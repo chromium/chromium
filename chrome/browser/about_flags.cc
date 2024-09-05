@@ -2236,6 +2236,14 @@ const FeatureEntry::FeatureVariation kMagicStackAndroidVariations[] = {
      std::size(kMagicStackAndroid_show_all_modules), nullptr},
 };
 
+const FeatureEntry::FeatureParam kEducationalTipModule_force_tab_group[] = {
+    {"force_tab_group", "true"}};
+
+const FeatureEntry::FeatureVariation kEducationalTipModuleVariations[] = {
+    {"Show tab group promo", kEducationalTipModule_force_tab_group,
+     std::size(kEducationalTipModule_force_tab_group), nullptr},
+};
+
 const FeatureEntry::FeatureParam
     kAccountReauthenticationRecentTimeWindow_0Minutes[] = {
         {"account_reauthentication_recent_time_window_minutes", "0"},
@@ -7287,7 +7295,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-educational-tip-module",
      flag_descriptions::kEducationalTipModuleName,
      flag_descriptions::kEducationalTipModuleDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kEducationalTipModule)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kEducationalTipModule,
+                                    kEducationalTipModuleVariations,
+                                    "EducationalTipModule")},
 
     {"maylaunchurl-uses-separate-storage-partition",
      flag_descriptions::kMayLaunchUrlUsesSeparateStoragePartitionName,

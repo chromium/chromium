@@ -10,6 +10,7 @@ import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.IntentUtils;
@@ -50,7 +51,7 @@ public class DefaultBrowserPromoCoordinator implements EducationalTipCardProvide
     }
 
     @Override
-    public int getCardImage() {
+    public @DrawableRes int getCardImage() {
         return R.drawable.default_browser_promo_logo;
     }
 

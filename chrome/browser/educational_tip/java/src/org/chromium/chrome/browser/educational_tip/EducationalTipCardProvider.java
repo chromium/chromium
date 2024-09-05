@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.educational_tip;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 
 import java.lang.annotation.Retention;
@@ -35,8 +36,12 @@ public interface EducationalTipCardProvider {
     String getCardDescription();
 
     /** Gets the image of the card. */
+    @DrawableRes
     int getCardImage();
 
     /** Called when the user clicks a module button. */
     void onCardClicked();
+
+    /** Called when the module is hidden. */
+    default void destroy() {}
 }

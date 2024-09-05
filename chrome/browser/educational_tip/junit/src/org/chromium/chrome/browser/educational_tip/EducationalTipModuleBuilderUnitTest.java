@@ -10,6 +10,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import android.view.ViewGroup;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -17,13 +19,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -44,16 +46,24 @@ public class EducationalTipModuleBuilderUnitTest {
     @Mock private ModuleDelegate mModuleDelegate;
     @Mock private Callback<ModuleProvider> mBuildCallback;
     @Mock private BottomSheetController mBottomSheetController;
+    @Mock private ViewGroup mParentView;
+    @Mock private Runnable mShowTabSwitcherRunnable;
 
     private EducationalTipModuleBuilder mModuleBuilder;
+    private ObservableSupplierImpl<ViewGroup> mParentViewSupplier;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        mParentViewSupplier = new ObservableSupplierImpl<>();
+        mParentViewSupplier.set(mParentView);
 
         mModuleBuilder =
                 new EducationalTipModuleBuilder(
-                        RuntimeEnvironment.application, mBottomSheetController);
+                        RuntimeEnvironment.application,
+                        mBottomSheetController,
+                        new ObservableSupplierImpl<>(),
+                        mShowTabSwitcherRunnable,
+                        mParentViewSupplier);
     }
 
     @Test
