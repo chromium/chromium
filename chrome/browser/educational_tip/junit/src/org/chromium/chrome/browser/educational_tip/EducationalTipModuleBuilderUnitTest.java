@@ -8,7 +8,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import androidx.test.filters.SmallTest;
@@ -31,6 +30,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 
 /** Test relating to {@link EducationalTipModuleBuilder} */
@@ -43,6 +43,7 @@ public class EducationalTipModuleBuilderUnitTest {
 
     @Mock private ModuleDelegate mModuleDelegate;
     @Mock private Callback<ModuleProvider> mBuildCallback;
+    @Mock private BottomSheetController mBottomSheetController;
 
     private EducationalTipModuleBuilder mModuleBuilder;
 
@@ -50,7 +51,9 @@ public class EducationalTipModuleBuilderUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mModuleBuilder = new EducationalTipModuleBuilder(RuntimeEnvironment.application);
+        mModuleBuilder =
+                new EducationalTipModuleBuilder(
+                        RuntimeEnvironment.application, mBottomSheetController);
     }
 
     @Test
@@ -70,6 +73,6 @@ public class EducationalTipModuleBuilderUnitTest {
         assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());
 
         assertTrue(mModuleBuilder.build(mModuleDelegate, mBuildCallback));
-        verify(mBuildCallback, times(1)).onResult(any(ModuleProvider.class));
+        verify(mBuildCallback).onResult(any(ModuleProvider.class));
     }
 }

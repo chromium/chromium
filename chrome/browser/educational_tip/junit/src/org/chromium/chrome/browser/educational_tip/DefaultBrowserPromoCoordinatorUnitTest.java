@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.educational_tip;
 
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.times;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 
 import androidx.test.filters.SmallTest;
@@ -23,9 +25,12 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.educational_tip.cards.DefaultBrowserPromoBottomSheetContent;
 import org.chromium.chrome.browser.educational_tip.cards.DefaultBrowserPromoCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
+import org.chromium.ui.widget.ButtonCompat;
 
 /** Test relating to {@link DefaultBrowserPromoCoordinator} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -35,6 +40,7 @@ import org.chromium.ui.shadows.ShadowAppCompatResources;
 public class DefaultBrowserPromoCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Runnable mOnModuleClickedCallback;
+    @Mock private BottomSheetController mBottomSheetController;
 
     private DefaultBrowserPromoCoordinator mDefaultBrowserPromoCoordinator;
 
@@ -44,16 +50,31 @@ public class DefaultBrowserPromoCoordinatorUnitTest {
 
         mDefaultBrowserPromoCoordinator =
                 new DefaultBrowserPromoCoordinator(
-                        RuntimeEnvironment.application, mOnModuleClickedCallback);
+                        RuntimeEnvironment.application,
+                        mOnModuleClickedCallback,
+                        mBottomSheetController);
     }
 
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.EDUCATIONAL_TIP_MODULE})
-    public void testClickDefaultBrowserPromoCard() {
+    public void testDefaultBrowserPromoCardBottomSheet() {
         assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());
 
         mDefaultBrowserPromoCoordinator.onCardClicked();
-        verify(mOnModuleClickedCallback, times(1)).run();
+
+        verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
+        DefaultBrowserPromoBottomSheetContent defaultBrowserBottomSheetContent =
+                mDefaultBrowserPromoCoordinator.getDefaultBrowserBottomSheetContent();
+        ButtonCompat bottomSheetButton =
+                defaultBrowserBottomSheetContent
+                        .getContentView()
+                        .findViewById(
+                                org.chromium.chrome.browser.educational_tip.R.id
+                                        .default_browser_bottom_sheet_button);
+
+        bottomSheetButton.performClick();
+        verify(mBottomSheetController).hideContent(any(), anyBoolean(), anyInt());
+        verify(mOnModuleClickedCallback).run();
     }
 }

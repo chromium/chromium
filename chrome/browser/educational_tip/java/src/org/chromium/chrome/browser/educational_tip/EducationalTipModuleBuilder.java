@@ -16,15 +16,19 @@ import org.chromium.chrome.browser.magic_stack.ModuleConfigChecker;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.magic_stack.ModuleProviderBuilder;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 public class EducationalTipModuleBuilder implements ModuleProviderBuilder, ModuleConfigChecker {
     private final Context mContext;
+    private final BottomSheetController mBottomSheetController;
 
     /** Pass in the dependencies needed to build {@link EducationalTipModuleCoordinator}. */
-    public EducationalTipModuleBuilder(@NonNull Context context) {
+    public EducationalTipModuleBuilder(
+            @NonNull Context context, @NonNull BottomSheetController bottomSheetController) {
         mContext = context;
+        mBottomSheetController = bottomSheetController;
     }
 
     /** Build {@link ModuleProvider} for the educational tip module. */
@@ -36,7 +40,8 @@ public class EducationalTipModuleBuilder implements ModuleProviderBuilder, Modul
             return false;
         }
         EducationalTipModuleCoordinator coordinator =
-                new EducationalTipModuleCoordinator(mContext, moduleDelegate);
+                new EducationalTipModuleCoordinator(
+                        mContext, moduleDelegate, mBottomSheetController);
         onModuleBuiltCallback.onResult(coordinator);
         return true;
     }

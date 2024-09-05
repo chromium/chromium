@@ -14,6 +14,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleProperties.java",
     "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleView.java",
     "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleViewBinder.java",
+    "java/src/org/chromium/chrome/browser/educational_tip/cards/DefaultBrowserPromoBottomSheetContent.java",
     "java/src/org/chromium/chrome/browser/educational_tip/cards/DefaultBrowserPromoCoordinator.java",
   ]
   deps = [
@@ -25,6 +26,7 @@ android_library("java") {
     "//chrome/browser/magic_stack/android:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tabmodel:java",
+    "//components/browser_ui/bottomsheet/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_java",
@@ -36,6 +38,7 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable/default_browser_promo_logo.xml",
     "java/res/drawable/educational_tip_module_content_image_background.xml",
+    "java/res/layout/educational_tip_default_browser_bottom_sheet.xml",
     "java/res/layout/educational_tip_module_layout.xml",
     "java/res/values/dimens.xml",
   ]
@@ -65,6 +68,7 @@ robolectric_library("junit") {
     "//chrome/browser/flags:java",
     "//chrome/browser/magic_stack/android:java",
     "//chrome/browser/profiles/android:java",
+    "//components/browser_ui/bottomsheet/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_runner_java",

@@ -2247,7 +2247,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         if (ChromeFeatureList.sEducationalTipModule.isEnabled()) {
             EducationalTipModuleBuilder educationalTipModuleBuilder =
-                    new EducationalTipModuleBuilder(this);
+                    new EducationalTipModuleBuilder(
+                            this, mRootUiCoordinator.getBottomSheetController());
             moduleRegistry.registerModule(ModuleType.EDUCATIONAL_TIP, educationalTipModuleBuilder);
         }
 

@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Coordinator for the educational tip module. */
@@ -18,9 +19,13 @@ public class EducationalTipModuleCoordinator implements ModuleProvider {
     private final EducationalTipModuleMediator mMediator;
 
     public EducationalTipModuleCoordinator(
-            @NonNull Context context, @NonNull ModuleDelegate moduleDelegate) {
+            @NonNull Context context,
+            @NonNull ModuleDelegate moduleDelegate,
+            @NonNull BottomSheetController bottomSheetController) {
         PropertyModel model = new PropertyModel(EducationalTipModuleProperties.ALL_KEYS);
-        mMediator = new EducationalTipModuleMediator(context, model, moduleDelegate);
+        mMediator =
+                new EducationalTipModuleMediator(
+                        context, model, moduleDelegate, bottomSheetController);
     }
 
     // ModuleProvider implementation.

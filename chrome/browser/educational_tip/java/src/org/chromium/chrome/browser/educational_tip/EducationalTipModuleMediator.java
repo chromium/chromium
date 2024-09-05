@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider.EducationalTipCardType;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator for the educational tip module. */
@@ -24,14 +25,15 @@ public class EducationalTipModuleMediator {
     EducationalTipModuleMediator(
             @NonNull Context context,
             @NonNull PropertyModel model,
-            @NonNull ModuleDelegate moduleDelegate) {
+            @NonNull ModuleDelegate moduleDelegate,
+            @NonNull BottomSheetController bottomSheetController) {
         mContext = context;
         mModuleType = ModuleType.EDUCATIONAL_TIP;
         mModel = model;
         mModuleDelegate = moduleDelegate;
         mEducationalTipCardProvider =
                 EducationalTipCardProviderFactory.createInstance(
-                        mContext, getCardType(), this::removeModule);
+                        mContext, getCardType(), this::removeModule, bottomSheetController);
     }
 
     /** Show the educational tip module. */

@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider.EducationalTipCardType;
 import org.chromium.chrome.browser.educational_tip.cards.DefaultBrowserPromoCoordinator;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /** A factory interface for building a EducationalTipCardProvider instance. */
 public class EducationalTipCardProviderFactory {
@@ -19,9 +20,11 @@ public class EducationalTipCardProviderFactory {
     static EducationalTipCardProvider createInstance(
             @NonNull Context context,
             @EducationalTipCardType int cardType,
-            @NonNull Runnable onModuleClickedCallback) {
+            @NonNull Runnable onModuleClickedCallback,
+            @NonNull BottomSheetController bottomSheetController) {
         if (cardType == EducationalTipCardType.DEFAULT_BROWSER_PROMO) {
-            return new DefaultBrowserPromoCoordinator(context, onModuleClickedCallback);
+            return new DefaultBrowserPromoCoordinator(
+                    context, onModuleClickedCallback, bottomSheetController);
         }
 
         assert false : "Educational tip module's card type not supported!";
