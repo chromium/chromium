@@ -364,6 +364,7 @@
   "the web as expected, so should not expire.",
   {
     "prefix": "origin-trials-runtimeflags-disabled",
+    "owners": ["origin-trials-support@google.com"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["http/tests/origin_trials/webexposed"],
     "args": ["--disable-origin-trial-controlled-blink-features",
