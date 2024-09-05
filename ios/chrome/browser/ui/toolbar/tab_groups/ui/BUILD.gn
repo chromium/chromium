@@ -12,6 +12,7 @@ source_set("ui") {
   deps = [
     ":constants",
     "//base",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",

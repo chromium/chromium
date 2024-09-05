@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_view.h"
 
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_constants.h"
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_mutator.h"
@@ -123,9 +124,16 @@
   [menuElements addObject:[actionFactory actionToUngroupTabGroupWithBlock:^{
                   [weakSelf.mutator unGroup];
                 }]];
-  [menuElements addObject:[actionFactory actionToCloseTabGroupWithBlock:^{
-                  [weakSelf.mutator closeGroup];
-                }]];
+  if (IsTabGroupSyncEnabled()) {
+    [menuElements addObject:[actionFactory actionToCloseTabGroupWithBlock:^{
+                    [weakSelf.mutator closeGroup];
+                  }]];
+  } else {
+    [menuElements addObject:[actionFactory actionToDeleteWithBlock:^{
+                    [weakSelf.mutator closeGroup];
+                  }]];
+  }
+
   button.menu = [UIMenu menuWithChildren:menuElements];
   return button;
 }
