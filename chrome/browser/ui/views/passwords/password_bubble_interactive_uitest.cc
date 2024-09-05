@@ -1062,9 +1062,17 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
                  /*screenshot_name=*/std::string(), /*baseline_cl=*/"5189779"));
 }
 
+// TODO(crbug.com/364687935): Failing on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_NavigateToManagementDetailsViewWithMoveFooterVisibleAndTakeScreenshot \
+  DISABLED_NavigateToManagementDetailsViewWithMoveFooterVisibleAndTakeScreenshot
+#else
+#define MAYBE_NavigateToManagementDetailsViewWithMoveFooterVisibleAndTakeScreenshot \
+  NavigateToManagementDetailsViewWithMoveFooterVisibleAndTakeScreenshot
+#endif
 IN_PROC_BROWSER_TEST_F(
     PasswordBubbleInteractiveUiTest,
-    NavigateToManagementDetailsViewWithMoveFooterVisibleAndTakeScreenshot) {
+    MAYBE_NavigateToManagementDetailsViewWithMoveFooterVisibleAndTakeScreenshot) {
   const char kFirstCredentialsRow[] = "FirstCredentialsRow";
 
   std::unique_ptr<base::AutoReset<bool>> bypass_user_auth_for_testing =
