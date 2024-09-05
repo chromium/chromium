@@ -2650,7 +2650,7 @@ crbug.com/364677549 external/wpt/css/css-properties-values-api/register-property
 crbug.com/364754341 external/wpt/css/css-text/parsing/tab-size-computed.html [ Crash Pass ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/364676077 external/wpt/html/dom/elements/global-attributes/dir-shadow-39.html [ Failure ]
+crbug.com/40571175 external/wpt/html/dom/elements/global-attributes/dir-shadow-39.html [ Failure ]
 crbug.com/364744930 external/wpt/css/css-nesting/contextually-invalid-selectors.html [ Failure ]
 crbug.com/364665775 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-016.html [ Failure ]
 crbug.com/364665775 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-017.html [ Failure ]
