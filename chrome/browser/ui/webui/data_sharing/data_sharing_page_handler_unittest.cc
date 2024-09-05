@@ -6,6 +6,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ui/webui/data_sharing/data_sharing_ui.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/data_sharing/public/features.h"
@@ -48,6 +49,9 @@ class TestDataSharingPageHandler : public DataSharingPageHandler {
 
 class DataSharingPageHandlerUnitTest : public BrowserWithTestWindowTest {
  public:
+  DataSharingPageHandlerUnitTest()
+      : BrowserWithTestWindowTest(
+            base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME) {}
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
@@ -88,4 +92,16 @@ TEST_F(DataSharingPageHandlerUnitTest, GetShareLink) {
       base::BindLambdaForTesting(
           [&](const GURL& url) { ASSERT_TRUE(url.is_valid()); });
   handler()->GetShareLink("GROUP_ID", "ACCESS_TOKEN", std::move(callback));
+}
+
+TEST_F(DataSharingPageHandlerUnitTest, OnAccessTokenFetched) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  GTEST_SKIP() << "N/A for Google Chrome Branding Build";
+#else
+  // For non-branded build, the access token is set to expire 1 minute later.
+  // (See kDummyTokenExpirationDuration in data_sharing_page_handler.cc)
+  // Fast forward 1 minute to make sure the access token is refetched once.
+  EXPECT_CALL(page_, OnAccessTokenFetched(testing::_)).Times(2);
+  task_environment()->FastForwardBy(base::Minutes(1));
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
