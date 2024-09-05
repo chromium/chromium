@@ -2007,6 +2007,18 @@ NavigationRequest::NavigationRequest(
       ad_auction_headers_eligible_ = true;
       headers.SetHeader(kAdAuctionRequestHeaderKey, "?1");
     }
+
+    // Partitioned popins are special modal popups that are partitioned as
+    // though they were an iframe embedded in the opener. All main-frame
+    // navigations and redirects must set a request header to notify the loaded
+    // site they are in a partitioned popin and not a standard popup.
+    // See https://explainers-by-googlers.github.io/partitioned-popins/
+    if (frame_tree_node->IsOutermostMainFrame() &&
+        frame_tree_node->current_frame_host()
+            ->delegate()
+            ->PartitionedPopinOpener()) {
+      headers.SetHeader("Sec-Popin-Context", "partitioned");
+    }
   }
 
   begin_params_->headers = headers.ToString();
