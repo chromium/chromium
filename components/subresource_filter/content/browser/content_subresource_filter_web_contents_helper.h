@@ -97,7 +97,7 @@ class ContentSubresourceFilterWebContentsHelper
  protected:
   // content::WebContentsObserver:
   void RenderFrameDeleted(content::RenderFrameHost* frame_host) override;
-  void FrameDeleted(int frame_tree_node_id) override;
+  void FrameDeleted(content::FrameTreeNodeId frame_tree_node_id) override;
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
   void ReadyToCommitNavigation(

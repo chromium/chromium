@@ -125,7 +125,7 @@ void ContentSubresourceFilterThrottleManager::RenderFrameDeleted(
 }
 
 void ContentSubresourceFilterThrottleManager::FrameDeleted(
-    int frame_tree_node_id) {
+    content::FrameTreeNodeId frame_tree_node_id) {
   // TODO(bokan): This will be called for frame tree nodes that don't belong to
   // this frame tree node as well since we can't tell outside of //content
   // which page a FTN belongs to.

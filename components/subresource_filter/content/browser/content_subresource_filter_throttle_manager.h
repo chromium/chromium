@@ -231,7 +231,7 @@ class ContentSubresourceFilterThrottleManager
   // called explicitly from the WebContentsHelper, which is a
   // WebContentsObserver, but only for the appropriate throttle manager.
   void RenderFrameDeleted(content::RenderFrameHost* frame_host);
-  void FrameDeleted(int frame_tree_node_id);
+  void FrameDeleted(content::FrameTreeNodeId frame_tree_node_id);
   // "InFrame" here means that the navigation doesn't move a page between frame
   // trees. i.e.  it is not a prerender activation.
   void ReadyToCommitInFrameNavigation(

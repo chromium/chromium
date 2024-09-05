@@ -166,7 +166,8 @@ void MimeHandlerViewEmbedder::RenderFrameCreated(
                      weak_factory_.GetWeakPtr()));
 }
 
-void MimeHandlerViewEmbedder::FrameDeleted(int frame_tree_node_id) {
+void MimeHandlerViewEmbedder::FrameDeleted(
+    content::FrameTreeNodeId frame_tree_node_id) {
   // TODO(mcnee): RenderFrameDeleted seems like a better fit for the child frame
   // case (i.e. |placeholder_render_frame_host_for_inner_contents_|), though
   // we'd still need FrameDeleted for |frame_tree_node_id_|.

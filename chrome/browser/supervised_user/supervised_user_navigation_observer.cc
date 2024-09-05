@@ -170,7 +170,8 @@ void SupervisedUserNavigationObserver::DidFinishNavigation(
   }
 }
 
-void SupervisedUserNavigationObserver::FrameDeleted(int frame_tree_node_id) {
+void SupervisedUserNavigationObserver::FrameDeleted(
+    content::FrameTreeNodeId frame_tree_node_id) {
   supervised_user_interstitials_.erase(frame_tree_node_id);
 }
 

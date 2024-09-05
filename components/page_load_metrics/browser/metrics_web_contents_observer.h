@@ -103,7 +103,7 @@ class MetricsWebContentsObserver
       base::TerminationStatus status) override;
   void RenderFrameHostChanged(content::RenderFrameHost* old_host,
                               content::RenderFrameHost* new_host) override;
-  void FrameDeleted(int frame_tree_node_id) override;
+  void FrameDeleted(content::FrameTreeNodeId frame_tree_node_id) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void MediaStartedPlaying(
       const content::WebContentsObserver::MediaPlayerInfo& video_type,

@@ -123,7 +123,7 @@ class RenderFrameTracker : public content::WebContentsObserver {
   // content::WebContentsObserver:
   void RenderFrameHostChanged(content::RenderFrameHost* old_host,
                               content::RenderFrameHost* new_host) override;
-  void FrameDeleted(int frame_tree_node_id) override;
+  void FrameDeleted(content::FrameTreeNodeId frame_tree_node_id) override;
 
   content::RenderFrameHost* GetHost(int frame_id) {
     if (!base::Contains(render_frame_hosts_, frame_id)) {
@@ -142,7 +142,8 @@ void RenderFrameTracker::RenderFrameHostChanged(
   render_frame_hosts_[new_host->GetFrameTreeNodeId()] = new_host;
 }
 
-void RenderFrameTracker::FrameDeleted(int frame_tree_node_id) {
+void RenderFrameTracker::FrameDeleted(
+    content::FrameTreeNodeId frame_tree_node_id) {
   if (!base::Contains(render_frame_hosts_, frame_tree_node_id)) {
     return;
   }

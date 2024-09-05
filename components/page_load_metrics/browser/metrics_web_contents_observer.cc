@@ -234,7 +234,8 @@ void MetricsWebContentsObserver::RenderFrameHostChanged(
   RegisterInputEventObserver(new_host);
 }
 
-void MetricsWebContentsObserver::FrameDeleted(int frame_tree_node_id) {
+void MetricsWebContentsObserver::FrameDeleted(
+    content::FrameTreeNodeId frame_tree_node_id) {
   content::RenderFrameHost* rfh =
       web_contents()->UnsafeFindFrameByFrameTreeNodeId(frame_tree_node_id);
   if (!rfh) {

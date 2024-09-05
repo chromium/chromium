@@ -202,7 +202,7 @@ void FingerprintingProtectionWebContentsHelper::
 }
 
 void FingerprintingProtectionWebContentsHelper::FrameDeleted(
-    int frame_tree_node_id) {
+    content::FrameTreeNodeId frame_tree_node_id) {
   navigated_frames_.erase(frame_tree_node_id);
 }
 

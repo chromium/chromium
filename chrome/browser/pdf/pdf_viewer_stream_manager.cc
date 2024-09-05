@@ -329,7 +329,8 @@ void PdfViewerStreamManager::RenderFrameHostChanged(
   // DO NOT add code past this point. `this` may have been deleted.
 }
 
-void PdfViewerStreamManager::FrameDeleted(int frame_tree_node_id) {
+void PdfViewerStreamManager::FrameDeleted(
+    content::FrameTreeNodeId frame_tree_node_id) {
   // If a PDF host is deleted, delete the associated `StreamInfo`.
   for (auto iter = stream_infos_.begin(); iter != stream_infos_.end();) {
     StreamInfo* stream_info = iter->second.get();

@@ -42,7 +42,10 @@ class MockWebContentsObserver : public WebContentsObserver {
               RenderFrameHostChanged,
               (RenderFrameHost* old_host, RenderFrameHost* new_host),
               (override));
-  MOCK_METHOD(void, FrameDeleted, (int frame_tree_node_id), (override));
+  MOCK_METHOD(void,
+              FrameDeleted,
+              (FrameTreeNodeId frame_tree_node_id),
+              (override));
   MOCK_METHOD(void,
               RenderFrameHostStateChanged,
               (RenderFrameHost* render_frame_host,

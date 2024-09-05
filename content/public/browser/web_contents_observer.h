@@ -17,6 +17,7 @@
 #include "components/viz/common/vertical_scroll_direction.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/allow_service_worker_result.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/visibility.h"
@@ -181,7 +182,7 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   // destroyed.
   // Use |RenderFrameHostChanged| to listen for when a RenderFrameHost object is
   // made the current host for a frame.
-  virtual void FrameDeleted(int frame_tree_node_id) {}
+  virtual void FrameDeleted(FrameTreeNodeId frame_tree_node_id) {}
 
   // This method is invoked whenever one of the frames of a WebContents changes
   // its |RenderFrameHost::GetLifecycleState()| i.e., when RenderFrameHost

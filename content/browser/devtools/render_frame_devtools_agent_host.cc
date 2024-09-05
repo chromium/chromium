@@ -560,7 +560,8 @@ void RenderFrameDevToolsAgentHost::RenderFrameHostChanged(
   // UpdateFrameHost may destruct |this|.
 }
 
-void RenderFrameDevToolsAgentHost::FrameDeleted(int frame_tree_node_id) {
+void RenderFrameDevToolsAgentHost::FrameDeleted(
+    FrameTreeNodeId frame_tree_node_id) {
   for (auto* tracing : protocol::TracingHandler::ForAgentHost(this))
     tracing->FrameDeleted(frame_tree_node_id);
   if (frame_tree_node_ &&
