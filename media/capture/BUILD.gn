@@ -163,7 +163,7 @@ component("capture_lib") {
     "//media/mojo/mojom",
     "//services/service_manager/public/cpp",
     "//services/video_capture/public/mojom",
-    "//services/video_effects:buildflags",
+    "//services/video_effects/buildflags",
     "//third_party/libyuv",
     "//ui/display",
     "//ui/gfx",
