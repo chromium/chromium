@@ -1,7 +1,11 @@
 <style include="cr-shared-style settings-columned-section"></style>
-<div>
-  <!-- TODO(crbug.com/361437117): Add the toggle. -->
-</div>
+<!-- 'label=" "'' is intentional here to avoid dropping the sub-label. -->
+<settings-toggle-button
+    no-extension-indicator label=" "
+    sub-label-with-link="$i18n{autofillPredictionImprovementsToggleSubLabel}"
+    on-sub-label-link-clicked="onToggleSubLabelLinkClick_"
+    pref="{{prefs.autofill.prediction_improvements.enabled}}">
+</settings-toggle-button>
 <div class="settings-columned-section">
   <div class="column">
     <h3 class="description-header">$i18n{columnHeadingWhenOn}</h3>

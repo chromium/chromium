@@ -757,6 +757,9 @@
   <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_PAGE_TITLE" desc="The title of the page in Settings that allows to manage the autofill improved predictions settings." translateable="false">
     Autofill prediction improvements
   </message>
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TOGGLE_SUB_LABEL" desc="The description of the main toggle that enables/disables improved autofill predictions." translateable="false">
+    Chrome can adapt to a form's format — for example, automatically filling your birthday as MM/DD/YYYY or DD/MM/YY. Learn more about <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Chrome Autofill<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
+  </message>
   <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_WHEN_ON_SAVED_INFO" desc="One of the items describing what happens when improved autofill predictions are enabled." translateable="false">
     Chrome asks if you want to use saved info to fill forms
   </message>

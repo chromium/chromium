@@ -9,13 +9,16 @@
 
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import '../controls/settings_toggle_button.js';
 import '../icons.html.js';
 import '../settings_columned_section.css.js';
 
+import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './autofill_prediction_improvements_section.html.js';
+import {loadTimeData} from '../i18n_setup.js';
 
+import {getTemplate} from './autofill_prediction_improvements_section.html.js';
 
 export class SettingsAutofillPredictionImprovementsSectionElement extends
     PolymerElement {
@@ -25,6 +28,22 @@ export class SettingsAutofillPredictionImprovementsSectionElement extends
 
   static get template() {
     return getTemplate();
+  }
+
+  static get properties() {
+    return {
+      prefs: {
+        type: Object,
+        notify: true,
+      },
+    };
+  }
+
+  private prefs: {[key: string]: any};
+
+  private onToggleSubLabelLinkClick_(): void {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('addressesAndPaymentMethodsLearnMoreURL'));
   }
 }
 

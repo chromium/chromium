@@ -1378,6 +1378,12 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       "autofillPredictionImprovementsEnabled",
       base::FeatureList::IsEnabled(
           autofill_prediction_improvements::kAutofillPredictionImprovements));
+  html_source->AddString(
+      "autofillPredictionImprovementsToggleSubLabel",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TOGGLE_SUB_LABEL,
+          base::ASCIIToUTF16(
+              std::string(chrome::kAddressesAndPaymentMethodsLearnMoreURL))));
 }
 
 void AddSignOutDialogStrings(content::WebUIDataSource* html_source,

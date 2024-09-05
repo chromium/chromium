@@ -191,6 +191,12 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[autofill::prefs::kAutofillPaymentCardBenefits] =
       settings_api::PrefType::kBoolean;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  (*s_allowlist)[autofill::prefs::kAutofillPredictionImprovementsEnabled] =
+      settings_api::PrefType::kBoolean;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
   (*s_allowlist)[payments::kCanMakePaymentEnabled] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[bookmarks::prefs::kShowBookmarkBar] =
