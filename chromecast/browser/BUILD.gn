@@ -415,17 +415,6 @@ cast_source_set("simple_main_parts") {
   public_deps = [ ":browser" ]
 }
 
-cast_source_set("simple_client") {
-  sources = [ "cast_content_browser_client_simple.cc" ]
-
-  public_deps = [ ":browser" ]
-
-  deps = [
-    "//base",
-    "//chromecast/common:cors_exempt_headers",
-  ]
-}
-
 cast_source_set("base_types") {
   public = [
     "visibility_types.h",
@@ -619,21 +608,4 @@ if (is_android) {
   java_cpp_enum("java_enums") {
     sources = [ "visibility_types.h" ]
   }
-}
-
-# Could be used in the internal build if the internal implementation won't be
-# included, for example, some unit tests.
-cast_source_set("simple_browser") {
-  sources = [
-    "cast_browser_main_parts_simple.cc",
-    "cast_content_browser_client_simple.cc",
-    "pref_service_helper_simple.cc",
-  ]
-
-  deps = [
-    ":browser",
-    ":prefs",
-    "//chromecast/base:default_create_sys_info",
-    "//chromecast/common:cors_exempt_headers",
-  ]
 }

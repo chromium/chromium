@@ -512,13 +512,7 @@ if (!is_fuchsia) {
   }
 
   group("cast_shell_lib_simple") {
-    deps = [
-      ":cast_shell_lib_base",
-      "//chromecast/browser:prefs_simple",
-      "//chromecast/browser:simple_client",
-      "//chromecast/browser:simple_main_parts",
-      "//chromecast/renderer:simple_client",
-    ]
+    deps = [ "//chromecast/cast_core:core_runtime_lib_simple" ]
   }
 
   cast_executable("cast_shell") {
