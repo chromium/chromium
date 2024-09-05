@@ -998,15 +998,15 @@ _CONFIG = [
         ],
     },
     {
-        'paths': ['third_party/blink/renderer/core/css/media_values.cc'],
+        'paths': ['third_party/blink/renderer/core/css/color_function.h'],
         'allowed': [
-            'color_space_utilities::GetColorSpaceGamut',
+            'base::MakeFixedFlatMap',
         ],
     },
     {
-        'paths': ['third_party/blink/renderer/core/css/properties/css_color_function_parser.cc'],
+        'paths': ['third_party/blink/renderer/core/css/media_values.cc'],
         'allowed': [
-            'base::MakeFixedFlatMap',
+            'color_space_utilities::GetColorSpaceGamut',
         ],
     },
     {

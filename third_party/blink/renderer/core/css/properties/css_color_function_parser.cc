@@ -6,9 +6,9 @@
 
 #include <cmath>
 
-#include "base/containers/fixed_flat_map.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
+#include "third_party/blink/renderer/core/css/css_color_channel_keywords.h"
 #include "third_party/blink/renderer/core/css/css_color_mix_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
@@ -19,15 +19,6 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 
 namespace blink {
-
-struct ColorFunctionParser::FunctionMetadata {
-  // The name/binding for positional color channels 0, 1 and 2.
-  std::array<CSSValueID, 3> channel_name;
-
-  // The value (number) that equals 100% for the corresponding positional color
-  // channel.
-  std::array<double, 3> channel_percentage;
-};
 
 namespace {
 
@@ -97,91 +88,6 @@ Color::ColorSpace ColorSpaceFromColorSpaceArgument(CSSValueID id) {
       return Color::ColorSpace::kNone;
   }
 }
-
-// Unique entries in kFunctionMetadataMap.
-enum class FunctionMetadataEntry : uint8_t {
-  kLegacyRgb,  // Color::ColorSpace::kSRGBLegacy
-  kColorRgb,   // Color::ColorSpace::kSRGB,
-               // Color::ColorSpace::kSRGBLinear,
-               // Color::ColorSpace::kDisplayP3,
-               // Color::ColorSpace::kA98RGB,
-               // Color::ColorSpace::kProPhotoRGB,
-               // Color::ColorSpace::kRec2020
-  kColorXyz,   // Color::ColorSpace::kXYZD50,
-               // Color::ColorSpace::kXYZD65
-  kLab,        // Color::ColorSpace::kLab
-  kOkLab,      // Color::ColorSpace::kOklab
-  kLch,        // Color::ColorSpace::kLch
-  kOkLch,      // Color::ColorSpace::kOklch
-  kHsl,        // Color::ColorSpace::kHSL
-  kHwb,        // Color::ColorSpace::kHWB
-};
-
-constexpr double kPercentNotApplicable =
-    std::numeric_limits<double>::quiet_NaN();
-
-constexpr auto kFunctionMetadataMap =
-    base::MakeFixedFlatMap<FunctionMetadataEntry,
-                           ColorFunctionParser::FunctionMetadata>({
-        // rgb(); percentage mapping: r,g,b=255
-        {FunctionMetadataEntry::kLegacyRgb,
-         {{CSSValueID::kR, CSSValueID::kG, CSSValueID::kB}, {255, 255, 255}}},
-
-        // color(... <predefined-rgb-params> ...); percentage mapping: r,g,b=1
-        {FunctionMetadataEntry::kColorRgb,
-         {{CSSValueID::kR, CSSValueID::kG, CSSValueID::kB}, {1, 1, 1}}},
-
-        // color(... <xyz-params> ...); percentage mapping: x,y,z=1
-        {FunctionMetadataEntry::kColorXyz,
-         {{CSSValueID::kX, CSSValueID::kY, CSSValueID::kZ}, {1, 1, 1}}},
-
-        // lab(); percentage mapping: l=100 a,b=125
-        {FunctionMetadataEntry::kLab,
-         {{CSSValueID::kL, CSSValueID::kA, CSSValueID::kB}, {100, 125, 125}}},
-
-        // oklab(); percentage mapping: l=1 a,b=0.4
-        {FunctionMetadataEntry::kOkLab,
-         {{CSSValueID::kL, CSSValueID::kA, CSSValueID::kB}, {1, 0.4, 0.4}}},
-
-        // lch(); percentage mapping: l=100 c=150 h=n/a
-        {FunctionMetadataEntry::kLch,
-         {{CSSValueID::kL, CSSValueID::kC, CSSValueID::kH},
-          {100, 150, kPercentNotApplicable}}},
-
-        // oklch(); percentage mapping: l=1 c=0.4 h=n/a
-        {FunctionMetadataEntry::kOkLch,
-         {{CSSValueID::kL, CSSValueID::kC, CSSValueID::kH},
-          {1, 0.4, kPercentNotApplicable}}},
-
-        // hsl(); percentage mapping: h=n/a s,l=100
-        {FunctionMetadataEntry::kHsl,
-         {{CSSValueID::kH, CSSValueID::kS, CSSValueID::kL},
-          {kPercentNotApplicable, 100, 100}}},
-
-        // hwb(); percentage mapping: h=n/a w,b=100
-        {FunctionMetadataEntry::kHwb,
-         {{CSSValueID::kH, CSSValueID::kW, CSSValueID::kB},
-          {kPercentNotApplicable, 100, 100}}},
-    });
-
-constexpr auto kColorSpaceFunctionMap =
-    base::MakeFixedFlatMap<Color::ColorSpace, FunctionMetadataEntry>({
-        {Color::ColorSpace::kSRGBLegacy, FunctionMetadataEntry::kLegacyRgb},
-        {Color::ColorSpace::kSRGB, FunctionMetadataEntry::kColorRgb},
-        {Color::ColorSpace::kSRGBLinear, FunctionMetadataEntry::kColorRgb},
-        {Color::ColorSpace::kDisplayP3, FunctionMetadataEntry::kColorRgb},
-        {Color::ColorSpace::kA98RGB, FunctionMetadataEntry::kColorRgb},
-        {Color::ColorSpace::kProPhotoRGB, FunctionMetadataEntry::kColorRgb},
-        {Color::ColorSpace::kRec2020, FunctionMetadataEntry::kColorRgb},
-        {Color::ColorSpace::kXYZD50, FunctionMetadataEntry::kColorXyz},
-        {Color::ColorSpace::kXYZD65, FunctionMetadataEntry::kColorXyz},
-        {Color::ColorSpace::kLab, FunctionMetadataEntry::kLab},
-        {Color::ColorSpace::kOklab, FunctionMetadataEntry::kOkLab},
-        {Color::ColorSpace::kLch, FunctionMetadataEntry::kLch},
-        {Color::ColorSpace::kOklch, FunctionMetadataEntry::kOkLch},
-        {Color::ColorSpace::kHSL, FunctionMetadataEntry::kHsl},
-        {Color::ColorSpace::kHWB, FunctionMetadataEntry::kHwb},
-    });
 
 bool ColorChannelIsHue(Color::ColorSpace color_space, int channel) {
   if (color_space == Color::ColorSpace::kHSL ||
@@ -317,11 +223,11 @@ bool ColorFunctionParser::ConsumeColorSpaceAndOriginColor(
     color_space_ = ColorSpaceFromFunctionName(function_id);
   }
 
-  auto function_entry = kColorSpaceFunctionMap.find(color_space_);
-  CHECK(function_entry != kColorSpaceFunctionMap.end());
+  auto function_entry = ColorFunction::kColorSpaceMap.find(color_space_);
+  CHECK(function_entry != ColorFunction::kColorSpaceMap.end());
   auto function_metadata_entry =
-      kFunctionMetadataMap.find(function_entry->second);
-  CHECK(function_metadata_entry != kFunctionMetadataMap.end());
+      ColorFunction::kMetadataMap.find(function_entry->second);
+  CHECK(function_metadata_entry != ColorFunction::kMetadataMap.end());
   function_metadata_ = &function_metadata_entry->second;
 
   if (unresolved_origin_color_) {
