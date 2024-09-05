@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/values.h"
+#include "pdf/buildflags.h"
 #include "pdf/document_attachment_info.h"
 #include "pdf/document_metadata.h"
 #include "pdf/pdfium/pdfium_engine.h"
@@ -95,6 +96,10 @@ class TestPDFiumEngine : public PDFiumEngine {
   uint32_t GetLoadedByteSize() override;
 
   bool ReadLoadedBytes(uint32_t length, void* buffer) override;
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  MOCK_METHOD(gfx::Size, GetThumbnailSize, (int, float), (override));
+#endif
 
   std::vector<uint8_t> GetSaveData() override;
 

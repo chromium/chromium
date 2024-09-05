@@ -13,6 +13,7 @@
 #include <set>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
@@ -93,6 +94,9 @@ class PdfInkModule {
     // Asks the client to change the cursor to `bitmap`.
     virtual void UpdateInkCursorImage(SkBitmap bitmap) {}
 
+    // Asks the client to update the thumbnail for `page_index`.
+    virtual void UpdateThumbnail(int page_index) {}
+
     // Returns the 0-based page index for the given `point` if it is on a
     // visible page, or -1 if `point` is not on a visible page.
     virtual int VisiblePageIndexFromPoint(const gfx::PointF& point) = 0;
@@ -105,8 +109,14 @@ class PdfInkModule {
 
   bool enabled() const { return enabled_; }
 
-  // Draws `strokes_` and `inputs_` into `canvas`.
+  // Draws `strokes_` and `inputs_` into `canvas`. Here, `canvas` covers the
+  // visible content area, so this only draws strokes for visible pages.
   void Draw(SkCanvas& canvas);
+
+  // Draws `strokes_` for `page_index` into `canvas`. Here, `canvas` only covers
+  // the region for the page at `page_index`, so this only draws strokes for
+  // that page, regardless of page visibility.
+  bool DrawThumbnail(SkCanvas& canvas, int page_index);
 
   // Returns whether the event was handled or not.
   bool HandleInputEvent(const blink::WebInputEvent& event);
@@ -212,8 +222,13 @@ class PdfInkModule {
   };
 
   struct EraserState {
+    EraserState();
+    EraserState(const EraserState&) = delete;
+    EraserState& operator=(const EraserState&) = delete;
+    ~EraserState();
+
     bool erasing = false;
-    bool did_erase_strokes = false;
+    base::flat_set<int> page_indices_with_erased_strokes;
     float eraser_size = 0;
   };
 

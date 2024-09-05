@@ -412,6 +412,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   bool IsPageVisible(int page_index) override;
   void StrokeFinished() override;
   void UpdateInkCursorImage(SkBitmap bitmap) override;
+  void UpdateThumbnail(int page_index) override;
   int VisiblePageIndexFromPoint(const gfx::PointF& point) override;
 #endif
 

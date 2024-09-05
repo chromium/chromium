@@ -871,6 +871,11 @@ export class PdfViewerElement extends PdfViewerBaseElement {
           type: 'touchSelectionOccurred',
         });
         return;
+        // <if expr="enable_pdf_ink2">
+      case 'updateInk2Thumbnail':
+        // TODO(crbug.com/353942908): Update the thumbnail.
+        return;
+        // </if>
     }
     assertNotReached('Unknown message type received: ' + data.type);
   }

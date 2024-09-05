@@ -24,6 +24,7 @@
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "pdf/buildflags.h"
 #include "pdf/document_attachment_info.h"
 #include "pdf/document_layout.h"
 #include "pdf/document_metadata.h"
@@ -399,6 +400,10 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   void RequestThumbnail(int page_index,
                         float device_pixel_ratio,
                         SendThumbnailCallback send_callback);
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  // Virtual to support testing.
+  virtual gfx::Size GetThumbnailSize(int page_index, float device_pixel_ratio);
+#endif
 
   // DocumentLoader::Client:
   std::unique_ptr<URLLoaderWrapper> CreateURLLoader() override;

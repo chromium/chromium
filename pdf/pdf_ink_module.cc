@@ -181,6 +181,39 @@ void PdfInkModule::Draw(SkCanvas& canvas) {
   }
 }
 
+bool PdfInkModule::DrawThumbnail(SkCanvas& canvas, int page_index) {
+  auto it = strokes_.find(page_index);
+  if (it == strokes_.end() || it->second.empty()) {
+    return false;
+  }
+
+  // Since thumbnails are always drawn without any rotation, `transform` only
+  // needs to perform scaling.
+  const SkImageInfo canvas_info = canvas.imageInfo();
+  const gfx::Rect content_rect = client_->GetPageContentsRect(page_index);
+  const float ratio =
+      client_->GetZoom() *
+      std::min(
+          static_cast<float>(canvas_info.width()) / content_rect.width(),
+          static_cast<float>(canvas_info.height()) / content_rect.height());
+  const InkAffineTransform transform = {ratio, 0, 0, 0, ratio, 0};
+
+  auto skia_renderer = InkSkiaRenderer::Create();
+  for (const FinishedStrokeState& finished_stroke : it->second) {
+    if (!finished_stroke.should_draw) {
+      continue;
+    }
+
+    bool success =
+        skia_renderer->Draw(*finished_stroke.stroke, transform, canvas);
+    CHECK(success);
+  }
+
+  // No need to draw in-progress strokes, since DrawThumbnail() only gets called
+  // after the in-progress strokes finish.
+  return true;
+}
+
 bool PdfInkModule::HandleInputEvent(const blink::WebInputEvent& event) {
   if (!enabled()) {
     return false;
@@ -441,6 +474,7 @@ bool PdfInkModule::FinishStroke(const gfx::PointF& position) {
   }
 
   client_->StrokeFinished();
+  client_->UpdateThumbnail(state.page_index);
 
   bool undo_redo_success = undo_redo_model_.FinishDraw();
   CHECK(undo_redo_success);
@@ -470,7 +504,9 @@ bool PdfInkModule::StartEraseStroke(const gfx::PointF& position) {
   CHECK(discards.has_value());
   ApplyUndoRedoDiscards(discards.value());
 
-  state.did_erase_strokes = EraseHelper(position, page_index);
+  if (EraseHelper(position, page_index)) {
+    state.page_indices_with_erased_strokes.insert(page_index);
+  }
   return true;
 }
 
@@ -489,7 +525,9 @@ bool PdfInkModule::ContinueEraseStroke(const gfx::PointF& position) {
     return true;
   }
 
-  state.did_erase_strokes |= EraseHelper(position, page_index);
+  if (EraseHelper(position, page_index)) {
+    state.page_indices_with_erased_strokes.insert(page_index);
+  }
   return true;
 }
 
@@ -505,13 +543,16 @@ bool PdfInkModule::FinishEraseStroke(const gfx::PointF& position) {
 
   CHECK(is_erasing_stroke());
   EraserState& state = erasing_stroke_state();
-  if (state.did_erase_strokes) {
+  if (!state.page_indices_with_erased_strokes.empty()) {
     client_->StrokeFinished();
+    for (int page_index : state.page_indices_with_erased_strokes) {
+      client_->UpdateThumbnail(page_index);
+    }
   }
 
   // Reset `state` now that the erase operation is done.
   state.erasing = false;
-  state.did_erase_strokes = false;
+  state.page_indices_with_erased_strokes.clear();
   return true;
 }
 
@@ -741,6 +782,7 @@ void PdfInkModule::ApplyUndoRedoCommandsHelper(std::set<size_t> ids,
 
     CHECK(invalidate_rect.has_value());
     client_->Invalidate(InkRectToEnclosingGfxRect(invalidate_rect.value()));
+    client_->UpdateThumbnail(page_index);
 
     if (ids.empty()) {
       return;  // Return early if there is nothing left to apply.
@@ -821,6 +863,10 @@ void PdfInkModule::MaybeSetCursor() {
 PdfInkModule::DrawingStrokeState::DrawingStrokeState() = default;
 
 PdfInkModule::DrawingStrokeState::~DrawingStrokeState() = default;
+
+PdfInkModule::EraserState::EraserState() = default;
+
+PdfInkModule::EraserState::~EraserState() = default;
 
 PdfInkModule::FinishedStrokeState::FinishedStrokeState(
     std::unique_ptr<InkStroke> stroke,

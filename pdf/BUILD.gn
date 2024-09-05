@@ -375,6 +375,7 @@ if (enable_pdf) {
     ]
 
     deps = [
+      ":buildflags",
       ":internal",
       "//base",
       "//cc:test_support",

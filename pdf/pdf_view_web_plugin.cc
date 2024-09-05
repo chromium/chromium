@@ -125,6 +125,7 @@
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
 #include "pdf/pdf_ink_module.h"
+#include "third_party/skia/include/core/SkCanvas.h"
 #endif
 
 namespace chrome_pdf {
@@ -2080,6 +2081,32 @@ void PdfViewWebPlugin::StrokeFinished() {
 void PdfViewWebPlugin::UpdateInkCursorImage(SkBitmap bitmap) {
   gfx::Point hotspot(bitmap.width() / 2, bitmap.height() / 2);
   cursor_ = ui::Cursor::NewCustom(std::move(bitmap), std::move(hotspot));
+}
+
+void PdfViewWebPlugin::UpdateThumbnail(int page_index) {
+  CHECK(ink_module_);
+
+  const gfx::Size size = engine_->GetThumbnailSize(page_index, device_scale_);
+  auto info = SkImageInfo::Make(size.width(), size.height(),
+                                kRGBA_8888_SkColorType, kUnpremul_SkAlphaType);
+  const size_t alloc_size = info.computeMinByteSize();
+  CHECK(!SkImageInfo::ByteSizeOverflowed(alloc_size));
+  std::vector<uint8_t> image_data(alloc_size);
+
+  SkBitmap sk_bitmap;
+  sk_bitmap.installPixels(info, image_data.data(), info.minRowBytes());
+  SkCanvas canvas(sk_bitmap);
+  if (!ink_module_->DrawThumbnail(canvas, page_index)) {
+    return;
+  }
+
+  base::Value::Dict message;
+  message.Set("type", "updateInk2Thumbnail");
+  message.Set("pageNumber", page_index + 1);
+  message.Set("imageData", std::move(image_data));
+  message.Set("width", size.width());
+  message.Set("height", size.height());
+  client_->PostMessage(std::move(message));
 }
 
 int PdfViewWebPlugin::VisiblePageIndexFromPoint(const gfx::PointF& point) {
