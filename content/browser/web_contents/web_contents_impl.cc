@@ -784,7 +784,8 @@ WebContentsImpl* WebContentsImpl::FromRenderFrameHostImpl(
   return static_cast<WebContentsImpl*>(rfh->delegate());
 }
 
-WebContents* WebContents::FromFrameTreeNodeId(int frame_tree_node_id) {
+WebContents* WebContents::FromFrameTreeNodeId(
+    FrameTreeNodeId frame_tree_node_id) {
   OPTIONAL_TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("content.verbose"),
                         "WebContents::FromFrameTreeNodeId",
                         "frame_tree_node_id", frame_tree_node_id);
@@ -1667,8 +1668,8 @@ RenderFrameHostImpl* WebContentsImpl::GetFocusedFrame() {
   return focused_node->current_frame_host();
 }
 
-bool WebContentsImpl::IsPrerenderedFrame(int frame_tree_node_id) {
-  if (frame_tree_node_id == RenderFrameHost::kNoFrameTreeNodeId) {
+bool WebContentsImpl::IsPrerenderedFrame(FrameTreeNodeId frame_tree_node_id) {
+  if (frame_tree_node_id.is_null()) {
     return false;
   }
 
@@ -1692,7 +1693,7 @@ bool WebContentsImpl::IsPrerenderedFrame(int frame_tree_node_id) {
 }
 
 RenderFrameHostImpl* WebContentsImpl::UnsafeFindFrameByFrameTreeNodeId(
-    int frame_tree_node_id) {
+    FrameTreeNodeId frame_tree_node_id) {
   OPTIONAL_TRACE_EVENT1("content",
                         "WebContentsImpl::UnsafeFindFrameByFrameTreeNodeId",
                         "frame_tree_node_id", frame_tree_node_id);

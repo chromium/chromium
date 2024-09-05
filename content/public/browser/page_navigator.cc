@@ -38,7 +38,7 @@ OpenURLParams::OpenURLParams(const GURL& url,
 
 OpenURLParams::OpenURLParams(const GURL& url,
                              const Referrer& referrer,
-                             int frame_tree_node_id,
+                             FrameTreeNodeId frame_tree_node_id,
                              WindowOpenDisposition disposition,
                              ui::PageTransition transition,
                              bool is_renderer_initiated)

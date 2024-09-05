@@ -27,6 +27,7 @@
 #include "build/build_config.h"
 #include "cc/input/browser_controls_state.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/mhtml_generation_result.h"
 #include "content/public/browser/navigation_controller.h"
@@ -377,7 +378,7 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // Returns the WebContents associated with the |frame_tree_node_id|. This may
   // return nullptr if the RenderFrameHost is shutting down.
   CONTENT_EXPORT static WebContents* FromFrameTreeNodeId(
-      int frame_tree_node_id);
+      FrameTreeNodeId frame_tree_node_id);
 
   // A callback that returns a pointer to a WebContents. The callback can
   // always be used, but it may return nullptr: if the info used to
@@ -481,22 +482,20 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   virtual RenderFrameHost* GetFocusedFrame() = 0;
 
   // Returns true if |frame_tree_node_id| refers to a frame in a prerendered
-  // page.
-  // TODO(1196715, 1232528): This will be extended to also return true if it is
-  // in an inner page of a prerendered page.
-  virtual bool IsPrerenderedFrame(int frame_tree_node_id) = 0;
+  // page. TODO(https://crbug.com/40176578, https://crbug.com/40191159): This
+  // will be extended to also return true if it is in an inner page of a
+  // prerendered page.
+  virtual bool IsPrerenderedFrame(FrameTreeNodeId frame_tree_node_id) = 0;
 
   // NOTE: This is generally unsafe to use. A frame's RenderFrameHost may
   // change over its lifetime, such as during cross-process navigation (and
   // thus privilege change). Use RenderFrameHost::FromID instead wherever
   // possible.
   //
-  // Given a FrameTreeNode ID that belongs to this WebContents, returns the
+  // Given a FrameTreeNodeId that belongs to this WebContents, returns the
   // current RenderFrameHost regardless of which FrameTree it is in.
-  //
-  // See RenderFrameHost::GetFrameTreeNodeId for documentation on this ID.
   virtual RenderFrameHost* UnsafeFindFrameByFrameTreeNodeId(
-      int frame_tree_node_id) = 0;
+      FrameTreeNodeId frame_tree_node_id) = 0;
 
   // Calls |on_frame| for every RenderFrameHost in this WebContents. Note that
   // this includes RenderFrameHosts that are not descended from the primary main

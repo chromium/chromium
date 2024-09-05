@@ -221,7 +221,7 @@ class CONTENT_EXPORT WebContentsImpl
       GlobalRenderFrameHostId render_frame_host_id);
   static WebContents* FromRenderFrameHostID(int render_process_host_id,
                                             int render_frame_host_id);
-  static WebContents* FromFrameTreeNodeId(int frame_tree_node_id);
+  static WebContents* FromFrameTreeNodeId(FrameTreeNodeId frame_tree_node_id);
   static WebContentsImpl* FromOuterFrameTreeNode(
       const FrameTreeNode* frame_tree_node);
   static WebContentsImpl* FromRenderWidgetHostImpl(RenderWidgetHostImpl* rwh);
@@ -380,9 +380,9 @@ class CONTENT_EXPORT WebContentsImpl
   RenderFrameHostImpl* GetPrimaryMainFrame() override;
   PageImpl& GetPrimaryPage() override;
   RenderFrameHostImpl* GetFocusedFrame() override;
-  bool IsPrerenderedFrame(int frame_tree_node_id) override;
+  bool IsPrerenderedFrame(FrameTreeNodeId frame_tree_node_id) override;
   RenderFrameHostImpl* UnsafeFindFrameByFrameTreeNodeId(
-      int frame_tree_node_id) override;
+      FrameTreeNodeId frame_tree_node_id) override;
   void ForEachRenderFrameHostWithAction(
       base::FunctionRef<FrameIterationAction(RenderFrameHost*)> on_frame)
       override;
