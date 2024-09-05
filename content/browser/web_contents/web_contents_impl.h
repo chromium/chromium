@@ -1626,7 +1626,7 @@ class CONTENT_EXPORT WebContentsImpl
                                 RenderFrameHostImpl* render_frame_host);
 
     WebContentsImpl* outer_web_contents() const { return outer_web_contents_; }
-    int outer_contents_frame_tree_node_id() const {
+    FrameTreeNodeId outer_contents_frame_tree_node_id() const {
       return outer_contents_frame_tree_node_id_;
     }
     FrameTreeNode* OuterContentsFrameTreeNode() const;
@@ -1656,7 +1656,7 @@ class CONTENT_EXPORT WebContentsImpl
 
     // The ID of the FrameTreeNode in the |outer_web_contents_| that hosts
     // |current_web_contents_| as an inner WebContents.
-    int outer_contents_frame_tree_node_id_;
+    FrameTreeNodeId outer_contents_frame_tree_node_id_;
 
     // List of inner WebContents that we host. The outer WebContents owns the
     // inner WebContents.

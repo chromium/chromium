@@ -52,16 +52,16 @@ bool IsSameSiteWithAncestors(const url::Origin& origin,
 }
 
 void SetIdpSigninStatus(content::BrowserContext* context,
-                        int frame_tree_node_id,
+                        FrameTreeNodeId frame_tree_node_id,
                         const url::Origin& origin,
                         blink::mojom::IdpSigninStatus status) {
   FrameTreeNode* frame_tree_node = nullptr;
   // frame_tree_node_id may be invalid if we are loading the first frame
   // of the tab.
-  if (frame_tree_node_id != FrameTreeNode::kFrameTreeNodeInvalidId) {
+  if (frame_tree_node_id) {
     frame_tree_node = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
-    // If the id was not kFrameTreeNodeInvalidId, but the lookup failed, we
-    // ignore the load because we cannot do same-origin checks.
+    // If the id was valid, but the lookup failed, we ignore the load because we
+    // cannot do same-origin checks.
     if (!frame_tree_node) {
       RecordSetLoginStatusIgnoredReason(
           FedCmSetLoginStatusIgnoredReason::kFrameTreeLookupFailed);

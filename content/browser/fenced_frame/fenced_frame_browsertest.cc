@@ -254,8 +254,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest, CreateFromParser) {
   // The fenced frame is set-up synchronously, so it should exist immediately.
   RenderFrameHostImplWrapper dummy_child_frame(
       primary_main_frame_host()->child_at(0)->current_frame_host());
-  EXPECT_NE(dummy_child_frame->inner_tree_main_frame_tree_node_id(),
-            FrameTreeNode::kFrameTreeNodeInvalidId);
+  EXPECT_TRUE(dummy_child_frame->inner_tree_main_frame_tree_node_id());
   FrameTreeNode* inner_frame_tree_node = FrameTreeNode::GloballyFindByID(
       dummy_child_frame->inner_tree_main_frame_tree_node_id());
   EXPECT_TRUE(inner_frame_tree_node);
@@ -2346,7 +2345,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameNestedModesTest, NestedModes) {
   ASSERT_EQ(1u, primary_main_frame_host()->child_count());
   RenderFrameHostImpl* parent_fenced_frame_rfh =
       primary_main_frame_host()->child_at(0)->current_frame_host();
-  int inner_node_id =
+  FrameTreeNodeId inner_node_id =
       parent_fenced_frame_rfh->inner_tree_main_frame_tree_node_id();
   parent_fenced_frame_rfh =
       FrameTreeNode::GloballyFindByID(inner_node_id)->current_frame_host();

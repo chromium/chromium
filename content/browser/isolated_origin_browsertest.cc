@@ -1547,7 +1547,8 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationPrerenderOptInHeaderTest,
   GURL non_isolated_origin_url(
       https_server()->GetURL("a.foo.com", "/title2.html"));
 
-  int host_id = prerender_helper_.AddPrerender(non_isolated_origin_url);
+  FrameTreeNodeId host_id =
+      prerender_helper_.AddPrerender(non_isolated_origin_url);
 
   // In primary tab, navigate to an isolated origin.
   SetHeaderValue("?1");
@@ -1630,7 +1631,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationPrerenderOptInHeaderTest,
   GURL isolated_origin_url(
       https_server()->GetURL("a.foo.com", "/isolate_origin"));
 
-  int host_id = prerender_helper_.AddPrerender(isolated_origin_url);
+  FrameTreeNodeId host_id = prerender_helper_.AddPrerender(isolated_origin_url);
 
   // Verify origin is isolated in the prerender IsolationContext.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();

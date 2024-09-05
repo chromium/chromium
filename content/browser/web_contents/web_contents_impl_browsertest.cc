@@ -528,8 +528,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, OpenURLSubframe) {
   WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
   FrameTreeNode* root = wc->GetPrimaryFrameTree().root();
   ASSERT_EQ(3UL, root->child_count());
-  int frame_tree_node_id = root->child_at(0)->frame_tree_node_id();
-  EXPECT_NE(-1, frame_tree_node_id);
+  FrameTreeNodeId frame_tree_node_id = root->child_at(0)->frame_tree_node_id();
+  EXPECT_TRUE(frame_tree_node_id);
 
   // Navigate with the subframe's FrameTreeNode ID.
   const GURL url(embedded_test_server()->GetURL("/title1.html"));
@@ -555,7 +555,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, OpenURLNonExistentSubframe) {
   WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
 
   // Take a FrameTreeNodeID that doesn't represent any frames.
-  int frame_tree_node_id = 100;
+  FrameTreeNodeId frame_tree_node_id = FrameTreeNodeId(100);
   ASSERT_FALSE(FrameTreeNode::GloballyFindByID(frame_tree_node_id));
 
   // Navigate with the invalid FrameTreeNode ID.
@@ -6071,7 +6071,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsPrerenderBrowserTest,
 
   // Prerender a page that has a MIME type, text/plain.
   const GURL prerendering_url = embedded_test_server()->GetURL("/plain.txt");
-  int host_id = prerender_helper().AddPrerender(prerendering_url);
+  FrameTreeNodeId host_id = prerender_helper().AddPrerender(prerendering_url);
 
   // Check MIME type for each page.
   EXPECT_EQ("text/html",
@@ -6106,7 +6106,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsPrerenderWithDiscardBrowserTest,
 
   // Prerender a page.
   const GURL prerendering_url = embedded_test_server()->GetURL("/plain.txt");
-  const int host_id = prerender_helper().AddPrerender(prerendering_url);
+  const FrameTreeNodeId host_id =
+      prerender_helper().AddPrerender(prerendering_url);
   PrerenderHostRegistry* registry =
       static_cast<WebContentsImpl*>(web_contents())->GetPrerenderHostRegistry();
   EXPECT_TRUE(registry->FindNonReservedHostById(host_id));

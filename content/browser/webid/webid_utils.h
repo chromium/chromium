@@ -35,7 +35,7 @@ bool IsSameSiteWithAncestors(const url::Origin& origin,
                              RenderFrameHost* render_frame_host);
 
 void SetIdpSigninStatus(BrowserContext* context,
-                        int frame_tree_node_id,
+                        FrameTreeNodeId frame_tree_node_id,
                         const url::Origin& origin,
                         blink::mojom::IdpSigninStatus status);
 

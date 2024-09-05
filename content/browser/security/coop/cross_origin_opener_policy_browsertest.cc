@@ -4821,7 +4821,8 @@ IN_PROC_BROWSER_TEST_P(ProcessReuseOnPrerenderCOOPSwapBrowserTest,
   // with new BrowsingInstance / SiteInstance, and a new process will be
   // assigned to it accordingly.
   ASSERT_TRUE(navigation_manager.WaitForRequestStart());
-  int prerender_host_id = prerender_helper().GetHostForUrl(prerender_page);
+  FrameTreeNodeId prerender_host_id =
+      prerender_helper().GetHostForUrl(prerender_page);
   RenderFrameHostImpl* rfh_2 =
       web_contents()->UnsafeFindFrameByFrameTreeNodeId(prerender_host_id);
   ASSERT_TRUE(rfh_2);
@@ -10193,7 +10194,7 @@ IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesAccessBrowserTest, Prerender) {
   // TODO(crbug.com/40917339): This is an undesired consequence of
   // always starting the prerendering in another BrowsingInstance. See if this
   // should be fixed.
-  int host_id = prerender_helper().AddPrerender(coop_rp_page);
+  FrameTreeNodeId host_id = prerender_helper().AddPrerender(coop_rp_page);
   RenderFrameHostImpl* prerender_frame_host = static_cast<RenderFrameHostImpl*>(
       prerender_helper().GetPrerenderedMainFrameHost(host_id));
   ASSERT_TRUE(prerender_frame_host);

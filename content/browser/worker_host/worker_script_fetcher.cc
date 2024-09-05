@@ -531,7 +531,7 @@ WorkerScriptFetcher::CreateFactoryBundle(
     non_network_factories.emplace(
         url::kFileSystemScheme,
         CreateFileSystemURLLoaderFactory(
-            worker_process_id, RenderFrameHost::kNoFrameTreeNodeId,
+            worker_process_id, FrameTreeNodeId(),
             storage_partition->GetFileSystemContext(), storage_domain,
             request_initiator_storage_key));
   }

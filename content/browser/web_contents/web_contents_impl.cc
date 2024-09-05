@@ -937,9 +937,7 @@ class WebContentsImpl::ColorChooserHolder : public blink::mojom::ColorChooser {
 WebContentsImpl::WebContentsTreeNode::WebContentsTreeNode(
     WebContentsImpl* current_web_contents)
     : current_web_contents_(current_web_contents),
-      outer_web_contents_(nullptr),
-      outer_contents_frame_tree_node_id_(
-          FrameTreeNode::kFrameTreeNodeInvalidId) {}
+      outer_web_contents_(nullptr) {}
 
 WebContentsImpl::WebContentsTreeNode::~WebContentsTreeNode() = default;
 
@@ -1661,9 +1659,9 @@ RenderFrameHostImpl* WebContentsImpl::GetFocusedFrame() {
 
   // If an inner frame tree has focus, we should return a RenderFrameHost from
   // the inner frame tree and not the placeholder RenderFrameHost.
-  DCHECK_EQ(
-      focused_node->current_frame_host()->inner_tree_main_frame_tree_node_id(),
-      FrameTreeNode::kFrameTreeNodeInvalidId);
+  DCHECK(focused_node->current_frame_host()
+             ->inner_tree_main_frame_tree_node_id()
+             .is_null());
 
   return focused_node->current_frame_host();
 }
@@ -5635,7 +5633,7 @@ WebContents* WebContentsImpl::OpenURL(
     return nullptr;
   }
 
-  if (params.frame_tree_node_id != FrameTreeNode::kFrameTreeNodeInvalidId) {
+  if (params.frame_tree_node_id) {
     if (auto* frame_tree_node =
             FrameTreeNode::GloballyFindByID(params.frame_tree_node_id)) {
       // If a frame tree node ID is specified and it exists, ensure it is for a
@@ -8362,8 +8360,7 @@ const blink::RendererPreferences& WebContentsImpl::GetRendererPrefs() const {
 }
 
 RenderFrameHostImpl* WebContentsImpl::GetOuterWebContentsFrame() {
-  if (GetOuterDelegateFrameTreeNodeId() ==
-      FrameTreeNode::kFrameTreeNodeInvalidId) {
+  if (GetOuterDelegateFrameTreeNodeId().is_null()) {
     return nullptr;
   }
 
@@ -9092,9 +9089,8 @@ void WebContentsImpl::SetFocusedFrameTree(FrameTree* frame_tree_to_focus) {
            ->GetOutermostMainFrameOrEmbedder());
   if (frame_tree_to_focus->GetFocusedFrame() &&
       frame_tree_to_focus->GetFocusedFrame()
-              ->current_frame_host()
-              ->inner_tree_main_frame_tree_node_id() !=
-          FrameTreeNode::kFrameTreeNodeInvalidId) {
+          ->current_frame_host()
+          ->inner_tree_main_frame_tree_node_id()) {
     // If an inner frame tree, in `frame_tree_to_focus`, had focus, the
     // placeholder RenderFrameHost needs to be unset as the focused frame in
     // `frame_tree_to_focus`.
@@ -9140,9 +9136,9 @@ void WebContentsImpl::SetFocusedFrame(FrameTreeNode* node,
   // An embedding frame focusing a fenced frame is not allowed since that would
   // be an information leak.  If a renderer attempts to do that, that should be
   // blocked by `RenderFrameProxyHost::DidFocusFrame()`.
-  DCHECK(inner_contents ||
-         node->current_frame_host()->inner_tree_main_frame_tree_node_id() ==
-             FrameTreeNode::kFrameTreeNodeInvalidId);
+  DCHECK(inner_contents || node->current_frame_host()
+                               ->inner_tree_main_frame_tree_node_id()
+                               .is_null());
 
   if (inner_contents) {
     // An inner WebContents is not created from Fenced Frames so we
@@ -11116,16 +11112,17 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
       /*initiator_origin=*/std::nullopt,
       content::ChildProcessHost::kInvalidUniqueID, GetWeakPtr(),
       /*initiator_frame_token=*/std::nullopt,
-      /*initiator_frame_tree_node_id=*/RenderFrameHost::kNoFrameTreeNodeId,
-      ukm::kInvalidSourceId, page_transition, should_warm_up_compositor,
+      /*initiator_frame_tree_node_id=*/FrameTreeNodeId(), ukm::kInvalidSourceId,
+      page_transition, should_warm_up_compositor,
       std::move(url_match_predicate),
       std::move(prerender_navigation_handle_callback));
   attributes.holdback_status_override = holdback_status_override;
 
-  int frame_tree_node_id = GetPrerenderHostRegistry()->CreateAndStartHost(
-      attributes, preloading_attempt);
+  FrameTreeNodeId frame_tree_node_id =
+      GetPrerenderHostRegistry()->CreateAndStartHost(attributes,
+                                                     preloading_attempt);
 
-  if (frame_tree_node_id != FrameTreeNode::kFrameTreeNodeInvalidId) {
+  if (frame_tree_node_id) {
     return std::make_unique<PrerenderHandleImpl>(
         GetPrerenderHostRegistry()->GetWeakPtr(), frame_tree_node_id,
         prerendering_url);
