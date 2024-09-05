@@ -171,7 +171,7 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       content::BrowserContext* browser_context,
       const base::RepeatingCallback<content::WebContents*()>& wc_getter,
       content::FrameTreeNodeId frame_tree_node_id) override;
-  bool ShouldOverrideUrlLoading(int frame_tree_node_id,
+  bool ShouldOverrideUrlLoading(content::FrameTreeNodeId frame_tree_node_id,
                                 bool browser_initiated,
                                 const GURL& gurl,
                                 const std::string& request_method,

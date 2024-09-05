@@ -48,6 +48,7 @@
 #include "content/public/browser/login_delegate.h"
 #include "content/public/browser/mojo_binder_policy_map.h"
 #include "content/public/browser/privacy_sandbox_invoking_api.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/common/alternative_error_page_override_info.mojom-forward.h"
 #include "content/public/common/page_visibility_state.h"
@@ -1759,8 +1760,8 @@ class CONTENT_EXPORT ContentBrowserClient {
   //
   // |navigation_ui_data| is only valid if this is a navigation request.
   //
-  // |frame_tree_node_id| is also invalid (kNoFrameTreeNodeId) in some cases
-  // (e.g., requests for web workers).
+  // |frame_tree_node_id| is also invalid in some cases (e.g., requests for web
+  // workers).
   //
   // |navigation_id| is only valid if this is a navigation request.
   //
@@ -1802,7 +1803,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // available. It can return nullptr for requests for which it there are no
   // WebContents (e.g., requests for web workers).
   //
-  // |frame_tree_node_id| is also invalid (kNoFrameTreeNodeId) in some cases
+  // |frame_tree_node_id| is also invalid in some cases
   // (e.g., requests for web workers).
   //
   // This is called on the UI thread.
@@ -2115,7 +2116,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual std::vector<std::unique_ptr<URLLoaderRequestInterceptor>>
   WillCreateURLLoaderRequestInterceptors(
       content::NavigationUIData* navigation_ui_data,
-      int frame_tree_node_id,
+      FrameTreeNodeId frame_tree_node_id,
       int64_t navigation_id,
       bool force_no_https_upgrade,
       scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner);
@@ -2135,7 +2136,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // callback, the default behavior will be used to fetch the request.
   virtual URLLoaderRequestHandler
   CreateURLLoaderHandlerForServiceWorkerNavigationPreload(
-      int frame_tree_node_id,
+      FrameTreeNodeId frame_tree_node_id,
       const network::ResourceRequest& resource_request);
 
   // Called when the NetworkService, accessible through
@@ -2194,7 +2195,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   //           make JNI calls, because of the uncleared exception.
   //           Callers should return to the message loop as soon as
   //           possible, so that the exception can be rethrown.
-  virtual bool ShouldOverrideUrlLoading(int frame_tree_node_id,
+  virtual bool ShouldOverrideUrlLoading(FrameTreeNodeId frame_tree_node_id,
                                         bool browser_initiated,
                                         const GURL& gurl,
                                         const std::string& request_method,

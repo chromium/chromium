@@ -671,14 +671,14 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
   WillCreateURLLoaderRequestInterceptors(
       content::NavigationUIData* navigation_ui_data,
-      int frame_tree_node_id,
+      content::FrameTreeNodeId frame_tree_node_id,
       int64_t navigation_id,
       bool force_no_https_upgrade,
       scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner)
       override;
   content::ContentBrowserClient::URLLoaderRequestHandler
   CreateURLLoaderHandlerForServiceWorkerNavigationPreload(
-      int frame_tree_node_id,
+      content::FrameTreeNodeId frame_tree_node_id,
       const network::ResourceRequest& resource_request) override;
   bool WillInterceptWebSocket(content::RenderFrameHost* frame) override;
   void CreateWebSocket(
@@ -1162,7 +1162,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       bool is_consumer_lookup_enabled,
       safe_browsing::hash_realtime_utils::HashRealTimeSelection
           hash_realtime_selection,
-      int frame_tree_node_id);
+      content::FrameTreeNodeId frame_tree_node_id);
 
   // Try to upload an enterprise legacy tech event to the enterprise management
   // server for admins.
@@ -1183,7 +1183,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const network::ResourceRequest& request,
       content::BrowserContext* browser_context,
       const base::RepeatingCallback<content::WebContents*()>& wc_getter,
-      int frame_tree_node_id,
+      content::FrameTreeNodeId frame_tree_node_id,
       std::optional<int64_t> navigation_id,
       Profile* profile);
 #endif

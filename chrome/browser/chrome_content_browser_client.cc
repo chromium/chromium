@@ -5951,7 +5951,7 @@ ChromeContentBrowserClient::MaybeCreateSafeBrowsingURLLoaderThrottle(
     const network::ResourceRequest& request,
     content::BrowserContext* browser_context,
     const base::RepeatingCallback<content::WebContents*()>& wc_getter,
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     std::optional<int64_t> navigation_id,
     Profile* profile) {
   bool matches_enterprise_allowlist = safe_browsing::IsURLAllowlistedByPolicy(
@@ -6016,10 +6016,10 @@ ChromeContentBrowserClient::MaybeCreateSafeBrowsingURLLoaderThrottle(
 
 #if BUILDFLAG(IS_ANDROID)
 std::tuple<std::string /*client_data_header*/, bool /*is_custom_tab*/>
-GetClientDataHeader(int frame_tree_node_id) {
+GetClientDataHeader(content::FrameTreeNodeId frame_tree_node_id) {
   std::string client_data_header;
   bool is_custom_tab = false;
-  if (frame_tree_node_id != content::RenderFrameHost::kNoFrameTreeNodeId) {
+  if (frame_tree_node_id) {
     auto* web_contents = WebContents::FromFrameTreeNodeId(frame_tree_node_id);
     // Could be null if the FrameTreeNode's RenderFrameHost is shutting down.
     if (web_contents) {
@@ -6705,7 +6705,7 @@ void ChromeContentBrowserClient::WillCreateURLLoaderFactory(
 std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
 ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
     content::NavigationUIData* navigation_ui_data,
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     int64_t navigation_id,
     bool force_no_https_upgrade,
     scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner) {
@@ -6745,7 +6745,7 @@ ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
 content::ContentBrowserClient::URLLoaderRequestHandler
 ChromeContentBrowserClient::
     CreateURLLoaderHandlerForServiceWorkerNavigationPreload(
-        int frame_tree_node_id,
+        content::FrameTreeNodeId frame_tree_node_id,
         const network::ResourceRequest& resource_request) {
   SearchPrefetchURLLoader::RequestHandler prefetch_handler =
       SearchPrefetchURLLoaderInterceptor::MaybeCreateLoaderForRequest(
@@ -7438,7 +7438,7 @@ ChromeContentBrowserClient::GetAsyncCheckTracker(
     bool is_consumer_lookup_enabled,
     safe_browsing::hash_realtime_utils::HashRealTimeSelection
         hash_realtime_selection,
-    int frame_tree_node_id) {
+    content::FrameTreeNodeId frame_tree_node_id) {
   content::WebContents* contents = wc_getter.Run();
   if (!contents || !safe_browsing_service_ ||
       !safe_browsing_service_->ui_manager()) {

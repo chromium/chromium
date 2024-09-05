@@ -183,7 +183,7 @@ class XrwNavigationThrottle : public content::NavigationThrottle {
 // Get async check tracker to make Safe Browsing v5 check asynchronous
 base::WeakPtr<AsyncCheckTracker> GetAsyncCheckTracker(
     const base::RepeatingCallback<content::WebContents*()>& wc_getter,
-    int frame_tree_node_id) {
+    content::FrameTreeNodeId frame_tree_node_id) {
   if (!base::FeatureList::IsEnabled(
           safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
     return nullptr;
@@ -764,7 +764,7 @@ AwContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate() {
 }
 
 bool AwContentBrowserClient::ShouldOverrideUrlLoading(
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     bool browser_initiated,
     const GURL& gurl,
     const std::string& request_method,
@@ -1122,8 +1122,7 @@ void AwContentBrowserClient::WillCreateURLLoaderFactory(
         FROM_HERE,
         base::BindOnce(
             &AwProxyingURLLoaderFactory::CreateProxy, std::move(cookie_manager),
-            cookie_access_policy, isolation_info,
-            content::RenderFrameHost::kNoFrameTreeNodeId,
+            cookie_access_policy, isolation_info, content::FrameTreeNodeId(),
             std::move(proxied_receiver), std::move(target_factory_remote),
             std::nullopt /* security_options */,
             aw_browser_context->service_worker_xrw_allowlist_matcher(),

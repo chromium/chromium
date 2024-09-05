@@ -2826,7 +2826,7 @@ class FailBeginNavigationImpl : public ContentBrowserTestContentBrowserClient {
   ~FailBeginNavigationImpl() override = default;
 
   // `ContentBrowserTestContentBrowserClient`:
-  bool ShouldOverrideUrlLoading(int frame_tree_node_id,
+  bool ShouldOverrideUrlLoading(FrameTreeNodeId frame_tree_node_id,
                                 bool browser_initiated,
                                 const GURL& gurl,
                                 const std::string& request_method,

@@ -1110,7 +1110,7 @@ bool ContentBrowserClient::WillCreateRestrictedCookieManager(
 std::vector<std::unique_ptr<URLLoaderRequestInterceptor>>
 ContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
     content::NavigationUIData* navigation_ui_data,
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     int64_t navigation_id,
     bool force_no_https_upgrade,
     scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner) {
@@ -1119,7 +1119,7 @@ ContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
 
 ContentBrowserClient::URLLoaderRequestHandler
 ContentBrowserClient::CreateURLLoaderHandlerForServiceWorkerNavigationPreload(
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     const network::ResourceRequest& resource_request) {
   return ContentBrowserClient::URLLoaderRequestHandler();
 }
@@ -1149,7 +1149,7 @@ base::Value::Dict ContentBrowserClient::GetNetLogConstants() {
 
 #if BUILDFLAG(IS_ANDROID)
 bool ContentBrowserClient::ShouldOverrideUrlLoading(
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     bool browser_initiated,
     const GURL& gurl,
     const std::string& request_method,
