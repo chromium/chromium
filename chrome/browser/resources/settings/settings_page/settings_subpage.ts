@@ -17,7 +17,7 @@ import '../settings_shared.css.js';
 import '../site_favicon.js';
 
 import type {CrSearchFieldElement} from '//resources/cr_elements/cr_search_field/cr_search_field.js';
-import type {FindShortcutMixinInterface} from '//resources/cr_elements/find_shortcut_mixin.js';
+import type {FindShortcutListener} from '//resources/cr_elements/find_shortcut_manager.js';
 import {FindShortcutMixin} from '//resources/cr_elements/find_shortcut_mixin.js';
 import type {I18nMixinInterface} from '//resources/cr_elements/i18n_mixin.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
@@ -56,7 +56,7 @@ const SettingsSubpageElementBase =
     mixinBehaviors(
         [IronResizableBehavior],
         RouteObserverMixin(FindShortcutMixin(I18nMixin(PolymerElement)))) as {
-      new (): PolymerElement & FindShortcutMixinInterface & I18nMixinInterface &
+      new (): PolymerElement & FindShortcutListener & I18nMixinInterface &
           RouteObserverMixinInterface,
     };
 
