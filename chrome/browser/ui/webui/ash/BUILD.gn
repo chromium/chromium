@@ -8,8 +8,6 @@ assert(is_chromeos_ash)
 
 static_library("ash") {
   sources = [
-    "power_ui.cc",
-    "power_ui.h",
     "remote_maintenance_curtain_ui.cc",
     "remote_maintenance_curtain_ui.h",
     "sanitize_dialog.cc",
