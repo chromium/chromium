@@ -1497,6 +1497,13 @@ BASE_FEATURE(kGrowthCampaignsTriggerByAppOpen,
              "GrowthCampaignsTriggerByAppOpen",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether growth campaigns triggering by url navigation is enabled.
+// This flag is used as a kill switch to disable the feature in the case that
+// the feature introduces any unexpected behaviours.
+BASE_FEATURE(kGrowthCampaignsTriggerByBrowser,
+             "GrowthCampaignsTriggerByBrowser",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls whether growth campaigns triggering by any event is enabled.
 // This flag is used as a kill switch to disable the feature in the case that
 // the feature introduces any unexpected behaviours.
@@ -1504,11 +1511,11 @@ BASE_FEATURE(kGrowthCampaignsTriggerByEvent,
              "GrowthCampaignsTriggerByEvent",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether growth campaigns triggering by url navigation is enabled.
+// Controls whether growth campaigns triggering by recording an event.
 // This flag is used as a kill switch to disable the feature in the case that
 // the feature introduces any unexpected behaviours.
-BASE_FEATURE(kGrowthCampaignsTriggerByBrowser,
-             "GrowthCampaignsTriggerByBrowser",
+BASE_FEATURE(kGrowthCampaignsTriggerByRecordEvent,
+             "GrowthCampaignsTriggerByRecordEvent",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables internals page of ChromeOS growth framework.
@@ -4039,12 +4046,16 @@ bool IsGrowthCampaignsTriggerByAppOpenEnabled() {
   return base::FeatureList::IsEnabled(kGrowthCampaignsTriggerByAppOpen);
 }
 
+bool IsGrowthCampaignsTriggerByBrowserEnabled() {
+  return base::FeatureList::IsEnabled(kGrowthCampaignsTriggerByBrowser);
+}
+
 bool IsGrowthCampaignsTriggerByEventEnabled() {
   return base::FeatureList::IsEnabled(kGrowthCampaignsTriggerByEvent);
 }
 
-bool IsGrowthCampaignsTriggerByBrowserEnabled() {
-  return base::FeatureList::IsEnabled(kGrowthCampaignsTriggerByBrowser);
+bool IsGrowthCampaignsTriggerByRecordEventEnabled() {
+  return base::FeatureList::IsEnabled(kGrowthCampaignsTriggerByRecordEvent);
 }
 
 bool IsGrowthInternalsEnabled() {

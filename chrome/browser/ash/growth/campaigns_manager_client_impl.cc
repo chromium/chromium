@@ -10,12 +10,14 @@
 #include <string>
 #include <variant>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/version.h"
+#include "chrome/browser/ash/growth/campaigns_manager_session.h"
 #include "chrome/browser/ash/growth/install_web_app_action_performer.h"
 #include "chrome/browser/ash/growth/metrics.h"
 #include "chrome/browser/ash/growth/open_url_action_performer.h"
@@ -46,6 +48,11 @@
 namespace {
 
 inline constexpr char kCampaignComponentName[] = "growth-campaigns";
+
+// A util function to add the `kGrowthCampaignsEventNamePrefix`.
+std::string AddEventPrefix(const std::string& event) {
+  return growth::GetGrowthCampaignsEventNamePrefix() + event;
+}
 
 Profile* GetProfile() {
   return ProfileManager::GetActiveUserProfile();
@@ -177,7 +184,8 @@ void CampaignsManagerClientImpl::RegisterSyntheticFieldTrial(
       variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }
 
-void CampaignsManagerClientImpl::RecordEvent(const std::string& event_name) {
+void CampaignsManagerClientImpl::RecordEvent(const std::string& event_name,
+                                             bool trigger_campaigns) {
   auto* tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile());
   if (!tracker || !tracker->IsInitialized()) {
@@ -187,7 +195,13 @@ void CampaignsManagerClientImpl::RecordEvent(const std::string& event_name) {
     return;
   }
 
-  tracker->NotifyEvent(event_name);
+  tracker->NotifyEvent(AddEventPrefix(event_name));
+
+  if (auto* session = CampaignsManagerSession::Get();
+      ash::features::IsGrowthCampaignsTriggerByRecordEventEnabled() &&
+      trigger_campaigns && session) {
+    session->MaybeTriggerCampaignsOnEvent(event_name);
+  }
 }
 
 void CampaignsManagerClientImpl::ClearConfig(

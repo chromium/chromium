@@ -514,9 +514,11 @@ BASE_DECLARE_FEATURE(kGrowthCampaignsTriggerAtLoadComplete);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGrowthCampaignsTriggerByAppOpen);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kGrowthCampaignsTriggerByBrowser);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGrowthCampaignsTriggerByEvent);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kGrowthCampaignsTriggerByBrowser);
+BASE_DECLARE_FEATURE(kGrowthCampaignsTriggerByRecordEvent);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kGrowthInternals);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kHomeButtonWithText);
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -1250,9 +1252,10 @@ bool IsGrowthCampaignsTriggerAtLoadComplete();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsGrowthCampaignsTriggerByAppOpenEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsGrowthCampaignsTriggerByEventEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsGrowthCampaignsTriggerByBrowserEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGrowthCampaignsTriggerByEventEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsGrowthCampaignsTriggerByRecordEventEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGrowthInternalsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsGlanceablesTimeManagementClassroomStudentViewEnabled();

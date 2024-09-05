@@ -84,7 +84,8 @@ class CampaignsManagerClient {
   // Proxy to Feature Engagement methods.
   virtual void ClearConfig(
       const std::map<std::string, std::string>& params) = 0;
-  virtual void RecordEvent(const std::string& event) = 0;
+  virtual void RecordEvent(const std::string& event,
+                           bool trigger_campaigns) = 0;
   virtual bool WouldTriggerHelpUI(
       const std::map<std::string, std::string>& params) = 0;
   // Returns the IdentityManager for the active user profile.

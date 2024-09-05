@@ -20,9 +20,6 @@ COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH_UTILS)
 std::string GetGrowthCampaignsEventNamePrefix();
 
 // TODO: b/341955045 - Separate for UIEvent and AppOpenedEvent.
-// Returns event name from provided `event` and `id`.
-// NOTE: This event name is not prefixed by the
-// `kGrowthCampaignsEventNamePrefix`.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH_UTILS)
 std::string GetEventName(CampaignEvent event, const std::string& id);
 

@@ -137,48 +137,6 @@ void MaybeTriggerSlot(growth::Slot slot) {
                                    action_type.value(), payload);
 }
 
-void MaybeTriggerCampaignsOnEvent(const std::string& event) {
-  if (!ash::features::IsGrowthCampaignsTriggerByEventEnabled()) {
-    return;
-  }
-
-  auto* campaigns_manager = growth::CampaignsManager::Get();
-  CHECK(campaigns_manager);
-
-  growth::Trigger trigger(growth::TriggerType::kEvent);
-  trigger.event = event;
-  campaigns_manager->SetTrigger(std::move(trigger));
-
-  MaybeTriggerSlot(growth::Slot::kNudge);
-  MaybeTriggerSlot(growth::Slot::kNotification);
-}
-
-void MaybeTriggerCampaignsWhenAppOpened() {
-  auto* campaigns_manager = growth::CampaignsManager::Get();
-  CHECK(campaigns_manager);
-
-  auto app_group_id = GetAppGroupId();
-
-  // If `app_group_id` is defined, record the `event` and trigger campaigns
-  // based on the trigger `event`. An `app_group_id` is used to configurate how
-  // often, i.e. the interval, to show the nudges.
-  if (app_group_id) {
-    campaigns_manager->RecordEvent(
-        GetEventName(growth::CampaignEvent::kEvent, app_group_id.value()));
-    MaybeTriggerCampaignsOnEvent(app_group_id.value());
-  }
-
-  if (!ash::features::IsGrowthCampaignsTriggerByAppOpenEnabled()) {
-    return;
-  }
-
-  growth::Trigger trigger(growth::TriggerType::kAppOpened);
-  campaigns_manager->SetTrigger(std::move(trigger));
-
-  MaybeTriggerSlot(growth::Slot::kNudge);
-  MaybeTriggerSlot(growth::Slot::kNotification);
-}
-
 void MaybeTriggerCampaignsWhenCampaignsLoaded() {
   if (!ash::features::IsGrowthCampaignsTriggerAtLoadComplete()) {
     return;
@@ -441,6 +399,23 @@ void CampaignsManagerSession::OnInstanceRegistryWillBeDestroyed(
   }
 }
 
+void CampaignsManagerSession::MaybeTriggerCampaignsOnEvent(
+    const std::string& event) {
+  if (!ash::features::IsGrowthCampaignsTriggerByEventEnabled()) {
+    return;
+  }
+
+  auto* campaigns_manager = growth::CampaignsManager::Get();
+  CHECK(campaigns_manager);
+
+  growth::Trigger trigger(growth::TriggerType::kEvent);
+  trigger.event = event;
+  campaigns_manager->SetTrigger(std::move(trigger));
+
+  MaybeTriggerSlot(growth::Slot::kNudge);
+  MaybeTriggerSlot(growth::Slot::kNotification);
+}
+
 void CampaignsManagerSession::PrimaryPageChanged(
     const content::WebContents* web_contents) {
   auto* campaigns_manager = growth::CampaignsManager::Get();
@@ -649,4 +624,30 @@ void CampaignsManagerSession::HandleAppInstanceDestruction(
     return;
   }
   ClearAppOpenContext();
+}
+
+void CampaignsManagerSession::MaybeTriggerCampaignsWhenAppOpened() {
+  auto* campaigns_manager = growth::CampaignsManager::Get();
+  CHECK(campaigns_manager);
+
+  auto app_group_id = GetAppGroupId();
+
+  // If `app_group_id` is defined, record the `event` and trigger campaigns
+  // based on the trigger `event`. An `app_group_id` is used to configurate how
+  // often, i.e. the interval, to show the nudges.
+  if (app_group_id) {
+    campaigns_manager->RecordEvent(
+        GetEventName(growth::CampaignEvent::kEvent, app_group_id.value()));
+    MaybeTriggerCampaignsOnEvent(app_group_id.value());
+  }
+
+  if (!ash::features::IsGrowthCampaignsTriggerByAppOpenEnabled()) {
+    return;
+  }
+
+  growth::Trigger trigger(growth::TriggerType::kAppOpened);
+  campaigns_manager->SetTrigger(std::move(trigger));
+
+  MaybeTriggerSlot(growth::Slot::kNudge);
+  MaybeTriggerSlot(growth::Slot::kNotification);
 }

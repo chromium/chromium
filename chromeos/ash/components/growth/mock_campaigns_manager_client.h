@@ -48,7 +48,10 @@ class MockCampaignsManagerClient : public CampaignsManagerClient {
               ClearConfig,
               ((const std::map<std::string, std::string>& params)),
               (override));
-  MOCK_METHOD(void, RecordEvent, (const std::string& event), (override));
+  MOCK_METHOD(void,
+              RecordEvent,
+              (const std::string& event, bool trigger_campaigns),
+              (override));
   MOCK_METHOD(bool,
               WouldTriggerHelpUI,
               ((const std::map<std::string, std::string>& params)),

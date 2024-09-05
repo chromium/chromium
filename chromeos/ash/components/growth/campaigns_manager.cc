@@ -52,11 +52,6 @@ inline constexpr char kGrowthStudyName[] = "CrOSGrowthStudy";
 // will be unique for different groups.
 inline constexpr char kGrowthGroupName[] = "CampaignId";
 
-// A util function to add the `kGrowthCampaignsEventNamePrefix`.
-std::string AddEventPrefix(const std::string& event) {
-  return growth::GetGrowthCampaignsEventNamePrefix() + event;
-}
-
 std::optional<base::Value::Dict> ParseCampaignsFile(
     const std::string& campaigns_data) {
   std::optional<base::Value> value(base::JSONReader::Read(campaigns_data));
@@ -302,8 +297,9 @@ void CampaignsManager::ClearEvent(const std::string& event) {
   client_->ClearConfig(conditions_params);
 }
 
-void CampaignsManager::RecordEvent(const std::string& event) {
-  client_->RecordEvent(AddEventPrefix(event));
+void CampaignsManager::RecordEvent(const std::string& event,
+                                   bool trigger_campaigns) {
+  client_->RecordEvent(event, trigger_campaigns);
 }
 
 void CampaignsManager::OnCampaignsComponentLoaded(

@@ -106,7 +106,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
 
   // Record event to the Feature Engagement framework. Event will be stored and
   // could be used for targeting.
-  void RecordEvent(const std::string& event);
+  // If `trigger campaigns` is true, it will try to trigger the campaign if the
+  // campaign is selected.
+  // For example, `RecordEvent("hover_on_hotseat", true)` will record an event
+  // in the Feature Engagement framework and try to trigger campaigns by this
+  // event.
+  void RecordEvent(const std::string& event, bool trigger_campaigns = false);
 
   void SetOobeCompleteTimeForTesting(base::Time time);
   void SetTrackerInitializedForTesting();
