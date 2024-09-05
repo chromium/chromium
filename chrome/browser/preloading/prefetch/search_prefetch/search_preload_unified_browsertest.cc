@@ -1512,8 +1512,9 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   // 4. Fail the prerender.
   content::test::PrerenderHostObserver prerender_observer(
       *GetActiveWebContents(), expected_prerender_url);
-  int host_id = prerender_helper().GetHostForUrl(expected_prerender_url);
-  ASSERT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+  content::FrameTreeNodeId host_id =
+      prerender_helper().GetHostForUrl(expected_prerender_url);
+  ASSERT_TRUE(host_id);
   prerender_helper().CancelPrerenderedPage(host_id);
   prerender_observer.WaitForDestroyed();
   EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetch_url));
@@ -1678,7 +1679,8 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   EXPECT_EQ(prefetch_status.value(), SearchPrefetchStatus::kComplete);
 
   // 3. Cancel the prerenders
-  int host_id = prerender_helper().GetHostForUrl(expected_prerender_url);
+  content::FrameTreeNodeId host_id =
+      prerender_helper().GetHostForUrl(expected_prerender_url);
   content::test::PrerenderHostObserver prerender_observer(
       *GetActiveWebContents(), host_id);
   // Ensure kCompleted is recorded.
@@ -1936,7 +1938,8 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   // The suggestion service should hint `expected_prefetch_url`, and
   // prerendering for this url should start.
   registry_observer.WaitForTrigger(expected_prerender_url);
-  int host_id = prerender_helper().GetHostForUrl(expected_prerender_url);
+  content::FrameTreeNodeId host_id =
+      prerender_helper().GetHostForUrl(expected_prerender_url);
 
   // Ensure prerender has started to read response body.
   ASSERT_TRUE(prerender_navigation_manager.WaitForResponse());
@@ -2110,7 +2113,8 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
 
   // 3. Turns to another prediction.
   {
-    int host_id = prerender_helper().GetHostForUrl(expected_prerender_url);
+    content::FrameTreeNodeId host_id =
+        prerender_helper().GetHostForUrl(expected_prerender_url);
     content::test::PrerenderHostObserver prerender_observer(
         *GetActiveWebContents(), host_id);
     ChangeAutocompleteResult("pref", "prefetch", PrerenderHint::kEnabled,

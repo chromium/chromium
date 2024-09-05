@@ -197,8 +197,8 @@ IN_PROC_BROWSER_TEST_F(LatencyAblationEnabledBrowserTest, DontAblatePrerender) {
   base::HistogramTester histogram_tester;
 
   GURL url(https_server_->GetURL(kSearchDomain, "/title1.html"));
-  auto host_id = prerender_helper_->AddPrerender(url);
-  EXPECT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+  content::FrameTreeNodeId host_id = prerender_helper_->AddPrerender(url);
+  EXPECT_TRUE(host_id);
   prerender_helper_->NavigatePrimaryPage(url);
 
   histogram_tester.ExpectTotalCount("Navigation.LatencyAblation.ExcessWaitTime",

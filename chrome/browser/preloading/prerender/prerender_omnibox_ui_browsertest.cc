@@ -176,7 +176,7 @@ class PrerenderOmniboxUIBrowserTest : public InProcessBrowserTest,
 
   void SelectAutocompleteMatchAndWaitForActivation(
       OmniboxPopupSelection selection,
-      int host_id) {
+      content::FrameTreeNodeId host_id) {
     content::test::PrerenderHostObserver prerender_observer(
         *GetActiveWebContents(), host_id);
     omnibox()->model()->OpenSelection(selection);
@@ -317,8 +317,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxUIBrowserTest,
   const GURL kNewUrl = embedded_test_server()->GetURL("/empty.html?newUrl");
   GetAutocompleteActionPredictor()->StartPrerendering(
       kPrerenderingUrl, *GetActiveWebContents(), gfx::Size(50, 50));
-  EXPECT_NE(prerender_helper().GetHostForUrl(kPrerenderingUrl),
-            content::RenderFrameHost::kNoFrameTreeNodeId);
+  EXPECT_TRUE(prerender_helper().GetHostForUrl(kPrerenderingUrl));
   GetAutocompleteActionPredictor()->StartPrerendering(
       kNewUrl, *GetActiveWebContents(), gfx::Size(50, 50));
 
@@ -782,15 +781,17 @@ class PrerenderOmniboxSearchSuggestionUIBrowserTest
     EXPECT_TRUE(autocomplete_controller->done());
   }
 
-  int InputSearchQueryAndWaitForTrigger(std::string_view search_query,
-                                        const GURL& expected_url) {
+  content::FrameTreeNodeId InputSearchQueryAndWaitForTrigger(
+      std::string_view search_query,
+      const GURL& expected_url) {
     content::test::PrerenderHostRegistryObserver registry_observer(
         *GetActiveWebContents());
     InputSearchQuery(search_query);
     // The suggestion service should hint a search term which is be displayed in
     // the page with `expected_url`.
     registry_observer.WaitForTrigger(expected_url);
-    int host_id = prerender_helper().GetHostForUrl(expected_url);
+    content::FrameTreeNodeId host_id =
+        prerender_helper().GetHostForUrl(expected_url);
     return host_id;
   }
 
@@ -858,15 +859,15 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
   AddNewSuggestionRule("prerender22", {"prerender222", "prerender223"});
   std::string search_query_1 = "prerender22";
   GURL prerender_url = GetSearchUrl(search_query_1, "prerender222");
-  int host_id =
+  content::FrameTreeNodeId host_id =
       InputSearchQueryAndWaitForTrigger(search_query_1, prerender_url);
-  ASSERT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+  ASSERT_TRUE(host_id);
 
   // Start the second prerendering with the different suggestion.
   AddNewSuggestionRule("prerender33", {"prerender333", "prerender334"});
   std::string search_query_2 = "prerender33";
   GURL prerender_url2 = GetSearchUrl(search_query_2, "prerender333");
-  int host_id2 =
+  content::FrameTreeNodeId host_id2 =
       InputSearchQueryAndWaitForTrigger(search_query_2, prerender_url2);
   ASSERT_NE(host_id, host_id2);
   prerender_helper().WaitForPrerenderLoadCompletion(*GetActiveWebContents(),
@@ -995,8 +996,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxReferrerChainUIBrowserTest,
       kPrerenderingUrl, *GetActiveWebContents(), gfx::Size(50, 50));
 
   registry_observer.WaitForTrigger(kPrerenderingUrl);
-  int host_id = prerender_helper().GetHostForUrl(kPrerenderingUrl);
-  ASSERT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+  content::FrameTreeNodeId host_id =
+      prerender_helper().GetHostForUrl(kPrerenderingUrl);
+  ASSERT_TRUE(host_id);
   prerender_helper().WaitForPrerenderLoadCompletion(host_id);
   // By using no id, we should get the most recent navigation event.
   auto index = FindNavigationEventIndex(kPrerenderingUrl,

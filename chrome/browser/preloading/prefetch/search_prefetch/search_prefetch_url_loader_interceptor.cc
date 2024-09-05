@@ -33,7 +33,8 @@
 
 namespace {
 
-SearchPrefetchService* GetSearchPrefetchService(int frame_tree_node_id) {
+SearchPrefetchService* GetSearchPrefetchService(
+    content::FrameTreeNodeId frame_tree_node_id) {
   content::WebContents* web_contents =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
   if (!web_contents) {
@@ -60,7 +61,7 @@ void SearchPrefetchRequestHandler(
 }  // namespace
 
 SearchPrefetchURLLoaderInterceptor::SearchPrefetchURLLoaderInterceptor(
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     int64_t navigation_id,
     scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner)
     : frame_tree_node_id_(frame_tree_node_id) {
@@ -80,7 +81,7 @@ SearchPrefetchURLLoaderInterceptor::~SearchPrefetchURLLoaderInterceptor() =
 SearchPrefetchURLLoader::RequestHandler
 SearchPrefetchURLLoaderInterceptor::MaybeCreateLoaderForRequest(
     const network::ResourceRequest& tentative_resource_request,
-    int frame_tree_node_id) {
+    content::FrameTreeNodeId frame_tree_node_id) {
   // Do not intercept non-main frame navigations.
   if (!tentative_resource_request.is_outermost_main_frame) {
     // Use the is_outermost_main_frame flag instead of obtaining the
