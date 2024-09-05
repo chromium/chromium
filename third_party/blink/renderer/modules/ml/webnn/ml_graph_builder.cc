@@ -845,9 +845,67 @@ base::expected<webnn::mojom::blink::GraphInfoPtr, String> BuildWebNNGraphInfo(
 
   HeapVector<Member<const MLOperator>>* topologically_sorted_operators =
       GetOperatorsInTopologicalOrder(named_outputs);
+
+  // Optimize away redundant constant reshapes by removing the reshape operator
+  // and change constant operand's descriptor to the reshape output operand's
+  // descriptor.
+  // The algorithm walks down all constants and its dependent operators to
+  // identify redundant reshapes, skips serialization for reshape operator and
+  // points the reshape output operand in `operand_to_id_map` to constant's id.
+  HeapHashMap<Member<const MLOperand>, HeapHashSet<Member<const MLOperator>>>
+      operand_dependencies;
+  HeapHashSet<Member<const MLOperand>> constant_operands;
+  for (const auto& current_operator : *topologically_sorted_operators) {
+    for (const auto& operand : current_operator->Inputs()) {
+      if (operand->Kind() == webnn::mojom::blink::Operand::Kind::kConstant) {
+        constant_operands.insert(operand);
+      }
+      auto it = operand_dependencies.find(operand);
+      auto& operators =
+          it != operand_dependencies.end()
+              ? it->value
+              : operand_dependencies
+                    .Set(operand, HeapHashSet<Member<const MLOperator>>())
+                    .stored_value->value;
+
+      operators.insert(current_operator);
+    }
+  }
+
+  // Hash map of redundant reshape output operand from constant that can be
+  // removed from the graph.
+  HeapHashMap<Member<const MLOperand>, Member<const MLOperand>>
+      reshaped_to_constant_mapping;
+  HeapHashMap<Member<const MLOperand>, Member<const MLOperand>>
+      constant_to_reshaped_mapping;
+
+  for (const auto& constant_operand : constant_operands) {
+    Member<const MLOperand> next_operand = constant_operand;
+    // For each constant operand, keep walking down the dependencies until no
+    // reshape is found.
+    while (true) {
+      auto dependent_operators = operand_dependencies.at(next_operand);
+      // If reshape is the only dependent of the constant, then this reshape
+      // operation can be removed from the graph.
+      if (dependent_operators.size() != 1) {
+        break;
+      }
+      auto dependent_operator = *dependent_operators.begin();
+      if (dependent_operator->Kind() !=
+          webnn::mojom::blink::Operation::Tag::kReshape) {
+        break;
+      }
+      Member<const MLOperand> reshape_output = dependent_operator->Outputs()[0];
+      reshaped_to_constant_mapping.Set(reshape_output, constant_operand);
+      constant_to_reshaped_mapping.Set(constant_operand, reshape_output);
+      next_operand = reshape_output;
+    }
+  }
   // Visit the operators in topological order. For each operator,
   // 1, Create `mojo::Operand` for its input and output operands if needed.
   // 2, Create `mojo::Operator` with the id of input and output operands.
+  //
+  // Skips the redundant constant reshapes.
   for (const auto& current_operator : *topologically_sorted_operators) {
     for (const auto& operand : current_operator->Inputs()) {
       if (operand_to_id_map.Contains(operand.Get())) {
@@ -869,9 +927,18 @@ base::expected<webnn::mojom::blink::GraphInfoPtr, String> BuildWebNNGraphInfo(
         case webnn::mojom::blink::Operand::Kind::kConstant: {
           // Convert `mojo::Operand` for constant operand.
           uint64_t operand_id = NextOperandId(*graph_info);
-          graph_info->id_to_operand_map.insert(
-              operand_id,
-              mojo::ConvertTo<webnn::mojom::blink::OperandPtr>(operand.Get()));
+          auto mojo_operand =
+              mojo::ConvertTo<webnn::mojom::blink::OperandPtr>(operand.Get());
+          // Set constant's descriptor to the redundant reshape's output's
+          // descriptor.
+          if (constant_to_reshaped_mapping.Contains(operand)) {
+            mojo_operand->descriptor =
+                mojo::ConvertTo<webnn::mojom::blink::OperandPtr>(
+                    constant_to_reshaped_mapping.at(operand))
+                    ->descriptor;
+          }
+          graph_info->id_to_operand_map.insert(operand_id,
+                                               std::move(mojo_operand));
           // Build the map of constant operands for this graph with the id.
           graph_info->constant_id_to_buffer_map.insert(
               operand_id, operand->AsConstantOperand()->Bytes());
@@ -885,10 +952,20 @@ base::expected<webnn::mojom::blink::GraphInfoPtr, String> BuildWebNNGraphInfo(
           NOTREACHED();
       }
     }
-
+    bool is_redundant_reshape = false;
     for (const auto& operand : current_operator->Outputs()) {
       if (operand_to_id_map.Contains(operand.Get())) {
         // The `mojo::Operand` is already converted with the MLOperand, skip it.
+        continue;
+      }
+
+      if (reshaped_to_constant_mapping.Contains(operand)) {
+        is_redundant_reshape = true;
+        // Point redundant reshape's output operand to its corresponding
+        // constant operand.
+        operand_to_id_map.insert(
+            operand,
+            operand_to_id_map.at(reshaped_to_constant_mapping.at(operand)));
         continue;
       }
       // Because the graph's output operands are already converted before, this
@@ -900,7 +977,9 @@ base::expected<webnn::mojom::blink::GraphInfoPtr, String> BuildWebNNGraphInfo(
           mojo::ConvertTo<webnn::mojom::blink::OperandPtr>(operand.Get()));
       operand_to_id_map.insert(operand, operand_id);
     }
-
+    if (is_redundant_reshape) {
+      continue;
+    }
     // Create `mojo::Operation` with the id of the input and output operands.
     std::optional<String> error =
         SerializeMojoOperation(operand_to_id_map, context_properties,
