@@ -2568,8 +2568,8 @@ buildflag_header("protected_memory_buildflags") {
   header = "protected_memory_buildflags.h"
   header_dir = "base/memory"
 
-  protected_memory_enabled =
-      !is_component_build && (is_win || is_linux || is_android || is_mac)
+  protected_memory_enabled = !is_component_build && is_clang &&
+                             (is_win || is_linux || is_android || is_mac)
 
   flags = [ "PROTECTED_MEMORY_ENABLED=$protected_memory_enabled" ]
 }
