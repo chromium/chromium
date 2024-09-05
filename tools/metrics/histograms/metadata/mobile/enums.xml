@@ -259,6 +259,7 @@ chromium-metrics-reviews@google.com.
   <int value="27" label="Tab Groups Panel Entry"/>
   <int value="28" label="Sort Drive Items Entry"/>
   <int value="29" label="Select Drive Identity Entry"/>
+  <int value="30" label="Tab Group Indicator Entry"/>
 </enum>
 
 <enum name="IOSShareAction">

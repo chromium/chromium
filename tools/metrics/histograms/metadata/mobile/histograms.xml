@@ -199,6 +199,7 @@ chromium-metrics-reviews@google.com.
     <variant name="TabGridEdit" summary="Tab Grid Edit"/>
     <variant name="TabGridSearchResult" summary="Tab Grid Search Result"/>
     <variant name="TabGroupEntry" summary="Tab group view entry"/>
+    <variant name="TabGroupIndicatorEntry" summary="Tab Group Indicator Entry"/>
     <variant name="TabGroupsPanelEntry" summary="Tab group panel entry"/>
     <variant name="TabGroupViewEntry"
         summary="Tab group view entry in tab grid"/>

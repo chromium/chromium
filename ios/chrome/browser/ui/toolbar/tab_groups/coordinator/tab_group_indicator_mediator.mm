@@ -20,7 +20,6 @@
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
 }
 
-// Creates an instance of the mediator.
 - (instancetype)initWithConsumer:(id<TabGroupIndicatorConsumer>)consumer
                     webStateList:(WebStateList*)webStateList {
   self = [super init];

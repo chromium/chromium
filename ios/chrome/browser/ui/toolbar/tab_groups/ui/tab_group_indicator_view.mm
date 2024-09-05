@@ -4,8 +4,10 @@
 
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_view.h"
 
+#import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 @implementation TabGroupIndicatorView {
   // Stores the tab group informations.
@@ -21,6 +23,8 @@
   UILabel* _titleView;
   // Dot view.
   UIView* _coloredDotView;
+  // Button used to display the menu.
+  UIButton* _menuButton;
 }
 
 - (instancetype)init {
@@ -31,8 +35,10 @@
     _containerView = [self containerView];
     _titleView = [self titleView];
     _coloredDotView = [self coloredDotView];
+    _menuButton = [self menuButton];
 
     [self addSubview:_containerView];
+    [self addSubview:_menuButton];
     [_containerView addSubview:_coloredDotView];
     [_containerView addSubview:_titleView];
 
@@ -97,6 +103,31 @@
   return dotView;
 }
 
+// Returns the menu button.
+- (UIButton*)menuButton {
+  UIButton* button = [[UIButton alloc] init];
+  button.translatesAutoresizingMaskIntoConstraints = NO;
+  button.showsMenuAsPrimaryAction = YES;
+
+  ActionFactory* actionFactory = [[ActionFactory alloc]
+      initWithScenario:kMenuScenarioHistogramTabGroupIndicatorEntry];
+  NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
+  [menuElements addObject:[actionFactory actionToRenameTabGroupWithBlock:^{
+                              // TODO(crbug.com/361499394): Implement this.
+                          }]];
+  [menuElements addObject:[actionFactory actionToAddNewTabInGroupWithBlock:^{
+                              // TODO(crbug.com/361499394): Implement this.
+                          }]];
+  [menuElements addObject:[actionFactory actionToUngroupTabGroupWithBlock:^{
+                              // TODO(crbug.com/361499394): Implement this.
+                          }]];
+  [menuElements addObject:[actionFactory actionToCloseTabGroupWithBlock:^{
+                              // TODO(crbug.com/361499394): Implement this.
+                          }]];
+  button.menu = [UIMenu menuWithChildren:menuElements];
+  return button;
+}
+
 // Sets the constraints of the view.
 - (void)setContraints {
   [NSLayoutConstraint activateConstraints:@[
@@ -121,6 +152,7 @@
     [_titleView.bottomAnchor
         constraintEqualToAnchor:_containerView.bottomAnchor],
   ]];
+  AddSameConstraints(_menuButton, self);
 }
 
 #pragma mark - Setters

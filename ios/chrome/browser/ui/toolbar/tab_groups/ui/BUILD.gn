@@ -4,15 +4,24 @@
 
 source_set("ui") {
   sources = [
-    "tab_group_indicator_constants.h",
-    "tab_group_indicator_constants.mm",
     "tab_group_indicator_consumer.h",
     "tab_group_indicator_view.h",
     "tab_group_indicator_view.mm",
   ]
   deps = [
+    ":constants",
     "//base",
+    "//ios/chrome/browser/ui/menu",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("constants") {
+  sources = [
+    "tab_group_indicator_constants.h",
+    "tab_group_indicator_constants.mm",
   ]
   frameworks = [ "UIKit.framework" ]
 }
