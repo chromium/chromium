@@ -93,7 +93,7 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
-/** Unit tests for {@link org.chromium.chrome.browser.ChromeBackupAgent}. */
+/** Unit tests for {@link org.chromium.chrome.browser.backup.ChromeBackupAgent}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
