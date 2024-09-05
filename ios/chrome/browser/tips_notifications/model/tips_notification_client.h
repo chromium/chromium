@@ -12,6 +12,7 @@
 #import "components/prefs/pref_change_registrar.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 
+class Browser;
 @class CommandDispatcher;
 class PrefRegistrySimple;
 enum class TipsNotificationType;
@@ -96,15 +97,14 @@ class TipsNotificationClient : public PushNotificationClient {
   bool IsSceneLevelForegroundActive();
 
   // Helpers to handle notification interactions.
-  CommandDispatcher* Dispatcher();
-  void ShowUIForNotificationType(TipsNotificationType type);
-  void ShowDefaultBrowserPromo();
-  void ShowWhatsNew();
-  void ShowSignin();
-  void ShowSetUpListContinuation();
-  void ShowDocking();
-  void ShowOmniboxPosition();
-  void ShowLensPromo();
+  void ShowUIForNotificationType(TipsNotificationType type, Browser* browser);
+  void ShowDefaultBrowserPromo(Browser* browser);
+  void ShowWhatsNew(Browser* browser);
+  void ShowSignin(Browser* browser);
+  void ShowSetUpListContinuation(Browser* browser);
+  void ShowDocking(Browser* browser);
+  void ShowOmniboxPosition(Browser* browser);
+  void ShowLensPromo(Browser* browser);
 
   // Helpers to store state in local state prefs.
   void MarkNotificationTypeSent(TipsNotificationType type);
