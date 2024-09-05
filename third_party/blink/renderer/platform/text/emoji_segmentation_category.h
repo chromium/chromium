@@ -41,6 +41,15 @@ inline bool operator<(EmojiSegmentationCategory a, uint8_t b) {
 inline bool operator>(EmojiSegmentationCategory a, uint8_t b) {
   return static_cast<uint8_t>(a) > b;
 }
+inline bool operator<=(EmojiSegmentationCategory a, uint8_t b) {
+  return static_cast<uint8_t>(a) <= b;
+}
+inline bool operator<=(uint8_t a, EmojiSegmentationCategory b) {
+  return a <= static_cast<uint8_t>(b);
+}
+inline uint8_t operator-(EmojiSegmentationCategory a, uint8_t b) {
+  return static_cast<uint8_t>(a) - b;
+}
 
 // If this function returns true for categories of any characters in a string,
 // it may produce Emoji presentation, and thus cannot skip being run through the
