@@ -1,3 +1,42 @@
+<style include="cr-shared-style settings-columned-section"></style>
 <div>
-  <!-- TODO(crbug.com/361437117): Add content. -->
+  <!-- TODO(crbug.com/361437117): Add the toggle. -->
+</div>
+<div class="settings-columned-section">
+  <div class="column">
+    <h3 class="description-header">$i18n{columnHeadingWhenOn}</h3>
+    <ul class="icon-bulleted-list">
+      <li>
+        <cr-icon icon="settings20:edit-square"></cr-icon>
+        <div class="cr-secondary-text">
+          $i18n{autofillPredictionImprovementsWhenOnSavedInfo}
+        </div>
+      </li>
+      <li>
+        <cr-icon icon="settings20:history"></cr-icon>
+        <div class="cr-secondary-text">
+          $i18n{autofillPredictionImprovementsWhenOnAdapts}
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div class="column">
+    <h3 class="description-header">
+      $i18n{columnHeadingConsider}
+    </h3>
+    <ul class="icon-bulleted-list">
+      <li>
+        <cr-icon icon="settings:devices"></cr-icon>
+        <div class="cr-secondary-text">
+          $i18n{autofillPredictionImprovementsToConsiderInfoLocal}
+        </div>
+      </li>
+      <li>
+        <cr-icon icon="settings20:data"></cr-icon>
+        <div class="cr-secondary-text">
+          $i18n{autofillPredictionImprovementsToConsiderDataUsage}
+        </div>
+      </li>
+    </ul>
+  </div>
 </div>

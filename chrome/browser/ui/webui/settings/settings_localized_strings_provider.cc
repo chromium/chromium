@@ -1263,7 +1263,16 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       {"experimentalAdvancedFeature3Sublabel",
        IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_SUBLABEL},
       {"autofillPredictionImprovementsPageTitle",
-       IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_PAGE_TITLE}};
+       IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_PAGE_TITLE},
+      {"autofillPredictionImprovementsWhenOnSavedInfo",
+       IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_WHEN_ON_SAVED_INFO},
+      {"autofillPredictionImprovementsWhenOnAdapts",
+       IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_WHEN_ON_ADAPTS},
+      {"autofillPredictionImprovementsToConsiderInfoLocal",
+       IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TO_CONSIDER_INFO_LOCAL},
+      {"autofillPredictionImprovementsToConsiderDataUsage",
+       IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TO_CONSIDER_DATA_USAGE},
+  };
 
   GURL google_password_manager_url = GetGooglePasswordManagerURL(
       password_manager::ManagePasswordsReferrer::kChromeSettings);
