@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/ip_protection/ip_protection_geo_utils.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 
 #include <memory>
 #include <optional>
 #include <string>
 
-#include "components/ip_protection/common/ip_protection_data_types.h"
-
-namespace network {
+namespace ip_protection {
 
 std::string GetGeoIdFromGeoHint(
     const std::optional<ip_protection::GeoHint> geo_hint) {
@@ -57,4 +55,4 @@ std::optional<ip_protection::GeoHint> GetGeoHintFromGeoIdForTesting(  // IN-TEST
   return geo_hint;
 }
 
-}  // namespace network
+}  // namespace ip_protection

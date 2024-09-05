@@ -20,7 +20,6 @@
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "net/base/features.h"
 #include "net/base/proxy_chain.h"
-#include "services/network/ip_protection/ip_protection_geo_utils.h"
 #include "services/network/ip_protection/ip_protection_proxy_list_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -85,7 +84,7 @@ class MockIpProtectionConfigGetter : public IpProtectionConfigGetter {
 
     std::move(callback).Run(
         expected_call.proxy_chains,
-        network::GetGeoHintFromGeoIdForTesting(expected_call.geo_id));
+        ip_protection::GetGeoHintFromGeoIdForTesting(expected_call.geo_id));
 
     expected_get_proxy_list_calls_.pop_front();
   }

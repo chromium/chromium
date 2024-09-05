@@ -24,7 +24,6 @@
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
-#include "services/network/ip_protection/ip_protection_geo_utils.h"
 #include "services/network/ip_protection/ip_protection_proxy_list_manager_impl.h"
 #include "services/network/ip_protection/ip_protection_token_cache_manager_impl.h"
 #include "services/network/url_loader.h"
@@ -404,7 +403,7 @@ void IpProtectionProxyDelegate::OnIpProtectionConfigAvailableForTesting(
       std::vector{net::ProxyChain::ForIpProtection(
           std::vector{net::ProxyServer::FromSchemeHostAndPort(
               net::ProxyServer::SCHEME_HTTPS, "proxy-a", std::nullopt)})},
-      network::GetGeoHintFromGeoIdForTesting(
+      ip_protection::GetGeoHintFromGeoIdForTesting(
           ipp_token_cache_manager_impl->CurrentGeo()));
   std::optional<ip_protection::BlindSignedAuthToken> result =
       ipp_config_cache_->GetAuthToken(0);  // kProxyA.

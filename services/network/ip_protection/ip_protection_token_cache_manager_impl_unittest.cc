@@ -20,7 +20,6 @@
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "net/base/features.h"
 #include "services/network/ip_protection/ip_protection_config_cache.h"
-#include "services/network/ip_protection/ip_protection_geo_utils.h"
 #include "services/network/ip_protection/ip_protection_token_cache_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -57,12 +56,13 @@ const ip_protection::GeoHint kMountainViewGeo = {.country_code = "US",
                                                  .iso_region = "US-CA",
                                                  .city_name = "MOUNTAIN VIEW"};
 const std::string kMountainViewGeoId =
-    network::GetGeoIdFromGeoHint(kMountainViewGeo);
+    ip_protection::GetGeoIdFromGeoHint(kMountainViewGeo);
 
 const ip_protection::GeoHint kSunnyvaleGeo = {.country_code = "US",
                                               .iso_region = "US-CA",
                                               .city_name = "SUNNYVALE"};
-const std::string kSunnyvaleGeoId = network::GetGeoIdFromGeoHint(kSunnyvaleGeo);
+const std::string kSunnyvaleGeoId =
+    ip_protection::GetGeoIdFromGeoHint(kSunnyvaleGeo);
 
 struct ExpectedTryGetAuthTokensCall {
   // The expected batch_size argument for the call.

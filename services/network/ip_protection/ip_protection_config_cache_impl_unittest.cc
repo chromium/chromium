@@ -19,7 +19,6 @@
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "net/base/features.h"
 #include "net/base/network_change_notifier.h"
-#include "services/network/ip_protection/ip_protection_geo_utils.h"
 #include "services/network/ip_protection/ip_protection_proxy_list_manager.h"
 #include "services/network/ip_protection/ip_protection_proxy_list_manager_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -69,7 +68,7 @@ class MockIpProtectionTokenCacheManager : public IpProtectionTokenCacheManager {
   }
 
   void SetAuthToken(ip_protection::BlindSignedAuthToken auth_token) {
-    auth_tokens_[network::GetGeoIdFromGeoHint(auth_token.geo_hint)] =
+    auth_tokens_[ip_protection::GetGeoIdFromGeoHint(auth_token.geo_hint)] =
         auth_token;
   }
 
@@ -193,7 +192,7 @@ TEST_F(IpProtectionConfigCacheImplTest,
   ip_protection::BlindSignedAuthToken exp_token;
   exp_token.token = "a-token";
   exp_token.geo_hint =
-      network::GetGeoHintFromGeoIdForTesting(kMountainViewGeoId).value();
+      ip_protection::GetGeoHintFromGeoIdForTesting(kMountainViewGeoId).value();
   auto ipp_token_cache_manager =
       std::make_unique<MockIpProtectionTokenCacheManager>();
   ipp_token_cache_manager->SetAuthToken(std::move(exp_token));
@@ -218,7 +217,8 @@ TEST_F(IpProtectionConfigCacheImplTest, GetAuthTokenFromManagerForProxyA) {
   ipp_token_cache_manager->SetAuthToken(ip_protection::BlindSignedAuthToken{
       .token = "a-token",
       .geo_hint =
-          network::GetGeoHintFromGeoIdForTesting(kMountainViewGeoId).value()});
+          ip_protection::GetGeoHintFromGeoIdForTesting(kMountainViewGeoId)
+              .value()});
 
   ipp_config_cache_->SetIpProtectionProxyListManagerForTesting(
       std::move(ipp_proxy_list_manager));
@@ -241,7 +241,7 @@ TEST_F(IpProtectionConfigCacheImplTest, GetAuthTokenFromManagerForProxyB) {
   ip_protection::BlindSignedAuthToken exp_token;
   exp_token.token = "b-token";
   exp_token.geo_hint =
-      network::GetGeoHintFromGeoIdForTesting(kMountainViewGeoId).value();
+      ip_protection::GetGeoHintFromGeoIdForTesting(kMountainViewGeoId).value();
   auto ipp_token_cache_manager =
       std::make_unique<MockIpProtectionTokenCacheManager>();
   ipp_token_cache_manager->SetAuthToken(std::move(exp_token));
@@ -269,7 +269,7 @@ TEST_F(IpProtectionConfigCacheImplTest,
   ip_protection::BlindSignedAuthToken exp_token;
   exp_token.token = "a-token";
   exp_token.geo_hint =
-      network::GetGeoHintFromGeoIdForTesting(kMountainViewGeoId).value();
+      ip_protection::GetGeoHintFromGeoIdForTesting(kMountainViewGeoId).value();
   auto ipp_token_cache_manager =
       std::make_unique<MockIpProtectionTokenCacheManager>();
   ipp_token_cache_manager->SetAuthToken(std::move(exp_token));
@@ -303,11 +303,12 @@ TEST_F(IpProtectionConfigCacheImplTest, GetAuthTokenForOldGeo) {
   ipp_token_cache_manager->SetAuthToken(ip_protection::BlindSignedAuthToken{
       .token = "a-token",
       .geo_hint =
-          network::GetGeoHintFromGeoIdForTesting(kMountainViewGeoId).value()});
+          ip_protection::GetGeoHintFromGeoIdForTesting(kMountainViewGeoId)
+              .value()});
   ipp_token_cache_manager->SetAuthToken(ip_protection::BlindSignedAuthToken{
       .token = "a-token",
-      .geo_hint =
-          network::GetGeoHintFromGeoIdForTesting(kSunnyvaleGeoId).value()});
+      .geo_hint = ip_protection::GetGeoHintFromGeoIdForTesting(kSunnyvaleGeoId)
+                      .value()});
 
   ipp_config_cache_->SetIpProtectionProxyListManagerForTesting(
       std::move(ipp_proxy_list_manager));
@@ -321,7 +322,7 @@ TEST_F(IpProtectionConfigCacheImplTest, GetAuthTokenForOldGeo) {
       ipp_config_cache_->GetAuthToken(0);
   ASSERT_TRUE(token);
   ASSERT_EQ(token->geo_hint,
-            network::GetGeoHintFromGeoIdForTesting(kMountainViewGeoId));
+            ip_protection::GetGeoHintFromGeoIdForTesting(kMountainViewGeoId));
 }
 
 // Proxy list manager returns currently cached proxy hostnames.

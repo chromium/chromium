@@ -16,7 +16,6 @@
 #include "net/base/features.h"
 #include "net/base/proxy_chain.h"
 #include "services/network/ip_protection/ip_protection_config_cache.h"
-#include "services/network/ip_protection/ip_protection_geo_utils.h"
 
 namespace network {
 
@@ -157,7 +156,7 @@ void IpProtectionProxyListManagerImpl::OnGotProxyList(
     // 3. The new geo is different than the existing geo.
     if (enable_token_caching_by_geo_ && !proxy_list->empty()) {
       CHECK(geo_hint.has_value());
-      current_geo_id_ = network::GetGeoIdFromGeoHint(std::move(geo_hint));
+      current_geo_id_ = ip_protection::GetGeoIdFromGeoHint(std::move(geo_hint));
       ip_protection_config_cache_->GeoObserved(current_geo_id_);
     }
   }

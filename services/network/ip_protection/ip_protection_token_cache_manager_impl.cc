@@ -16,7 +16,6 @@
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "net/base/features.h"
 #include "services/network/ip_protection/ip_protection_config_cache.h"
-#include "services/network/ip_protection/ip_protection_geo_utils.h"
 
 namespace network {
 
@@ -292,7 +291,7 @@ void IpProtectionTokenCacheManagerImpl::OnGotAuthTokens(
   // contains a single `geo_hint`.
   std::string geo_id_from_token =
       enable_token_caching_by_geo_
-          ? network::GetGeoIdFromGeoHint(tokens->front().geo_hint)
+          ? ip_protection::GetGeoIdFromGeoHint(tokens->front().geo_hint)
           : kDefaultGeo;
 
   // Metric should only be recorded under the following conditions:

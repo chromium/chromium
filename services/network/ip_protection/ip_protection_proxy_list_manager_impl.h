@@ -17,7 +17,6 @@
 #include "net/base/proxy_chain.h"
 #include "services/network/ip_protection/ip_protection_config_cache.h"
 #include "services/network/ip_protection/ip_protection_config_getter.h"
-#include "services/network/ip_protection/ip_protection_geo_utils.h"
 #include "services/network/ip_protection/ip_protection_proxy_list_manager.h"
 
 namespace network {
@@ -61,7 +60,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyListManagerImpl
   void SetProxyListForTesting(
       std::optional<std::vector<net::ProxyChain>> proxy_list,
       std::optional<ip_protection::GeoHint> geo_hint) {
-    current_geo_id_ = network::GetGeoIdFromGeoHint(geo_hint);
+    current_geo_id_ = ip_protection::GetGeoIdFromGeoHint(geo_hint);
     proxy_list_ = *proxy_list;
     have_fetched_proxy_list_ = true;
   }
