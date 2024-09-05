@@ -3009,8 +3009,8 @@ static const CSSValue& ComputeRegisteredPropertyValue(
       return value;
     }
     if (StyleColor::IsColorKeyword(value_id)) {
-      return ComputeColorValue(state->CssToLengthConversionData(),
-                               *identifier_value, document, color_scheme);
+      return ComputeColorValue(css_to_length_conversion_data, *identifier_value,
+                               document, color_scheme);
     }
   }
 
@@ -3032,13 +3032,13 @@ static const CSSValue& ComputeRegisteredPropertyValue(
   }
 
   if (auto* color_mix_value = DynamicTo<cssvalue::CSSColorMixValue>(value)) {
-    return ComputeColorValue(state->CssToLengthConversionData(),
-                             *color_mix_value, document, color_scheme);
+    return ComputeColorValue(css_to_length_conversion_data, *color_mix_value,
+                             document, color_scheme);
   }
 
   if (auto* relative_color_value =
           DynamicTo<cssvalue::CSSRelativeColorValue>(value)) {
-    return ComputeColorValue(state->CssToLengthConversionData(),
+    return ComputeColorValue(css_to_length_conversion_data,
                              *relative_color_value, document, color_scheme);
   }
 
