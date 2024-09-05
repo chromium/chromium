@@ -467,6 +467,11 @@ AuthFactorModel* LoginAuthUserView::TestApi::smart_lock_auth_factor_model()
   return view_->smart_lock_auth_factor_model_;
 }
 
+PinStatusMessageView* LoginAuthUserView::TestApi::pin_status_message_view()
+    const {
+  return view_->pin_status_message_view_;
+}
+
 bool LoginAuthUserView::TestApi::HasAuthMethod(AuthMethods auth_method) const {
   return view_->HasAuthMethod(auth_method);
 }
@@ -490,6 +495,12 @@ LoginAuthUserView::TestApi::GetDisabledAuthMessageContent() const {
       .GetDisabledAuthMessageContent();
 }
 
+const std::u16string& LoginAuthUserView::TestApi::GetPinStatusMessageContent()
+    const {
+  return PinStatusMessageView::TestApi(view_->pin_status_message_view_)
+      .GetPinStatusMessageContent();
+}
+
 LoginAuthUserView::Callbacks::Callbacks() = default;
 
 LoginAuthUserView::Callbacks::Callbacks(const Callbacks& other) = default;
@@ -502,11 +513,13 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
       on_auth_(callbacks.on_auth),
       on_tap_(callbacks.on_tap),
       on_remove_warning_shown_(callbacks.on_remove_warning_shown),
-      on_remove_(callbacks.on_remove) {
+      on_remove_(callbacks.on_remove),
+      on_pin_unlock_(callbacks.on_pin_unlock) {
   DCHECK(callbacks.on_auth);
   DCHECK(callbacks.on_tap);
   DCHECK(callbacks.on_remove);
   DCHECK(callbacks.on_auth_factor_is_hiding_password_changed);
+  DCHECK(callbacks.on_pin_unlock);
   DCHECK_NE(user.basic_user_info.type, user_manager::UserType::kPublicAccount);
   if (Shell::Get()->login_screen_controller()->IsAuthenticating()) {
     // TODO(b/276246832): We should avoid re-layouting during Authentication.
@@ -601,6 +614,10 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
   auto locked_tpm_message_view = std::make_unique<LockedTpmMessageView>();
   locked_tpm_message_view_ = locked_tpm_message_view.get();
 
+  auto pin_status_message_view =
+      std::make_unique<PinStatusMessageView>(on_pin_unlock_);
+  pin_status_message_view_ = pin_status_message_view.get();
+
   auto fingerprint_auth_factor_model =
       FingerprintAuthFactorModel::Factory::Create(user.fingerprint_state);
   fingerprint_auth_factor_model_ = fingerprint_auth_factor_model.get();
@@ -654,6 +671,9 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
       login_views_utils::WrapViewForPreferredSize(std::move(pin_input_view));
   auto wrapped_pin_password_toggle_view =
       login_views_utils::WrapViewForPreferredSize(std::move(toggle_container));
+  auto wrapped_pin_status_message_view =
+      login_views_utils::WrapViewForPreferredSize(
+          std::move(pin_status_message_view));
   auto wrapped_auth_factors_view =
       login_views_utils::WrapViewForPreferredSize(std::move(auth_factors_view));
   auto wrapped_challenge_response_view =
@@ -686,6 +706,7 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
   AddChildView(std::move(wrapped_padding_below_password_view));
   AddChildView(std::move(wrapped_pin_view));
   AddChildView(std::move(wrapped_pin_password_toggle_view));
+  AddChildView(std::move(wrapped_pin_status_message_view));
   AddChildView(std::move(wrapped_auth_factors_view));
   auto* challenge_ptr =
       AddChildView(std::move(wrapped_challenge_response_view));
@@ -755,6 +776,15 @@ void LoginAuthUserView::SetAuthMethods(
       auth_metadata.time_until_tpm_unlock.has_value()) {
     locked_tpm_message_view_->SetRemainingTime(
         auth_metadata.time_until_tpm_unlock.value());
+  }
+
+  const bool is_pin_soft_locked =
+      input_field_mode_ == InputFieldMode::kPasswordOnly &&
+      auth_metadata.pin_available_at.has_value();
+  pin_status_message_view_->SetVisible(is_pin_soft_locked);
+  if (is_pin_soft_locked) {
+    pin_status_message_view_->SetPinAvailbleAt(
+        auth_metadata.pin_available_at.value());
   }
 
   // Adjust the PIN keyboard visibility before the password textfield's one, so

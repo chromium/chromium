@@ -410,6 +410,10 @@ class ASH_EXPORT LockContentsView
   // Updates the layout with the new users list.
   void ApplyUserChanges(const std::vector<LoginUserInfo>& users);
 
+  // Shows the pin auth and hides the pin delay message on the user pod when pin
+  // becomes available after being soft-locked.
+  void OnPinUnlock(bool is_primary);
+
   const LockScreen::ScreenType screen_type_;
 
   std::vector<UserState> users_;

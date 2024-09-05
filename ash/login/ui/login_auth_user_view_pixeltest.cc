@@ -143,6 +143,7 @@ class LoginAuthUserViewTestBase : public LoginTestBase {
     auth_callbacks.on_remove = base::DoNothing();
     auth_callbacks.on_auth_factor_is_hiding_password_changed =
         base::DoNothing();
+    auth_callbacks.on_pin_unlock = base::DoNothing();
     view_ = new LoginAuthUserView(user_, auth_callbacks);
 
     // We proxy |view_| inside of |container_| so we can control layout.

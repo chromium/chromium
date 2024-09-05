@@ -979,6 +979,8 @@ component("ash") {
     "login/ui/pin_request_view.h",
     "login/ui/pin_request_widget.cc",
     "login/ui/pin_request_widget.h",
+    "login/ui/pin_status_message_view.cc",
+    "login/ui/pin_status_message_view.h",
     "login/ui/public_account_menu_view.cc",
     "login/ui/public_account_menu_view.h",
     "login/ui/public_account_monitoring_info_dialog.cc",

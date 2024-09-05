@@ -3575,4 +3575,76 @@ TEST_F(LockContentsViewUnitTest, LoginToolTipViewAccessibleProperties) {
   EXPECT_EQ(data.role, ax::mojom::Role::kTooltip);
 }
 
+class LockContentsViewPinTimeoutUnitTest : public LockContentsViewUnitTest {
+ public:
+  LockContentsViewPinTimeoutUnitTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kAllowPinTimeoutSetup);
+  }
+
+  void AdvanceClock(base::TimeDelta time_delta) {
+    task_environment()->AdvanceClock(time_delta);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  std::u16string GetExpectedPinStatusMessage(
+      const std::u16string& time_string) {
+    return l10n_util::GetStringFUTF16(IDS_ASH_LOGIN_POD_PIN_LOCKED_WARNING,
+                                      time_string);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(LockContentsViewPinTimeoutUnitTest, PinDelayMessageCorrectness) {
+  ASSERT_NO_FATAL_FAILURE(ShowLoginScreen());
+  LockContentsView* contents =
+      LockScreen::TestApi(LockScreen::Get()).contents_view();
+
+  AddUsers(1);
+
+  LoginBigUserView* big_view =
+      LockContentsViewTestApi(contents).primary_big_view();
+  LoginAuthUserView::TestApi auth_test_api(big_view->auth_user());
+  LoginPinView* pin_view = auth_test_api.pin_view();
+  PinStatusMessageView* pin_status_message_view =
+      auth_test_api.pin_status_message_view();
+
+  AccountId account_id = big_view->GetCurrentUser().basic_user_info.account_id;
+  contents->OnPinEnabledForUserChanged(account_id, true,
+                                       /*available_at*/ std::nullopt);
+
+  EXPECT_TRUE(pin_view->GetVisible());
+  EXPECT_FALSE(pin_status_message_view->GetVisible());
+
+  // Lock pin for 2 hours.
+  contents->OnPinEnabledForUserChanged(
+      account_id, false,
+      /*available_at*/ base::Time::Now() + base::Hours(2));
+
+  // Remaining 1:59:00.
+  AdvanceClock(base::Minutes(1));
+  EXPECT_FALSE(pin_view->GetVisible());
+  EXPECT_TRUE(pin_status_message_view->GetVisible());
+  EXPECT_EQ(GetExpectedPinStatusMessage(u"1 hour, 59 minutes"),
+            auth_test_api.GetPinStatusMessageContent());
+
+  // Remaining 1:00:00.
+  AdvanceClock(base::Minutes(59));
+  EXPECT_TRUE(pin_status_message_view->GetVisible());
+  EXPECT_EQ(GetExpectedPinStatusMessage(u"1 hour, 0 minutes"),
+            auth_test_api.GetPinStatusMessageContent());
+
+  // Remaining 0:59:30.
+  AdvanceClock(base::Seconds(30));
+  EXPECT_TRUE(pin_status_message_view->GetVisible());
+  EXPECT_EQ(GetExpectedPinStatusMessage(u"59 minutes, 30 seconds"),
+            auth_test_api.GetPinStatusMessageContent());
+
+  // Pin becomes available again.
+  AdvanceClock(base::Hours(1));
+  EXPECT_TRUE(pin_view->GetVisible());
+  EXPECT_FALSE(pin_status_message_view->GetVisible());
+}
+
 }  // namespace ash
