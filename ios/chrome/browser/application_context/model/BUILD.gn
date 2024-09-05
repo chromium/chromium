@@ -29,7 +29,6 @@ source_set("model") {
     "//components/variations/service",
     "//components/version_info",
     "//ios/chrome/app:tests_hook",
-    "//ios/chrome/browser/browser_state/model",
     "//ios/chrome/browser/component_updater/model",
     "//ios/chrome/browser/crash_report/model/breadcrumbs",
     "//ios/chrome/browser/crash_report/model/breadcrumbs:application_breadcrumbs_logger",

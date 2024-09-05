@@ -581,7 +581,6 @@ source_set("app_internal") {
     "//ios/chrome/browser/accessibility/model",
     "//ios/chrome/browser/appearance/ui_bundled",
     "//ios/chrome/browser/bookmarks/model",
-    "//ios/chrome/browser/browser_state/model",
     "//ios/chrome/browser/browsing_data/model",
     "//ios/chrome/browser/commerce/model/push_notification",
     "//ios/chrome/browser/content_notification/model:util",

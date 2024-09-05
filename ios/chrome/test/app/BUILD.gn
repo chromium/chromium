@@ -60,7 +60,6 @@ source_set("test_support") {
     "//ios/chrome/browser/autofill/ui_bundled/form_input_accessory:common",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/bookmarks/ui_bundled:core",
-    "//ios/chrome/browser/browser_state/model",
     "//ios/chrome/browser/browser_view/ui_bundled",
     "//ios/chrome/browser/browsing_data/model",
     "//ios/chrome/browser/content_settings/model",

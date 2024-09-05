@@ -23,7 +23,6 @@ source_set("test") {
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
     "//components/user_prefs",
-    "//ios/chrome/browser/browser_state/model",
     "//ios/chrome/browser/net/model:net_types",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/prefs/model",
