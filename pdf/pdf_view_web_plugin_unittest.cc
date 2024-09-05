@@ -538,6 +538,16 @@ class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
         << window_rect.ToString();
   }
 
+  ui::Cursor TestSendInputEvent(const blink::WebInputEvent& event,
+                                blink::WebInputEventResult expected_result) {
+    ui::Cursor cursor;
+    EXPECT_EQ(
+        expected_result,
+        plugin_->HandleInputEvent(
+            blink::WebCoalescedInputEvent(event, ui::LatencyInfo()), &cursor));
+    return cursor;
+  }
+
   // Provides the cc::PaintCanvas for painting.
   gfx::Canvas canvas_{kCanvasSize, /*image_scale=*/1.0f, /*is_opaque=*/true};
 };
@@ -1428,11 +1438,8 @@ TEST_F(PdfViewWebPluginTest, HandleInputEvent) {
   mouse_event.SetType(blink::WebInputEvent::Type::kMouseDown);
   mouse_event.SetPositionInWidget(10.0f, 20.0f);
 
-  ui::Cursor dummy_cursor;
-  EXPECT_EQ(blink::WebInputEventResult::kHandledApplication,
-            plugin_->HandleInputEvent(
-                blink::WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()),
-                &dummy_cursor));
+  TestSendInputEvent(mouse_event,
+                     blink::WebInputEventResult::kHandledApplication);
 }
 
 class PdfViewWebPluginImeTest : public PdfViewWebPluginTest {
@@ -2461,25 +2468,19 @@ TEST_F(PdfViewWebPluginInkTest, UpdateCursor) {
 
   ui::Cursor cursor;
   EXPECT_EQ(ui::mojom::CursorType::kNull, cursor.type());
-  EXPECT_EQ(blink::WebInputEventResult::kNotHandled,
-            plugin_->HandleInputEvent(
-                blink::WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()),
-                &cursor));
+  cursor =
+      TestSendInputEvent(mouse_event, blink::WebInputEventResult::kNotHandled);
   EXPECT_EQ(ui::mojom::CursorType::kPointer, cursor.type());
 
   plugin_->OnMessage(CreateSetAnnotationModeMessageForTesting(/*enable=*/true));
-  EXPECT_EQ(blink::WebInputEventResult::kNotHandled,
-            plugin_->HandleInputEvent(
-                blink::WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()),
-                &cursor));
+  cursor =
+      TestSendInputEvent(mouse_event, blink::WebInputEventResult::kNotHandled);
   EXPECT_EQ(ui::mojom::CursorType::kCustom, cursor.type());
 
   plugin_->OnMessage(
       CreateSetAnnotationModeMessageForTesting(/*enable=*/false));
-  EXPECT_EQ(blink::WebInputEventResult::kNotHandled,
-            plugin_->HandleInputEvent(
-                blink::WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()),
-                &cursor));
+  cursor =
+      TestSendInputEvent(mouse_event, blink::WebInputEventResult::kNotHandled);
   EXPECT_EQ(ui::mojom::CursorType::kPointer, cursor.type());
 }
 

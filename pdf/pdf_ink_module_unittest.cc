@@ -467,12 +467,7 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
     }
 
     blink::WebMouseEvent mouse_up_event =
-        MouseEventBuilder()
-            .SetType(blink::WebInputEvent::Type::kMouseUp)
-            .SetPosition(mouse_up_point)
-            .SetButton(blink::WebPointerProperties::Button::kLeft)
-            .SetClickCount(1)
-            .Build();
+        MouseEventBuilder().CreateLeftMouseUpAtPosition(mouse_up_point).Build();
     EXPECT_EQ(expect_mouse_events_handled,
               ink_module().HandleInputEvent(mouse_up_event));
   }
