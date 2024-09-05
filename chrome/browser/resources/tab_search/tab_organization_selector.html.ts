@@ -15,16 +15,17 @@ export function getHtml(this: TabOrganizationSelectorElement) {
   <div id="buttonContainer">
     <tab-organization-selector-button id="autoTabGroupsButton"
         top="true"
-        heading="Auto tab groups"
-        subheading="Check for suggestions"
+        heading="$i18n{autoTabGroupsSelectorHeading}"
+        subheading="$i18n{autoTabGroupsSelectorSubheading}"
         icon="cr:group"
         @click="${this.onAutoTabGroupsClick_}">
     </tab-organization-selector-button>
     <tab-organization-selector-button id="declutterButton"
         bottom="true"
-        heading="Declutter"
-        subheading="No inactive tabs"
+        heading="${this.declutterHeading_}"
+        subheading="$i18n{declutterSelectorSubheading}"
         icon="cr:delete"
+        ?disabled="${this.disableDeclutter_}"
         @click="${this.onDeclutterClick_}">
     </tab-organization-selector-button>
   </div>

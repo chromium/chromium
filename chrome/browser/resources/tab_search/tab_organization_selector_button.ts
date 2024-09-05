@@ -27,6 +27,7 @@ export class TabOrganizationSelectorButtonElement extends CrLitElement {
   static override get properties() {
     return {
       bottom: {type: Boolean, reflect: true},
+      disabled: {type: Boolean, reflect: true},
       heading: {type: String},
       icon: {type: String},
       subheading: {type: String},
@@ -35,6 +36,7 @@ export class TabOrganizationSelectorButtonElement extends CrLitElement {
   }
 
   bottom: boolean = false;
+  disabled: boolean = false;
   heading: string = '';
   icon: string = 'cr:error';
   subheading: string = '';

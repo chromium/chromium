@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
+#include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_sync_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -152,6 +153,11 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"thumbsUp", IDS_TAB_ORGANIZATION_THUMBS_UP},
       // Declutter UI strings
       {"declutterTitle", IDS_DECLUTTER_TITLE},
+      // Selector UI strings
+      {"autoTabGroupsSelectorHeading", IDS_AUTO_TAB_GROUPS_SELECTOR_HEADING},
+      {"autoTabGroupsSelectorSubheading",
+       IDS_AUTO_TAB_GROUPS_SELECTOR_SUBHEADING},
+      {"declutterSelectorSubheading", IDS_DECLUTTER_SELECTOR_SUBHEADING},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean("useRipples", views::PlatformStyle::kUseRipples);
@@ -197,6 +203,11 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
+
+  auto plural_string_handler = std::make_unique<PluralStringHandler>();
+  plural_string_handler->AddLocalizedString("declutterSelectorHeading",
+                                            IDS_DECLUTTER_SELECTOR_HEADING);
+  web_ui->AddMessageHandler(std::move(plural_string_handler));
 
   web_ui->AddMessageHandler(std::make_unique<TabSearchSyncHandler>(profile));
 

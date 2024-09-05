@@ -14,6 +14,10 @@
   --selector-button-outer-radius: 12px;
 }
 
+:host([disabled]) {
+  pointer-events: none;
+}
+
 cr-button {
   background-color: var(--color-tab-search-button-background);
   border: none;
@@ -29,6 +33,10 @@ cr-button {
 :host([bottom]) cr-button {
   border-end-end-radius: var(--selector-button-outer-radius);
   border-end-start-radius: var(--selector-button-outer-radius);
+}
+
+cr-button:focus-visible {
+  outline-offset: 0;
 }
 
 #buttonContent {

@@ -10,7 +10,7 @@ export function getHtml(this: TabOrganizationSelectorButtonElement) {
   // clang-format off
   return html`
 <!--_html_template_start_-->
-<cr-button>
+<cr-button ?disabled="${this.disabled}">
   <div id="buttonContent">
     <div id="iconTextRow">
       <div id="prefixIcon">
@@ -21,7 +21,7 @@ export function getHtml(this: TabOrganizationSelectorButtonElement) {
         <div>${this.subheading}</div>
       </div>
     </div>
-    <cr-icon icon="cr:chevron-right"></cr-icon>
+    ${this.disabled ? '' : html`<cr-icon icon="cr:chevron-right"></cr-icon>`}
   </div>
 </cr-button>
 <!--_html_template_end_-->`;
