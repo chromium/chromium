@@ -36,28 +36,43 @@ def create_rollup_config(config_out_file, rollup_root_dir, path_mappings):
   with open(config_out_file, 'w') as f:
     f.write(config_content)
 
+def path_mappings_from_tsconfig(tsconfig_path):
+  path_mappings = {}
+  with open(tsconfig_path, 'r', encoding='utf-8') as tsconfig:
+    tsconfig_contents = json.load(tsconfig)
+    out_dir = tsconfig_contents['compilerOptions']['outDir']
+    base_dir = os.path.join(os.path.dirname(tsconfig_path), out_dir)
+    files = tsconfig_contents['compilerOptions']['paths']
+
+    for file in files:
+      if file.startswith('//') and file.endswith('.js'):
+        script_path = file[2:]
+        path_mappings[script_path] = \
+            os.path.abspath(os.path.join(base_dir, script_path))
+
+    if "references" in tsconfig_contents:
+      for reference in tsconfig_contents['references']:
+        reference_path = \
+            os.path.join(os.path.dirname(tsconfig_path), reference['path'])
+        path_mappings.update(path_mappings_from_tsconfig(reference_path))
+
+  return path_mappings
+
 def optimize_js(primary_script,
     js_out_file,
-    path_mapping_manifests,
+    dep_tsconfigs,
     skip_minification,
     output_name):
-  """Creates a single output JavaScript file from |primary_script| (and any
-  imported scripts) and writes it out to |js_out_file|. Script imports will be
-  resolved by searching for the script path in the maifest files passed to
-  |path_mapping_manifests| and using the directory location listed in the
-  manifest file to locate the source file.
-  The output script will be minimized unless |skip_minification| is false."""
+  """Creates a single output JavaScript file from `primary_script` (and any
+  imported scripts) and writes it out to `js_out_file`. Script imports will be
+  resolved by searching for the script path in the tsconfigs files passed to
+  `dep_tsconfigs` to locate the source file. The output script will be minimized
+  unless `skip_minification` is true."""
 
   path_mappings = {}
-  if path_mapping_manifests != None:
-    for manifest_path in path_mapping_manifests:
-      with open(manifest_path, 'r', encoding='utf-8') as manifest:
-        manifest_contents = json.load(manifest)
-        base_dir = manifest_contents['base_dir']
-        files = manifest_contents['files']
-
-        for f in files:
-          path_mappings[f] = os.path.abspath(os.path.join(base_dir, f))
+  if dep_tsconfigs != None:
+    for tsconfig_path in dep_tsconfigs:
+      path_mappings.update(path_mappings_from_tsconfig(tsconfig_path))
 
   output_script_dir = os.path.dirname(js_out_file)
 
@@ -119,11 +134,11 @@ def main(argv):
       required=True,
       help="Path to the output file for the compiled JavaScript to be written")
   parser.add_argument(
-      '--path-mapping-manifests',
+      '--dep-tsconfigs',
       required=False,
       nargs='*',
       default = None,
-      help="Path mapping manifest files to locate script imports.")
+      help="Dependent tsconfig files to locate script imports.")
   parser.add_argument(
       '--skip-minification',
       default=False,
@@ -139,7 +154,7 @@ def main(argv):
   js_out_file = os.path.abspath(args.js_out_file)
 
   optimize_js(primary_script, js_out_file,
-      args.path_mapping_manifests, args.skip_minification, args.output_name)
+      args.dep_tsconfigs, args.skip_minification, args.output_name)
 
 if __name__ == '__main__':
   main(sys.argv[1:])
