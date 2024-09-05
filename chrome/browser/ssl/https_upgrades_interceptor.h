@@ -49,10 +49,10 @@ class HttpsUpgradesInterceptor : public content::URLLoaderRequestInterceptor,
                                  public network::mojom::URLLoader {
  public:
   static std::unique_ptr<HttpsUpgradesInterceptor> MaybeCreateInterceptor(
-      int frame_tree_node_id,
+      content::FrameTreeNodeId frame_tree_node_id,
       content::NavigationUIData* navigation_ui_data_);
 
-  HttpsUpgradesInterceptor(int frame_tree_node_id,
+  HttpsUpgradesInterceptor(content::FrameTreeNodeId frame_tree_node_id,
                            bool http_interstitial_enabled,
                            content::NavigationUIData* navigation_ui_data_);
   ~HttpsUpgradesInterceptor() override;
@@ -118,7 +118,7 @@ class HttpsUpgradesInterceptor : public content::URLLoaderRequestInterceptor,
   void OnConnectionClosed();
 
   // Used to access the WebContents for the navigation.
-  int frame_tree_node_id_;
+  content::FrameTreeNodeId frame_tree_node_id_;
 
   // Controls whether we are upgrading and falling back with an interstitial
   // before proceeding with the HTTP navigation. This reflects the general

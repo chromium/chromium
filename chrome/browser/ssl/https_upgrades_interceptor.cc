@@ -181,7 +181,7 @@ using security_interstitials::https_only_mode::NavigationRequestSecurityLevel;
 // static
 std::unique_ptr<HttpsUpgradesInterceptor>
 HttpsUpgradesInterceptor::MaybeCreateInterceptor(
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     content::NavigationUIData* navigation_ui_data) {
   auto* web_contents =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
@@ -206,7 +206,7 @@ HttpsUpgradesInterceptor::MaybeCreateInterceptor(
 }
 
 HttpsUpgradesInterceptor::HttpsUpgradesInterceptor(
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     bool http_interstitial_enabled_by_pref,
     content::NavigationUIData* navigation_ui_data)
     : frame_tree_node_id_(frame_tree_node_id),
