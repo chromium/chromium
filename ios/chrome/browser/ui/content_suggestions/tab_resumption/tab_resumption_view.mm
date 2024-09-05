@@ -477,7 +477,8 @@ void SetFallbackImageToImageView(UIImageView* image_view,
   _reasonLabel = [[UILabel alloc] init];
   _reasonLabel.translatesAutoresizingMaskIntoConstraints = NO;
   _reasonLabel.adjustsFontForContentSizeCategory = YES;
-  _reasonLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  _reasonLabel.textColor =
+      [UIColor colorNamed:kTextLightTertiaryDarkPrimaryColor];
 
   [_reasonLabel setText:_item.reason];
   UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
@@ -487,7 +488,7 @@ void SetFallbackImageToImageView(UIImageView* image_view,
   _reasonLabelContainer.translatesAutoresizingMaskIntoConstraints = NO;
   [_reasonLabelContainer addSubview:_reasonLabel];
   _reasonLabelContainer.backgroundColor =
-      [UIColor colorNamed:kSecondaryBackgroundColor];
+      [UIColor colorNamed:kTertiaryBackgroundColor];
 
   _leadingLabelConstraint = [_reasonLabel.leadingAnchor
       constraintEqualToAnchor:_reasonLabelContainer.leadingAnchor];

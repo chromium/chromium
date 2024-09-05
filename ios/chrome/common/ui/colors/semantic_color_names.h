@@ -48,6 +48,7 @@ extern NSString* const kTextSecondaryColor;
 extern NSString* const kInvertedTextSecondaryColor;
 extern NSString* const kTextTertiaryColor;
 extern NSString* const kTextQuaternaryColor;
+extern NSString* const kTextLightTertiaryDarkPrimaryColor;
 extern NSString* const kTextfieldBackgroundColor;
 extern NSString* const kTextfieldFocusedBackgroundColor;
 extern NSString* const kTextfieldHighlightBackgroundColor;
