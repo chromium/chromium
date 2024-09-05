@@ -1157,6 +1157,12 @@ if (use_blink && !is_cronet_build) {
       } else {
         args += [ "--timeout-multiplier=1" ]
       }
+      if (is_chrome_branded) {
+        args += [
+          "--driver-name",
+          "Google Chrome",
+        ]
+      }
       data_deps = [
         ":blink_web_tests_expectations",
         ":blink_web_tests_support_data",
