@@ -6365,11 +6365,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "omnibox-actions-ui-simplification",
-    "owners": [ "orinj@chromium.org", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "omnibox-answer-actions",
     "owners": [ "pnoland@chromium.org", "chrome-mobile-search@google.com" ],
     "expiry_milestone": 135
@@ -6519,19 +6514,14 @@
     "expiry_milestone": 130
   },
   {
-    "name": "omnibox-keyword-mode-refresh",
-    "owners": [ "orinj@chromium.org", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "omnibox-local-history-zero-suggest-beyond-ntp",
     "owners": [ "mahmadi@chromium.org", "ender@chromium.org", "stkhapugin@chromium.org", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 130
   },
   {
     "name": "omnibox-max-url-matches",
-    "owners": [ "orinj@chromium.org", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 120
+    "owners": [ "orinj@chromium.org", "ender@chromium.org", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 150
   },
   {
     "name": "omnibox-max-zero-suggest-matches",
