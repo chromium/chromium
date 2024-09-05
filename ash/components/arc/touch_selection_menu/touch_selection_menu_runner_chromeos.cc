@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/touch_selection_menu/touch_selection_menu_runner_chromeos.h"
+#include "ash/components/arc/touch_selection_menu/touch_selection_menu_runner_chromeos.h"
 
 #include <utility>
 
@@ -14,7 +14,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/ash/touch_selection_menu/touch_selection_menu_chromeos.h"
+#include "ash/components/arc/touch_selection_menu/touch_selection_menu_chromeos.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
