@@ -762,18 +762,23 @@ class CaptureGroupIdTransportSocketPool : public TransportClientSocketPool {
   bool socket_requested_ = false;
 };
 
-class CaptureKeyHttpStreamPoolObserver : public HttpStreamPool::Observer {
+class CaptureKeyHttpStreamPoolDelegate : public HttpStreamPool::TestDelegate {
  public:
-  CaptureKeyHttpStreamPoolObserver() = default;
+  CaptureKeyHttpStreamPoolDelegate() = default;
 
-  CaptureKeyHttpStreamPoolObserver(const CaptureKeyHttpStreamPoolObserver&) =
+  CaptureKeyHttpStreamPoolDelegate(const CaptureKeyHttpStreamPoolDelegate&) =
       delete;
-  CaptureKeyHttpStreamPoolObserver& operator=(
-      const CaptureKeyHttpStreamPoolObserver&) = delete;
+  CaptureKeyHttpStreamPoolDelegate& operator=(
+      const CaptureKeyHttpStreamPoolDelegate&) = delete;
 
-  ~CaptureKeyHttpStreamPoolObserver() override = default;
+  ~CaptureKeyHttpStreamPoolDelegate() override = default;
 
   void OnRequestStream(const HttpStreamKey& key) override { last_key_ = key; }
+
+  std::optional<int> OnPreconnect(const HttpStreamKey& stream_key,
+                                  size_t num_streams) override {
+    return std::nullopt;
+  }
 
   const HttpStreamKey& last_key() const { return last_key_; }
 
@@ -15663,17 +15668,17 @@ TEST_P(HttpNetworkTransactionTest, GroupIdOrHttpStreamKeyForDirectConnections) {
       alt_data.set_connect_data(MockConnect(SYNCHRONOUS, ERR_FAILED));
       session_deps_.socket_factory->AddSocketDataProvider(&alt_data);
 
-      auto http_pool_observer =
-          std::make_unique<CaptureKeyHttpStreamPoolObserver>();
-      CaptureKeyHttpStreamPoolObserver* http_pool_observer_ptr =
-          http_pool_observer.get();
-      session->http_stream_pool()->SetObserverForTesting(
-          std::move(http_pool_observer));
+      auto http_pool_delegate =
+          std::make_unique<CaptureKeyHttpStreamPoolDelegate>();
+      CaptureKeyHttpStreamPoolDelegate* http_pool_delegate_ptr =
+          http_pool_delegate.get();
+      session->http_stream_pool()->SetDelegateForTesting(
+          std::move(http_pool_delegate));
 
       EXPECT_EQ(ERR_FAILED,
                 HttpStreamKeyTransactionHelper(test.url, session.get()));
       EXPECT_EQ(test.expected_http_stream_key,
-                http_pool_observer_ptr->last_key());
+                http_pool_delegate_ptr->last_key());
     } else {
       auto transport_conn_pool =
           std::make_unique<CaptureGroupIdTransportSocketPool>(

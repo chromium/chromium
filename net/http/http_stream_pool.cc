@@ -151,8 +151,8 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::RequestStream(
     AlternativeServiceInfo alternative_service_info,
     quic::ParsedQuicVersion quic_version,
     const NetLogWithSource& net_log) {
-  if (observer_for_testing_) {
-    observer_for_testing_->OnRequestStream(stream_key);
+  if (delegate_for_testing_) {
+    delegate_for_testing_->OnRequestStream(stream_key);
   }
 
   QuicSessionKey quic_session_key = stream_key.ToQuicSessionKey();
@@ -225,6 +225,16 @@ int HttpStreamPool::Preconnect(const HttpStreamKey& stream_key,
     // We had a SPDY session but the server required HTTP/1.1. The session is
     // going away right now.
     return ERR_HTTP_1_1_REQUIRED;
+  }
+
+  if (delegate_for_testing_) {
+    // Some tests expect OnPreconnect() is called after checking existing
+    // sessions.
+    std::optional<int> result =
+        delegate_for_testing_->OnPreconnect(stream_key, num_streams);
+    if (result.has_value()) {
+      return *result;
+    }
   }
 
   return GetOrCreateGroup(stream_key)
@@ -364,8 +374,9 @@ bool HttpStreamPool::CanUseExistingQuicSession(
              quic_session_key, stream_key.destination());
 }
 
-void HttpStreamPool::SetObserverForTesting(std::unique_ptr<Observer> observer) {
-  observer_for_testing_ = std::move(observer);
+void HttpStreamPool::SetDelegateForTesting(
+    std::unique_ptr<TestDelegate> delegate) {
+  delegate_for_testing_ = std::move(delegate);
 }
 
 base::Value::Dict HttpStreamPool::GetInfoAsValue() const {

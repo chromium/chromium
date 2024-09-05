@@ -41,13 +41,19 @@ class NET_EXPORT_PRIVATE HttpStreamPool
     : public NetworkChangeNotifier::IPAddressObserver,
       public SSLClientContext::Observer {
  public:
-  // Observes the HttpStreamPool. Used only for tests.
-  class NET_EXPORT_PRIVATE Observer {
+  // Observes events on the HttpStreamPool and may intercept preconnects. Used
+  // only for tests.
+  class NET_EXPORT_PRIVATE TestDelegate {
    public:
-    virtual ~Observer() = default;
+    virtual ~TestDelegate() = default;
 
     // Called when a stream is requested.
     virtual void OnRequestStream(const HttpStreamKey& stream_key) = 0;
+
+    // Called when a preconnect is requested. When returns a non-nullopt value,
+    // the preconnect completes with the value.
+    virtual std::optional<int> OnPreconnect(const HttpStreamKey& stream_key,
+                                            size_t num_streams) = 0;
   };
 
   // Reasons for closing streams.
@@ -187,7 +193,7 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   // Retrieves information on the current state of the pool as a base::Value.
   base::Value::Dict GetInfoAsValue() const;
 
-  void SetObserverForTesting(std::unique_ptr<Observer> observer);
+  void SetDelegateForTesting(std::unique_ptr<TestDelegate> observer);
 
   Group& GetOrCreateGroupForTesting(const HttpStreamKey& stream_key);
 
@@ -278,7 +284,7 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   std::set<std::unique_ptr<JobController>, base::UniquePtrComparator>
       job_controllers_;
 
-  std::unique_ptr<Observer> observer_for_testing_;
+  std::unique_ptr<TestDelegate> delegate_for_testing_;
 };
 
 }  // namespace net

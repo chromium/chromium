@@ -58,6 +58,7 @@
 #include "net/http/http_server_properties.h"
 #include "net/http/http_stream.h"
 #include "net/http/http_stream_pool.h"
+#include "net/http/http_stream_pool_test_util.h"
 #include "net/http/transport_security_state.h"
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
@@ -531,6 +532,10 @@ ClientSocketPool::GroupId GetGroupId(const TestCase& test) {
       SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false);
 }
 
+HttpStreamKey GetHttpStreamKey(const TestCase& test) {
+  return GroupIdToHttpStreamKey(GetGroupId(test));
+}
+
 class CapturePreconnectsTransportSocketPool : public TransportClientSocketPool {
  public:
   explicit CapturePreconnectsTransportSocketPool(
@@ -618,6 +623,36 @@ class CapturePreconnectsTransportSocketPool : public TransportClientSocketPool {
   ClientSocketPool::GroupId last_group_id_;
 };
 
+class CapturePreconnectHttpStreamPoolDelegate
+    : public HttpStreamPool::TestDelegate {
+ public:
+  CapturePreconnectHttpStreamPoolDelegate() = default;
+
+  CapturePreconnectHttpStreamPoolDelegate(
+      const CapturePreconnectHttpStreamPoolDelegate&) = delete;
+  CapturePreconnectHttpStreamPoolDelegate& operator=(
+      const CapturePreconnectHttpStreamPoolDelegate&) = delete;
+
+  ~CapturePreconnectHttpStreamPoolDelegate() override = default;
+
+  void OnRequestStream(const HttpStreamKey& stream_key) override {}
+
+  std::optional<int> OnPreconnect(const HttpStreamKey& stream_key,
+                                  size_t num_streams) override {
+    last_stream_key_ = stream_key;
+    last_num_streams_ = num_streams;
+    return OK;
+  }
+
+  const HttpStreamKey& last_stream_key() const { return last_stream_key_; }
+
+  int last_num_streams() const { return last_num_streams_; }
+
+ private:
+  HttpStreamKey last_stream_key_;
+  int last_num_streams_ = -1;
+};
+
 using HttpStreamFactoryTest = TestWithTaskEnvironment;
 
 TEST_F(HttpStreamFactoryTest, PreconnectDirect) {
@@ -628,22 +663,33 @@ TEST_F(HttpStreamFactoryTest, PreconnectDirect) {
         std::make_unique<StaticHttpUserAgentSettings>("*", "test-ua");
     std::unique_ptr<HttpNetworkSession> session(
         SpdySessionDependencies::SpdyCreateSession(&session_deps));
-    HttpNetworkSessionPeer peer(session.get());
-    CommonConnectJobParams common_connect_job_params =
-        session->CreateCommonConnectJobParams();
-    std::unique_ptr<CapturePreconnectsTransportSocketPool>
-        owned_transport_conn_pool =
-            std::make_unique<CapturePreconnectsTransportSocketPool>(
-                &common_connect_job_params);
-    CapturePreconnectsTransportSocketPool* transport_conn_pool =
-        owned_transport_conn_pool.get();
-    auto mock_pool_manager = std::make_unique<MockClientSocketPoolManager>();
-    mock_pool_manager->SetSocketPool(ProxyChain::Direct(),
-                                     std::move(owned_transport_conn_pool));
-    peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
-    PreconnectHelper(test, session.get());
-    EXPECT_EQ(test.num_streams, transport_conn_pool->last_num_streams());
-    EXPECT_EQ(GetGroupId(test), transport_conn_pool->last_group_id());
+
+    if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+      auto delegate =
+          std::make_unique<CapturePreconnectHttpStreamPoolDelegate>();
+      CapturePreconnectHttpStreamPoolDelegate* delegate_ptr = delegate.get();
+      session->http_stream_pool()->SetDelegateForTesting(std::move(delegate));
+      PreconnectHelper(test, session.get());
+      EXPECT_EQ(test.num_streams, delegate_ptr->last_num_streams());
+      EXPECT_EQ(GetHttpStreamKey(test), delegate_ptr->last_stream_key());
+    } else {
+      HttpNetworkSessionPeer peer(session.get());
+      CommonConnectJobParams common_connect_job_params =
+          session->CreateCommonConnectJobParams();
+      std::unique_ptr<CapturePreconnectsTransportSocketPool>
+          owned_transport_conn_pool =
+              std::make_unique<CapturePreconnectsTransportSocketPool>(
+                  &common_connect_job_params);
+      CapturePreconnectsTransportSocketPool* transport_conn_pool =
+          owned_transport_conn_pool.get();
+      auto mock_pool_manager = std::make_unique<MockClientSocketPoolManager>();
+      mock_pool_manager->SetSocketPool(ProxyChain::Direct(),
+                                       std::move(owned_transport_conn_pool));
+      peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
+      PreconnectHelper(test, session.get());
+      EXPECT_EQ(test.num_streams, transport_conn_pool->last_num_streams());
+      EXPECT_EQ(GetGroupId(test), transport_conn_pool->last_group_id());
+    }
   }
 }
 
@@ -721,25 +767,38 @@ TEST_F(HttpStreamFactoryTest, PreconnectDirectWithExistingSpdySession) {
                        /*disable_cert_verification_network_fetches=*/false);
     std::ignore = CreateFakeSpdySession(session->spdy_session_pool(), key);
 
-    CommonConnectJobParams common_connect_job_params =
-        session->CreateCommonConnectJobParams();
-    std::unique_ptr<CapturePreconnectsTransportSocketPool>
-        owned_transport_conn_pool =
-            std::make_unique<CapturePreconnectsTransportSocketPool>(
-                &common_connect_job_params);
-    CapturePreconnectsTransportSocketPool* transport_conn_pool =
-        owned_transport_conn_pool.get();
-    auto mock_pool_manager = std::make_unique<MockClientSocketPoolManager>();
-    mock_pool_manager->SetSocketPool(ProxyChain::Direct(),
-                                     std::move(owned_transport_conn_pool));
-    peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
-    PreconnectHelper(test, session.get());
-    // We shouldn't be preconnecting if we have an existing session, which is
-    // the case for https://www.google.com.
-    if (test.ssl) {
-      EXPECT_EQ(-1, transport_conn_pool->last_num_streams());
+    if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+      auto delegate =
+          std::make_unique<CapturePreconnectHttpStreamPoolDelegate>();
+      CapturePreconnectHttpStreamPoolDelegate* delegate_ptr = delegate.get();
+      session->http_stream_pool()->SetDelegateForTesting(std::move(delegate));
+      PreconnectHelper(test, session.get());
+      if (test.ssl) {
+        EXPECT_EQ(-1, delegate_ptr->last_num_streams());
+      } else {
+        EXPECT_EQ(test.num_streams, delegate_ptr->last_num_streams());
+      }
     } else {
-      EXPECT_EQ(test.num_streams, transport_conn_pool->last_num_streams());
+      CommonConnectJobParams common_connect_job_params =
+          session->CreateCommonConnectJobParams();
+      std::unique_ptr<CapturePreconnectsTransportSocketPool>
+          owned_transport_conn_pool =
+              std::make_unique<CapturePreconnectsTransportSocketPool>(
+                  &common_connect_job_params);
+      CapturePreconnectsTransportSocketPool* transport_conn_pool =
+          owned_transport_conn_pool.get();
+      auto mock_pool_manager = std::make_unique<MockClientSocketPoolManager>();
+      mock_pool_manager->SetSocketPool(ProxyChain::Direct(),
+                                       std::move(owned_transport_conn_pool));
+      peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
+      PreconnectHelper(test, session.get());
+      // We shouldn't be preconnecting if we have an existing session, which is
+      // the case for https://www.google.com.
+      if (test.ssl) {
+        EXPECT_EQ(-1, transport_conn_pool->last_num_streams());
+      } else {
+        EXPECT_EQ(test.num_streams, transport_conn_pool->last_num_streams());
+      }
     }
   }
 }
@@ -753,24 +812,37 @@ TEST_F(HttpStreamFactoryTest, PreconnectUnsafePort) {
       ConfiguredProxyResolutionService::CreateDirect());
   std::unique_ptr<HttpNetworkSession> session(
       SpdySessionDependencies::SpdyCreateSession(&session_deps));
-  HttpNetworkSessionPeer peer(session.get());
-  CommonConnectJobParams common_connect_job_params =
-      session->CreateCommonConnectJobParams();
-  std::unique_ptr<CapturePreconnectsTransportSocketPool>
-      owned_transport_conn_pool =
-          std::make_unique<CapturePreconnectsTransportSocketPool>(
-              &common_connect_job_params);
-  CapturePreconnectsTransportSocketPool* transport_conn_pool =
-      owned_transport_conn_pool.get();
-  auto mock_pool_manager = std::make_unique<MockClientSocketPoolManager>();
-  mock_pool_manager->SetSocketPool(ProxyChain::Direct(),
-                                   std::move(owned_transport_conn_pool));
-  peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
 
-  PreconnectHelperForURL(1, GURL("http://www.google.com:7"),
-                         NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                         session.get());
-  EXPECT_EQ(-1, transport_conn_pool->last_num_streams());
+  auto DoPreconnect = [&] {
+    PreconnectHelperForURL(1, GURL("http://www.google.com:7"),
+                           NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                           session.get());
+  };
+
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+    auto delegate = std::make_unique<CapturePreconnectHttpStreamPoolDelegate>();
+    CapturePreconnectHttpStreamPoolDelegate* delegate_ptr = delegate.get();
+    session->http_stream_pool()->SetDelegateForTesting(std::move(delegate));
+    DoPreconnect();
+    EXPECT_EQ(-1, delegate_ptr->last_num_streams());
+  } else {
+    HttpNetworkSessionPeer peer(session.get());
+    CommonConnectJobParams common_connect_job_params =
+        session->CreateCommonConnectJobParams();
+    std::unique_ptr<CapturePreconnectsTransportSocketPool>
+        owned_transport_conn_pool =
+            std::make_unique<CapturePreconnectsTransportSocketPool>(
+                &common_connect_job_params);
+    CapturePreconnectsTransportSocketPool* transport_conn_pool =
+        owned_transport_conn_pool.get();
+    auto mock_pool_manager = std::make_unique<MockClientSocketPoolManager>();
+    mock_pool_manager->SetSocketPool(ProxyChain::Direct(),
+                                     std::move(owned_transport_conn_pool));
+    peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
+
+    DoPreconnect();
+    EXPECT_EQ(-1, transport_conn_pool->last_num_streams());
+  }
 }
 
 // Verify that preconnects to invalid GURLs do nothing, and do not CHECK.
@@ -779,23 +851,36 @@ TEST_F(HttpStreamFactoryTest, PreconnectInvalidUrls) {
       ConfiguredProxyResolutionService::CreateDirect());
   std::unique_ptr<HttpNetworkSession> session(
       SpdySessionDependencies::SpdyCreateSession(&session_deps));
-  HttpNetworkSessionPeer peer(session.get());
-  CommonConnectJobParams common_connect_job_params =
-      session->CreateCommonConnectJobParams();
-  std::unique_ptr<CapturePreconnectsTransportSocketPool>
-      owned_transport_conn_pool =
-          std::make_unique<CapturePreconnectsTransportSocketPool>(
-              &common_connect_job_params);
-  CapturePreconnectsTransportSocketPool* transport_conn_pool =
-      owned_transport_conn_pool.get();
-  auto mock_pool_manager = std::make_unique<MockClientSocketPoolManager>();
-  mock_pool_manager->SetSocketPool(ProxyChain::Direct(),
-                                   std::move(owned_transport_conn_pool));
-  peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
 
-  PreconnectHelperForURL(1, GURL(), NetworkAnonymizationKey(),
-                         SecureDnsPolicy::kAllow, session.get());
-  EXPECT_EQ(-1, transport_conn_pool->last_num_streams());
+  auto DoPreconnect = [&] {
+    PreconnectHelperForURL(1, GURL(), NetworkAnonymizationKey(),
+                           SecureDnsPolicy::kAllow, session.get());
+  };
+
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+    auto delegate = std::make_unique<CapturePreconnectHttpStreamPoolDelegate>();
+    CapturePreconnectHttpStreamPoolDelegate* delegate_ptr = delegate.get();
+    session->http_stream_pool()->SetDelegateForTesting(std::move(delegate));
+    DoPreconnect();
+    EXPECT_EQ(-1, delegate_ptr->last_num_streams());
+  } else {
+    HttpNetworkSessionPeer peer(session.get());
+    CommonConnectJobParams common_connect_job_params =
+        session->CreateCommonConnectJobParams();
+    std::unique_ptr<CapturePreconnectsTransportSocketPool>
+        owned_transport_conn_pool =
+            std::make_unique<CapturePreconnectsTransportSocketPool>(
+                &common_connect_job_params);
+    CapturePreconnectsTransportSocketPool* transport_conn_pool =
+        owned_transport_conn_pool.get();
+    auto mock_pool_manager = std::make_unique<MockClientSocketPoolManager>();
+    mock_pool_manager->SetSocketPool(ProxyChain::Direct(),
+                                     std::move(owned_transport_conn_pool));
+    peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
+
+    DoPreconnect();
+    EXPECT_EQ(-1, transport_conn_pool->last_num_streams());
+  }
 }
 
 // Verify that preconnects use the specified NetworkAnonymizationKey.
@@ -808,36 +893,60 @@ TEST_F(HttpStreamFactoryTest, PreconnectNetworkIsolationKey) {
       ConfiguredProxyResolutionService::CreateDirect());
   std::unique_ptr<HttpNetworkSession> session(
       SpdySessionDependencies::SpdyCreateSession(&session_deps));
-  HttpNetworkSessionPeer peer(session.get());
-  CommonConnectJobParams common_connect_job_params =
-      session->CreateCommonConnectJobParams();
-  std::unique_ptr<CapturePreconnectsTransportSocketPool>
-      owned_transport_conn_pool =
-          std::make_unique<CapturePreconnectsTransportSocketPool>(
-              &common_connect_job_params);
-  CapturePreconnectsTransportSocketPool* transport_conn_pool =
-      owned_transport_conn_pool.get();
-  auto mock_pool_manager = std::make_unique<MockClientSocketPoolManager>();
-  mock_pool_manager->SetSocketPool(ProxyChain::Direct(),
-                                   std::move(owned_transport_conn_pool));
-  peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
 
   const GURL kURL("http://foo.test/");
   const SchemefulSite kSiteFoo(GURL("http://foo.test"));
   const SchemefulSite kSiteBar(GURL("http://bar.test"));
   const auto kKey1 = NetworkAnonymizationKey::CreateSameSite(kSiteFoo);
   const auto kKey2 = NetworkAnonymizationKey::CreateSameSite(kSiteBar);
-  PreconnectHelperForURL(1, kURL, kKey1, SecureDnsPolicy::kAllow,
-                         session.get());
-  EXPECT_EQ(1, transport_conn_pool->last_num_streams());
-  EXPECT_EQ(kKey1,
-            transport_conn_pool->last_group_id().network_anonymization_key());
+  auto DoPreconnect1 = [&] {
+    PreconnectHelperForURL(1, kURL, kKey1, SecureDnsPolicy::kAllow,
+                           session.get());
+  };
+  auto DoPreconnect2 = [&] {
+    PreconnectHelperForURL(2, kURL, kKey2, SecureDnsPolicy::kAllow,
+                           session.get());
+  };
 
-  PreconnectHelperForURL(2, kURL, kKey2, SecureDnsPolicy::kAllow,
-                         session.get());
-  EXPECT_EQ(2, transport_conn_pool->last_num_streams());
-  EXPECT_EQ(kKey2,
-            transport_conn_pool->last_group_id().network_anonymization_key());
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+    auto delegate = std::make_unique<CapturePreconnectHttpStreamPoolDelegate>();
+    CapturePreconnectHttpStreamPoolDelegate* delegate_ptr = delegate.get();
+    session->http_stream_pool()->SetDelegateForTesting(std::move(delegate));
+
+    DoPreconnect1();
+    EXPECT_EQ(1, delegate_ptr->last_num_streams());
+    EXPECT_EQ(kKey1,
+              delegate_ptr->last_stream_key().network_anonymization_key());
+
+    DoPreconnect2();
+    EXPECT_EQ(2, delegate_ptr->last_num_streams());
+    EXPECT_EQ(kKey2,
+              delegate_ptr->last_stream_key().network_anonymization_key());
+  } else {
+    HttpNetworkSessionPeer peer(session.get());
+    CommonConnectJobParams common_connect_job_params =
+        session->CreateCommonConnectJobParams();
+    std::unique_ptr<CapturePreconnectsTransportSocketPool>
+        owned_transport_conn_pool =
+            std::make_unique<CapturePreconnectsTransportSocketPool>(
+                &common_connect_job_params);
+    CapturePreconnectsTransportSocketPool* transport_conn_pool =
+        owned_transport_conn_pool.get();
+    auto mock_pool_manager = std::make_unique<MockClientSocketPoolManager>();
+    mock_pool_manager->SetSocketPool(ProxyChain::Direct(),
+                                     std::move(owned_transport_conn_pool));
+    peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
+
+    DoPreconnect1();
+    EXPECT_EQ(1, transport_conn_pool->last_num_streams());
+    EXPECT_EQ(kKey1,
+              transport_conn_pool->last_group_id().network_anonymization_key());
+
+    DoPreconnect2();
+    EXPECT_EQ(2, transport_conn_pool->last_num_streams());
+    EXPECT_EQ(kKey2,
+              transport_conn_pool->last_group_id().network_anonymization_key());
+  }
 }
 
 // Verify that preconnects use the specified Secure DNS Tag.
@@ -846,34 +955,58 @@ TEST_F(HttpStreamFactoryTest, PreconnectDisableSecureDns) {
       ConfiguredProxyResolutionService::CreateDirect());
   std::unique_ptr<HttpNetworkSession> session(
       SpdySessionDependencies::SpdyCreateSession(&session_deps));
-  HttpNetworkSessionPeer peer(session.get());
-  CommonConnectJobParams common_connect_job_params =
-      session->CreateCommonConnectJobParams();
-  std::unique_ptr<CapturePreconnectsTransportSocketPool>
-      owned_transport_conn_pool =
-          std::make_unique<CapturePreconnectsTransportSocketPool>(
-              &common_connect_job_params);
-  CapturePreconnectsTransportSocketPool* transport_conn_pool =
-      owned_transport_conn_pool.get();
-  auto mock_pool_manager = std::make_unique<MockClientSocketPoolManager>();
-  mock_pool_manager->SetSocketPool(ProxyChain::Direct(),
-                                   std::move(owned_transport_conn_pool));
-  peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
 
   const GURL kURL("http://foo.test/");
   const SchemefulSite kSiteFoo(GURL("http://foo.test"));
   const SchemefulSite kSiteBar(GURL("http://bar.test"));
-  PreconnectHelperForURL(1, kURL, NetworkAnonymizationKey(),
-                         SecureDnsPolicy::kAllow, session.get());
-  EXPECT_EQ(1, transport_conn_pool->last_num_streams());
-  EXPECT_EQ(SecureDnsPolicy::kAllow,
-            transport_conn_pool->last_group_id().secure_dns_policy());
+  auto DoPreconnect1 = [&] {
+    PreconnectHelperForURL(1, kURL, NetworkAnonymizationKey(),
+                           SecureDnsPolicy::kAllow, session.get());
+  };
+  auto DoPreconnect2 = [&] {
+    PreconnectHelperForURL(2, kURL, NetworkAnonymizationKey(),
+                           SecureDnsPolicy::kDisable, session.get());
+  };
 
-  PreconnectHelperForURL(2, kURL, NetworkAnonymizationKey(),
-                         SecureDnsPolicy::kDisable, session.get());
-  EXPECT_EQ(2, transport_conn_pool->last_num_streams());
-  EXPECT_EQ(SecureDnsPolicy::kDisable,
-            transport_conn_pool->last_group_id().secure_dns_policy());
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+    auto delegate = std::make_unique<CapturePreconnectHttpStreamPoolDelegate>();
+    CapturePreconnectHttpStreamPoolDelegate* delegate_ptr = delegate.get();
+    session->http_stream_pool()->SetDelegateForTesting(std::move(delegate));
+
+    DoPreconnect1();
+    EXPECT_EQ(1, delegate_ptr->last_num_streams());
+    EXPECT_EQ(SecureDnsPolicy::kAllow,
+              delegate_ptr->last_stream_key().secure_dns_policy());
+
+    DoPreconnect2();
+    EXPECT_EQ(2, delegate_ptr->last_num_streams());
+    EXPECT_EQ(SecureDnsPolicy::kDisable,
+              delegate_ptr->last_stream_key().secure_dns_policy());
+  } else {
+    HttpNetworkSessionPeer peer(session.get());
+    CommonConnectJobParams common_connect_job_params =
+        session->CreateCommonConnectJobParams();
+    std::unique_ptr<CapturePreconnectsTransportSocketPool>
+        owned_transport_conn_pool =
+            std::make_unique<CapturePreconnectsTransportSocketPool>(
+                &common_connect_job_params);
+    CapturePreconnectsTransportSocketPool* transport_conn_pool =
+        owned_transport_conn_pool.get();
+    auto mock_pool_manager = std::make_unique<MockClientSocketPoolManager>();
+    mock_pool_manager->SetSocketPool(ProxyChain::Direct(),
+                                     std::move(owned_transport_conn_pool));
+    peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
+
+    DoPreconnect1();
+    EXPECT_EQ(1, transport_conn_pool->last_num_streams());
+    EXPECT_EQ(SecureDnsPolicy::kAllow,
+              transport_conn_pool->last_group_id().secure_dns_policy());
+
+    DoPreconnect2();
+    EXPECT_EQ(2, transport_conn_pool->last_num_streams());
+    EXPECT_EQ(SecureDnsPolicy::kDisable,
+              transport_conn_pool->last_group_id().secure_dns_policy());
+  }
 }
 
 TEST_F(HttpStreamFactoryTest, JobNotifiesProxy) {
