@@ -37,8 +37,8 @@ HTML_SINGLE_PERIPHERAL = """
     }
 }],
                          indirect=True)
-async def test_bluetooth_handle_prompt(websocket, context_id, html,
-                                       test_headless_mode):
+async def test_bluetooth_requestDevicePromptUpdated(websocket, context_id,
+                                                    html, test_headless_mode):
     if test_headless_mode == "old":
         pytest.xfail("Old headless mode does not support Bluetooth")
 
@@ -90,10 +90,10 @@ async def test_bluetooth_handle_prompt(websocket, context_id, html,
         })
 
     response = await wait_for_event(websocket,
-                                    'bluetooth.requestDevicePromptOpened')
+                                    'bluetooth.requestDevicePromptUpdated')
     assert response == AnyExtending({
         'type': 'event',
-        'method': 'bluetooth.requestDevicePromptOpened',
+        'method': 'bluetooth.requestDevicePromptUpdated',
         'params': {
             'context': context_id,
             'devices': [{

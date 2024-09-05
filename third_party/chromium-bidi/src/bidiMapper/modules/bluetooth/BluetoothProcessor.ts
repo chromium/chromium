@@ -37,7 +37,7 @@ export class BluetoothProcessor {
       this.#eventManager.registerEvent(
         {
           type: 'event',
-          method: 'bluetooth.requestDevicePromptOpened',
+          method: 'bluetooth.requestDevicePromptUpdated',
           params: {
             context: cdpTarget.id,
             prompt: event.id,

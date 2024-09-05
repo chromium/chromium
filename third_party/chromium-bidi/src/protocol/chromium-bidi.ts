@@ -93,8 +93,7 @@ export namespace Network {
 
 export namespace Bluetooth {
   export enum EventNames {
-    RequestDevicePromptOpened = 'bluetooth.requestDevicePromptOpened',
-    RequestDevicePromptClosed = 'bluetooth.requestDevicePromptClosed',
+    RequestDevicePromptUpdated = 'bluetooth.requestDevicePromptUpdated',
   }
 }
 
@@ -121,11 +120,8 @@ export type CommandResponse =
 
 export type BluetoothEvent = {
   type: 'event';
-} & (
-  | WebDriverBidiBluetooth.Bluetooth.RequestDevicePromptOpened
-  | (WebDriverBidiBluetooth.Bluetooth.RequestDevicePromptClosed &
-      WebDriverBidi.Extensible)
-);
+} & (WebDriverBidiBluetooth.Bluetooth.RequestDevicePromptUpdated &
+  WebDriverBidi.Extensible);
 export type Event = WebDriverBidi.Event | Cdp.Event | BluetoothEvent;
 
 export const EVENT_NAMES = new Set([
