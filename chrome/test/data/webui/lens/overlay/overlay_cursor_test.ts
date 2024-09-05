@@ -18,7 +18,7 @@ import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
 import {fakeScreenshotBitmap, waitForScreenshotRendered} from '../utils/image_utils.js';
 import {createObject} from '../utils/object_utils.js';
 import {simulateStartDrag} from '../utils/selection_utils.js';
-import {createLine, createParagraph, createText, createWord} from '../utils/text_utils.js';
+import {createLine, createParagraph, createText, createWord, dispatchTranslateStateEvent} from '../utils/text_utils.js';
 
 import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
 
@@ -171,6 +171,25 @@ suite('OverlayCursor', () => {
     assertEquals('unset', document.body.style.cursor);
     assertEquals(
         'url("lens.svg")',
+        selectionOverlayElement.style.getPropertyValue('--cursor-img-url'));
+
+    // Now enable translate mode.
+    dispatchTranslateStateEvent(
+        selectionOverlayElement.$.textSelectionLayer, true, 'es');
+
+    // Hover over the selection overlay.
+    await simulateHover(selectionOverlayElement.$.selectionOverlay);
+
+    // Verify the cursor tooltip is the text string, despite the cursor not
+    // hovering over text.
+    assertTrue(isRendered(tooltipEl));
+    assertStringContains(tooltipEl.innerHTML, 'Select text');
+
+    // Verify the cursor changed to text and the cursor image changed to text
+    // icon.
+    assertEquals('text', document.body.style.cursor);
+    assertEquals(
+        'url("text.svg")',
         selectionOverlayElement.style.getPropertyValue('--cursor-img-url'));
   });
 

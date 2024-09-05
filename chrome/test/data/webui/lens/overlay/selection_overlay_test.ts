@@ -20,7 +20,7 @@ import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
 import {fakeScreenshotBitmap, waitForScreenshotRendered} from '../utils/image_utils.js';
 import {assertBoxesWithinThreshold, createObject} from '../utils/object_utils.js';
 import {getImageBoundingRect, simulateClick, simulateDrag} from '../utils/selection_utils.js';
-import {createLine, createParagraph, createText, createTranslatedLine, createTranslatedParagraph, createWord} from '../utils/text_utils.js';
+import {createLine, createParagraph, createText, createTranslatedLine, createTranslatedParagraph, createWord, dispatchTranslateStateEvent} from '../utils/text_utils.js';
 
 import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
 
@@ -131,15 +131,6 @@ suite('SelectionOverlay', function() {
     ]);
     callbackRouterRemote.textReceived(text);
     return flushTasks();
-  }
-
-  function dispatchTranslateStateEvent(
-      target: Element, translateModeEnabled: boolean, targetLanguage: string) {
-    target.dispatchEvent(new CustomEvent('translate-mode-state-changed', {
-      detail: {translateModeEnabled, targetLanguage},
-      bubbles: true,
-      composed: true,
-    }));
   }
 
   function addObjects() {

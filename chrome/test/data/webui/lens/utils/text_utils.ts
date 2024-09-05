@@ -85,3 +85,12 @@ export function createWord(
     formulaMetadata: null,
   };
 }
+
+export function dispatchTranslateStateEvent(
+    target: Element, translateModeEnabled: boolean, targetLanguage: string) {
+  target.dispatchEvent(new CustomEvent('translate-mode-state-changed', {
+    detail: {translateModeEnabled, targetLanguage},
+    bubbles: true,
+    composed: true,
+  }));
+}
