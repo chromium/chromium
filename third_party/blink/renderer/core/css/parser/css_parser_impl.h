@@ -153,7 +153,7 @@ class CORE_EXPORT CSSParserImpl {
   static std::unique_ptr<Vector<KeyframeOffset>> ParseKeyframeKeyList(
       const CSSParserContext*,
       const String&);
-  static String ParseCustomPropertyName(const String& name_text);
+  static String ParseCustomPropertyName(StringView name_text);
 
   bool ConsumeEndOfPreludeForAtRuleWithoutBlock(CSSParserTokenStream& stream,
                                                 CSSAtRuleID id);
