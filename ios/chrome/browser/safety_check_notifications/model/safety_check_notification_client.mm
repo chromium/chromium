@@ -141,19 +141,11 @@ void SafetyCheckNotificationClient::OnSceneActiveForegroundBrowserReady(
     password_check_state_ = safety_check_manager->GetPasswordCheckState();
     insecure_password_counts_ =
         safety_check_manager->GetInsecurePasswordCounts();
-
-    ClearAndRescheduleSafetyCheckNotifications(
-        update_chrome_check_state_, safe_browsing_check_state_,
-        password_check_state_, insecure_password_counts_,
-        std::move(completion));
-
-    return;
   }
 
-  // TODO(crbug.com/347975105): Implement
-  // `OnSceneActiveForegroundBrowserReady()` to conditionally schedule
-  // notifications.
-  std::move(completion).Run();
+  ClearAndRescheduleSafetyCheckNotifications(
+      update_chrome_check_state_, safe_browsing_check_state_,
+      password_check_state_, insecure_password_counts_, std::move(completion));
 }
 
 void SafetyCheckNotificationClient::PasswordCheckStateChanged(
@@ -267,8 +259,12 @@ void SafetyCheckNotificationClient::OnNotificationsCleared(
   if (![requests count]) {
     // TODO(crbug.com/362481419): Add logging to track the state of the
     // notification (requested, triggered, etc.).
+    interacted_notification_metadata_ = nil;
+
     return;
   }
+
+  interacted_notification_metadata_ = nil;
 
   [UNUserNotificationCenter.currentNotificationCenter
       removePendingNotificationRequestsWithIdentifiers:identifiers];
@@ -366,14 +362,16 @@ void SafetyCheckNotificationClient::ClearAndRescheduleSafetyCheckNotifications(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if ([interacted_notification_metadata_ count]) {
-    [HandlerForProtocol(
-        GetSceneLevelForegroundActiveBrowser()->GetCommandDispatcher(),
-        ApplicationCommands)
+    Browser* browser = GetSceneLevelForegroundActiveBrowser();
+
+    CHECK(browser);
+
+    [HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands)
         prepareToPresentModal:
             base::CallbackToBlock(base::BindOnce(
                 &SafetyCheckNotificationClient::ShowUIForNotificationMetadata,
                 weak_ptr_factory_.GetWeakPtr(),
-                interacted_notification_metadata_))];
+                interacted_notification_metadata_, browser))];
   }
 
   ClearNotifications(
@@ -390,18 +388,17 @@ void SafetyCheckNotificationClient::ClearAndRescheduleSafetyCheckNotifications(
 }
 
 void SafetyCheckNotificationClient::ShowUIForNotificationMetadata(
-    NSDictionary* notification_metadata) {
+    NSDictionary* notification_metadata,
+    Browser* browser) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // The notification metadata must correspond to one of the Safety Check
   // notification types.
-  if (!notification_metadata[kSafetyCheckSafeBrowsingNotificationID] ||
-      !notification_metadata[kSafetyCheckUpdateChromeNotificationID] ||
+  if (!notification_metadata[kSafetyCheckSafeBrowsingNotificationID] &&
+      !notification_metadata[kSafetyCheckUpdateChromeNotificationID] &&
       !notification_metadata[kSafetyCheckPasswordNotificationID]) {
     NOTREACHED();
   }
-
-  Browser* browser = GetSceneLevelForegroundActiveBrowser();
 
   id<ApplicationCommands> applicationHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);

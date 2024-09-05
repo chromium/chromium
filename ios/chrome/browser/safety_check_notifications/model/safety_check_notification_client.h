@@ -18,6 +18,8 @@
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 
+class Browser;
+
 // A push notification client for managing Safety Check-related notifications.
 // Observes Safety Check state changes to ensure notifications are accurate, and
 // handles user registration, notification delivery, and user interaction.
@@ -104,7 +106,8 @@ class SafetyCheckNotificationClient
 
   // Navigates to and displays the relevant UI based on the provided
   // `notification_metadata`.
-  void ShowUIForNotificationMetadata(NSDictionary* notification_metadata);
+  void ShowUIForNotificationMetadata(NSDictionary* notification_metadata,
+                                     Browser* browser);
 
   // Current state of the Update Chrome check.
   UpdateChromeSafetyCheckState update_chrome_check_state_ =
