@@ -149,49 +149,6 @@ void AddNamesFromFileToMap(
   }
 }
 
-// Returns the new accumulated results, given the currently accumulated results
-// in `previous_results`.
-// Assumes that an empty `previous_results` signifies the first word.
-std::map<std::string_view, double> GetResultsFromASingleWordQuery(
-    const std::map<std::string, std::vector<EmojiSearchEntry>, std::less<>>&
-        map,
-    const std::map<std::string_view, double>& scored_emoji,
-    const std::u16string_view word) {
-  if (word.empty()) {
-    return {};
-  }
-  std::map<std::string_view, double> word_scored_emoji;
-  // Make search case insensitive.
-  std::string lower_bound = base::UTF16ToUTF8(base::i18n::ToLower(word));
-  std::string upper_bound = lower_bound;
-  // will break if someone searches for some very specific char, but
-  // should be fine.
-  upper_bound.back() = upper_bound.back() + 1;
-  // This should ensure we get everything that is a substring match
-  auto upper_bound_iterator = map.upper_bound(upper_bound);
-  for (auto matches = map.lower_bound(lower_bound);
-       matches != upper_bound_iterator; ++matches) {
-    for (const auto& match : matches->second) {
-      double previous_score;
-      if (scored_emoji.empty()) {
-        // First word.
-        previous_score = 1;
-      } else if (const auto& it = scored_emoji.find(match.emoji_string);
-                 it != scored_emoji.end()) {
-        // Second+ word, and emoji was previously found.
-        previous_score = it->second;
-      } else {
-        // Second+ word, and emoji was not previously found.
-        continue;
-      }
-      // Will zero initialize if entry missing
-      word_scored_emoji[match.emoji_string] +=
-          previous_score * match.weighting / matches->first.size();
-    }
-  }
-  return word_scored_emoji;
-}
-
 std::map<std::string_view, double> GetResultsFromMap(
     const std::map<std::string, std::vector<EmojiSearchEntry>, std::less<>>&
         map,
@@ -201,7 +158,36 @@ std::map<std::string_view, double> GetResultsFromMap(
       base::SplitResult::SPLIT_WANT_NONEMPTY);
   std::map<std::string_view, double> scored_emoji;
   for (const std::u16string_view word : words) {
-    scored_emoji = GetResultsFromASingleWordQuery(map, scored_emoji, word);
+    std::map<std::string_view, double> word_scored_emoji;
+    // Make search case insensitive.
+    std::string lower_bound = base::UTF16ToUTF8(base::i18n::ToLower(word));
+    std::string upper_bound = lower_bound;
+    // will break if someone searches for some very specific char, but
+    // should be fine.
+    upper_bound.back() = upper_bound.back() + 1;
+    // This should ensure we get everything that is a substring match
+    auto upper_bound_iterator = map.upper_bound(upper_bound);
+    for (auto matches = map.lower_bound(lower_bound);
+         matches != upper_bound_iterator; ++matches) {
+      for (const auto& match : matches->second) {
+        double previous_score;
+        if (scored_emoji.empty()) {
+          // First word.
+          previous_score = 1;
+        } else if (const auto& it = scored_emoji.find(match.emoji_string);
+                   it != scored_emoji.end()) {
+          // Second+ word, and emoji was previously found.
+          previous_score = it->second;
+        } else {
+          // Second+ word, and emoji was not previously found.
+          continue;
+        }
+        // Will zero initialize if entry missing
+        word_scored_emoji[match.emoji_string] +=
+            previous_score * match.weighting / matches->first.size();
+      }
+    }
+    scored_emoji = std::move(word_scored_emoji);
     if (scored_emoji.empty()) {
       // Early return if there were no matches, as we assume an empty
       // `scored_emoji` means the first word.
