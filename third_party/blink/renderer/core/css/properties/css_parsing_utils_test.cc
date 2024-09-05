@@ -311,5 +311,15 @@ TEST(CSSParsingUtilsTest, InternalPositionTryFallbacksInUAMode) {
   }
 }
 
+// crbug.com/364340016
+TEST(CSSParsingUtilsTest, ConsumePositionTryFallbacksInUAMode) {
+  String css_text = "block-start span-inline-end";
+  CSSParserTokenStream stream(css_text);
+  CSSValue* value = css_parsing_utils::ConsumePositionTryFallbacks(
+      stream, *MakeContext(kUASheetMode));
+  ASSERT_TRUE(value);
+  EXPECT_EQ("block-start span-inline-end", value->CssText());
+}
+
 }  // namespace
 }  // namespace blink

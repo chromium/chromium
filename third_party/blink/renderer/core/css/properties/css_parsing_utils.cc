@@ -7609,9 +7609,9 @@ CSSValue* ConsumeDashedIdentOrTactic(CSSParserTokenStream& stream,
       continue;
     }
     if (context.Mode() == kUASheetMode && !dashed_ident) {
-      CSSCustomIdentValue* value = ConsumeCustomIdent(stream, context);
-      if (value && value->Value().StartsWith("-internal-")) {
-        dashed_ident = value;
+      if (stream.Peek().GetType() == kIdentToken &&
+          stream.Peek().Value().ToString().StartsWith("-internal-")) {
+        dashed_ident = ConsumeCustomIdent(stream, context);
         continue;
       }
     }
