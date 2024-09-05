@@ -217,6 +217,7 @@ CSSValue* ConsumeLinear(CSSParserTokenStream& stream,
   DCHECK_EQ(stream.Peek().FunctionId(), CSSValueID::kLinear);
   {
     CSSParserTokenStream::RestoringBlockGuard guard(stream);
+    stream.ConsumeWhitespace();
     Vector<cssvalue::CSSLinearStop> stop_list{};
     std::optional<cssvalue::CSSLinearStop> linear_stop;
     do {
