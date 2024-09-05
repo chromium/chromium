@@ -8,8 +8,6 @@ assert(is_chromeos_ash)
 
 static_library("ash") {
   sources = [
-    "os_feedback_dialog.cc",
-    "os_feedback_dialog.h",
     "power_ui.cc",
     "power_ui.h",
     "remote_maintenance_curtain_ui.cc",
@@ -72,7 +70,6 @@ static_library("ash") {
     "//ash/webui/common:trusted_types_util",
     "//ash/webui/diagnostics_ui",
     "//ash/webui/diagnostics_ui:url_constants",
-    "//ash/webui/os_feedback_ui:url_constants",
     "//ash/webui/sanitize_ui",
     "//ash/webui/shimless_rma",
     "//chrome/app:generated_resources",

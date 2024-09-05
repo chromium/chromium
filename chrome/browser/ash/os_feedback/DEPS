@@ -29,6 +29,7 @@ include_rules = [
   "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/chrome_pages.h",
   "+chrome/browser/ui/webui/ash",
+  "+chrome/browser/ui/webui/ash/os_feedback_dialog",
   "+chrome/common/webui_url_constants.h",
   "+chrome/test/base",
 ]

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_ASH_OS_FEEDBACK_DIALOG_H_
-#define CHROME_BROWSER_UI_WEBUI_ASH_OS_FEEDBACK_DIALOG_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_OS_FEEDBACK_DIALOG_OS_FEEDBACK_DIALOG_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_OS_FEEDBACK_DIALOG_OS_FEEDBACK_DIALOG_H_
 
 #include "base/functional/callback_forward.h"
 #include "base/values.h"
@@ -47,4 +47,4 @@ class OsFeedbackDialog : public SystemWebDialogDelegate {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_ASH_OS_FEEDBACK_DIALOG_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_OS_FEEDBACK_DIALOG_OS_FEEDBACK_DIALOG_H_

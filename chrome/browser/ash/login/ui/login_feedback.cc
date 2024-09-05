@@ -9,7 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/ash/os_feedback_dialog.h"
+#include "chrome/browser/ui/webui/ash/os_feedback_dialog/os_feedback_dialog.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "extensions/browser/api/feedback_private/feedback_private_api.h"
 
