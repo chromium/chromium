@@ -11,7 +11,6 @@
 #include <string_view>
 
 #include "base/i18n/unicodestring.h"
-#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -285,35 +284,15 @@ bool TimeDurationFormat(TimeDelta time,
   const int minutes = total_minutes % 60;
   UMeasureFormatWidth u_width = DurationWidthToMeasureWidth(width);
 
-  // TODO(derat): Delete the |status| checks and LOG(ERROR) calls throughout
-  // this function once the cause of http://crbug.com/677043 is tracked down.
   const icu::Measure measures[] = {
       icu::Measure(hours, icu::MeasureUnit::createHour(status), status),
       icu::Measure(minutes, icu::MeasureUnit::createMinute(status), status)};
-  if (U_FAILURE(status)) {
-    LOG(ERROR) << "Creating MeasureUnit or Measure for " << hours << "h"
-               << minutes << "m failed: " << u_errorName(status);
-    return false;
-  }
-
   icu::MeasureFormat measure_format(icu::Locale::getDefault(), u_width, status);
-  if (U_FAILURE(status)) {
-    LOG(ERROR) << "Creating MeasureFormat for "
-               << icu::Locale::getDefault().getName()
-               << " failed: " << u_errorName(status);
-    return false;
-  }
-
   icu::UnicodeString formatted;
   icu::FieldPosition ignore(icu::FieldPosition::DONT_CARE);
   measure_format.formatMeasures(measures, 2, formatted, ignore, status);
-  if (U_FAILURE(status)) {
-    LOG(ERROR) << "formatMeasures failed: " << u_errorName(status);
-    return false;
-  }
-
   *out = i18n::UnicodeStringToString16(formatted);
-  return true;
+  return U_SUCCESS(status);
 }
 
 bool TimeDurationFormatWithSeconds(TimeDelta time,
