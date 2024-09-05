@@ -301,6 +301,9 @@ template("chrome_common_apk_or_module_tmpl") {
       shared_resources_allowlist_locales = platform_pak_locales
 
       product_config_java_packages += [ webview_product_config_java_package ]
+    } else {
+      # Chrome does not enable Strict Mode checks.
+      disable_strict_mode_context = true
     }
 
     if (enable_silent_java_assert_reporting) {

@@ -1955,6 +1955,11 @@ if (!is_robolectric && enable_java_templates) {
           invoker.write_clang_profiling_data) {
         defines += [ "_WRITE_CLANG_PROFILING_DATA" ]
       }
+
+      if (defined(invoker.disable_strict_mode_context) &&
+          invoker.disable_strict_mode_context) {
+        defines += [ "_DISABLE_STRICT_MODE_CONTEXT" ]
+      }
     }
   }
 
@@ -2619,7 +2624,11 @@ if (!is_robolectric && enable_java_templates) {
     }
     if (_generate_buildconfig_java) {
       generate_build_config_srcjar("${_template_name}__build_config_srcjar") {
-        forward_variables_from(invoker, [ "isolated_splits_enabled" ])
+        forward_variables_from(invoker,
+                               [
+                                 "disable_strict_mode_context",
+                                 "isolated_splits_enabled",
+                               ])
         _bundles_supported = _is_bundle_module
         if (defined(invoker.bundles_supported)) {
           _bundles_supported = invoker.bundles_supported
@@ -3276,6 +3285,7 @@ if (!is_robolectric && enable_java_templates) {
             "deps",
             "enable_lint",
             "enable_proguard_checks",
+            "disable_strict_mode_context",
             "enforce_resource_overlays_in_tests",
             "expected_android_manifest",
             "expected_android_manifest_base",
@@ -3424,6 +3434,7 @@ if (!is_robolectric && enable_java_templates) {
             "data",
             "data_deps",
             "deps",
+            "disable_strict_mode_context",
             "expected_android_manifest",
             "expected_android_manifest_base",
             "expected_android_manifest_library_version_offset",

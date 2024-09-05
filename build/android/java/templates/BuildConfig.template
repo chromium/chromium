@@ -115,4 +115,11 @@ public class BuildConfig {
 #else
     public static boolean IS_DESKTOP_ANDROID;
 #endif
+
+    // Controls whether or not StrictModeContext is a no-op.
+#if defined(_DISABLE_STRICT_MODE_CONTEXT)
+    public static boolean DISABLE_STRICT_MODE_CONTEXT = true;
+#else
+    public static boolean DISABLE_STRICT_MODE_CONTEXT;
+#endif
 }
