@@ -33,6 +33,7 @@
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/process_lock.h"
+#include "content/browser/process_reuse_policy.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/debug_urls.h"
@@ -434,7 +435,7 @@ void UpdateProcessReusePolicyForProcessPerSiteWithMainFrameThreshold(
   RecordProcessPerSiteWithMainFrameThresholdBlockReason(
       ProcessPerSiteWithMainFrameThresholdBlockReason::kNotBlocked);
   site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::
+      ProcessReusePolicy::
           REUSE_PENDING_OR_COMMITTED_SITE_WITH_MAIN_FRAME_THRESHOLD);
 }
 
@@ -2856,8 +2857,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
                 frame_tree_node_->GetParentOrOuterDocument()
                     ->GetOutermostMainFrame())) {
       new_instance->set_process_reuse_policy(
-          SiteInstanceImpl::ProcessReusePolicy::
-              REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME);
+          ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME);
     }
   }
 

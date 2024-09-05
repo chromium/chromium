@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "content/browser/browsing_instance.h"
 #include "content/browser/isolation_context.h"
+#include "content/browser/process_reuse_policy.h"
 #include "content/browser/security/coop/coop_related_group.h"
 #include "content/browser/site_info.h"
 #include "content/browser/web_exposed_isolation_info.h"
@@ -190,43 +191,6 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   void set_process_assignment(SiteInstanceProcessAssignment assignment) {
     process_assignment_ = assignment;
   }
-
-  // The policy to apply when selecting a RenderProcessHost for the
-  // SiteInstance. If no suitable RenderProcessHost for the SiteInstance exists
-  // according to the policy, and there are processes with unmatched service
-  // workers for the site, the newest process with an unmatched service worker
-  // is reused. If still no RenderProcessHost exists a new RenderProcessHost
-  // will be created unless the process limit has been reached. When the limit
-  // has been reached, the RenderProcessHost reused will be chosen randomly and
-  // not based on the site.
-  enum class ProcessReusePolicy {
-    // In this mode, all instances of the site will be hosted in the same
-    // RenderProcessHost.
-    PROCESS_PER_SITE,
-
-    // In this mode, the subframe's site will be rendered in a RenderProcessHost
-    // that is already in use for the site, either for a pending navigation or a
-    // committed navigation. If multiple such processes exist, ones that have
-    // foreground frames are given priority, and otherwise one is selected
-    // randomly.
-    REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME,
-
-    // Similar to REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME, but only applied to
-    // workers. Reuse decisions may vary from those for
-    // REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME.
-    REUSE_PENDING_OR_COMMITTED_SITE_WORKER,
-
-    // Similar to REUSE_PENDING_OR_COMMITTED_SITE, but limits the number of
-    // main frames a RenderProcessHost can host to a certain threshold.
-    REUSE_PENDING_OR_COMMITTED_SITE_WITH_MAIN_FRAME_THRESHOLD,
-
-    // In this mode, SiteInstances don't proactively reuse processes. An
-    // existing process with an unmatched service worker for the site is reused
-    // only for navigations, not for service workers. When the process limit has
-    // been reached, a randomly chosen RenderProcessHost is reused as in the
-    // other policies.
-    DEFAULT,
-  };
 
   void set_process_reuse_policy(ProcessReusePolicy policy) {
     CHECK(!IsDefaultSiteInstance());

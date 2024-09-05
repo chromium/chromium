@@ -1624,6 +1624,7 @@ source_set("browser") {
     "process_internals/process_internals_ui.h",
     "process_lock.cc",
     "process_lock.h",
+    "process_reuse_policy.h",
     "process_visibility_util.cc",
     "push_messaging/push_messaging_context.cc",
     "push_messaging/push_messaging_context.h",

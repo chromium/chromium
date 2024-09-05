@@ -110,6 +110,7 @@
 #include "content/browser/payments/payment_app_context_impl.h"
 #include "content/browser/permissions/permission_service_context.h"
 #include "content/browser/process_lock.h"
+#include "content/browser/process_reuse_policy.h"
 #include "content/browser/push_messaging/push_messaging_manager.h"
 #include "content/browser/quota/quota_context.h"
 #include "content/browser/renderer_host/embedded_frame_sink_provider_impl.h"
@@ -542,19 +543,12 @@ bool HasEnoughMemoryForAnotherMainFrame(RenderProcessHost* host,
   return false;
 }
 
-bool MayReuseAndIsSuitableWithMainFrameThreshold(
-    RenderProcessHost* host,
-    SiteInstanceImpl* site_instance,
-    std::optional<size_t> main_frame_threshold) {
-  // It's possible that |host| has become unsuitable for hosting
-  // |site_instance|, for example if it was reused by a navigation to a
-  // different site, and |site_instance| requires a dedicated process. Do not
-  // allow such hosts to be reused.  See https://crbug.com/780661.
-  if (!RenderProcessHostImpl::MayReuseAndIsSuitable(host, site_instance)) {
-    return false;
-  }
-
-  if (!main_frame_threshold) {
+bool IsBelowReuseResourceThresholds(RenderProcessHost* host,
+                                    SiteInstanceImpl* site_instance,
+                                    ProcessReusePolicy process_reuse_policy) {
+  if (process_reuse_policy !=
+      ProcessReusePolicy::
+          REUSE_PENDING_OR_COMMITTED_SITE_WITH_MAIN_FRAME_THRESHOLD) {
     return true;
   }
 
@@ -576,7 +570,9 @@ bool MayReuseAndIsSuitableWithMainFrameThreshold(
 
   // If a threshold is specified, don't reuse `host` if it already hosts more
   // main frames (including BFCached and prerendered) than the threshold.
-  if (main_frame_count >= *main_frame_threshold) {
+  size_t main_frame_threshold = base::checked_cast<size_t>(
+      features::kProcessPerSiteMainFrameThreshold.Get());
+  if (main_frame_count >= main_frame_threshold) {
     return false;
   }
 
@@ -658,7 +654,7 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
 
   void FindRenderProcessesForSiteInstance(
       SiteInstanceImpl* site_instance,
-      std::optional<size_t> main_frame_threshold,
+      ProcessReusePolicy process_reuse_policy,
       std::set<RenderProcessHost*>* foreground_processes,
       std::set<RenderProcessHost*>* background_processes) {
     auto result = map_.find(site_instance->GetSiteInfo());
@@ -677,8 +673,17 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
         continue;
       }
 
-      if (!MayReuseAndIsSuitableWithMainFrameThreshold(host, site_instance,
-                                                       main_frame_threshold)) {
+      // It's possible that |host| has become unsuitable for hosting
+      // |site_instance|, for example if it was reused by a navigation to a
+      // different site, and |site_instance| requires a dedicated process. Do
+      // not allow such hosts to be reused.  See https://crbug.com/780661.
+      if (!RenderProcessHostImpl::MayReuseAndIsSuitable(host, site_instance)) {
+        continue;
+      }
+
+      // Don't reuse processes that have high resource usage already.
+      if (!IsBelowReuseResourceThresholds(host, site_instance,
+                                          process_reuse_policy)) {
         continue;
       }
 
@@ -4610,7 +4615,7 @@ void RenderProcessHostImpl::RegisterSoleProcessHostForSite(
 RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
     SiteInstanceImpl* site_instance) {
   const SiteInfo& site_info = site_instance->GetSiteInfo();
-  SiteInstanceImpl::ProcessReusePolicy process_reuse_policy =
+  ProcessReusePolicy process_reuse_policy =
       site_instance->process_reuse_policy();
   RenderProcessHost* render_process_host = nullptr;
 
@@ -4619,17 +4624,15 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
 
   // First, attempt to reuse an existing RenderProcessHost if necessary.
   switch (process_reuse_policy) {
-    case SiteInstanceImpl::ProcessReusePolicy::PROCESS_PER_SITE: {
+    case ProcessReusePolicy::PROCESS_PER_SITE: {
       render_process_host = GetSoleProcessHostForSite(
           site_instance->GetIsolationContext(), site_info);
       break;
     }
-    case SiteInstanceImpl::ProcessReusePolicy::
-        REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME:
-    case SiteInstanceImpl::ProcessReusePolicy::
-        REUSE_PENDING_OR_COMMITTED_SITE_WORKER: {
-      render_process_host =
-          FindReusableProcessHostForSiteInstance(site_instance);
+    case ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME:
+    case ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE_WORKER: {
+      render_process_host = FindReusableProcessHostForSiteInstance(
+          site_instance, process_reuse_policy);
       const base::TimeTicks reusable_host_lookup_time = base::TimeTicks::Now();
       UMA_HISTOGRAM_BOOLEAN(
           "SiteIsolation.ReusePendingOrCommittedSite.CouldReuse2",
@@ -4645,14 +4648,12 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
       }
       break;
     }
-    case SiteInstanceImpl::ProcessReusePolicy::
+    case ProcessReusePolicy::
         REUSE_PENDING_OR_COMMITTED_SITE_WITH_MAIN_FRAME_THRESHOLD: {
       CHECK(base::FeatureList::IsEnabled(
           features::kProcessPerSiteUpToMainFrameThreshold));
-      size_t main_frame_threshold = base::checked_cast<size_t>(
-          features::kProcessPerSiteMainFrameThreshold.Get());
       render_process_host = FindReusableProcessHostForSiteInstance(
-          site_instance, main_frame_threshold);
+          site_instance, process_reuse_policy);
       if (render_process_host) {
         is_unmatched_service_worker = false;
         render_process_host->StopTrackingProcessForShutdownDelay();
@@ -4669,7 +4670,7 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
   // site instance is for a service worker. We use DEFAULT when we have failed
   // to start the service worker before and want to use a new process.
   if (!render_process_host &&
-      !(process_reuse_policy == SiteInstanceImpl::ProcessReusePolicy::DEFAULT &&
+      !(process_reuse_policy == ProcessReusePolicy::DEFAULT &&
         site_instance->is_for_service_worker())) {
     render_process_host =
         UnmatchedServiceWorkerProcessTracker::MatchWithSite(site_instance);
@@ -5384,7 +5385,7 @@ void RenderProcessHostImpl::BindChildHistogramFetcherFactory(
 RenderProcessHost*
 RenderProcessHostImpl::FindReusableProcessHostForSiteInstance(
     SiteInstanceImpl* site_instance,
-    std::optional<size_t> main_frame_threshold) {
+    ProcessReusePolicy process_reuse_policy) {
   BrowserContext* browser_context = site_instance->GetBrowserContext();
   if (!ShouldFindReusableProcessHostForSite(site_instance->GetSiteInfo()))
     return nullptr;
@@ -5399,7 +5400,7 @@ RenderProcessHostImpl::FindReusableProcessHostForSiteInstance(
           browser_context->GetUserData(kPendingSiteProcessCountTrackerKey));
   if (pending_tracker) {
     pending_tracker->FindRenderProcessesForSiteInstance(
-        site_instance, main_frame_threshold, &eligible_foreground_hosts,
+        site_instance, process_reuse_policy, &eligible_foreground_hosts,
         &eligible_background_hosts);
   }
 
@@ -5411,7 +5412,7 @@ RenderProcessHostImpl::FindReusableProcessHostForSiteInstance(
             browser_context->GetUserData(kCommittedSiteProcessCountTrackerKey));
     if (committed_tracker) {
       committed_tracker->FindRenderProcessesForSiteInstance(
-          site_instance, main_frame_threshold, &eligible_foreground_hosts,
+          site_instance, process_reuse_policy, &eligible_foreground_hosts,
           &eligible_background_hosts);
     }
   }
@@ -5420,13 +5421,13 @@ RenderProcessHostImpl::FindReusableProcessHostForSiteInstance(
   // RenderProcessHosts whose shutdown is pending that previously hosted a frame
   // for `site_url`.
   if (eligible_foreground_hosts.empty() && eligible_background_hosts.empty() &&
-      ShouldDelayProcessShutdown()) {
+      RenderProcessHostImpl::ShouldDelayProcessShutdown()) {
     SiteProcessCountTracker* delayed_shutdown_tracker =
         static_cast<SiteProcessCountTracker*>(browser_context->GetUserData(
             kDelayedShutdownSiteProcessCountTrackerKey));
     if (delayed_shutdown_tracker) {
       delayed_shutdown_tracker->FindRenderProcessesForSiteInstance(
-          site_instance, main_frame_threshold, &eligible_foreground_hosts,
+          site_instance, process_reuse_policy, &eligible_foreground_hosts,
           &eligible_background_hosts);
     }
   }

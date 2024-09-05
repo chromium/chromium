@@ -165,6 +165,7 @@ class RenderWidgetHelper;
 class SiteInfo;
 class SiteInstance;
 class SiteInstanceImpl;
+enum class ProcessReusePolicy;
 struct ChildProcessTerminationInfo;
 struct GlobalRenderFrameHostId;
 
@@ -1159,11 +1160,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   // Returns a RenderProcessHost that is rendering a URL corresponding to
   // |site_instance| in one of its frames, or that is expecting a navigation to
-  // that SiteInstance. `main_frame_threshold` is an optional parameter to
-  // limit the maximum number of main frames a RenderProcessHost can host.
+  // that SiteInstance. `process_reuse_policy` indicates the context so that
+  // appropriate thresholds can be applied.
   static RenderProcessHost* FindReusableProcessHostForSiteInstance(
       SiteInstanceImpl* site_instance,
-      std::optional<size_t> main_frame_threshold = std::nullopt);
+      ProcessReusePolicy process_reuse_policy);
 
   void NotifyRendererOfLockedStateUpdate();
 
