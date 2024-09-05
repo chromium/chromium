@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 
-import android.content.res.ColorStateList;
 import android.util.Size;
 import android.view.View.AccessibilityDelegate;
 
@@ -21,7 +20,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGroup
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -56,6 +54,8 @@ public class TabProperties {
 
     public static final WritableIntPropertyKey TAB_ID = new WritableIntPropertyKey();
 
+    public static final ReadableBooleanPropertyKey IS_INCOGNITO = new ReadableBooleanPropertyKey();
+
     public static final WritableObjectPropertyKey<TabActionListener> TAB_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
@@ -89,27 +89,10 @@ public class TabProperties {
 
     public static final WritableBooleanPropertyKey IS_SELECTED = new WritableBooleanPropertyKey();
 
-    public static final WritableObjectPropertyKey<ColorStateList> CHECKED_DRAWABLE_STATE_LIST =
-            new WritableObjectPropertyKey<>();
-
     public static final WritableIntPropertyKey CARD_ANIMATION_STATUS = new WritableIntPropertyKey();
 
     public static final WritableObjectPropertyKey<SelectionDelegate<Integer>>
             TAB_SELECTION_DELEGATE = new WritableObjectPropertyKey<>();
-
-    public static final ReadableBooleanPropertyKey IS_INCOGNITO = new ReadableBooleanPropertyKey();
-
-    public static final ReadableIntPropertyKey SELECTED_TAB_BACKGROUND_DRAWABLE_ID =
-            new ReadableIntPropertyKey();
-
-    public static final ReadableIntPropertyKey TABSTRIP_FAVICON_BACKGROUND_COLOR_ID =
-            new ReadableIntPropertyKey();
-
-    public static final WritableObjectPropertyKey<ColorStateList>
-            SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND = new WritableObjectPropertyKey<>();
-
-    public static final WritableObjectPropertyKey<ColorStateList>
-            SELECTABLE_TAB_ACTION_BUTTON_SELECTED_BACKGROUND = new WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<String> URL_DOMAIN =
             new WritableObjectPropertyKey<>();
@@ -152,25 +135,20 @@ public class TabProperties {
             new PropertyKey[] {
                 TAB_ACTION_STATE,
                 TAB_ID,
+                IS_INCOGNITO,
                 TAB_CLICK_LISTENER,
                 TAB_LONG_CLICK_LISTENER,
                 TAB_ACTION_BUTTON_LISTENER,
                 FAVICON_FETCHED,
                 FAVICON_FETCHER,
                 IS_SELECTED,
-                IS_INCOGNITO,
                 GRID_CARD_SIZE,
                 THUMBNAIL_FETCHER,
                 IPH_PROVIDER,
                 TITLE,
-                CHECKED_DRAWABLE_STATE_LIST,
                 CARD_ALPHA,
                 CARD_ANIMATION_STATUS,
                 TAB_SELECTION_DELEGATE,
-                SELECTED_TAB_BACKGROUND_DRAWABLE_ID,
-                TABSTRIP_FAVICON_BACKGROUND_COLOR_ID,
-                SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND,
-                SELECTABLE_TAB_ACTION_BUTTON_SELECTED_BACKGROUND,
                 URL_DOMAIN,
                 ACCESSIBILITY_DELEGATE,
                 CARD_TYPE,
@@ -190,14 +168,13 @@ public class TabProperties {
     public static final PropertyKey[] ALL_KEYS_TAB_STRIP =
             new PropertyKey[] {
                 TAB_ID,
+                IS_INCOGNITO,
                 TAB_CLICK_LISTENER,
                 TAB_ACTION_BUTTON_LISTENER,
                 FAVICON_FETCHED,
                 FAVICON_FETCHER,
                 IS_SELECTED,
                 TITLE,
-                TABSTRIP_FAVICON_BACKGROUND_COLOR_ID,
-                IS_INCOGNITO,
                 HAS_NOTIFICATION_BUBBLE
             };
 
@@ -206,8 +183,6 @@ public class TabProperties {
                 TAB_ACTION_BUTTON_LISTENER,
                 TAB_CLICK_LISTENER,
                 TAB_LONG_CLICK_LISTENER,
-                CHECKED_DRAWABLE_STATE_LIST,
-                SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND,
                 ACTION_BUTTON_DESCRIPTION_STRING,
                 CONTENT_DESCRIPTION_STRING,
             };

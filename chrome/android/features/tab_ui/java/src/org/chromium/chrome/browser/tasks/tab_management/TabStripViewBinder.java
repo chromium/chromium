@@ -118,11 +118,14 @@ class TabStripViewBinder {
         ImageButton button = (ImageButton) view.fastFindViewById(R.id.tab_strip_item_button);
         button.setBackgroundResource(
                 org.chromium.chrome.browser.tab_ui.R.drawable.tabstrip_favicon_background);
+
         ViewCompat.setBackgroundTintList(
                 button,
                 AppCompatResources.getColorStateList(
                         view.getContext(),
-                        model.get(TabProperties.TABSTRIP_FAVICON_BACKGROUND_COLOR_ID)));
+                        model.get(TabProperties.IS_INCOGNITO)
+                                ? R.color.favicon_background_color_incognito
+                                : R.color.favicon_background_color));
         if (!model.get(TabProperties.IS_SELECTED)) {
             button.getBackground().setAlpha(FAVICON_BACKGROUND_DEFAULT_ALPHA);
         } else {

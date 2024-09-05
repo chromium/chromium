@@ -234,8 +234,6 @@ public class TabListMediatorUnitTest {
                 TabProperties.TAB_ACTION_BUTTON_LISTENER,
                 TabProperties.TAB_CLICK_LISTENER,
                 TabProperties.TAB_LONG_CLICK_LISTENER,
-                TabProperties.CHECKED_DRAWABLE_STATE_LIST,
-                TabProperties.SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND,
                 TabProperties.IS_SELECTED,
             };
 
@@ -4283,9 +4281,6 @@ public class TabListMediatorUnitTest {
         initAndAssertAllProperties();
 
         // Unique sets of keys for each of SELECTABLE/CLOSABLE.
-        ArrayList<PropertyKey> uniqueSelectableKeys =
-                new ArrayList<>(Arrays.asList(TAB_GRID_SELECTABLE_KEYS));
-        uniqueSelectableKeys.removeAll(Arrays.asList(TAB_GRID_CLOSABLE_KEYS));
         ArrayList<PropertyKey> uniqueClosableKeys =
                 new ArrayList<>(Arrays.asList(TAB_GRID_CLOSABLE_KEYS));
         uniqueClosableKeys.removeAll(Arrays.asList(TAB_GRID_SELECTABLE_KEYS));
@@ -4297,7 +4292,6 @@ public class TabListMediatorUnitTest {
         Collection<PropertyKey> setProps = model.getAllSetProperties();
         assertEquals(TabActionState.CLOSABLE, model.get(TabProperties.TAB_ACTION_STATE));
         assertThat(setProps, hasItems(TAB_GRID_CLOSABLE_KEYS));
-        assertThat(setProps, not(hasItems(TAB_GRID_SELECTABLE_KEYS)));
 
         // After the TabActionState is changed to SELECTABLE, the CLOSABLE state properties should
         // still be present but unbound.
@@ -4315,7 +4309,6 @@ public class TabListMediatorUnitTest {
         assertEquals(TabActionState.CLOSABLE, model.get(TabProperties.TAB_ACTION_STATE));
         assertThat(setProps, hasItems(TAB_GRID_CLOSABLE_KEYS));
         assertThat(setProps, hasItems(TAB_GRID_SELECTABLE_KEYS));
-        assertAllUnset(model, uniqueSelectableKeys);
     }
 
     @Test

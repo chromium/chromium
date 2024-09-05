@@ -17,7 +17,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.content.ComponentCallbacks;
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -38,7 +37,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -95,7 +93,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionS
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorActionMetricGroups;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -1962,37 +1959,7 @@ class TabListMediator implements TabListNotificationHandler {
         model.set(TabProperties.TAB_LONG_CLICK_LISTENER, getTabLongClickListener(tabActionState));
         model.set(TabProperties.TAB_CARD_LABEL_DATA, model.get(TabProperties.TAB_CARD_LABEL_DATA));
 
-        if (mTabActionState == TabActionState.SELECTABLE) {
-            // Incognito in both light/dark theme is the same as non-incognito mode in dark theme.
-            // Non-incognito mode and incognito in both light/dark themes in dark theme all look
-            // dark.
-            ColorStateList checkedDrawableColorList =
-                    ColorStateList.valueOf(
-                            tab.isIncognito()
-                                    ? mContext.getColor(R.color.default_icon_color_dark)
-                                    : SemanticColorUtils.getDefaultIconColorInverse(mContext));
-            ColorStateList actionButtonBackgroundColorList =
-                    AppCompatResources.getColorStateList(
-                            mContext,
-                            tab.isIncognito()
-                                    ? R.color.default_icon_color_light
-                                    : R.color.default_icon_color_tint_list);
-            // TODO(crbug.com/41477267): Update color baseline_primary_80 to active_color_dark when
-            // the associated bug is landed.
-            ColorStateList actionbuttonSelectedBackgroundColorList =
-                    ColorStateList.valueOf(
-                            tab.isIncognito()
-                                    ? mContext.getColor(R.color.baseline_primary_80)
-                                    : SemanticColorUtils.getDefaultControlColorActive(mContext));
-
-            model.set(TabProperties.CHECKED_DRAWABLE_STATE_LIST, checkedDrawableColorList);
-            model.set(
-                    TabProperties.SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND,
-                    actionButtonBackgroundColorList);
-            model.set(
-                    TabProperties.SELECTABLE_TAB_ACTION_BUTTON_SELECTED_BACKGROUND,
-                    actionbuttonSelectedBackgroundColorList);
-        } else {
+        if (mTabActionState != TabActionState.SELECTABLE) {
             model.set(
                     TabProperties.IS_SELECTED,
                     TabModelUtils.getCurrentTabId(
@@ -2081,19 +2048,11 @@ class TabListMediator implements TabListNotificationHandler {
             }
         }
 
-        int selectedTabBackgroundDrawableId =
-                tab.isIncognito()
-                        ? R.drawable.selected_tab_background_incognito
-                        : R.drawable.selected_tab_background;
-
-        int tabstripFaviconBackgroundDrawableId =
-                tab.isIncognito()
-                        ? R.color.favicon_background_color_incognito
-                        : R.color.favicon_background_color;
         PropertyModel tabInfo =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
                         .with(TabProperties.TAB_ACTION_STATE, mTabActionState)
                         .with(TabProperties.TAB_ID, tab.getId())
+                        .with(TabProperties.IS_INCOGNITO, tab.isIncognito())
                         .with(
                                 TabProperties.TITLE,
                                 getLatestTitleForTab(tab, /* useDefault= */ true))
@@ -2107,13 +2066,6 @@ class TabListMediator implements TabListNotificationHandler {
                                 TabProperties.CARD_ANIMATION_STATUS,
                                 TabGridView.AnimationStatus.CARD_RESTORE)
                         .with(TabProperties.TAB_SELECTION_DELEGATE, getTabSelectionDelegate())
-                        .with(TabProperties.IS_INCOGNITO, tab.isIncognito())
-                        .with(
-                                TabProperties.SELECTED_TAB_BACKGROUND_DRAWABLE_ID,
-                                selectedTabBackgroundDrawableId)
-                        .with(
-                                TabProperties.TABSTRIP_FAVICON_BACKGROUND_COLOR_ID,
-                                tabstripFaviconBackgroundDrawableId)
                         .with(TabProperties.ACCESSIBILITY_DELEGATE, mAccessibilityDelegate)
                         .with(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP, false)
                         .with(CARD_TYPE, TAB)

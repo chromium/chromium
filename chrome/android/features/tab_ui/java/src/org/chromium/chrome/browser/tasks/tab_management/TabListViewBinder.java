@@ -19,7 +19,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.ViewCompat;
@@ -33,6 +35,7 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGroupInfo;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
@@ -88,8 +91,11 @@ class TabListViewBinder {
                         setFavicon(view, tabFavicon.getDefaultDrawable());
                     });
         } else if (TabProperties.IS_SELECTED == propertyKey) {
+            @DrawableRes
             int selectedTabBackground =
-                    model.get(TabProperties.SELECTED_TAB_BACKGROUND_DRAWABLE_ID);
+                    model.get(TabProperties.IS_INCOGNITO)
+                            ? R.drawable.selected_tab_background_incognito
+                            : R.drawable.selected_tab_background;
             Resources res = view.getResources();
             Resources.Theme theme = view.getContext().getTheme();
             Drawable drawable =
@@ -220,30 +226,30 @@ class TabListViewBinder {
         bindListTab(model, view, propertyKey);
 
         final int tabId = model.get(TabProperties.TAB_ID);
-        final int defaultLevel = view.getResources().getInteger(R.integer.list_item_level_default);
-        final int selectedLevel =
-                view.getResources().getInteger(R.integer.list_item_level_selected);
         TabListView tabListView = (TabListView) view;
-
         if (TabProperties.TAB_SELECTION_DELEGATE == propertyKey) {
             tabListView.setSelectionDelegate(model.get(TabProperties.TAB_SELECTION_DELEGATE));
             tabListView.setItem(tabId);
         } else if (TabProperties.IS_SELECTED == propertyKey) {
             boolean isSelected = model.get(TabProperties.IS_SELECTED);
+            boolean isIncognito = model.get(TabProperties.IS_INCOGNITO);
             ImageView actionButton = view.findViewById(R.id.end_button);
-            actionButton.getBackground().setLevel(isSelected ? selectedLevel : defaultLevel);
-            DrawableCompat.setTintList(
-                    actionButton.getBackground().mutate(),
-                    isSelected
-                            ? model.get(
-                                    TabProperties.SELECTABLE_TAB_ACTION_BUTTON_SELECTED_BACKGROUND)
-                            : model.get(TabProperties.SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND));
+
+            Context context = view.getContext();
+            Resources res = view.getResources();
+            int level = getCheckmarkLevel(res, isSelected);
+            ColorStateList backgroundColorStateList =
+                    getBackgroundColorStateList(context, isSelected, isIncognito);
+
+            var background = actionButton.getBackground();
+            background.setLevel(level);
+            DrawableCompat.setTintList(background.mutate(), backgroundColorStateList);
 
             // The check should be invisible if not selected.
             actionButton.getDrawable().setAlpha(isSelected ? 255 : 0);
             ImageViewCompat.setImageTintList(
                     actionButton,
-                    isSelected ? model.get(TabProperties.CHECKED_DRAWABLE_STATE_LIST) : null);
+                    isSelected ? getCheckedDrawableColorStateList(context, isIncognito) : null);
             if (isSelected) ((AnimatedVectorDrawableCompat) actionButton.getDrawable()).start();
         }
     }
@@ -294,6 +300,36 @@ class TabListViewBinder {
 
         } else {
             colorIconView.setVisibility(View.GONE);
+        }
+    }
+
+    private static int getCheckmarkLevel(Resources res, boolean isSelected) {
+        return isSelected
+                ? res.getInteger(R.integer.list_item_level_selected)
+                : res.getInteger(R.integer.list_item_level_default);
+    }
+
+    private static ColorStateList getCheckedDrawableColorStateList(
+            Context context, boolean isIncognito) {
+        return ColorStateList.valueOf(
+                isIncognito
+                        ? context.getColor(R.color.default_icon_color_dark)
+                        : SemanticColorUtils.getDefaultIconColorInverse(context));
+    }
+
+    private static ColorStateList getBackgroundColorStateList(
+            Context context, boolean isSelected, boolean isIncognito) {
+        if (isSelected) {
+            return ColorStateList.valueOf(
+                    isIncognito
+                            ? context.getColor(R.color.baseline_primary_80)
+                            : SemanticColorUtils.getDefaultControlColorActive(context));
+        } else {
+            return AppCompatResources.getColorStateList(
+                    context,
+                    isIncognito
+                            ? R.color.default_icon_color_light
+                            : R.color.default_icon_color_tint_list);
         }
     }
 }

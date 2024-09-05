@@ -295,8 +295,6 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
                     view.addView(mTabListView);
                 });
 
-        int mSelectedTabBackgroundDrawableId = R.drawable.selected_tab_background;
-
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mGridModel =
@@ -309,9 +307,6 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
                                     .with(
                                             TabProperties.TAB_ACTION_BUTTON_LISTENER,
                                             mMockCloseListener)
-                                    .with(
-                                            TabProperties.SELECTED_TAB_BACKGROUND_DRAWABLE_ID,
-                                            mSelectedTabBackgroundDrawableId)
                                     .build();
                     mStripModel =
                             new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_STRIP)
@@ -319,9 +314,6 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
                                     .with(
                                             TabProperties.TAB_ACTION_BUTTON_LISTENER,
                                             mMockCloseListener)
-                                    .with(
-                                            TabProperties.TABSTRIP_FAVICON_BACKGROUND_COLOR_ID,
-                                            R.color.favicon_background_color)
                                     .build();
                     mSelectableModel =
                             new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
@@ -337,9 +329,6 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
                                     .with(
                                             TabProperties.TAB_SELECTION_DELEGATE,
                                             new SelectionDelegate<>())
-                                    .with(
-                                            TabProperties.SELECTED_TAB_BACKGROUND_DRAWABLE_ID,
-                                            mSelectedTabBackgroundDrawableId)
                                     .build();
 
                     mGridMCP =
