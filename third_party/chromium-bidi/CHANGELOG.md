@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.7.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.6.5...chromium-bidi-v0.7.0) (2024-09-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* emit `browsingContext.contextDestroyed` once ([#2563](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2563))
+
+### Bug Fixes
+
+* always provide url in `browsingContext.navigationStarted` ([#2483](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2483)) ([318d621](https://github.com/GoogleChromeLabs/chromium-bidi/commit/318d6212570ae8abe2c22e06c5bb618cdb34286c))
+* emit `browsingContext.contextDestroyed` once ([#2563](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2563)) ([930d401](https://github.com/GoogleChromeLabs/chromium-bidi/commit/930d401862910bf78f9d5d66dd9b2218fd8f8aa3))
+* fail previous navigation on the next one ([#2569](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2569)) ([0cfd51a](https://github.com/GoogleChromeLabs/chromium-bidi/commit/0cfd51ad7704f5d489b170946a073e17e23f0eeb))
+* navigation with wait `None` ([#2557](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2557)) ([bf89379](https://github.com/GoogleChromeLabs/chromium-bidi/commit/bf8937958df8066995230f63435b7ea41adc1dfb))
+
 ## [0.6.5](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.6.4...chromium-bidi-v0.6.5) (2024-08-29)
 
 
