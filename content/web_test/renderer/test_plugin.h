@@ -105,7 +105,7 @@ class TestPlugin : public blink::WebPlugin, public cc::TextureLayerClient {
                               const gfx::PointF& position,
                               const gfx::PointF& screen_position) override;
   void DidReceiveResponse(const blink::WebURLResponse& response) override {}
-  void DidReceiveData(const char* data, size_t data_length) override {}
+  void DidReceiveData(base::span<const char> data) override {}
   void DidFinishLoading() override {}
   void DidFailLoading(const blink::WebURLError& error) override {}
   v8::Local<v8::Object> V8ScriptableObject(v8::Isolate*) override;

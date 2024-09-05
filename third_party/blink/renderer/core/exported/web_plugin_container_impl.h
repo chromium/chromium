@@ -32,6 +32,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EXPORTED_WEB_PLUGIN_CONTAINER_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EXPORTED_WEB_PLUGIN_CONTAINER_IMPL_H_
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
@@ -175,7 +176,7 @@ class CORE_EXPORT WebPluginContainerImpl final
 
   // Resource load events for the plugin's source data:
   void DidReceiveResponse(const ResourceResponse&);
-  void DidReceiveData(const char* data, size_t data_length);
+  void DidReceiveData(base::span<const char> data);
   void DidFinishLoading();
   void DidFailLoading(const ResourceError&);
 

@@ -170,8 +170,7 @@ void PluginDocumentParser::AppendBytes(base::span<const uint8_t> data) {
     return;
   }
   if (WebPluginContainerImpl* view = GetPluginView()) {
-    base::span<const char> char_data = base::as_chars(data);
-    view->DidReceiveData(char_data.data(), char_data.size());
+    view->DidReceiveData(base::as_chars(data));
   }
 }
 

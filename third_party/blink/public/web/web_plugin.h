@@ -32,6 +32,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PLUGIN_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PLUGIN_H_
 
+#include "base/containers/span.h"
 #include "cc/paint/paint_canvas.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-shared.h"
@@ -135,7 +136,7 @@ class WebPlugin {
   }
 
   virtual void DidReceiveResponse(const WebURLResponse&) = 0;
-  virtual void DidReceiveData(const char* data, size_t data_length) = 0;
+  virtual void DidReceiveData(base::span<const char> data) = 0;
   virtual void DidFinishLoading() = 0;
   virtual void DidFailLoading(const WebURLError&) = 0;
 

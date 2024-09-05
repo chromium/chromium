@@ -612,7 +612,7 @@ blink::WebInputEventResult PdfViewWebPlugin::HandleInputEvent(
 void PdfViewWebPlugin::DidReceiveResponse(
     const blink::WebURLResponse& response) {}
 
-void PdfViewWebPlugin::DidReceiveData(const char* data, size_t data_length) {}
+void PdfViewWebPlugin::DidReceiveData(base::span<const char> data) {}
 
 void PdfViewWebPlugin::DidFinishLoading() {}
 
