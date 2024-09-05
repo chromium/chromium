@@ -799,6 +799,7 @@
   },
   {
     "prefix": "controls-refresh-hc",
+    "owners": ["masonf@chromium.org", "almaher@microsoft.com"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["fast/forms/color-scheme"],
     "args": ["--enable-features=ForcedColors",
