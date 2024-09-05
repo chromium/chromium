@@ -910,36 +910,58 @@ CSSSelector::PseudoType CSSSelectorParser::ParsePseudoType(
 namespace {
 PseudoId ParsePseudoElementLegacy(const String& selector_string,
                                   const Node* parent) {
-  CSSTokenizer tokenizer(selector_string);
-  const auto tokens = tokenizer.TokenizeToEOF();
-  CSSParserTokenRange range(tokens);
+  CSSParserTokenStream stream(selector_string);
 
   int number_of_colons = 0;
-  while (!range.AtEnd() && range.Peek().GetType() == kColonToken) {
+  while (!stream.AtEnd() && stream.Peek().GetType() == kColonToken) {
     number_of_colons++;
-    range.Consume();
+    stream.Consume();
   }
 
   // TODO(crbug.com/1197620): allowing 0 or 1 preceding colons is not aligned
   // with specs.
-  if (!range.AtEnd() && number_of_colons <= 2 &&
-      (range.Peek().GetType() == kIdentToken ||
-       range.Peek().GetType() == kFunctionToken)) {
-    CSSParserToken selector_name_token = range.Consume();
+  if (stream.AtEnd() || number_of_colons > 2) {
+    return kPseudoIdNone;
+  }
+
+  if (stream.Peek().GetType() == kIdentToken) {
+    CSSParserToken selector_name_token = stream.Consume();
     PseudoId pseudo_id =
         CSSSelector::GetPseudoId(CSSSelectorParser::ParsePseudoType(
             selector_name_token.Value().ToAtomicString(),
-            selector_name_token.GetType() == kFunctionToken,
+            /*has_arguments=*/false,
             parent ? &parent->GetDocument() : nullptr));
 
-    if (PseudoElement::IsWebExposed(pseudo_id, parent) &&
-        ((PseudoElementHasArguments(pseudo_id) &&
-          range.Peek(0).GetType() == kIdentToken &&
-          range.Peek(1).GetType() == kRightParenthesisToken &&
-          range.Peek(2).GetType() == kEOFToken) ||
-         range.Peek().GetType() == kEOFToken)) {
+    if (stream.AtEnd() && PseudoElement::IsWebExposed(pseudo_id, parent)) {
       return pseudo_id;
+    } else {
+      return kPseudoIdNone;
     }
+  }
+
+  if (stream.Peek().GetType() == kFunctionToken) {
+    CSSParserToken selector_name_token = stream.Peek();
+    PseudoId pseudo_id =
+        CSSSelector::GetPseudoId(CSSSelectorParser::ParsePseudoType(
+            selector_name_token.Value().ToAtomicString(),
+            /*has_arguments=*/true, parent ? &parent->GetDocument() : nullptr));
+
+    if (!PseudoElementHasArguments(pseudo_id) ||
+        !PseudoElement::IsWebExposed(pseudo_id, parent)) {
+      return kPseudoIdNone;
+    }
+
+    {
+      CSSParserTokenStream::BlockGuard guard(stream);
+      if (stream.Peek().GetType() != kIdentToken) {
+        return kPseudoIdNone;
+      }
+      stream.Consume();
+      if (!stream.AtEnd()) {
+        return kPseudoIdNone;
+      }
+    }
+    return stream.AtEnd() ? pseudo_id : kPseudoIdNone;
   }
 
   return kPseudoIdNone;
