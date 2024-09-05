@@ -29,7 +29,7 @@
 #include "chrome/browser/extensions/api/preference/network_prediction_transformer.h"
 #include "chrome/browser/extensions/api/preference/privacy_sandbox_transformer.h"
 #include "chrome/browser/extensions/api/preference/protected_content_enabled_transformer.h"
-#include "chrome/browser/extensions/api/proxy/proxy_api.h"
+#include "chrome/browser/extensions/api/proxy/proxy_pref_transformer.h"
 #include "chrome/browser/extensions/api/runtime/chrome_runtime_api_delegate.h"
 #include "chrome/browser/extensions/chrome_component_extension_resource_manager.h"
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
