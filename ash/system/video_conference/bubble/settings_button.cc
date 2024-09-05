@@ -212,7 +212,9 @@ class SettingsMenuModelAdapter : public views::MenuModelAdapter {
 class SettingsButton::MenuController : public ui::SimpleMenuModel::Delegate,
                                        public views::ContextMenuController {
  public:
-  MenuController() = default;
+  explicit MenuController(base::OnceClosure close_bubble_callback)
+      : close_bubble_callback_(std::move(close_bubble_callback)) {}
+
   MenuController(const MenuController&) = delete;
   MenuController& operator=(const MenuController&) = delete;
   ~MenuController() override = default;
@@ -236,9 +238,11 @@ class SettingsButton::MenuController : public ui::SimpleMenuModel::Delegate,
     auto* client = Shell::Get()->system_tray_model()->client();
     switch (command_id) {
       case CommandId::kAudioSettings:
+        std::move(close_bubble_callback_).Run();
         client->ShowAudioSettings();
         break;
       case CommandId::kPrivacySettings:
+        std::move(close_bubble_callback_).Run();
         client->ShowPrivacyAndSecuritySettings();
         break;
       case CommandId::kPortraitRelighting:
@@ -321,12 +325,14 @@ class SettingsButton::MenuController : public ui::SimpleMenuModel::Delegate,
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   std::unique_ptr<views::MenuModelAdapter> menu_model_adapter_;
   std::unique_ptr<views::MenuRunner> menu_runner_;
+  base::OnceClosure close_bubble_callback_;
 };
 
-SettingsButton::SettingsButton()
+SettingsButton::SettingsButton(base::OnceClosure close_bubble_callback)
     : views::Button(base::BindRepeating(&SettingsButton::OnButtonActivated,
                                         base::Unretained(this))),
-      context_menu_(std::make_unique<MenuController>()) {
+      context_menu_(
+          std::make_unique<MenuController>(std::move(close_bubble_callback))) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
 

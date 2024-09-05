@@ -16,7 +16,7 @@ class SettingsButton : public views::Button {
   METADATA_HEADER(SettingsButton, views::Button)
 
  public:
-  SettingsButton();
+  explicit SettingsButton(base::OnceClosure close_bubble_callback);
   ~SettingsButton() override;
   SettingsButton(const SettingsButton&) = delete;
   SettingsButton& operator=(const SettingsButton&) = delete;

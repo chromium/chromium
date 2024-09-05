@@ -42,7 +42,7 @@ constexpr auto kTitleViewPadding = gfx::Insets::TLBR(16, 16, 0, 16);
 
 }  // namespace
 
-TitleView::TitleView() {
+TitleView::TitleView(base::OnceClosure close_bubble_callback) {
   SetOrientation(views::LayoutOrientation::kHorizontal);
   SetInsideBorderInsets(kTitleViewPadding);
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
@@ -100,7 +100,8 @@ TitleView::TitleView() {
   VideoConferenceTrayController::Get()->UpdateSidetoneSupportedState();
 
   if (features::IsVcStudioLookEnabled()) {
-    AddChildView(std::make_unique<SettingsButton>());
+    AddChildView(
+        std::make_unique<SettingsButton>(std::move(close_bubble_callback)));
   }
 }
 

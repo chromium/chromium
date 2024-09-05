@@ -17,7 +17,7 @@ namespace ash::video_conference {
 class TitleView : public views::BoxLayoutView {
   METADATA_HEADER(TitleView, views::BoxLayoutView)
  public:
-  explicit TitleView();
+  explicit TitleView(base::OnceClosure close_bubble_callback);
   TitleView(const TitleView&) = delete;
   TitleView& operator=(const TitleView&) = delete;
   ~TitleView() override;
