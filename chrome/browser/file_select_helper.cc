@@ -57,6 +57,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
+#include "chrome/browser/picture_in_picture/scoped_disallow_picture_in_picture.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 using blink::mojom::FileChooserFileInfo;
@@ -165,6 +166,7 @@ FileSelectHelper::~FileSelectHelper() {
   if (has_notified_picture_in_picture_window_manager_of_open_dialog_) {
     PictureInPictureWindowManager::GetInstance()->OnFileDialogClosed();
     has_notified_picture_in_picture_window_manager_of_open_dialog_ = false;
+    scoped_disallow_picture_in_picture_.reset();
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
@@ -576,6 +578,12 @@ void FileSelectHelper::RunFileChooser(
 #if !BUILDFLAG(IS_ANDROID)
   PictureInPictureWindowManager::GetInstance()->OnFileDialogOpened();
   has_notified_picture_in_picture_window_manager_of_open_dialog_ = true;
+
+  if (PictureInPictureWindowManager::GetInstance()
+          ->ShouldFileDialogBlockPictureInPicture(web_contents_)) {
+    scoped_disallow_picture_in_picture_ =
+        std::make_unique<ScopedDisallowPictureInPicture>();
+  }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   base::ThreadPool::PostTask(
@@ -757,6 +765,7 @@ void FileSelectHelper::RunFileChooserEnd() {
   if (has_notified_picture_in_picture_window_manager_of_open_dialog_) {
     PictureInPictureWindowManager::GetInstance()->OnFileDialogClosed();
     has_notified_picture_in_picture_window_manager_of_open_dialog_ = false;
+    scoped_disallow_picture_in_picture_.reset();
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

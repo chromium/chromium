@@ -197,6 +197,12 @@ void AutoPictureInPictureTabHelper::MaybeStartOrStopObservingTabStrip() {
 
 bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture(
     HasSufficientlyVisibleVideo has_sufficiently_visible_video) {
+  // Don't try to autopip if picture-in-picture is currently disabled.
+  if (PictureInPictureWindowManager::GetInstance()
+          ->IsPictureInPictureDisabled()) {
+    return false;
+  }
+
   // The tab must either have playback or be using camera/microphone to autopip.
   if (!MeetsVideoPlaybackConditions(has_sufficiently_visible_video) &&
       !IsUsingCameraOrMicrophone()) {

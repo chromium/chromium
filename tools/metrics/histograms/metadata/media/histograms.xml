@@ -4779,6 +4779,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.PictureInPicture.Disallowed"
+    enum="PictureInPictureDisallowedType" expires_after="2025-06-30">
+  <owner>steimel@chromium.org</owner>
+  <owner>liberato@chromium.org</owner>
+  <summary>
+    Recorded when a picture-in-picture window is closed due to a
+    ScopedDisallowPictureInPicture object. Records whether the closed
+    picture-in-picture window was just opened or already existed when the
+    ScopedDisallowPictureInPicture was created.
+  </summary>
+</histogram>
+
 <histogram name="Media.PictureInPicture.FileDialogOpenState"
     enum="FileDialogOpenState" expires_after="2025-03-02">
   <owner>steimel@chromium.org</owner>
