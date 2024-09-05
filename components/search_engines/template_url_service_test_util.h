@@ -24,6 +24,10 @@ namespace base {
 class RunLoop;
 }
 
+namespace os_crypt_async {
+class OSCryptAsync;
+}
+
 void RegisterPrefsForTemplateURLService(
     user_prefs::PrefRegistrySyncable* registry);
 
@@ -102,6 +106,7 @@ class LoadedTemplateURLServiceUnitTestBase
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::MainThreadType::UI};
   scoped_refptr<WebDatabaseService> database_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
   scoped_refptr<KeywordWebDataService> keyword_data_service_;
   TemplateURLServiceLoadWaiter template_url_service_load_waiter_;
 };

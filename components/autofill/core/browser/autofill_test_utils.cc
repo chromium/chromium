@@ -48,7 +48,6 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/form_field_data_predictions.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_service_factory.h"
@@ -809,15 +808,6 @@ CreditCard CreateCreditCardWithInfo(const char* name_on_card,
   SetCreditCardInfo(&credit_card, name_on_card, card_number, expiration_month,
                     expiration_year, billing_address_id, cvc);
   return credit_card;
-}
-
-void DisableSystemServices(PrefService* prefs) {
-  // Use a mock Keychain rather than the OS one to store credit card data.
-  OSCryptMocker::SetUp();
-}
-
-void ReenableSystemServices() {
-  OSCryptMocker::TearDown();
 }
 
 void SetServerCreditCards(PaymentsAutofillTable* table,

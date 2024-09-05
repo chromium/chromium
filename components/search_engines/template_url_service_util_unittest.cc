@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/country_codes/country_codes.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
@@ -76,7 +77,8 @@ void CallGetSearchProvidersUsingLoadedEngines(
     PrefService* prefs,
     search_engines::SearchEngineChoiceService* search_engine_choice_service,
     TemplateURLService::OwnedTemplateURLVector* template_urls,
-    WDKeywordsResult::Metadata& inout_resource_metadata) {
+    WDKeywordsResult::Metadata& inout_resource_metadata,
+    os_crypt_async::OSCryptAsync* os_crypt) {
   // Setup inspired by `//components/webdata_services/web_data_service_wrapper*`
 
   base::test::TaskEnvironment task_environment{
@@ -91,7 +93,7 @@ void CallGetSearchProvidersUsingLoadedEngines(
       /*ui_task_runner=*/task_runner,
       /*db_task_runner=*/task_runner);
   profile_database->AddTable(std::make_unique<KeywordTable>());
-  profile_database->LoadDatabase();
+  profile_database->LoadDatabase(os_crypt);
 
   auto keyword_web_data = base::MakeRefCounted<KeywordWebDataService>(
       profile_database, task_runner);
@@ -248,6 +250,10 @@ TEST(TemplateURLServiceUtilTest, MergeIntoEngineData) {
 
 class TemplateURLServiceUtilLoadTest : public testing::Test {
  public:
+  TemplateURLServiceUtilLoadTest()
+      : os_crypt_(os_crypt_async::GetTestOSCryptAsyncForTesting(
+            /*is_sync_for_unittests=*/true)) {}
+
   // Type used both as input and output of test helpers, to represent the
   // state of the database from its metadata.
   struct KeywordTestMetadata {
@@ -321,7 +327,7 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
     CallGetSearchProvidersUsingLoadedEngines(
         &prefs(),
         &search_engines_test_environment_.search_engine_choice_service(),
-        &template_urls, resource_metadata);
+        &template_urls, resource_metadata, os_crypt_.get());
 
     std::optional<bool> use_extended_list_output =
         prefs().HasPrefPath(
@@ -348,6 +354,7 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
   }
 
  private:
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
 };
 

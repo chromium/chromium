@@ -11,12 +11,15 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/deferred_sequenced_task_runner.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/webdata/common/web_data_service_base.h"
 #include "components/webdata/common/web_database.h"
 #include "components/webdata/common/webdata_export.h"
@@ -26,6 +29,10 @@ class WebDatabaseBackend;
 namespace base {
 class Location;
 class SequencedTaskRunner;
+}
+
+namespace os_crypt_async {
+class OSCryptAsync;
 }
 
 class WDTypedResult;
@@ -70,7 +77,7 @@ class WEBDATA_EXPORT WebDatabaseService
   void AddTable(std::unique_ptr<WebDatabaseTable> table);
 
   // Initializes the web database service.
-  void LoadDatabase();
+  void LoadDatabase(os_crypt_async::OSCryptAsync* os_crypt);
 
   // Unloads the database and shuts down the service.
   void ShutdownDatabase();
@@ -125,7 +132,11 @@ class WEBDATA_EXPORT WebDatabaseService
   void OnDatabaseLoadDone(sql::InitStatus status,
                           const std::string& diagnostics);
 
+  void CompleteLoadDatabase(os_crypt_async::Encryptor encryptor, bool success);
+
   base::FilePath path_;
+
+  base::CallbackListSubscription subscription_;
 
   // The primary owner is |WebDatabaseService| but is refcounted because
   // PostTask on DB sequence may outlive us.
@@ -135,6 +146,10 @@ class WEBDATA_EXPORT WebDatabaseService
   ErrorCallbacks error_callbacks_;
 
   scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
+
+  // Deferred task runner on which any tasks externally posted are queued until
+  // the initialization callback has been run.
+  scoped_refptr<base::DeferredSequencedTaskRunner> pending_task_queue_;
 
   // All vended weak pointers are invalidated in ShutdownDatabase().
   base::WeakPtrFactory<WebDatabaseService> weak_ptr_factory_{this};

@@ -41,7 +41,7 @@
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
@@ -62,19 +62,20 @@ CreditCardBenefitBase::BenefitId get_benefit_id(
 }
 
 class PaymentsAutofillTableTest : public testing::Test {
+ public:
+  PaymentsAutofillTableTest()
+      : encryptor_(os_crypt_async::GetTestEncryptorForTesting()) {}
+
  protected:
   void SetUp() override {
-    OSCryptMocker::SetUp();
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     file_ = temp_dir_.GetPath().AppendASCII("TestWebDatabase");
 
     table_ = std::make_unique<PaymentsAutofillTable>();
     db_ = std::make_unique<WebDatabase>();
     db_->AddTable(table_.get());
-    ASSERT_EQ(sql::INIT_OK, db_->Init(file_));
+    ASSERT_EQ(sql::INIT_OK, db_->Init(file_, &encryptor_));
   }
-
-  void TearDown() override { OSCryptMocker::TearDown(); }
 
   // Get date_modifed `column` of `table_name` with specific `instrument_id` or
   // `guid`.
@@ -98,6 +99,7 @@ class PaymentsAutofillTableTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  const os_crypt_async::Encryptor encryptor_;
   std::unique_ptr<PaymentsAutofillTable> table_;
   std::unique_ptr<WebDatabase> db_;
 };

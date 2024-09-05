@@ -69,7 +69,8 @@ std::unique_ptr<KeyedService> BuildWebDataService(
   return std::make_unique<WebDataServiceWrapper>(
       profile_path, g_browser_process->GetApplicationLocale(),
       content::GetUIThreadTaskRunner({}),
-      base::BindRepeating(&ProfileErrorCallback));
+      base::BindRepeating(&ProfileErrorCallback),
+      g_browser_process->os_crypt_async());
 }
 
 }  // namespace

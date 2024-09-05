@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -112,7 +113,13 @@ sql::Database* WebDatabase::GetSQLConnection() {
   return &db_;
 }
 
-sql::InitStatus WebDatabase::Init(const base::FilePath& db_name) {
+sql::InitStatus WebDatabase::Init(const base::FilePath& db_name,
+                                  const os_crypt_async::Encryptor* encryptor) {
+  // Only unit tests whose tables don't use any crypto for their tables pass in
+  // a null encryptor.
+  if (!encryptor) {
+    CHECK_IS_TEST();
+  }
   db_.set_histogram_tag("Web");
 
   if ((db_name.value() == kInMemoryPath) ? !db_.OpenInMemory()
@@ -160,7 +167,7 @@ sql::InitStatus WebDatabase::Init(const base::FilePath& db_name) {
 
   // Initialize the tables.
   for (const auto& table : tables_) {
-    table.second->Init(&db_, &meta_table_);
+    table.second->Init(&db_, &meta_table_, encryptor);
   }
 
   // If the file on disk is an older database version, bring it up to date.

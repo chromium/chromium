@@ -17,7 +17,8 @@
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
+#include "components/os_crypt/async/browser/test_utils.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
@@ -55,11 +56,13 @@ std::vector<ServerCvc> ExtractServerCvcDataFromDataBatch(
 
 class AutofillWalletCredentialSyncBridgeTest : public testing::Test {
  public:
+  AutofillWalletCredentialSyncBridgeTest()
+      : encryptor_(os_crypt_async::GetTestEncryptorForTesting()) {}
+
   void SetUp() override {
-    OSCryptMocker::SetUp();
     db_.AddTable(&sync_metadata_table_);
     db_.AddTable(&table_);
-    db_.Init(base::FilePath(WebDatabase::kInMemoryPath));
+    db_.Init(base::FilePath(WebDatabase::kInMemoryPath), &encryptor_);
     ON_CALL(backend_, GetDatabase()).WillByDefault(Return(&db_));
     ResetProcessor();
     bridge_ = std::make_unique<AutofillWalletCredentialSyncBridge>(
@@ -72,8 +75,6 @@ class AutofillWalletCredentialSyncBridgeTest : public testing::Test {
         /*dump_stack=*/base::DoNothing());
     mock_processor_.DelegateCallsByDefaultTo(real_processor_.get());
   }
-
-  void TearDown() override { OSCryptMocker::TearDown(); }
 
   std::vector<ServerCvc> GetAllServerCvcDataFromTable() {
     // In tests, it's more convenient to work without `std::unique_ptr`.
@@ -143,6 +144,7 @@ class AutofillWalletCredentialSyncBridgeTest : public testing::Test {
   }
 
  private:
+  const os_crypt_async::Encryptor encryptor_;
   NiceMock<MockAutofillWebDataBackend> backend_;
   AutofillSyncMetadataTable sync_metadata_table_;
   PaymentsAutofillTable table_;

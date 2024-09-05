@@ -8,6 +8,10 @@
 #include "base/memory/raw_ptr.h"
 #include "components/webdata/common/webdata_export.h"
 
+namespace os_crypt_async {
+class Encryptor;
+}
+
 namespace sql {
 class Database;
 class MetaTable;
@@ -34,7 +38,9 @@ class WEBDATA_EXPORT WebDatabaseTable {
   virtual TypeKey GetTypeKey() const = 0;
 
   // Stores the passed members as instance variables.
-  void Init(sql::Database* db, sql::MetaTable* meta_table);
+  void Init(sql::Database* db,
+            sql::MetaTable* meta_table,
+            const os_crypt_async::Encryptor* encryptor);
 
   // Resets the members stored during `Init()`.
   void Shutdown();
@@ -58,6 +64,8 @@ class WEBDATA_EXPORT WebDatabaseTable {
 
   sql::MetaTable* meta_table() const { return meta_table_; }
 
+  const os_crypt_async::Encryptor* encryptor() const { return encryptor_; }
+
  private:
   // Non-null, except before `Init()` and after `Shutdown()`. Effectively, this
   // means that they are non-null except during the constructor and destructor.
@@ -65,6 +73,9 @@ class WEBDATA_EXPORT WebDatabaseTable {
   // shorter than that of the `WebDatabaseBackend` owning `this`.
   raw_ptr<sql::Database> db_;
   raw_ptr<sql::MetaTable> meta_table_;
+  // Non-null, except before `Init()` and after `Shutdown()`. This object is
+  // owned by the `WebdatabaseBackend` owning `this`.
+  raw_ptr<const os_crypt_async::Encryptor> encryptor_;
 };
 
 #endif  // COMPONENTS_WEBDATA_COMMON_WEB_DATABASE_TABLE_H_

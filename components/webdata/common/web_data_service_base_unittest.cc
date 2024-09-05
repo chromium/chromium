@@ -4,12 +4,14 @@
 
 #include "components/webdata/common/web_data_service_base.h"
 
+#include <memory>
 #include <optional>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/webdata/common/web_database.h"
 #include "components/webdata/common/web_database_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,6 +40,14 @@ class TestTable : public WebDatabaseTable {
 };
 
 class WebDataServiceBaseTest : public testing::Test {
+ public:
+  WebDataServiceBaseTest()
+      : os_crypt_(os_crypt_async::GetTestOSCryptAsyncForTesting(
+            /*is_sync_for_unittests=*/true)) {}
+
+ protected:
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
+
  private:
   base::test::TaskEnvironment task_environment_;
 };
@@ -50,7 +60,7 @@ TEST_F(WebDataServiceBaseTest, InitFailureCallback) {
       base::SequencedTaskRunner::GetCurrentDefault());
 
   wdbs->AddTable(std::make_unique<TestTable>());
-  wdbs->LoadDatabase();
+  wdbs->LoadDatabase(os_crypt_.get());
 
   auto wdsb = base::MakeRefCounted<WebDataServiceBase>(
       wdbs, base::SequencedTaskRunner::GetCurrentDefault());

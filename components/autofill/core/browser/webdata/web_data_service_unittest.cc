@@ -33,7 +33,7 @@
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/webdata/common/web_data_results.h"
 #include "components/webdata/common/web_data_service_base.h"
 #include "components/webdata/common/web_data_service_consumer.h"
@@ -103,13 +103,12 @@ class MockAutofillWebDataServiceObserver
 class WebDataServiceTest : public testing::Test {
  public:
   WebDataServiceTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI),
+        os_crypt_(os_crypt_async::GetTestOSCryptAsyncForTesting(
+            /*is_sync_for_unittests=*/true)) {}
 
  protected:
   void SetUp() override {
-    // OSCrypt is used for encryption of credit card data in this test.
-    OSCryptMocker::SetUp();
-
     wdbs_ = base::MakeRefCounted<WebDatabaseService>(
         base::FilePath(WebDatabase::kInMemoryPath),
         base::SequencedTaskRunner::GetCurrentDefault(),
@@ -117,7 +116,7 @@ class WebDataServiceTest : public testing::Test {
     wdbs_->AddTable(std::make_unique<AddressAutofillTable>());
     wdbs_->AddTable(std::make_unique<AutocompleteTable>());
     wdbs_->AddTable(std::make_unique<PaymentsAutofillTable>());
-    wdbs_->LoadDatabase();
+    wdbs_->LoadDatabase(os_crypt_.get());
 
     wds_ = base::MakeRefCounted<AutofillWebDataService>(
         wdbs_, base::SequencedTaskRunner::GetCurrentDefault());
@@ -128,7 +127,6 @@ class WebDataServiceTest : public testing::Test {
     wds_->ShutdownOnUISequence();
     wdbs_->ShutdownDatabase();
     WaitForEmptyDBSequence();
-    OSCryptMocker::TearDown();
   }
 
   void WaitForEmptyDBSequence() {
@@ -140,6 +138,7 @@ class WebDataServiceTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   base::FilePath profile_dir_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
   scoped_refptr<WebDatabaseService> wdbs_;
   scoped_refptr<AutofillWebDataService> wds_;
 };

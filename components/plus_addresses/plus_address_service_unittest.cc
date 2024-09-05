@@ -29,6 +29,7 @@
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/plus_addresses/blocked_facets.pb.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_blocklist_data.h"
@@ -822,14 +823,16 @@ TEST_F(PlusAddressHttpForbiddenResponseTest, NoDisablingAfterSuccess) {
 // Tests that communication with `PlusAddressTable` works.
 class PlusAddressServiceWebDataTest : public ::testing::Test {
  protected:
-  PlusAddressServiceWebDataTest() {
+  PlusAddressServiceWebDataTest()
+      : os_crypt_(os_crypt_async::GetTestOSCryptAsyncForTesting(
+            /*is_sync_for_unittests=*/true)) {
     // Create an in-memory PlusAddressTable fully operating on the UI sequence.
     webdatabase_service_ = base::MakeRefCounted<WebDatabaseService>(
         base::FilePath(WebDatabase::kInMemoryPath),
         base::SingleThreadTaskRunner::GetCurrentDefault(),
         base::SingleThreadTaskRunner::GetCurrentDefault());
     webdatabase_service_->AddTable(std::make_unique<PlusAddressTable>());
-    webdatabase_service_->LoadDatabase();
+    webdatabase_service_->LoadDatabase(os_crypt_.get());
     plus_webdata_service_ = base::MakeRefCounted<PlusAddressWebDataService>(
         webdatabase_service_,
         base::SingleThreadTaskRunner::GetCurrentDefault());
@@ -864,6 +867,7 @@ class PlusAddressServiceWebDataTest : public ::testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   test::PlusAddressTestEnvironment plus_environment_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
   scoped_refptr<WebDatabaseService> webdatabase_service_;
   scoped_refptr<PlusAddressWebDataService> plus_webdata_service_;
   // Except briefly during initialisation, it always has a value.

@@ -38,6 +38,10 @@ class FilePath;
 class SequencedTaskRunner;
 }  // namespace base
 
+namespace os_crypt_async {
+class OSCryptAsync;
+}
+
 // WebDataServiceWrapper is a KeyedService that owns multiple WebDataServices
 // so that they can be associated with a context.
 class WebDataServiceWrapper : public KeyedService {
@@ -70,7 +74,8 @@ class WebDataServiceWrapper : public KeyedService {
       const base::FilePath& context_path,
       const std::string& application_locale,
       const scoped_refptr<base::SequencedTaskRunner>& ui_task_runner,
-      const ShowErrorCallback& show_error_callback);
+      const ShowErrorCallback& show_error_callback,
+      os_crypt_async::OSCryptAsync* os_crypt);
 
   WebDataServiceWrapper(const WebDataServiceWrapper&) = delete;
   WebDataServiceWrapper& operator=(const WebDataServiceWrapper&) = delete;

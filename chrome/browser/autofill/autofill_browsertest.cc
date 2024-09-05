@@ -114,9 +114,6 @@ class AutofillTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    // Don't want Keychain coming up on Mac.
-    test::DisableSystemServices(browser()->profile()->GetPrefs());
-
     // Wait for Personal Data Manager to be fully loaded to prevent that
     // spurious notifications deceive the tests.
     WaitForPersonalDataManagerToBeLoaded(browser()->profile());
@@ -136,7 +133,6 @@ class AutofillTest : public InProcessBrowserTest {
         ->GetAutofillManager()
         .client()
         .HideAutofillSuggestions(SuggestionHidingReason::kTabGone);
-    test::ReenableSystemServices();
     InProcessBrowserTest::TearDownOnMainThread();
   }
 

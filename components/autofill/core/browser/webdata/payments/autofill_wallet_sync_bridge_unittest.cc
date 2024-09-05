@@ -39,7 +39,7 @@
 #include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
@@ -278,14 +278,15 @@ MATCHER_P2(AddChange, key, data, "") {
 
 class AutofillWalletSyncBridgeTestBase {
  public:
-  AutofillWalletSyncBridgeTestBase() {
-    OSCryptMocker::SetUp();
+  AutofillWalletSyncBridgeTestBase()
+      : encryptor_(os_crypt_async::GetTestEncryptorForTesting()) {
     // Fix a time for implicitly constructed use_dates in AutofillProfile.
     test_clock_.SetNow(kJune2017);
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_.AddTable(&sync_metadata_table_);
     db_.AddTable(&table_);
-    db_.Init(temp_dir_.GetPath().AppendASCII("SyncTestWebDatabase"));
+    db_.Init(temp_dir_.GetPath().AppendASCII("SyncTestWebDatabase"),
+             &encryptor_);
     ON_CALL(*backend(), GetDatabase()).WillByDefault(Return(&db_));
     ResetProcessor();
     // Fake that initial sync has been done (so that the bridge immediately
@@ -429,6 +430,7 @@ class AutofillWalletSyncBridgeTestBase {
   autofill::TestAutofillClock test_clock_;
   ScopedTempDir temp_dir_;
   base::test::SingleThreadTaskEnvironment task_environment_;
+  const os_crypt_async::Encryptor encryptor_;
   NiceMock<MockAutofillWebDataBackend> backend_;
   AutofillSyncMetadataTable sync_metadata_table_;
   PaymentsAutofillTable table_;

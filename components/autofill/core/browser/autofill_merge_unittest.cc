@@ -135,8 +135,6 @@ class AutofillMergeTest : public testing::DataDrivenTest,
   // testing::Test:
   void SetUp() override;
 
-  void TearDown() override;
-
   // DataDrivenTest:
   void GenerateResults(const std::string& input, std::string* output) override;
 
@@ -161,7 +159,6 @@ AutofillMergeTest::AutofillMergeTest()
 AutofillMergeTest::~AutofillMergeTest() = default;
 
 void AutofillMergeTest::SetUp() {
-  test::DisableSystemServices(nullptr);
   test_api(test_address_data_manager()).set_auto_accept_address_imports(true);
   form_data_importer_ = std::make_unique<FormDataImporter>(
       &autofill_client_, /*history_service=*/nullptr, "en");
@@ -170,10 +167,6 @@ void AutofillMergeTest::SetUp() {
        features::kAutofillEnableSupportForPhoneNumberTrunkTypes,
        features::kAutofillInferCountryCallingCode},
       /*disabled_features=*/{});
-}
-
-void AutofillMergeTest::TearDown() {
-  test::ReenableSystemServices();
 }
 
 void AutofillMergeTest::GenerateResults(const std::string& input,

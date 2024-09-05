@@ -30,6 +30,7 @@
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -66,12 +67,14 @@ class AddressDataManagerTest : public testing::Test {
  protected:
   AddressDataManagerTest()
       : prefs_(test::PrefServiceForTesting()),
+        os_crypt_(os_crypt_async::GetTestOSCryptAsyncForTesting(
+            /*is_sync_for_unittests=*/true)),
         profile_web_database_(base::MakeRefCounted<WebDatabaseService>(
             base::FilePath(WebDatabase::kInMemoryPath),
             base::SingleThreadTaskRunner::GetCurrentDefault(),
             base::SingleThreadTaskRunner::GetCurrentDefault())) {
     profile_web_database_->AddTable(std::make_unique<AddressAutofillTable>());
-    profile_web_database_->LoadDatabase();
+    profile_web_database_->LoadDatabase(os_crypt_.get());
     profile_database_service_ = base::MakeRefCounted<AutofillWebDataService>(
         profile_web_database_,
         base::SingleThreadTaskRunner::GetCurrentDefault());
@@ -139,6 +142,7 @@ class AddressDataManagerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<PrefService> prefs_;
   signin::IdentityTestEnvironment identity_test_env_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
   syncer::TestSyncService sync_service_;
   scoped_refptr<AutofillWebDataService> profile_database_service_;
 

@@ -13,3 +13,9 @@ include_rules = [
   "+sql",
   "+testing/gtest",
 ]
+
+specific_include_rules = {
+  ".*test.(cc|h)": [
+    "+components/os_crypt/async/browser/test_utils.h"
+  ],
+}

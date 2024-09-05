@@ -12,6 +12,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/webdata/plus_address_sync_util.h"
@@ -44,14 +45,16 @@ using DataChangedBySyncCallbackMock =
 
 class PlusAddressSyncBridgeTest : public testing::Test {
  public:
-  PlusAddressSyncBridgeTest() {
+  PlusAddressSyncBridgeTest()
+      : os_crypt_(os_crypt_async::GetTestOSCryptAsyncForTesting(
+            /*is_sync_for_unittests=*/true)) {
     // Table and bridge operate on the DB sequence - UI sequence doesn't matter.
     webdatabase_service_ = base::MakeRefCounted<WebDatabaseService>(
         base::FilePath(WebDatabase::kInMemoryPath),
         base::SingleThreadTaskRunner::GetCurrentDefault(),
         base::SingleThreadTaskRunner::GetCurrentDefault());
     webdatabase_service_->AddTable(std::make_unique<PlusAddressTable>());
-    webdatabase_service_->LoadDatabase();
+    webdatabase_service_->LoadDatabase(os_crypt_.get());
     task_environment_.RunUntilIdle();
     RecreateBridge();
   }
@@ -94,6 +97,7 @@ class PlusAddressSyncBridgeTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
   scoped_refptr<WebDatabaseService> webdatabase_service_;
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   testing::NiceMock<DataChangedBySyncCallbackMock> on_data_changed_callback_;

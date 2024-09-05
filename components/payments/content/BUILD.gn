@@ -210,6 +210,7 @@ static_library("test_support") {
   deps = [
     ":utils",
     "//base/test:test_support",
+    "//components/os_crypt/async/browser:test_support",
     "//components/webdata/common",
     "//components/webdata_services",
     "//testing/gmock",
@@ -265,6 +266,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
+    "//components/os_crypt/async/browser:test_support",
     "//components/payments/core",
     "//components/payments/core:error_strings",
     "//components/payments/core:method_strings",

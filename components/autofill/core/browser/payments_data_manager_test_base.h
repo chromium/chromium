@@ -8,7 +8,7 @@
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/test/test_sync_service.h"
@@ -30,6 +30,7 @@ class PaymentsDataManagerTestBase {
   std::unique_ptr<PrefService> prefs_;
   signin::IdentityTestEnvironment identity_test_env_;
   syncer::TestSyncService sync_service_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
   scoped_refptr<AutofillWebDataService> profile_database_service_;
   scoped_refptr<AutofillWebDataService> account_database_service_;
   scoped_refptr<WebDatabaseService> profile_web_database_;

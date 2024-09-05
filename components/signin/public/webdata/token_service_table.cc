@@ -9,7 +9,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "components/os_crypt/sync/os_crypt.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -106,7 +106,7 @@ bool TokenServiceTable::SetTokenForService(
     const std::string& token,
     const std::vector<uint8_t>& wrapped_binding_key) {
   std::string encrypted_token;
-  bool encrypted = OSCrypt::EncryptString(token, &encrypted_token);
+  bool encrypted = encryptor()->EncryptString(token, &encrypted_token);
   if (!encrypted) {
     LOG(ERROR) << "Failed to encrypt token (token will not be saved to DB).";
     return false;
@@ -154,7 +154,7 @@ TokenServiceTable::Result TokenServiceTable::GetAllTokens(
                     s.ColumnBlobAsString(1, &encrypted_token) &&
                     s.ColumnBlobAsVector(2, &wrapped_binding_key);
     if (entry_ok) {
-      if (OSCrypt::DecryptString(encrypted_token, &decrypted_token)) {
+      if (encryptor()->DecryptString(encrypted_token, &decrypted_token)) {
         (*tokens)[service] = TokenServiceTable::TokenWithBindingKey(
             std::move(decrypted_token), std::move(wrapped_binding_key));
         read_token_result = READ_ONE_TOKEN_SUCCESS;

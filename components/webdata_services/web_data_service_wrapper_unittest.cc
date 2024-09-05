@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/search_engines/keyword_table.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/template_url_data.h"
@@ -35,6 +36,11 @@ class KeywordsConsumer : public WebDataServiceConsumer {
 };
 
 class WebDataServiceWrapperTest : public testing::Test {
+ public:
+  WebDataServiceWrapperTest()
+      : os_crypt_(os_crypt_async::GetTestOSCryptAsyncForTesting(
+            /*is_sync_for_unittests=*/true)) {}
+
  protected:
   void SetUp() override { ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir()); }
 
@@ -42,11 +48,13 @@ class WebDataServiceWrapperTest : public testing::Test {
   std::unique_ptr<WebDataServiceWrapper> CreateWebDataServiceWrapper() {
     return std::make_unique<WebDataServiceWrapper>(
         scoped_temp_dir_.GetPath(), "en_US",
-        task_environment_.GetMainThreadTaskRunner(), base::DoNothing());
+        task_environment_.GetMainThreadTaskRunner(), base::DoNothing(),
+        os_crypt_.get());
   }
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
   base::ScopedTempDir scoped_temp_dir_;
 };
 

@@ -129,8 +129,6 @@ class AutofillServerTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    // Prevent the Keychain from coming up on Mac.
-    test::DisableSystemServices(browser()->profile()->GetPrefs());
 
     // Wait for Personal Data Manager to be fully loaded as the events about
     // being loaded may throw off the tests and cause flakiness.

@@ -7,9 +7,11 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/webdata/common/web_data_request_manager.h"
 #include "components/webdata/common/web_database.h"
 #include "components/webdata/common/web_database_table.h"
@@ -33,7 +35,18 @@ void WebDatabaseBackend::AddTable(std::unique_ptr<WebDatabaseTable> table) {
   tables_.push_back(std::move(table));
 }
 
+void WebDatabaseBackend::MaybeInitEncryptorOnUiSequence(
+    os_crypt_async::Encryptor encryptor) {
+  CHECK(!encryptor_) << "Init should only be called once.";
+  // Encryptor is thread safe. This transfers it from the UI sequence to the DB
+  // sequence. The CHECKs above and below guarantee this only happens once,
+  // before any tasks have been posted to the DB sequence.
+  encryptor_.emplace(std::move(encryptor));
+}
+
 void WebDatabaseBackend::InitDatabase() {
+  // MaybeInitEncryptorOnUiSequence must be called first.
+  CHECK(encryptor_);
   LoadDatabaseIfNecessary();
   if (delegate_)
     delegate_->DBLoaded(init_status_, diagnostics_);
@@ -109,7 +122,7 @@ void WebDatabaseBackend::LoadDatabaseIfNecessary() {
       &WebDatabaseBackend::DatabaseErrorCallback, base::Unretained(this)));
   diagnostics_.clear();
   catastrophic_error_occurred_ = false;
-  init_status_ = db_->Init(db_path_);
+  init_status_ = db_->Init(db_path_, &(*encryptor_));
 
   if (init_status_ != sql::INIT_OK) {
     db_.reset();

@@ -45,6 +45,7 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -961,15 +962,10 @@ class RemoveAutofillTester {
       : personal_data_manager_(
             autofill::PersonalDataManagerFactory::GetForBrowserContext(
                 profile)) {
-    autofill::test::DisableSystemServices(profile->GetPrefs());
   }
 
   RemoveAutofillTester(const RemoveAutofillTester&) = delete;
   RemoveAutofillTester& operator=(const RemoveAutofillTester&) = delete;
-
-  ~RemoveAutofillTester() {
-    autofill::test::ReenableSystemServices();
-  }
 
   // Returns true if there is at least one address and one card.
   bool HasProfileAndCard() const {

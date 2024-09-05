@@ -6,6 +6,7 @@
 #define COMPONENTS_WEBDATA_COMMON_WEB_DATABASE_BACKEND_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -14,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/sequence_checker.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/webdata/common/web_data_request_manager.h"
 #include "components/webdata/common/web_database_service.h"
 #include "components/webdata/common/webdata_export.h"
@@ -22,6 +24,7 @@ class WebDatabase;
 class WebDatabaseTable;
 class WebDataRequest;
 class WebDataRequestManager;
+class WebDataServiceBase;
 class WebDatabaseService;
 
 namespace base {
@@ -70,6 +73,7 @@ class WEBDATA_EXPORT WebDatabaseBackend
 
  private:
   friend class WebDatabaseService;
+  friend class WebDataServiceBase;
 
   // Must call only before `InitDatabase`. `AddTable` is called on the client
   // sequence.
@@ -83,12 +87,15 @@ class WEBDATA_EXPORT WebDatabaseBackend
 
   // Task wrappers to update requests and and notify `request_manager_`. These
   // are used in cases where the request is being made from the UI thread and an
-  // asyncronous callback is required to notify the client of `request`'s
+  // asynchronous callback is required to notify the client of `request`'s
   // completion.
   void DBWriteTaskWrapper(WebDatabaseService::WriteTask task,
                           std::unique_ptr<WebDataRequest> request);
   void DBReadTaskWrapper(WebDatabaseService::ReadTask task,
                          std::unique_ptr<WebDataRequest> request);
+
+  // Called on UI sequence to initialize the encryptors in the tables.
+  void MaybeInitEncryptorOnUiSequence(os_crypt_async::Encryptor encryptor);
 
   // Task runners to run database tasks.
   void ExecuteWriteTask(WebDatabaseService::WriteTask task);
@@ -112,6 +119,10 @@ class WEBDATA_EXPORT WebDatabaseBackend
 
   // Path to database file.
   base::FilePath db_path_;
+
+  // This Encryptor is held on the db sequence and passed to each table during
+  // initialization. Must outlive `db_`.
+  std::optional<const os_crypt_async::Encryptor> encryptor_;
 
   // The tables that participate in managing the database. These are
   // owned here but other than that this class does nothing with

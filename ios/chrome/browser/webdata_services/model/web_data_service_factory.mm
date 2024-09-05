@@ -30,7 +30,8 @@ std::unique_ptr<KeyedService> BuildWebDataService(web::BrowserState* context) {
   const base::FilePath& browser_state_path = context->GetStatePath();
   return std::make_unique<WebDataServiceWrapper>(
       browser_state_path, GetApplicationContext()->GetApplicationLocale(),
-      web::GetUIThreadTaskRunner({}), base::DoNothing());
+      web::GetUIThreadTaskRunner({}), base::DoNothing(),
+      GetApplicationContext()->GetOSCryptAsync());
 }
 
 }  // namespace

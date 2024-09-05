@@ -51,9 +51,6 @@ class AutofillPolicyTest : public PolicyTest {
  public:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    // Don't want Keychain coming up on Mac.
-    autofill::test::DisableSystemServices(browser()->profile()->GetPrefs());
-
     // Wait for Personal Data Manager to be fully loaded to prevent that
     // spurious notifications deceive the tests.
     autofill::WaitForPersonalDataManagerToBeLoaded(browser()->profile());

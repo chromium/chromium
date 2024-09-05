@@ -1003,10 +1003,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, NoPromptIfLinkClicked) {
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerVotingBrowserTest,
                        VerifyPasswordGenerationUpload) {
-  // Disable Autofill requesting access to AddressBook data. This causes
-  // the test to hang on Mac.
-  autofill::test::DisableSystemServices(browser()->profile()->GetPrefs());
-
   // The form should not be hosted on localhost to enable sending
   // crowdsourcing votes.
   const std::string kTestSignonRealm = "example.com";
@@ -1064,7 +1060,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerVotingBrowserTest,
     histograms.ExpectUniqueSample("Autofill.UploadEvent", 1, 2);
   }
   EXPECT_FALSE(second_prompt_observer.IsSavePromptShownAutomatically());
-  autofill::test::ReenableSystemServices();
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, PromptForSubmitFromIframe) {

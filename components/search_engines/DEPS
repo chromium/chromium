@@ -40,3 +40,12 @@ include_rules = [
   # TODO(b/344899110): Cleanup when fixing the bug.
   "+components/crash/core/common/crash_key.h",
 ]
+
+specific_include_rules = {
+  ".*test\.(cc|h)": [
+    "+components/os_crypt/async/browser/test_utils.h"
+  ],
+  "template_url_service_test_util\.cc": [
+    "+components/os_crypt/async/browser/test_utils.h"
+  ],
+}

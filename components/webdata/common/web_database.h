@@ -16,6 +16,10 @@
 #include "sql/init_status.h"
 #include "sql/meta_table.h"
 
+namespace os_crypt_async {
+class Encryptor;
+}
+
 // This class manages a SQLite database that stores various web page meta data.
 class WEBDATA_EXPORT WebDatabase {
  public:
@@ -83,7 +87,10 @@ class WEBDATA_EXPORT WebDatabase {
   // Before calling this method, you must call AddTable for any
   // WebDatabaseTable objects that are supposed to participate in
   // managing the database.
-  sql::InitStatus Init(const base::FilePath& db_name);
+  //
+  // `encryptor` must not be null except in test code.
+  sql::InitStatus Init(const base::FilePath& db_name,
+                       const os_crypt_async::Encryptor* encryptor = nullptr);
 
   // Transactions management
   void BeginTransaction();

@@ -32,7 +32,10 @@ component("common") {
     "//base",
     "//build:blink_buildflags",
   ]
-  public_deps = [ "//sql" ]
+  public_deps = [
+    "//components/os_crypt/async/browser",
+    "//sql",
+  ]
 }
 
 source_set("unit_tests") {
@@ -48,6 +51,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
+    "//components/os_crypt/async/browser:test_support",
     "//components/password_manager/core/browser",
     "//components/plus_addresses/webdata",
     "//components/search_engines",

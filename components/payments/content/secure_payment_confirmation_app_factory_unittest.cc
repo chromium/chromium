@@ -9,6 +9,7 @@
 #include "base/base64.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/payments/content/mock_payment_app_factory_delegate.h"
 #include "components/payments/content/mock_payment_manifest_web_data_service.h"
 #include "components/payments/core/features.h"
@@ -38,7 +39,9 @@ static constexpr char kCredentialIdBase64[] = "cccc";
 class SecurePaymentConfirmationAppFactoryTest : public testing::Test {
  protected:
   SecurePaymentConfirmationAppFactoryTest()
-      : web_contents_(web_contents_factory_.CreateWebContents(&context_)) {}
+      : os_crypt_(os_crypt_async::GetTestOSCryptAsyncForTesting(
+            /*is_sync_for_unittests=*/true)),
+        web_contents_(web_contents_factory_.CreateWebContents(&context_)) {}
 
   void SetUp() override {
     ASSERT_TRUE(base::Base64Decode(kChallengeBase64, &challenge_bytes_));
@@ -69,6 +72,7 @@ class SecurePaymentConfirmationAppFactoryTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
   content::TestBrowserContext context_;
   content::TestWebContentsFactory web_contents_factory_;
   raw_ptr<content::WebContents> web_contents_;

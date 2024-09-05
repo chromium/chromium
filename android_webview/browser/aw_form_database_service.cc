@@ -4,6 +4,7 @@
 
 #include "android_webview/browser/aw_form_database_service.h"
 
+#include "android_webview/browser/aw_browser_process.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -50,7 +51,8 @@ AwFormDatabaseService::AwFormDatabaseService(const base::FilePath path)
   // Once crbug.com/1501199 is resolved, all tables can be removed.
   web_database_->AddTable(std::make_unique<autofill::AddressAutofillTable>());
   web_database_->AddTable(std::make_unique<autofill::PaymentsAutofillTable>());
-  web_database_->LoadDatabase();
+  web_database_->LoadDatabase(
+      AwBrowserProcess::GetInstance()->GetOSCryptAsync());
 
   autofill_data_ = new autofill::AutofillWebDataService(
       web_database_, content::GetUIThreadTaskRunner({}));

@@ -29,7 +29,6 @@ class Time;
 namespace autofill {
 
 class AutofillOfferData;
-class AutofillTableEncryptor;
 class BankAccount;
 class CreditCard;
 struct CreditCardCloudTokenData;
@@ -619,8 +618,6 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   bool InitMaskedCreditCardBenefitsTable();
   bool InitBenefitMerchantDomainsTable();
   bool InitGenericPaymentInstrumentsTable();
-
-  std::unique_ptr<AutofillTableEncryptor> autofill_table_encryptor_;
 };
 
 }  // namespace autofill

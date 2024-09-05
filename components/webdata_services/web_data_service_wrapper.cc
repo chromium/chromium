@@ -111,7 +111,8 @@ WebDataServiceWrapper::WebDataServiceWrapper(
     const base::FilePath& context_path,
     const std::string& application_locale,
     const scoped_refptr<base::SequencedTaskRunner>& ui_task_runner,
-    const ShowErrorCallback& show_error_callback) {
+    const ShowErrorCallback& show_error_callback,
+    os_crypt_async::OSCryptAsync* os_crypt) {
   base::FilePath path = context_path.Append(kWebDataFilename);
   auto db_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
@@ -138,7 +139,7 @@ WebDataServiceWrapper::WebDataServiceWrapper(
 #endif
   profile_database_->AddTable(
       std::make_unique<plus_addresses::PlusAddressTable>());
-  profile_database_->LoadDatabase();
+  profile_database_->LoadDatabase(os_crypt);
 
   profile_autofill_web_data_ =
       base::MakeRefCounted<autofill::AutofillWebDataService>(profile_database_,
@@ -206,7 +207,7 @@ WebDataServiceWrapper::WebDataServiceWrapper(
       std::make_unique<autofill::AutofillSyncMetadataTable>());
   account_database_->AddTable(
       std::make_unique<autofill::PaymentsAutofillTable>());
-  account_database_->LoadDatabase();
+  account_database_->LoadDatabase(os_crypt);
 
   account_autofill_web_data_ =
       base::MakeRefCounted<autofill::AutofillWebDataService>(account_database_,

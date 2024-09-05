@@ -20,7 +20,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service_delegate.h"
 #include "components/signin/internal/identity_manager/primary_account_manager.h"
@@ -71,6 +71,8 @@ class MutableProfileOAuth2TokenServiceDelegateTest
       : task_environment_(
             base::test::TaskEnvironment::MainThreadType::UI,
             base::test::TaskEnvironment::ThreadPoolExecutionMode::ASYNC),
+        os_crypt_(os_crypt_async::GetTestOSCryptAsyncForTesting(
+            /*is_sync_for_unittests=*/true)),
         access_token_success_count_(0),
         access_token_failure_count_(0),
         access_token_failure_(GoogleServiceAuthError::NONE),
@@ -82,7 +84,6 @@ class MutableProfileOAuth2TokenServiceDelegateTest
         revoke_all_tokens_on_load_(RevokeAllTokensOnLoad::kNo) {}
 
   void SetUp() override {
-    OSCryptMocker::SetUp();
     AccountTrackerService::RegisterPrefs(pref_service_.registry());
     PrimaryAccountManager::RegisterProfilePrefs(pref_service_.registry());
     client_ = std::make_unique<TestSigninClient>(&pref_service_);
@@ -93,12 +94,12 @@ class MutableProfileOAuth2TokenServiceDelegateTest
   }
 
   void TearDown() override {
+    token_web_data_->ShutdownDatabase();
     base::RunLoop().RunUntilIdle();
     if (oauth2_service_delegate_) {
       test_service_observation_.Reset();
       oauth2_service_delegate_->Shutdown();
     }
-    OSCryptMocker::TearDown();
   }
 
   void LoadTokenDatabase() {
@@ -107,7 +108,7 @@ class MutableProfileOAuth2TokenServiceDelegateTest
         path, base::SingleThreadTaskRunner::GetCurrentDefault(),
         base::SingleThreadTaskRunner::GetCurrentDefault());
     web_database->AddTable(std::make_unique<TokenServiceTable>());
-    web_database->LoadDatabase();
+    web_database->LoadDatabase(os_crypt_.get());
     token_web_data_ = new TokenWebData(
         web_database, base::SingleThreadTaskRunner::GetCurrentDefault());
     token_web_data_->Init(base::NullCallback());
@@ -276,6 +277,7 @@ class MutableProfileOAuth2TokenServiceDelegateTest
   TestingOAuth2AccessTokenManagerConsumer consumer_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   AccountTrackerService account_tracker_service_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
   scoped_refptr<TokenWebData> token_web_data_;
   std::unique_ptr<WDResult<TokenResult>> token_web_data_result_;
   int access_token_success_count_;

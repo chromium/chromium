@@ -16,6 +16,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
@@ -45,8 +46,6 @@
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
-#include "components/autofill/core/browser/webdata/autofill_table_encryptor.h"
-#include "components/autofill/core/browser/webdata/autofill_table_encryptor_factory.h"
 #include "components/autofill/core/browser/webdata/autofill_table_utils.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -54,6 +53,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/autofill_util.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -247,25 +247,26 @@ constexpr std::initializer_list<std::pair<std::string_view, std::string_view>>
 void BindEncryptedStringToColumn(sql::Statement* s,
                                  int column_index,
                                  const std::string& value,
-                                 const AutofillTableEncryptor& encryptor) {
+                                 const os_crypt_async::Encryptor& encryptor) {
   std::string encrypted_data;
-  encryptor.EncryptString(value, &encrypted_data);
+  std::ignore = encryptor.EncryptString(value, &encrypted_data);
   s->BindBlob(column_index, encrypted_data);
 }
 
-void BindEncryptedU16StringToColumn(sql::Statement* s,
-                                    int column_index,
-                                    const std::u16string& value,
-                                    const AutofillTableEncryptor& encryptor) {
+void BindEncryptedU16StringToColumn(
+    sql::Statement* s,
+    int column_index,
+    const std::u16string& value,
+    const os_crypt_async::Encryptor& encryptor) {
   std::string encrypted_data;
-  encryptor.EncryptString16(value, &encrypted_data);
+  std::ignore = encryptor.EncryptString16(value, &encrypted_data);
   s->BindBlob(column_index, encrypted_data);
 }
 
 void BindCreditCardToStatement(const CreditCard& credit_card,
                                base::Time modification_date,
                                sql::Statement* s,
-                               const AutofillTableEncryptor& encryptor) {
+                               const os_crypt_async::Encryptor& encryptor) {
   DCHECK(base::Uuid::ParseCaseInsensitive(credit_card.guid()).is_valid());
   int index = 0;
   s->BindString(index++, credit_card.guid());
@@ -289,7 +290,7 @@ void BindLocalStoredCvcToStatement(const std::string& guid,
                                    const std::u16string& cvc,
                                    base::Time modification_date,
                                    sql::Statement* s,
-                                   const AutofillTableEncryptor& encryptor) {
+                                   const os_crypt_async::Encryptor& encryptor) {
   CHECK(base::Uuid::ParseCaseInsensitive(guid).is_valid());
   int index = 0;
   s->BindString(index++, guid);
@@ -299,7 +300,7 @@ void BindLocalStoredCvcToStatement(const std::string& guid,
 }
 
 void BindServerCvcToStatement(const ServerCvc& server_cvc,
-                              const AutofillTableEncryptor& encryptor,
+                              const os_crypt_async::Encryptor& encryptor,
                               sql::Statement* s) {
   int index = 0;
   s->BindInt64(index++, server_cvc.instrument_id);
@@ -321,7 +322,7 @@ void BindMaskedBankAccountToStatement(const BankAccount& bank_account,
 
 void BindIbanToStatement(const Iban& iban,
                          sql::Statement* s,
-                         const AutofillTableEncryptor& encryptor) {
+                         const os_crypt_async::Encryptor& encryptor) {
   DCHECK(base::Uuid::ParseCaseInsensitive(iban.guid()).is_valid());
   int index = 0;
   s->BindString(index++, iban.guid());
@@ -345,7 +346,7 @@ void BindVirtualCardUsageDataToStatement(
 void BindPaymentInstrumentToStatement(
     const sync_pb::PaymentInstrument& payment_instrument,
     sql::Statement* s,
-    const AutofillTableEncryptor& encryptor) {
+    const os_crypt_async::Encryptor& encryptor) {
   int index = 0;
   s->BindInt64(index++, payment_instrument.instrument_id());
   BindEncryptedStringToColumn(
@@ -365,14 +366,15 @@ VirtualCardUsageData GetVirtualCardUsageDataFromStatement(sql::Statement& s) {
           url::Origin::Create(GURL(merchant_domain))};
 }
 
-std::string DecryptStringFromColumn(sql::Statement& s,
-                                    int column_index,
-                                    const AutofillTableEncryptor& encryptor) {
+std::string DecryptStringFromColumn(
+    sql::Statement& s,
+    int column_index,
+    const os_crypt_async::Encryptor& encryptor) {
   std::string value;
   std::string encrypted_value;
   s.ColumnBlobAsString(column_index, &encrypted_value);
   if (!encrypted_value.empty()) {
-    encryptor.DecryptString(encrypted_value, &value);
+    std::ignore = encryptor.DecryptString(encrypted_value, &value);
   }
   return value;
 }
@@ -380,12 +382,12 @@ std::string DecryptStringFromColumn(sql::Statement& s,
 std::u16string DecryptU16StringFromColumn(
     sql::Statement& s,
     int column_index,
-    const AutofillTableEncryptor& encryptor) {
+    const os_crypt_async::Encryptor& encryptor) {
   std::u16string value;
   std::string encrypted_value;
   s.ColumnBlobAsString(column_index, &encrypted_value);
   if (!encrypted_value.empty()) {
-    encryptor.DecryptString16(encrypted_value, &value);
+    std::ignore = encryptor.DecryptString16(encrypted_value, &value);
   }
   return value;
 }
@@ -393,7 +395,7 @@ std::u16string DecryptU16StringFromColumn(
 std::unique_ptr<CreditCard> CreditCardFromStatement(
     sql::Statement& card_statement,
     std::optional<std::reference_wrapper<sql::Statement>> cvc_statement,
-    const AutofillTableEncryptor& encryptor) {
+    const os_crypt_async::Encryptor& encryptor) {
   auto credit_card = std::make_unique<CreditCard>();
 
   int index = 0;
@@ -425,7 +427,7 @@ std::unique_ptr<CreditCard> CreditCardFromStatement(
 
 std::unique_ptr<ServerCvc> ServerCvcFromStatement(
     sql::Statement& s,
-    const AutofillTableEncryptor& encryptor) {
+    const os_crypt_async::Encryptor& encryptor) {
   return std::make_unique<ServerCvc>(ServerCvc{
       .instrument_id = s.ColumnInt64(0),
       .cvc = DecryptU16StringFromColumn(s, 1, encryptor),
@@ -434,7 +436,7 @@ std::unique_ptr<ServerCvc> ServerCvcFromStatement(
 
 std::unique_ptr<Iban> IbanFromStatement(
     sql::Statement& s,
-    const AutofillTableEncryptor& encryptor) {
+    const os_crypt_async::Encryptor& encryptor) {
   int index = 0;
   auto iban = std::make_unique<Iban>(Iban::Guid(s.ColumnString(index++)));
 
@@ -464,12 +466,7 @@ time_t GetEndTime(base::Time end) {
 
 }  // namespace
 
-PaymentsAutofillTable::PaymentsAutofillTable()
-    : autofill_table_encryptor_(
-          AutofillTableEncryptorFactory::GetInstance()->Create()) {
-  DCHECK(autofill_table_encryptor_);
-}
-
+PaymentsAutofillTable::PaymentsAutofillTable() = default;
 PaymentsAutofillTable::~PaymentsAutofillTable() = default;
 
 // static
@@ -642,7 +639,7 @@ bool PaymentsAutofillTable::AddLocalIban(const Iban& iban) {
   sql::Statement s;
   InsertBuilder(db(), s, kLocalIbansTable,
                 {kGuid, kUseCount, kUseDate, kValueEncrypted, kNickname});
-  BindIbanToStatement(iban, &s, *autofill_table_encryptor_);
+  BindIbanToStatement(iban, &s, *encryptor());
   if (!s.Run())
     return false;
 
@@ -666,7 +663,7 @@ bool PaymentsAutofillTable::UpdateLocalIban(const Iban& iban) {
   UpdateBuilder(db(), s, kLocalIbansTable,
                 {kGuid, kUseCount, kUseDate, kValueEncrypted, kNickname},
                 "guid=?1");
-  BindIbanToStatement(iban, &s, *autofill_table_encryptor_);
+  BindIbanToStatement(iban, &s, *encryptor());
 
   bool result = s.Run();
   DCHECK_GT(db()->GetLastChangeCount(), 0);
@@ -689,7 +686,7 @@ std::unique_ptr<Iban> PaymentsAutofillTable::GetLocalIban(const std::string& gui
   if (!s.Step())
     return nullptr;
 
-  return IbanFromStatement(s, *autofill_table_encryptor_);
+  return IbanFromStatement(s, *encryptor());
 }
 
 bool PaymentsAutofillTable::GetLocalIbans(std::vector<std::unique_ptr<Iban>>* ibans) {
@@ -724,7 +721,7 @@ bool PaymentsAutofillTable::AddCreditCard(const CreditCard& credit_card) {
                  kCardNumberEncrypted, kUseCount, kUseDate, kDateModified,
                  kOrigin, kBillingAddressId, kNickname});
   BindCreditCardToStatement(credit_card, AutofillClock::Now(), &card_statement,
-                            *autofill_table_encryptor_);
+                            *encryptor());
 
   if (!card_statement.Run()) {
     return false;
@@ -741,7 +738,7 @@ bool PaymentsAutofillTable::AddCreditCard(const CreditCard& credit_card) {
                   {kGuid, kValueEncrypted, kLastUpdatedTimestamp});
     BindLocalStoredCvcToStatement(credit_card.guid(), credit_card.cvc(),
                                   AutofillClock::Now(), &cvc_statement,
-                                  *autofill_table_encryptor_);
+                                  *encryptor());
     cvc_statement.Run();
   }
 
@@ -776,7 +773,7 @@ bool PaymentsAutofillTable::UpdateCreditCard(const CreditCard& credit_card) {
   BindCreditCardToStatement(credit_card,
                             card_updated ? AutofillClock::Now()
                                          : old_credit_card->modification_date(),
-                            &card_statement, *autofill_table_encryptor_);
+                            &card_statement, *encryptor());
   bool card_result = card_statement.Run();
   CHECK(db()->GetLastChangeCount() > 0);
 
@@ -806,7 +803,7 @@ bool PaymentsAutofillTable::UpdateLocalCvc(const std::string& guid,
                   {kGuid, kValueEncrypted, kLastUpdatedTimestamp}, "guid=?1");
   }
   BindLocalStoredCvcToStatement(guid, cvc, AutofillClock::Now(), &cvc_statement,
-                                *autofill_table_encryptor_);
+                                *encryptor());
   bool cvc_result = cvc_statement.Run();
   CHECK(db()->GetLastChangeCount() > 0);
   return cvc_result;
@@ -867,7 +864,7 @@ std::unique_ptr<CreditCard> PaymentsAutofillTable::GetCreditCard(
       has_cvc
           ? std::optional<std::reference_wrapper<sql::Statement>>{cvc_statement}
           : std::nullopt,
-      *autofill_table_encryptor_);
+      *encryptor());
 }
 
 bool PaymentsAutofillTable::GetCreditCards(
@@ -991,7 +988,7 @@ bool PaymentsAutofillTable::AddServerCvc(const ServerCvc& server_cvc) {
   sql::Statement s;
   InsertBuilder(db(), s, kServerStoredCvcTable,
                 {kInstrumentId, kValueEncrypted, kLastUpdatedTimestamp});
-  BindServerCvcToStatement(server_cvc, *autofill_table_encryptor_, &s);
+  BindServerCvcToStatement(server_cvc, *encryptor(), &s);
   s.Run();
   return db()->GetLastChangeCount() > 0;
 }
@@ -1001,7 +998,7 @@ bool PaymentsAutofillTable::UpdateServerCvc(const ServerCvc& server_cvc) {
   UpdateBuilder(db(), s, kServerStoredCvcTable,
                 {kInstrumentId, kValueEncrypted, kLastUpdatedTimestamp},
                 "instrument_id=?1");
-  BindServerCvcToStatement(server_cvc, *autofill_table_encryptor_, &s);
+  BindServerCvcToStatement(server_cvc, *encryptor(), &s);
   s.Run();
   return db()->GetLastChangeCount() > 0;
 }
@@ -1025,8 +1022,7 @@ PaymentsAutofillTable::DeleteOrphanedServerCvcs() {
                     kInstrumentId, " NOT IN (SELECT ", kInstrumentId, " FROM ",
                     kMaskedCreditCardsTable, ") RETURNING *"})));
   while (s.Step()) {
-    cvcs_to_be_deleted.push_back(
-        ServerCvcFromStatement(s, *autofill_table_encryptor_));
+    cvcs_to_be_deleted.push_back(ServerCvcFromStatement(s, *encryptor()));
   }
   return cvcs_to_be_deleted;
 }
@@ -1038,7 +1034,7 @@ std::vector<std::unique_ptr<ServerCvc>> PaymentsAutofillTable::GetAllServerCvcs(
   SelectBuilder(db(), s, kServerStoredCvcTable,
                 {kInstrumentId, kValueEncrypted, kLastUpdatedTimestamp});
   while (s.Step()) {
-    cvcs.push_back(ServerCvcFromStatement(s, *autofill_table_encryptor_));
+    cvcs.push_back(ServerCvcFromStatement(s, *encryptor()));
   }
   return cvcs;
 }
@@ -1826,8 +1822,7 @@ bool PaymentsAutofillTable::SetPaymentInstruments(
                 {kInstrumentId, kSerializedValueEncrypted});
   for (const sync_pb::PaymentInstrument& payment_instrument :
        payment_instruments) {
-    BindPaymentInstrumentToStatement(payment_instrument, &insert,
-                                     *autofill_table_encryptor_);
+    BindPaymentInstrumentToStatement(payment_instrument, &insert, *encryptor());
     insert.Run();
     insert.Reset(/*clear_bound_vars=*/true);
   }
@@ -1846,8 +1841,7 @@ bool PaymentsAutofillTable::GetPaymentInstruments(
   while (s.Step()) {
     int index = 0;
     int64_t instrument_id = s.ColumnInt64(index++);
-    auto serialized_value =
-        DecryptStringFromColumn(s, index++, *autofill_table_encryptor_);
+    auto serialized_value = DecryptStringFromColumn(s, index++, *encryptor());
     sync_pb::PaymentInstrument payment_instrument;
     if (payment_instrument.ParseFromString(serialized_value)) {
       payment_instruments.emplace_back(payment_instrument);
@@ -2042,8 +2036,7 @@ bool PaymentsAutofillTable::MigrateToVersion115EncryptIbanValue() {
     UpdateBuilder(db(), s, kIbansTable, {kGuid, kValue}, "guid=?1");
     int index = 0;
     s.BindString(index++, guid);
-    BindEncryptedU16StringToColumn(&s, index++, value,
-                                   *autofill_table_encryptor_);
+    BindEncryptedU16StringToColumn(&s, index++, value, *encryptor());
     if (!s.Run()) {
       return false;
     }

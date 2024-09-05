@@ -219,6 +219,8 @@ source_set("unit_tests") {
 
   if (enable_dice_support) {
     sources += [ "mutable_profile_oauth2_token_service_delegate_unittest.cc" ]
+
+    deps += [ "//components/os_crypt/async/browser:test_support" ]
   }
 
   if (enable_bound_session_credentials) {
