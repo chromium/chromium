@@ -230,18 +230,19 @@ class KeyboardAccessoryViewBinder {
             }
 
             float iconAlpha;
-            int textAppearance;
             if (item.getSuggestion().applyDeactivatedStyle()) {
+                // Disabling chipview if deactivated style is set.
+                chipView.setEnabled(false);
                 iconAlpha = GRAYED_OUT_OPACITY_ALPHA;
-                textAppearance = R.style.TextAppearance_TextMedium_Disabled;
-                chipView.setOnClickListener(null);
-                chipView.setOnLongClickListener(null);
+                // Restoring the chipview border post disabling it to meet the
+                // required UI.
+                chipView.setBorder(
+                        chipView.getResources().getDimensionPixelSize(R.dimen.chip_border_width),
+                        chipView.getContext().getColor(R.color.black_alpha_12));
             } else {
+                chipView.setEnabled(true);
                 iconAlpha = COMPLETE_OPACITY_ALPHA;
-                textAppearance = R.style.TextAppearance_ChipText;
             }
-            chipView.getPrimaryTextView().setTextAppearance(textAppearance);
-            chipView.getSecondaryTextView().setTextAppearance(textAppearance);
             Drawable iconDrawable = mSuggestionDrawableFunction.apply(item.getSuggestion());
             if (iconDrawable != null) {
                 iconDrawable.setAlpha((int) (255 * iconAlpha));
