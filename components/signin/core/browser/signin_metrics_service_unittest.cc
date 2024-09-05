@@ -197,6 +197,10 @@ class SigninMetricsServiceTest : public ::testing::Test {
     return active_primary_accounts_metrics_recorder_.get();
   }
 
+  signin::IdentityTestEnvironment& GetIdentityTestEnvironment() {
+    return identity_test_environment_;
+  }
+
  private:
   signin::IdentityManager* identity_manager() {
     return identity_test_environment_.identity_manager();
@@ -738,5 +742,25 @@ TEST_F(SigninMetricsServiceTest, SyncPausedWithLoadingCredentials) {
                                     0);
 
   EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("Signin.SigninPending"),
+              base::HistogramTester::CountsMap());
+}
+
+// Regression test for: crbug.com/363401501.
+TEST_F(SigninMetricsServiceTest, ErrorNotificationEmptyAccount) {
+  base::HistogramTester histogram_tester;
+
+  CreateSigninMetricsService();
+
+  ASSERT_FALSE(
+      GetIdentityTestEnvironment().identity_manager()->HasPrimaryAccount(
+          signin::ConsentLevel::kSignin));
+
+  GetIdentityTestEnvironment().OnErrorStateOfRefreshTokenUpdatedForAccount(
+      CoreAccountInfo(), GoogleServiceAuthError::AuthErrorNone(),
+      signin_metrics::SourceForRefreshTokenOperation::kUnknown);
+
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("Signin.SigninPending"),
+              base::HistogramTester::CountsMap());
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("Signin.SyncPaused"),
               base::HistogramTester::CountsMap());
 }

@@ -234,8 +234,12 @@ void SigninMetricsService::OnErrorStateOfRefreshTokenUpdatedForAccount(
     const GoogleServiceAuthError& error,
     signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
   // Not recording information for Signed out users.
-  if (core_account_info !=
-      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)) {
+  if (core_account_info != identity_manager_->GetPrimaryAccountInfo(
+                               signin::ConsentLevel::kSignin) ||
+      // TODO(crbug.com/41434401): `core_account_info` is not supposed to be
+      // empty but can potentially be. In that case we do not proceed with any
+      // metric recording. More info in the linked bug.
+      core_account_info.IsEmpty()) {
     return;
   }
 
