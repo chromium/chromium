@@ -4452,6 +4452,9 @@ ax::mojom::blink::IsPopup AXNodeObject::IsPopup() const {
   if (!html_element) {
     return ax::mojom::blink::IsPopup::kNone;
   }
+  if (RoleValue() == ax::mojom::blink::Role::kMenuListPopup) {
+    return ax::mojom::blink::IsPopup::kAuto;
+  }
   switch (html_element->PopoverType()) {
     case PopoverValueType::kNone:
       return ax::mojom::blink::IsPopup::kNone;

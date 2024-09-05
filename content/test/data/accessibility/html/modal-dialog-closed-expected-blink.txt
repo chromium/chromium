@@ -5,7 +5,7 @@ rootWebArea
 ++++++++inlineTextBox name='Test that elements respawn in the accessibility tree after a modal dialog closes.'
 ++++++sectionWithoutName
 ++++++++comboBoxSelect collapsed value='This should be in the tree.' haspopup=menu
-++++++++++menuListPopup invisible
+++++++++++menuListPopup invisible ispopup=auto
 ++++++++++++group invisible name='Group'
 ++++++++++++++genericContainer ignored invisible
 ++++++++++++++++menuListOption name='This should be in the tree.' selected=true

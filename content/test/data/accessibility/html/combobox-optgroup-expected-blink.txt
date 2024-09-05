@@ -2,7 +2,7 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer
 ++++++comboBoxSelect collapsed value='Mercedes Label' setSize=4 posInSet=3
-++++++++menuListPopup invisible setSize=4
+++++++++menuListPopup invisible setSize=4 ispopup=auto
 ++++++++++group invisible name='Swedish Cars Label'
 ++++++++++++genericContainer ignored invisible
 ++++++++++++++menuListOption invisible name='Volvo Label' setSize=4 posInSet=1 selected=false
