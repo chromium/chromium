@@ -38,7 +38,7 @@ struct EmojiSearchResult {
 };
 
 using EmojiEntryMap =
-    std::map<std::string, std::vector<EmojiSearchEntry>, std::less<>>;
+    std::map<std::u16string, std::vector<EmojiSearchEntry>, std::less<>>;
 
 enum class EmojiLanguageCode {
   kDa,  // Danish

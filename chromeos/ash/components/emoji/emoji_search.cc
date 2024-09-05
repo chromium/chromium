@@ -39,21 +39,20 @@ namespace {
 constexpr std::string_view kDefaultLanguageCode = "en";
 
 // Map from keyword -> sum of position weightings
-std::map<std::string, double, std::less<>> CombineSearchTerms(
+std::map<std::u16string, double, std::less<>> CombineSearchTerms(
     base::span<const std::string> long_search_terms) {
-  std::map<std::string, std::vector<int>, std::less<>> position_map;
+  std::map<std::u16string, std::vector<int>, std::less<>> position_map;
   for (const std::string& long_string : long_search_terms) {
     std::vector<std::string_view> words = base::SplitStringPieceUsingSubstr(
         long_string, " ", base::WhitespaceHandling::TRIM_WHITESPACE,
         base::SplitResult::SPLIT_WANT_NONEMPTY);
     for (size_t i = 0; i < words.size(); ++i) {
-      position_map[base::UTF16ToUTF8(
-                       base::i18n::ToLower(base::UTF8ToUTF16(words[i])))]
-          .push_back(i);
+      position_map[base::i18n::ToLower(base::UTF8ToUTF16(words[i]))].push_back(
+          i);
     }
   }
 
-  std::map<std::string, double, std::less<>> ret;
+  std::map<std::u16string, double, std::less<>> ret;
   for (auto& map_entry : position_map) {
     double weight = 0;
     for (int p : map_entry.second) {
@@ -68,7 +67,7 @@ std::map<std::string, double, std::less<>> CombineSearchTerms(
 // position in keyword / name.
 void AddDataFromFileToMap(
     const int file_id_in_resources,
-    std::map<std::string, std::vector<EmojiSearchEntry>, std::less<>>& map) {
+    std::map<std::u16string, std::vector<EmojiSearchEntry>, std::less<>>& map) {
   std::string json_string =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           file_id_in_resources);
@@ -150,14 +149,14 @@ void AddNamesFromFileToMap(
 }
 
 std::map<std::string_view, double> GetResultsFromMap(
-    const std::map<std::string, std::vector<EmojiSearchEntry>, std::less<>>&
+    const std::map<std::u16string, std::vector<EmojiSearchEntry>, std::less<>>&
         map,
     base::span<const std::u16string_view> lowercase_words) {
   std::map<std::string_view, double> scored_emoji;
   for (const std::u16string_view lowercase_word : lowercase_words) {
     std::map<std::string_view, double> word_scored_emoji;
-    std::string lower_bound = base::UTF16ToUTF8(lowercase_word);
-    std::string upper_bound = lower_bound;
+    std::u16string_view lower_bound = lowercase_word;
+    std::u16string upper_bound = std::u16string(lowercase_word);
     // will break if someone searches for some very specific char, but
     // should be fine.
     upper_bound.back() = upper_bound.back() + 1;
