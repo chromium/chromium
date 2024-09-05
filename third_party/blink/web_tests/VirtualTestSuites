@@ -1772,6 +1772,7 @@
 
   {
     "prefix": "enable-system-cursor-size-for-svg",
+    "owners": ["sahir.vellani@microsoft.com"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["fast/events/mouse-cursor-image-set-svg.html"],
     "args": [
