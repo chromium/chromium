@@ -3654,7 +3654,8 @@
       "external/wpt/css/css-color/parsing/color-computed-relative-color.html",
       "external/wpt/css/css-color/parsing/color-invalid-relative-color.html",
       "external/wpt/css/css-color/parsing/color-valid-relative-color.html",
-      "external/wpt/css/css-color/parsing/relative-color-out-of-gamut.html"
+      "external/wpt/css/css-color/parsing/relative-color-out-of-gamut.html",
+      "external/wpt/css/css-properties-values-api/registered-property-computation.html"
     ],
     "args": ["--disable-blink-features=CSSRelativeColorSupportsCurrentcolor"],
     "owners": ["kbabbitt@microsoft.com"],

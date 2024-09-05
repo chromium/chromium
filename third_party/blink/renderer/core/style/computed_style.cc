@@ -1141,8 +1141,8 @@ bool ComputedStyle::DiffNeedsNormalPaintInvalidation(
     // has changed, we need to recompute it even though VisuallyEqual()
     // thinks the old and new background styles are identical.
     if ((BackgroundInternal().AnyLayerUsesCurrentColor() ||
-         BackgroundColor().IsUnresolvedColorMixFunction() ||
-         InternalVisitedBackgroundColor().IsUnresolvedColorMixFunction()) &&
+         BackgroundColor().IsUnresolvedColorFunction() ||
+         InternalVisitedBackgroundColor().IsUnresolvedColorFunction()) &&
         (GetCurrentColor() != other.GetCurrentColor() ||
          GetInternalVisitedCurrentColor() !=
              other.GetInternalVisitedCurrentColor())) {

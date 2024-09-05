@@ -851,7 +851,8 @@ const blink::Color BackgroundColor::ColorIncludingFallback(
     bool* is_current_color) const {
   DCHECK(!visited_link);
   const StyleColor& background_color = style.BackgroundColor();
-  if (!style.InForcedColorsMode() && !background_color.HasColorKeyword()) {
+  if (!style.InForcedColorsMode() && !background_color.HasColorKeyword() &&
+      !background_color.IsUnresolvedColorFunction()) {
     // Fast path.
     if (is_current_color) {
       *is_current_color = false;
@@ -2030,17 +2031,17 @@ void Color::ApplyValue(StyleResolverState& state,
     builder.SetColor(builder.InitialColorForColorScheme());
   } else {
     StyleColor color = StyleBuilderConverter::ConvertStyleColor(state, value);
-    if (color.IsUnresolvedColorMixFunction()) {
-      // color-mix with currentcolor is a special case for this property.
+    if (color.IsUnresolvedColorFunction()) {
+      // Unresolved color functions are a special case for this property.
       // currentColor used in the color property value refers to the parent's
       // computed currentColor which means we can fully resolve currentColor at
       // ApplyValue time to get the correct resolved and used values for the
-      // color property, even for the color-mix() function.
-      // For typed OM, currentColor and color-mix() functions containing
+      // color property in all cases.
+      // For typed OM, currentColor and color functions containing
       // currentColor should have been preserved for values in
       // computedStyleMap().
       // See crbug.com/1099874
-      color = StyleColor(color.GetUnresolvedColorMix().Resolve(
+      color = StyleColor(color.GetUnresolvedColorFunction().Resolve(
           state.ParentStyle()->Color().GetColor()));
     } else if (color.IsCurrentColor()) {
       // As per the spec, 'color: currentColor' is treated as 'color: inherit'
@@ -4236,14 +4237,14 @@ void InternalVisitedColor::ApplyValue(StyleResolverState& state,
     DCHECK_EQ(state.GetElement(), state.GetDocument().documentElement());
     builder.SetInternalVisitedColor(builder.InitialColorForColorScheme());
   } else {
-    // color-mix with currentcolor is a special case for this property.
+    // Unresolved color functions are a special case for this property.
     // See Color::ApplyValue.
     // Using Color instead of InternalVisitedColor here, see
     // https://bugs.chromium.org/p/chromium/issues/detail?id=1236297#c5.
     StyleColor color =
         StyleBuilderConverter::ConvertStyleColor(state, value, true);
-    if (color.IsUnresolvedColorMixFunction()) {
-      color = StyleColor(color.GetUnresolvedColorMix().Resolve(
+    if (color.IsUnresolvedColorFunction()) {
+      color = StyleColor(color.GetUnresolvedColorFunction().Resolve(
           state.ParentStyle()->Color().GetColor()));
     }
     builder.SetInternalVisitedColor(color);

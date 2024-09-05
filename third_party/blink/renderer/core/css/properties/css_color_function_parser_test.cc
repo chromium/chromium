@@ -83,17 +83,17 @@ TEST(ColorFunctionParserTest, RelativeColorWithCurrentcolorBase_NoAlpha) {
 
   EXPECT_EQ(color->ColorInterpolationSpace(), Color::ColorSpace::kSRGBLegacy);
 
+  const CSSValue& channel0 = color->Channel0();
+  EXPECT_TRUE(channel0.IsNumericLiteralValue());
+  EXPECT_EQ(To<CSSNumericLiteralValue>(channel0).DoubleValue(), 1.0f);
+
   const CSSValue& channel1 = color->Channel1();
-  EXPECT_TRUE(channel1.IsNumericLiteralValue());
-  EXPECT_EQ(To<CSSNumericLiteralValue>(channel1).DoubleValue(), 1.0f);
+  EXPECT_TRUE(channel1.IsMathFunctionValue());
+  EXPECT_EQ(channel1.CssText(), "calc(g)");
 
   const CSSValue& channel2 = color->Channel2();
-  EXPECT_TRUE(channel2.IsMathFunctionValue());
-  EXPECT_EQ(channel2.CssText(), "calc(g)");
-
-  const CSSValue& channel3 = color->Channel3();
-  EXPECT_TRUE(channel3.IsIdentifierValue());
-  EXPECT_EQ(To<CSSIdentifierValue>(channel3).GetValueID(), CSSValueID::kB);
+  EXPECT_TRUE(channel2.IsIdentifierValue());
+  EXPECT_EQ(To<CSSIdentifierValue>(channel2).GetValueID(), CSSValueID::kB);
 
   EXPECT_EQ(color->Alpha(), nullptr);
 }
@@ -123,17 +123,17 @@ TEST(ColorFunctionParserTest, RelativeColorWithCurrentcolorBase_CalcAlpha) {
 
   EXPECT_EQ(color->ColorInterpolationSpace(), Color::ColorSpace::kSRGBLegacy);
 
+  const CSSValue& channel0 = color->Channel0();
+  EXPECT_TRUE(channel0.IsNumericLiteralValue());
+  EXPECT_EQ(To<CSSNumericLiteralValue>(channel0).DoubleValue(), 1.0f);
+
   const CSSValue& channel1 = color->Channel1();
-  EXPECT_TRUE(channel1.IsNumericLiteralValue());
-  EXPECT_EQ(To<CSSNumericLiteralValue>(channel1).DoubleValue(), 1.0f);
+  EXPECT_TRUE(channel1.IsMathFunctionValue());
+  EXPECT_EQ(channel1.CssText(), "calc(g)");
 
   const CSSValue& channel2 = color->Channel2();
-  EXPECT_TRUE(channel2.IsMathFunctionValue());
-  EXPECT_EQ(channel2.CssText(), "calc(g)");
-
-  const CSSValue& channel3 = color->Channel3();
-  EXPECT_TRUE(channel3.IsIdentifierValue());
-  EXPECT_EQ(To<CSSIdentifierValue>(channel3).GetValueID(), CSSValueID::kB);
+  EXPECT_TRUE(channel2.IsIdentifierValue());
+  EXPECT_EQ(To<CSSIdentifierValue>(channel2).GetValueID(), CSSValueID::kB);
 
   const CSSValue* alpha = color->Alpha();
   EXPECT_TRUE(alpha->IsMathFunctionValue());
@@ -164,6 +164,10 @@ TEST(ColorFunctionParserTest, RelativeColorWithCurrentcolorBase_NoneKeyword) {
 
   EXPECT_EQ(color->ColorInterpolationSpace(), Color::ColorSpace::kSRGBLegacy);
 
+  const CSSValue& channel0 = color->Channel0();
+  EXPECT_TRUE(channel0.IsIdentifierValue());
+  EXPECT_EQ(To<CSSIdentifierValue>(channel0).GetValueID(), CSSValueID::kNone);
+
   const CSSValue& channel1 = color->Channel1();
   EXPECT_TRUE(channel1.IsIdentifierValue());
   EXPECT_EQ(To<CSSIdentifierValue>(channel1).GetValueID(), CSSValueID::kNone);
@@ -171,10 +175,6 @@ TEST(ColorFunctionParserTest, RelativeColorWithCurrentcolorBase_NoneKeyword) {
   const CSSValue& channel2 = color->Channel2();
   EXPECT_TRUE(channel2.IsIdentifierValue());
   EXPECT_EQ(To<CSSIdentifierValue>(channel2).GetValueID(), CSSValueID::kNone);
-
-  const CSSValue& channel3 = color->Channel3();
-  EXPECT_TRUE(channel3.IsIdentifierValue());
-  EXPECT_EQ(To<CSSIdentifierValue>(channel3).GetValueID(), CSSValueID::kNone);
 
   const CSSValue* alpha = color->Alpha();
   EXPECT_TRUE(alpha->IsIdentifierValue());

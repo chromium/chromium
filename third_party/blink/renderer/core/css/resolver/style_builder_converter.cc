@@ -2462,11 +2462,14 @@ StyleColor ResolveColorValue(const CSSLengthResolver& length_resolver,
 
   if (auto* relative_color_value =
           DynamicTo<cssvalue::CSSRelativeColorValue>(value)) {
-    // TODO(crbug.com/325309578): Convert unresolved relative color values.
-    return ResolveColorValue(
-        length_resolver, relative_color_value->OriginColor(), text_link_colors,
-        used_color_scheme, color_provider, is_in_web_app_scope,
-        for_visited_link);
+    const StyleColor origin_color =
+        ResolveColorValue(length_resolver, relative_color_value->OriginColor(),
+                          text_link_colors, used_color_scheme, color_provider,
+                          is_in_web_app_scope, for_visited_link);
+    return StyleColor(MakeGarbageCollected<StyleColor::UnresolvedRelativeColor>(
+        origin_color, relative_color_value->ColorInterpolationSpace(),
+        relative_color_value->Channel0(), relative_color_value->Channel1(),
+        relative_color_value->Channel2(), relative_color_value->Alpha()));
   }
 
   auto& light_dark_pair = To<CSSLightDarkValuePair>(value);
@@ -3031,6 +3034,12 @@ static const CSSValue& ComputeRegisteredPropertyValue(
   if (auto* color_mix_value = DynamicTo<cssvalue::CSSColorMixValue>(value)) {
     return ComputeColorValue(state->CssToLengthConversionData(),
                              *color_mix_value, document, color_scheme);
+  }
+
+  if (auto* relative_color_value =
+          DynamicTo<cssvalue::CSSRelativeColorValue>(value)) {
+    return ComputeColorValue(state->CssToLengthConversionData(),
+                             *relative_color_value, document, color_scheme);
   }
 
   return value;
