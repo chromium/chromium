@@ -134,13 +134,6 @@ import java.util.stream.Collectors;
  * true.
  */
 class TabListMediator implements TabListNotificationHandler {
-    // Set to true after a `resetWithListOfTabs` that used a non-null list of tabs. Remains true
-    // until `postHiding` is invoked or the mediator is destroyed. While true, this mediator is
-    // actively tracking updates to a TabModel.
-    private boolean mShowingTabs;
-    private boolean mShownIPH;
-    private Tab mTabToAddDelayed;
-
     /** An interface to handle requests about updating TabGridDialog. */
     public interface TabGridDialogHandler {
         /**
@@ -191,6 +184,48 @@ class TabListMediator implements TabListNotificationHandler {
         boolean isReorderAction(int action);
     }
 
+    /** An interface to show IPH for a tab. */
+    public interface IphProvider {
+        void showIPH(View anchor);
+    }
+
+    /** Interface for implementing a {@link Runnable} that takes a tabId for a generic action. */
+    public interface TabActionListener {
+        /** Run the action for the given view and tabId. */
+        void run(View view, int tabId);
+    }
+
+    /**
+     * An interface to get a SelectionDelegate that contains the selected items for a selectable tab
+     * list.
+     */
+    public interface SelectionDelegateProvider {
+        SelectionDelegate getSelectionDelegate();
+    }
+
+    /** An interface to get the onClickListener when clicking on a grid card. */
+    interface GridCardOnClickListenerProvider {
+        /**
+         * @return {@link TabActionListener} to open Tab Grid dialog. If the given {@link Tab} is
+         *     not able to create group, return null;
+         */
+        @Nullable
+        TabActionListener openTabGridDialog(@NonNull Tab tab);
+
+        /**
+         * Run additional actions on tab selection.
+         *
+         * @param tabId The ID of selected {@link Tab}.
+         * @param fromActionButton Whether it is called from the Action button on the card.
+         */
+        void onTabSelecting(int tabId, boolean fromActionButton);
+    }
+
+    /** Interface for toggling whether item animations will run on the recycler view. */
+    interface RecyclerViewItemAnimationToggle {
+        void setDisableItemAnimations(boolean state);
+    }
+
     /** Provides capability to asynchronously acquire {@link ShoppingPersistedTabData} */
     static class ShoppingPersistedTabDataFetcher {
         protected final Tab mTab;
@@ -212,6 +247,7 @@ class TabListMediator implements TabListNotificationHandler {
 
         /**
          * Asynchronously acquire {@link ShoppingPersistedTabData}
+         *
          * @param callback {@link Callback} to pass {@link ShoppingPersistedTabData} back in
          */
         public void fetch(Callback<ShoppingPersistedTabData> callback) {
@@ -246,58 +282,6 @@ class TabListMediator implements TabListNotificationHandler {
                                                         shoppingPersistedTabData.getPriceDrop()));
                             });
         }
-    }
-
-    /** An interface to show IPH for a tab. */
-    public interface IphProvider {
-        void showIPH(View anchor);
-    }
-
-    private final IphProvider mIphProvider =
-            new IphProvider() {
-                private static final int IPH_DELAY_MS = 1000;
-
-                @Override
-                public void showIPH(View anchor) {
-                    if (mShownIPH) return;
-                    mShownIPH = true;
-
-                    PostTask.postDelayedTask(
-                            TaskTraits.UI_DEFAULT,
-                            () -> {
-                                TabGroupUtils.maybeShowIPH(
-                                        mProfile,
-                                        FeatureConstants.TAB_GROUPS_YOUR_TABS_ARE_TOGETHER_FEATURE,
-                                        anchor,
-                                        null);
-                            },
-                            IPH_DELAY_MS);
-                }
-            };
-
-    /**
-     * An interface to get a SelectionDelegate that contains the selected items for a selectable
-     * tab list.
-     */
-    public interface SelectionDelegateProvider {
-        SelectionDelegate getSelectionDelegate();
-    }
-
-    /** An interface to get the onClickListener when clicking on a grid card. */
-    interface GridCardOnClickListenerProvider {
-        /**
-         * @return {@link TabActionListener} to open Tab Grid dialog.
-         * If the given {@link Tab} is not able to create group, return null;
-         */
-        @Nullable
-        TabActionListener openTabGridDialog(@NonNull Tab tab);
-
-        /**
-         * Run additional actions on tab selection.
-         * @param tabId The ID of selected {@link Tab}.
-         * @param fromActionButton Whether it is called from the Action button on the card.
-         */
-        void onTabSelecting(int tabId, boolean fromActionButton);
     }
 
     /** A class that stores shared info regarding a tab group's state. */
@@ -337,40 +321,74 @@ class TabListMediator implements TabListNotificationHandler {
     private static Map<Integer, Integer> sTabClosedFromMapTabClosedFromMap = new HashMap<>();
     private static Set<Integer> sViewedTabIds = new HashSet<>();
 
+    private final ValueChangedCallback<TabModelFilter> mOnTabModelFilterChanged =
+            new ValueChangedCallback<>(this::onTabModelFilterChanged);
+    private final TabListGroupMenuCoordinator.OnItemClickedCallback mOnMenuItemClickedCallback =
+            this::onMenuItemClicked;
     private final Context mContext;
     private final TabListModel mModel;
     private final @TabListMode int mMode;
     private final ModalDialogManager mModalDialogManager;
     private final ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
-    private final ValueChangedCallback<TabModelFilter> mOnTabModelFilterChanged =
-            new ValueChangedCallback<>(this::onTabModelFilterChanged);
-    private final TabActionListener mTabClosedListener;
+    private final ThumbnailProvider mThumbnailProvider;
+    private final TabListFaviconProvider mTabListFaviconProvider;
+    private final TabGroupColorFaviconProvider mTabGroupColorFaviconProvider;
     private final SelectionDelegateProvider mSelectionDelegateProvider;
     private final GridCardOnClickListenerProvider mGridCardOnClickListenerProvider;
     private final TabGridDialogHandler mTabGridDialogHandler;
-    private final TabListFaviconProvider mTabListFaviconProvider;
     private final Supplier<PriceWelcomeMessageController> mPriceWelcomeMessageControllerSupplier;
-    private final TabGroupColorFaviconProvider mTabGroupColorFaviconProvider;
-    private final TabListGroupMenuCoordinator.OnItemClickedCallback mOnMenuItemClickedCallback =
-            this::onMenuItemClicked;
     private @NonNull final ActionConfirmationManager mActionConfirmationManager;
     private final Runnable mOnTabGroupCreation;
+    private final TabModelObserver mTabModelObserver;
+    private final TabActionListener mTabClosedListener;
+    private final TabGridItemTouchHelperCallback mTabGridItemTouchHelperCallback;
 
-    private TabListGroupMenuCoordinator mTabListGroupMenuCoordinator;
-    private @Nullable Profile mProfile;
-    private Size mDefaultGridCardSize;
-    private String mComponentName;
-    private ThumbnailProvider mThumbnailProvider;
-    private boolean mActionsOnAllRelatedTabs;
-    private ComponentCallbacks mComponentCallbacks;
-    private TabGridItemTouchHelperCallback mTabGridItemTouchHelperCallback;
     private int mNextTabId = Tab.INVALID_TAB_ID;
+    private int mLastSelectedTabListModelIndex = TabList.INVALID_TAB_INDEX;
+    private boolean mActionsOnAllRelatedTabs;
+    private String mComponentName;
     private @TabActionState int mTabActionState;
+    private @Nullable Profile mProfile;
+    private TabListGroupMenuCoordinator mTabListGroupMenuCoordinator;
+    private Size mDefaultGridCardSize;
+    private ComponentCallbacks mComponentCallbacks;
     private GridLayoutManager mGridLayoutManager;
     // mRecyclerView and mOnScrollListener are null, unless the the price drop IPH or badge is
     // enabled.
     private @Nullable RecyclerView mRecyclerView;
     private @Nullable OnScrollListener mOnScrollListener;
+    // Set to true after a `resetWithListOfTabs` that used a non-null list of tabs. Remains true
+    // until `postHiding` is invoked or the mediator is destroyed. While true, this mediator is
+    // actively tracking updates to a TabModel.
+    private boolean mShowingTabs;
+    private boolean mShownIPH;
+    private Tab mTabToAddDelayed;
+    private RecyclerViewItemAnimationToggle mRecyclerViewItemAnimationToggle;
+    private ListObserver<Void> mListObserver;
+    private TabGroupTitleEditor mTabGroupTitleEditor;
+    private View.AccessibilityDelegate mAccessibilityDelegate;
+
+    private final IphProvider mIphProvider =
+            new IphProvider() {
+                private static final int IPH_DELAY_MS = 1000;
+
+                @Override
+                public void showIPH(View anchor) {
+                    if (mShownIPH) return;
+                    mShownIPH = true;
+
+                    PostTask.postDelayedTask(
+                            TaskTraits.UI_DEFAULT,
+                            () -> {
+                                TabGroupUtils.maybeShowIPH(
+                                        mProfile,
+                                        FeatureConstants.TAB_GROUPS_YOUR_TABS_ARE_TOGETHER_FEATURE,
+                                        anchor,
+                                        null);
+                            },
+                            IPH_DELAY_MS);
+                }
+            };
 
     private final TabActionListener mTabSelectedListener =
             new TabActionListener() {
@@ -569,23 +587,6 @@ class TabListMediator implements TabListNotificationHandler {
                     }
                 }
             };
-
-    /** Interface for toggling whether item animations will run on the recycler view. */
-    interface RecyclerViewItemAnimationToggle {
-        void setDisableItemAnimations(boolean state);
-    }
-
-    private RecyclerViewItemAnimationToggle mRecyclerViewItemAnimationToggle;
-
-    private final TabModelObserver mTabModelObserver;
-
-    private ListObserver<Void> mListObserver;
-
-    private TabGroupTitleEditor mTabGroupTitleEditor;
-
-    private View.AccessibilityDelegate mAccessibilityDelegate;
-
-    private int mLastSelectedTabListModelIndex = TabList.INVALID_TAB_INDEX;
 
     private final TabGroupModelFilterObserver mTabGroupObserver =
             new TabGroupModelFilterObserver() {
@@ -856,12 +857,6 @@ class TabListMediator implements TabListNotificationHandler {
                 }
             };
 
-    /** Interface for implementing a {@link Runnable} that takes a tabId for a generic action. */
-    public interface TabActionListener {
-        /** Run the action for the given view and tabId. */
-        void run(View view, int tabId);
-    }
-
     /**
      * Construct the Mediator with the given Models and observing hooks from the given
      * ChromeActivity.
@@ -870,6 +865,7 @@ class TabListMediator implements TabListNotificationHandler {
      * @param model The Model to keep state about a list of {@link Tab}s.
      * @param mode The {@link TabListMode}
      * @param modalDialogManager The {@link ModalDialogManager} for managing dialog lifecycles.
+     * @param tabModelFilterSupplier Used to fetch the filter that provides tab group information.
      * @param thumbnailProvider {@link ThumbnailProvider} to provide screenshot related details.
      * @param tabListFaviconProvider Provider for all favicon related drawables.
      * @param tabGroupColorFaviconProvider Provider for tab group color favicon related drawables.
@@ -885,6 +881,7 @@ class TabListMediator implements TabListNotificationHandler {
      * @param componentName This is a unique string to identify different components.
      * @param initialTabActionState The initial {@link TabActionState} to use for the shown tabs.
      *     Must always be CLOSABLE for TabListMode.STRIP.
+     * @param actionConfirmationManager Used for showing confirmation dialogs.
      * @param onTabGroupCreation Should be run when the UI is used to create a tab group.
      */
     public TabListMediator(
@@ -906,24 +903,24 @@ class TabListMediator implements TabListNotificationHandler {
             @NonNull ActionConfirmationManager actionConfirmationManager,
             @Nullable Runnable onTabGroupCreation) {
         mContext = context;
+        mModel = model;
+        mMode = mode;
         mModalDialogManager = modalDialogManager;
         mCurrentTabModelFilterSupplier = tabModelFilterSupplier;
         mThumbnailProvider = thumbnailProvider;
-        mModel = model;
-        mMode = mode;
         mTabListFaviconProvider = tabListFaviconProvider;
         mTabGroupColorFaviconProvider = tabGroupColorFaviconProvider;
-        mComponentName = componentName;
+        mActionsOnAllRelatedTabs = actionOnRelatedTabs;
         mSelectionDelegateProvider = selectionDelegateProvider;
         mGridCardOnClickListenerProvider = gridCardOnClickListenerProvider;
         mTabGridDialogHandler = dialogHandler;
-        mActionsOnAllRelatedTabs = actionOnRelatedTabs;
-        mTabActionState = initialTabActionState;
         mPriceWelcomeMessageControllerSupplier = priceWelcomeMessageControllerSupplier;
-        mProfile = mCurrentTabModelFilterSupplier.get().getTabModel().getProfile();
+        mComponentName = componentName;
+        mTabActionState = initialTabActionState;
         mActionConfirmationManager = actionConfirmationManager;
         mOnTabGroupCreation = onTabGroupCreation;
 
+        mProfile = mCurrentTabModelFilterSupplier.get().getTabModel().getProfile();
         mTabModelObserver =
                 new TabModelObserver() {
                     @Override
