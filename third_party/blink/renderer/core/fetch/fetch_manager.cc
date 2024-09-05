@@ -200,6 +200,14 @@ bool IsFetchLaterSendOnEnterBackForwardCacheEnabled() {
                                                  "send_on_enter_bfcache", true);
 }
 
+// Tells whether the FetchLater should use the "deferred-fetch" policy.
+// Defaults to false until the discussion is finalized.
+// https://github.com/WICG/pending-beacon/issues/87#issuecomment-2315624105
+bool IsFetchLaterUsePermissionsPolicyEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      features::kFetchLaterAPI, "use_permissions_policy", false);
+}
+
 bool HasNonEmptyLocationHeader(const FetchHeaderList* headers) {
   String value;
   if (!headers->Get(http_names::kLocation, value))
@@ -1568,7 +1576,8 @@ FetchLaterResult* FetchLaterManager::FetchLater(
   // https://w3c.github.io/webappsec-permissions-policy/#algo-is-feature-enabled
   // NOTE: The default value of True for report means that most permissions
   // policy checks will generate a violation report if the feature is disabled.
-  if (!GetExecutionContext()->IsFeatureEnabled(
+  if (IsFetchLaterUsePermissionsPolicyEnabled() &&
+      !GetExecutionContext()->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kDeferredFetch,
           ReportOptions::kReportOnFailure)) {
     exception_state.ThrowDOMException(
