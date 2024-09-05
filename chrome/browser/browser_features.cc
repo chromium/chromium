@@ -110,6 +110,12 @@ const base::FeatureParam<std::string> kDevToolsFreestylerDogfoodModelId{
     &kDevToolsFreestylerDogfood, "aida_model_id", /*default_value=*/""};
 const base::FeatureParam<double> kDevToolsFreestylerDogfoodTemperature{
     &kDevToolsFreestylerDogfood, "aida_temperature", /*default_value=*/0};
+const base::FeatureParam<DevToolsFreestylerUserTier>::Option devtools_freestyler_user_tier_options[] = {
+    {DevToolsFreestylerUserTier::kTesters, "TESTERS"},
+    {DevToolsFreestylerUserTier::kPublic, "PUBLIC"}};
+const base::FeatureParam<DevToolsFreestylerUserTier> kDevToolsFreestylerDogfoodUserTier{
+    &kDevToolsFreestylerDogfood, "user_tier", /*default_value=*/DevToolsFreestylerUserTier::kTesters,
+    &devtools_freestyler_user_tier_options};
 
 // Whether the DevTools resource explainer assistant is enabled.
 BASE_FEATURE(kDevToolsExplainThisResourceDogfood,

@@ -1560,6 +1560,9 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
       "modelId", features::kDevToolsFreestylerDogfoodModelId.Get());
   freestyler_dogfood_dict.Set(
       "temperature", features::kDevToolsFreestylerDogfoodTemperature.Get());
+  freestyler_dogfood_dict.Set(
+      "userTier", features::kDevToolsFreestylerDogfoodUserTier.GetName(
+        features::kDevToolsFreestylerDogfoodUserTier.Get()));
   response_dict.Set("devToolsFreestylerDogfood",
                     std::move(freestyler_dogfood_dict));
 

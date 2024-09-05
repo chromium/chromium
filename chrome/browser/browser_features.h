@@ -41,6 +41,16 @@ BASE_DECLARE_FEATURE(kDevToolsFreestylerDogfood);
 extern const base::FeatureParam<std::string> kDevToolsFreestylerDogfoodModelId;
 extern const base::FeatureParam<double> kDevToolsFreestylerDogfoodTemperature;
 
+enum class DevToolsFreestylerUserTier {
+    // Users who are internal testers or validators.
+    // In future, the data from these users will be excluded from training data when logging is enabled.
+    kTesters,
+    // Users in the general public.
+    kPublic
+};
+
+extern const base::FeatureParam<DevToolsFreestylerUserTier> kDevToolsFreestylerDogfoodUserTier;
+
 BASE_DECLARE_FEATURE(kDevToolsExplainThisResourceDogfood);
 extern const base::FeatureParam<std::string>
     kDevToolsExplainThisResourceDogfoodModelId;
