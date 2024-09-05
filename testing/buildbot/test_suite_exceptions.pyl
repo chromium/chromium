@@ -1304,6 +1304,9 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14.chrome_public_test_apk.filter',
           '--emulator-debug-tags=all,-qemud,-sensors',
         ],
+        'swarming': {
+          'shards': 40,
+        },
       },
       'android-15-x64-fyi-rel': {
         'args': [
