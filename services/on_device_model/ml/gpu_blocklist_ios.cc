@@ -6,12 +6,8 @@
 
 namespace ml {
 
-bool GpuBlocklist::IsGpuBlocked(const ChromeMLAPI& api) const {
-  if (skip_for_testing) {
-    return false;
-  }
-
-  // Do not blocklist any iOS GPUs for now.
+COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
+bool IsGpuBlocked(const ChromeMLAPI& api) {
   return false;
 }
 
