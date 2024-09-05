@@ -66,10 +66,6 @@ void AddSuggestionContentToView(
 ui::ImageModel ImageModelFromVectorIcon(const gfx::VectorIcon& vector_icon,
                                         int icon_size);
 
-// Appplies a grayed-out disabled style to views conveying that it is
-// deactivated and non-acceptable.
-void ApplyDeactivatedStyle(views::View& view);
-
 // Returns the expandable menu icon depending on `type`.
 const gfx::VectorIcon& GetExpandableMenuIcon(SuggestionType type);
 

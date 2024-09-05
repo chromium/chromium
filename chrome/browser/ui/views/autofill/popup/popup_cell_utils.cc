@@ -174,6 +174,72 @@ std::unique_ptr<views::ImageView> ConvertModelToImageView(
   return std::make_unique<views::ImageView>(image_model.value());
 }
 
+// Creates the table in which all the Autofill suggestion content apart from
+// leading and trailing icons is contained.
+std::unique_ptr<views::TableLayoutView> CreateSuggestionContentTable(
+    std::unique_ptr<views::Label> main_text_label,
+    std::unique_ptr<views::Label> minor_text_label,
+    std::unique_ptr<views::Label> description_label,
+    std::vector<std::unique_ptr<views::View>> subtext_views) {
+  const bool kHasTwoColumns = !!description_label;
+  auto table =
+      views::Builder<views::TableLayoutView>()
+          .AddColumn(views::LayoutAlignment::kStart,
+                     views::LayoutAlignment::kStretch,
+                     views::TableLayout::kFixedSize,
+                     views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+          .Build();
+  if (kHasTwoColumns) {
+    const int kDividerSpacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
+        DISTANCE_RELATED_LABEL_HORIZONTAL_LIST);
+    table->AddPaddingColumn(views::TableLayout::kFixedSize, kDividerSpacing);
+    table->AddColumn(views::LayoutAlignment::kStart,
+                     views::LayoutAlignment::kStretch,
+                     views::TableLayout::kFixedSize,
+                     views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
+  }
+
+  // Major and minor text go into the first row, first column.
+  table->AddRows(1, 0);
+  if (minor_text_label) {
+    auto first_line_container = std::make_unique<views::View>();
+    first_line_container
+        ->SetLayoutManager(std::make_unique<views::FlexLayout>())
+        ->SetOrientation(views::LayoutOrientation::kHorizontal)
+        .SetMainAxisAlignment(views::LayoutAlignment::kStart)
+        .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+        .SetIgnoreDefaultMainAxisMargins(true)
+        .SetCollapseMargins(true)
+        .SetDefault(
+            views::kMarginsKey,
+            gfx::Insets::VH(0, ChromeLayoutProvider::Get()->GetDistanceMetric(
+                                   DISTANCE_RELATED_LABEL_HORIZONTAL_LIST)));
+
+    first_line_container->AddChildView(std::move(main_text_label));
+
+    first_line_container->AddChildView(std::move(minor_text_label));
+    table->AddChildView(std::move(first_line_container));
+  } else {
+    table->AddChildView(std::move(main_text_label));
+  }
+
+  // The description goes into the first row, second column.
+  if (kHasTwoColumns) {
+    table->AddChildView(description_label ? std::move(description_label)
+                                          : std::make_unique<views::View>());
+  }
+
+  // Every subtext label goes into an additional row.
+  for (std::unique_ptr<views::View>& subtext_view : subtext_views) {
+    table->AddPaddingRow(0, kAdjacentLabelsVerticalSpacing).AddRows(1, 0);
+    table->AddChildView(std::move(subtext_view));
+    if (kHasTwoColumns) {
+      table->AddChildView(std::make_unique<views::View>());
+    }
+  }
+  return table;
+}
+
 }  // namespace
 
 std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
@@ -314,14 +380,6 @@ std::u16string GetVoiceOverStringFromSuggestion(const Suggestion& suggestion) {
   return base::JoinString(text, u" ");
 }
 
-gfx::Insets GetMarginsForContentCell() {
-  // The `PopupRowView` already adds some extra horizontal margin on the left -
-  // deduct that.
-  return gfx::Insets::VH(0,
-                         std::max(0, PopupBaseView::ArrowHorizontalMargin() -
-                                         PopupRowView::GetHorizontalMargin()));
-}
-
 std::unique_ptr<views::ImageView> GetIconImageView(
     const Suggestion& suggestion) {
   base::TimeTicks start_time = base::TimeTicks::Now();
@@ -376,72 +434,6 @@ void AddSpacerWithSize(views::BoxLayoutView& view,
   view.SetFlexForView(view.AddChildView(std::move(spacer)),
                       /*flex=*/resize ? 1 : 0,
                       /*use_min_size=*/true);
-}
-
-// Creates the table in which all the Autofill suggestion content apart from
-// leading and trailing icons is contained.
-std::unique_ptr<views::TableLayoutView> CreateSuggestionContentTable(
-    std::unique_ptr<views::Label> main_text_label,
-    std::unique_ptr<views::Label> minor_text_label,
-    std::unique_ptr<views::Label> description_label,
-    std::vector<std::unique_ptr<views::View>> subtext_views) {
-  const bool kHasTwoColumns = !!description_label;
-  auto table =
-      views::Builder<views::TableLayoutView>()
-          .AddColumn(views::LayoutAlignment::kStart,
-                     views::LayoutAlignment::kStretch,
-                     views::TableLayout::kFixedSize,
-                     views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
-          .Build();
-  if (kHasTwoColumns) {
-    const int kDividerSpacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
-        DISTANCE_RELATED_LABEL_HORIZONTAL_LIST);
-    table->AddPaddingColumn(views::TableLayout::kFixedSize, kDividerSpacing);
-    table->AddColumn(views::LayoutAlignment::kStart,
-                     views::LayoutAlignment::kStretch,
-                     views::TableLayout::kFixedSize,
-                     views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
-  }
-
-  // Major and minor text go into the first row, first column.
-  table->AddRows(1, 0);
-  if (minor_text_label) {
-    auto first_line_container = std::make_unique<views::View>();
-    first_line_container
-        ->SetLayoutManager(std::make_unique<views::FlexLayout>())
-        ->SetOrientation(views::LayoutOrientation::kHorizontal)
-        .SetMainAxisAlignment(views::LayoutAlignment::kStart)
-        .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
-        .SetIgnoreDefaultMainAxisMargins(true)
-        .SetCollapseMargins(true)
-        .SetDefault(
-            views::kMarginsKey,
-            gfx::Insets::VH(0, ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                   DISTANCE_RELATED_LABEL_HORIZONTAL_LIST)));
-
-    first_line_container->AddChildView(std::move(main_text_label));
-
-    first_line_container->AddChildView(std::move(minor_text_label));
-    table->AddChildView(std::move(first_line_container));
-  } else {
-    table->AddChildView(std::move(main_text_label));
-  }
-
-  // The description goes into the first row, second column.
-  if (kHasTwoColumns) {
-    table->AddChildView(description_label ? std::move(description_label)
-                                          : std::make_unique<views::View>());
-  }
-
-  // Every subtext label goes into an additional row.
-  for (std::unique_ptr<views::View>& subtext_view : subtext_views) {
-    table->AddPaddingRow(0, kAdjacentLabelsVerticalSpacing).AddRows(1, 0);
-    table->AddChildView(std::move(subtext_view));
-    if (kHasTwoColumns) {
-      table->AddChildView(std::make_unique<views::View>());
-    }
-  }
-  return table;
 }
 
 void AddSuggestionContentToView(
