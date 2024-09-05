@@ -91,6 +91,20 @@ void AttributionReportNetworkSender::SendReport(
   GURL url = report.ReportURL(is_debug_report);
   std::string body = SerializeAttributionJson(report.ReportBody());
 
+  if (!is_debug_report) {
+    switch (report.GetReportType()) {
+      case AttributionReport::Type::kEventLevel:
+        base::UmaHistogramCounts1000(
+            "Conversions.EventLevelReport.ReportBodySize", body.size());
+        break;
+      case AttributionReport::Type::kAggregatableAttribution:
+      case AttributionReport::Type::kNullAggregatable:
+        base::UmaHistogramCounts10000(
+            "Conversions.AggregatableReport.ReportBodySize", body.size());
+        break;
+    }
+  }
+
   url::Origin origin(report.reporting_origin());
   SendReport(std::move(url), std::move(origin), body,
              base::BindOnce(&AttributionReportNetworkSender::OnReportSent,

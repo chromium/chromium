@@ -1423,6 +1423,21 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Conversions.{ReportType}.ReportBodySize"
+    enum="ConversionReportSendRetryCount" expires_after="2025-03-03">
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the uncompressed size of non-debug attribution report request
+    bodies. Recorded for each sent event-level and aggregatable attribution
+    report.
+  </summary>
+  <token key="ReportType">
+    <variant name="AggregatableReport"/>
+    <variant name="EventLevelReport"/>
+  </token>
+</histogram>
+
 <histogram name="Conversions.{ReportType}.ReportRetriesTillSuccessOrFailure"
     enum="ConversionReportSendRetryCount" expires_after="2025-02-09">
   <owner>tquintanilla@chromium.org</owner>
