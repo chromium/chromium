@@ -352,6 +352,9 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
   // True if the created codec is software backed.
   bool is_software_codec_ = false;
 
+  // Enables Block Model (LinearBlock).
+  const bool use_block_model_;
+
   base::WeakPtrFactory<MediaCodecVideoDecoder> weak_factory_{this};
   base::WeakPtrFactory<MediaCodecVideoDecoder> codec_allocator_weak_factory_{
       this};

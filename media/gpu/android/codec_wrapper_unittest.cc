@@ -44,7 +44,7 @@ class CodecWrapperTest : public testing::Test {
         output_buffer_release_cb_.Get(),
         // Unrendered output buffers are released on our thread.
         base::SequencedTaskRunner::GetCurrentDefault(), kInitialCodedSize,
-        gfx::ColorSpace::CreateREC709(), kCodedSizeAlignment);
+        gfx::ColorSpace::CreateREC709(), kCodedSizeAlignment, false);
     ON_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
         .WillByDefault(Return(OkStatus()));
     ON_CALL(*codec_, DequeueInputBuffer(_, _))
@@ -242,7 +242,7 @@ TEST_F(CodecWrapperTest, CodecOutputBuffersGuessCodedSizeNoAlignment) {
       std::move(surface_pair), output_buffer_release_cb_.Get(),
       // Unrendered output buffers are released on our thread.
       base::SequencedTaskRunner::GetCurrentDefault(), kInitialCodedSize,
-      gfx::ColorSpace::CreateREC709(), std::nullopt);
+      gfx::ColorSpace::CreateREC709(), std::nullopt, false);
 
   EXPECT_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
       .WillOnce(Return(MediaCodecResult::Codes::kOutputFormatChanged))
@@ -260,7 +260,7 @@ TEST_F(CodecWrapperTest, CodecOutputBuffersGuessCodedSizeWeirdAlignment) {
       std::move(surface_pair), output_buffer_release_cb_.Get(),
       // Unrendered output buffers are released on our thread.
       base::SequencedTaskRunner::GetCurrentDefault(), kInitialCodedSize,
-      gfx::ColorSpace::CreateREC709(), gfx::Size(128, 1));
+      gfx::ColorSpace::CreateREC709(), gfx::Size(128, 1), false);
 
   EXPECT_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
       .WillOnce(Return(MediaCodecResult::Codes::kOutputFormatChanged))
@@ -445,7 +445,7 @@ TEST_F(CodecWrapperTest, CodecWrapperDefaultsToSRGB) {
       std::move(surface_pair), output_buffer_release_cb_.Get(),
       // Unrendered output buffers are released on our thread.
       base::SequencedTaskRunner::GetCurrentDefault(), kInitialCodedSize,
-      gfx::ColorSpace(), std::nullopt);
+      gfx::ColorSpace(), std::nullopt, false);
 
   // If MediaCodec doesn't provide a color space and we don't have a valid
   // config color space, then CodecWrapper should default to sRGB for sanity.
@@ -465,7 +465,7 @@ TEST_F(CodecWrapperTest, CodecWrapperUseConfigColorSpace) {
       std::move(surface_pair), output_buffer_release_cb_.Get(),
       // Unrendered output buffers are released on our thread.
       base::SequencedTaskRunner::GetCurrentDefault(), kInitialCodedSize,
-      gfx::ColorSpace::CreateJpeg(), std::nullopt);
+      gfx::ColorSpace::CreateJpeg(), std::nullopt, false);
 
   // If MediaCodec doesn't provide a color space and we have a valid config
   // color space, then CodecWrapper should use it.

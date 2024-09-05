@@ -1128,6 +1128,11 @@ BASE_FEATURE(kAllowNonSecureOverlays,
              "AllowNonSecureOverlays",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables block model (LinearBlock) on supported devices.
+BASE_FEATURE(kMediaCodecBlockModel,
+             "MediaCodecBlockModel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Allow FrameInfoHelper to guess coded size information for MediaCodec frames.
 BASE_FEATURE(kMediaCodecCodedSizeGuessing,
              "MediaCodecCodedSizeGuessing",

@@ -67,6 +67,9 @@ class MEDIA_EXPORT VideoCodecConfig {
 
   // The name of decoder/encoder. It's used to create the MediaCodec instance.
   std::string name;
+
+  // Enables Block Model (LinearBlock).
+  bool use_block_model = false;
 };
 
 // A bridge to a Java MediaCodec.
@@ -124,6 +127,10 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
                                     const uint8_t* data,
                                     size_t data_size,
                                     base::TimeDelta presentation_time) override;
+  MediaCodecResult QueueInputBlock(int index,
+                                   base::span<const uint8_t> data,
+                                   base::TimeDelta presentation_time,
+                                   bool is_eos) override;
   MediaCodecResult QueueSecureInputBuffer(
       int index,
       const uint8_t* data,

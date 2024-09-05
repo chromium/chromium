@@ -57,6 +57,8 @@ class MediaCodecBridge {
     protected MediaCodec mMediaCodec;
     private @BitrateAdjuster.Type int mBitrateAdjuster;
 
+    private String mMediaCodecName = "unknown";
+
     // The maximum input size this codec was configured with.
     private int mMaxInputSize;
 
@@ -100,6 +102,36 @@ class MediaCodecBridge {
         @CalledByNative("DequeueInputResult")
         private int index() {
             return mIndex;
+        }
+    }
+
+    private static class ObtainBlockResult {
+        private MediaCodec.LinearBlock mBlock;
+        private ByteBuffer mBuffer;
+
+        private ObtainBlockResult(MediaCodec.LinearBlock block, ByteBuffer buffer) {
+            mBlock = block;
+            mBuffer = buffer;
+        }
+
+        @CalledByNative("ObtainBlockResult")
+        private MediaCodec.LinearBlock block() {
+            return mBlock;
+        }
+
+        @CalledByNative("ObtainBlockResult")
+        private ByteBuffer buffer() {
+            return mBuffer;
+        }
+
+        @CalledByNative("ObtainBlockResult")
+        @SuppressLint("NewApi")
+        private void recycle() {
+            if (mBlock != null) {
+                mBlock.recycle();
+                mBlock = null;
+                mBuffer = null;
+            }
         }
     }
 
@@ -269,8 +301,14 @@ class MediaCodecBridge {
         assert mediaCodec != null;
         mMediaCodec = mediaCodec;
         mBitrateAdjuster = bitrateAdjuster;
-        mUseAsyncApi = useAsyncApi;
 
+        try {
+            mMediaCodecName = mMediaCodec.getName();
+        } catch (IllegalStateException e) {
+            Log.e(TAG, "Cannot get codec name", e);
+        }
+
+        mUseAsyncApi = useAsyncApi;
         if (!mUseAsyncApi) return;
 
         enableAsyncApi();
@@ -367,9 +405,8 @@ class MediaCodecBridge {
             }
         }
         try {
-            String codecName = mMediaCodec.getName();
             // This logging is to help us identify hung MediaCodecs in crash reports.
-            Log.w(TAG, "Releasing: %s", codecName);
+            Log.w(TAG, "Releasing: %s", mMediaCodecName);
             mMediaCodec.release();
             Log.w(TAG, "Codec released");
         } catch (IllegalStateException e) {
@@ -455,6 +492,25 @@ class MediaCodecBridge {
     }
 
     @CalledByNative
+    @SuppressLint("NewApi")
+    private ObtainBlockResult obtainBlock(int capacity) {
+        MediaCodec.LinearBlock block = null;
+        ByteBuffer buffer = null;
+        try {
+            // TODO(crbug.com/327625558): Store as member to avoid frequent allocations.
+            String[] names = new String[1];
+            names[0] = mMediaCodecName;
+            block = MediaCodec.LinearBlock.obtain(capacity < 16 ? 16 : capacity, names);
+            if (block != null) {
+                buffer = block.map();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to obtain LinearBlock", e);
+        }
+        return new ObtainBlockResult(block, buffer);
+    }
+
+    @CalledByNative
     private int flush() {
         try {
             mMediaCodec.flush();
@@ -489,13 +545,7 @@ class MediaCodecBridge {
 
     @CalledByNative
     private String getName() {
-        String codecName = "unknown";
-        try {
-            codecName = mMediaCodec.getName();
-        } catch (IllegalStateException e) {
-            Log.e(TAG, "Cannot get codec name", e);
-        }
-        return codecName;
+        return mMediaCodecName;
     }
 
     @CalledByNative
@@ -556,6 +606,28 @@ class MediaCodecBridge {
             mMediaCodec.queueInputBuffer(index, offset, size, presentationTimeUs, flags);
         } catch (Exception e) {
             Log.e(TAG, "Failed to queue input buffer", e);
+            return MediaCodecStatus.ERROR;
+        }
+        return MediaCodecStatus.OK;
+    }
+
+    @CalledByNative
+    @SuppressLint("NewApi")
+    private int queueInputBlock(
+            int index,
+            MediaCodec.LinearBlock block,
+            int offset,
+            int size,
+            long presentationTimeUs,
+            int flags) {
+        try {
+            MediaCodec.QueueRequest request = mMediaCodec.getQueueRequest(index);
+            request.setLinearBlock(block, offset, size);
+            request.setPresentationTimeUs(presentationTimeUs);
+            request.setFlags(flags);
+            request.queue();
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to queue input block", e);
             return MediaCodecStatus.ERROR;
         }
         return MediaCodecStatus.OK;
@@ -811,20 +883,29 @@ class MediaCodecBridge {
         return size & ~(alignment - 1);
     }
 
+    @SuppressLint("NewApi")
     boolean configureVideo(MediaFormat format, Surface surface, MediaCrypto crypto, int flags) {
         try {
+            if ((flags & MediaCodec.CONFIGURE_FLAG_USE_BLOCK_MODEL) != 0) {
+                format.removeKey(MediaFormat.KEY_MAX_INPUT_SIZE);
+            }
+
             mMediaCodec.configure(format, surface, crypto, flags);
 
             MediaFormat inputFormat = mMediaCodec.getInputFormat();
 
-            // This is always provided by MediaFormatBuilder, but we should see if the input
-            // format has the real value.
-            mMaxInputSize = format.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE);
-            if (flags != MediaCodec.CONFIGURE_FLAG_ENCODE) {
-                if (inputFormat.containsKey(MediaFormat.KEY_MAX_INPUT_SIZE)) {
-                    mMaxInputSize = inputFormat.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE);
+            if ((flags & MediaCodec.CONFIGURE_FLAG_USE_BLOCK_MODEL) != 0) {
+                mMaxInputSize = Integer.MAX_VALUE;
+            } else {
+                // This is always provided by MediaFormatBuilder, but we should see if the input
+                // format has the real value.
+                mMaxInputSize = format.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE);
+                if (flags != MediaCodec.CONFIGURE_FLAG_ENCODE) {
+                    if (inputFormat.containsKey(MediaFormat.KEY_MAX_INPUT_SIZE)) {
+                        mMaxInputSize = inputFormat.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE);
+                    }
+                    return true;
                 }
-                return true;
             }
 
             // Non 16x16 aligned resolutions don't work well with the MediaCodec encoder
