@@ -298,7 +298,7 @@ TEST_P(PrefetchContainerTest, CreatePrefetchContainer) {
   EXPECT_TRUE(
       prefetch_container.IsIsolatedNetworkContextRequiredForCurrentPrefetch());
 
-  EXPECT_EQ(prefetch_container.GetPrefetchContainerKey(),
+  EXPECT_EQ(prefetch_container.key(),
             PrefetchContainer::Key(document_token, GURL("https://test.com")));
   EXPECT_FALSE(prefetch_container.GetNonRedirectHead());
 }
@@ -322,7 +322,7 @@ TEST_P(PrefetchContainerTest, CreatePrefetchContainer_Embedder) {
   EXPECT_TRUE(
       prefetch_container.IsIsolatedNetworkContextRequiredForCurrentPrefetch());
 
-  EXPECT_EQ(prefetch_container.GetPrefetchContainerKey(),
+  EXPECT_EQ(prefetch_container.key(),
             PrefetchContainer::Key(std::nullopt, GURL("https://test.com")));
   EXPECT_FALSE(prefetch_container.GetNonRedirectHead());
 }

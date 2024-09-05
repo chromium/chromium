@@ -44,8 +44,7 @@ class NoVarySearchHelperTester final {
     auto prefetch_container = CreatePrefetchContainer(
         referring_render_frame_host, document_token_, url, std::move(head));
     prefetches_[url] = prefetch_container;
-    prefetches_by_key_[prefetch_container->GetPrefetchContainerKey()] =
-        prefetch_container;
+    prefetches_by_key_[prefetch_container->key()] = prefetch_container;
 
     // Also add `PrefetchContainer` with different `DocumentToken`s, to test
     // that `PrefetchContainer` with different `DocumentToken`s are not
@@ -60,12 +59,12 @@ class NoVarySearchHelperTester final {
     auto next_prefetch_container = CreatePrefetchContainer(
         referring_render_frame_host, next_document_token_, url,
         head_for_different_document.Clone());
-    prefetches_by_key_[next_prefetch_container->GetPrefetchContainerKey()] =
+    prefetches_by_key_[next_prefetch_container->key()] =
         next_prefetch_container;
     auto prev_prefetch_container = CreatePrefetchContainer(
         referring_render_frame_host, prev_document_token_, url,
         std::move(head_for_different_document));
-    prefetches_by_key_[prev_prefetch_container->GetPrefetchContainerKey()] =
+    prefetches_by_key_[prev_prefetch_container->key()] =
         prev_prefetch_container;
 
     return prefetch_container.get();

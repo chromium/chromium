@@ -428,9 +428,8 @@ void PrefetchDocumentManager::PrefetchWillBeDestroyed(
               blink::mojom::SpeculationEagerness::kEager
           ? completed_eager_prefetches_
           : completed_non_eager_prefetches_;
-  auto it = base::ranges::find(
-      completed_prefetches, prefetch->GetPrefetchContainerKey(),
-      [&](const auto& p) { return p->GetPrefetchContainerKey(); });
+  auto it = base::ranges::find(completed_prefetches, prefetch->key(),
+                               [&](const auto& p) { return p->key(); });
   if (it != completed_prefetches.end()) {
     completed_prefetches.erase(it);
   }

@@ -140,8 +140,7 @@ PreloadingURLMatchCallback PreloadingDataImpl::GetPrefetchServiceMatcher(
 
         base::WeakPtr<PrefetchContainer> prefetch_container =
             prefetch_service->MatchUrl(predicted.WithNewUrl(navigated_url));
-        return prefetch_container &&
-               prefetch_container->GetPrefetchContainerKey() == predicted;
+        return prefetch_container && prefetch_container->key() == predicted;
       },
       prefetch_service.GetWeakPtr(), predicted);
 }

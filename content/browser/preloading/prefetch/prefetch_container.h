@@ -215,7 +215,7 @@ class CONTENT_EXPORT PrefetchContainer {
 
   void OnWillBeDestroyed();
 
-  const Key& GetPrefetchContainerKey() const { return key_; }
+  const Key& key() const { return key_; }
 
   // The ID of the RenderFrameHost that triggered the prefetch.
   const GlobalRenderFrameHostId& GetReferringRenderFrameHostId() const {

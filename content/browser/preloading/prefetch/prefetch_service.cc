@@ -341,7 +341,7 @@ void PrefetchService::AddPrefetchContainerWithoutStartingPrefetch(
   base::WeakPtr<PrefetchContainer> prefetch_container =
       owned_prefetch_container->GetWeakPtr();
   DCHECK(prefetch_container);
-  auto prefetch_container_key = prefetch_container->GetPrefetchContainerKey();
+  auto prefetch_container_key = prefetch_container->key();
 
   RecordExistingPrefetchWithMatchingURL(prefetch_container);
 
@@ -869,7 +869,7 @@ void PrefetchService::OnGotEligibilityForRedirect(
   // If the redirect is not eligible and the prefetch is not a decoy, then stop
   // the prefetch.
   if (!eligible && !prefetch_container->IsDecoy()) {
-    DCHECK(active_prefetch_ == prefetch_container->GetPrefetchContainerKey());
+    DCHECK(active_prefetch_ == prefetch_container->key());
     active_prefetch_ = std::nullopt;
     prefetch_container->GetStreamingURLLoader()->HandleRedirect(
         PrefetchRedirectStatus::kFail, redirect_info, std::move(redirect_head));
@@ -1009,12 +1009,11 @@ void PrefetchService::OnPrefetchTimeout(
 void PrefetchService::ResetPrefetch(
     base::WeakPtr<PrefetchContainer> prefetch_container) {
   CHECK(prefetch_container);
-  auto it =
-      owned_prefetches_.find(prefetch_container->GetPrefetchContainerKey());
+  auto it = owned_prefetches_.find(prefetch_container->key());
   CHECK(it != owned_prefetches_.end());
   CHECK_EQ(it->second.get(), prefetch_container.get());
 
-  if (active_prefetch_ == prefetch_container->GetPrefetchContainerKey()) {
+  if (active_prefetch_ == prefetch_container->key()) {
     active_prefetch_ = std::nullopt;
   }
 
@@ -1062,7 +1061,7 @@ void PrefetchService::StartSinglePrefetch(
     ResetPrefetch(prefetch_to_evict);
   }
 
-  active_prefetch_.emplace(prefetch_container->GetPrefetchContainerKey());
+  active_prefetch_.emplace(prefetch_container->key());
 
   if (!prefetch_container->IsDecoy()) {
     // The status is updated to be successful or failed when it finishes.
@@ -1183,7 +1182,7 @@ void PrefetchService::OnPrefetchRedirect(
     return;
   }
 
-  DCHECK(active_prefetch_ == prefetch_container->GetPrefetchContainerKey());
+  DCHECK(active_prefetch_ == prefetch_container->key());
 
   // Update the prefetch's referrer in case a redirect requires a change in
   // network context and a new request needs to be started.
@@ -1207,7 +1206,7 @@ void PrefetchService::OnPrefetchRedirect(
   }
 
   if (failure) {
-    DCHECK(active_prefetch_ == prefetch_container->GetPrefetchContainerKey());
+    DCHECK(active_prefetch_ == prefetch_container->key());
     active_prefetch_ = std::nullopt;
     prefetch_container->SetPrefetchStatus(
         PrefetchStatus::kPrefetchFailedInvalidRedirect);
@@ -1314,7 +1313,7 @@ void PrefetchService::OnPrefetchResponseCompleted(
     return;
   }
 
-  DCHECK(active_prefetch_ == prefetch_container->GetPrefetchContainerKey());
+  DCHECK(active_prefetch_ == prefetch_container->key());
   active_prefetch_ = std::nullopt;
 
   prefetch_container->OnPrefetchComplete(completion_status);

@@ -1686,8 +1686,7 @@ void PrefetchContainer::AddClientHintsHeaders(
 std::ostream& operator<<(std::ostream& ostream,
                          const PrefetchContainer& prefetch_container) {
   return ostream << "PrefetchContainer[" << &prefetch_container
-                 << ", Key=" << prefetch_container.GetPrefetchContainerKey()
-                 << "]";
+                 << ", Key=" << prefetch_container.key() << "]";
 }
 
 std::ostream& operator<<(std::ostream& ostream,

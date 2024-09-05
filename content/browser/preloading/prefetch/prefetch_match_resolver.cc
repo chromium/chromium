@@ -304,8 +304,7 @@ void PrefetchMatchResolver2::RegisterCandidate(
   candidate_data->cached_servable_state = servable_state;
   candidate_data->timeout_timer = nullptr;
 
-  candidates_[prefetch_container.GetPrefetchContainerKey()] =
-      std::move(candidate_data);
+  candidates_[prefetch_container.key()] = std::move(candidate_data);
 }
 
 void PrefetchMatchResolver2::StartWaitFor(
@@ -359,12 +358,12 @@ void PrefetchMatchResolver2::UnregisterCandidate(
 
 void PrefetchMatchResolver2::OnWillBeDestroyed(
     PrefetchContainer& prefetch_container) {
-  MaybeUnblockForUnmatch(prefetch_container.GetPrefetchContainerKey());
+  MaybeUnblockForUnmatch(prefetch_container.key());
 }
 
 void PrefetchMatchResolver2::OnDeterminedHead(
     PrefetchContainer& prefetch_container) {
-  CHECK(candidates_.contains(prefetch_container.GetPrefetchContainerKey()));
+  CHECK(candidates_.contains(prefetch_container.key()));
   CHECK(!prefetch_container.is_in_dtor());
 
   if (prefetch_container.CreateReader().HaveDefaultContextCookiesChanged()) {
@@ -379,7 +378,7 @@ void PrefetchMatchResolver2::OnDeterminedHead(
     case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
       NOTREACHED_NORETURN();
     case PrefetchContainer::ServableState::kNotServable:
-      MaybeUnblockForUnmatch(prefetch_container.GetPrefetchContainerKey());
+      MaybeUnblockForUnmatch(prefetch_container.key());
       return;
   }
 
@@ -389,17 +388,17 @@ void PrefetchMatchResolver2::OnDeterminedHead(
       prefetch_container.IsExactMatch(navigated_key_.url()) ||
       prefetch_container.IsNoVarySearchHeaderMatch(navigated_key_.url());
   if (!is_match) {
-    MaybeUnblockForUnmatch(prefetch_container.GetPrefetchContainerKey());
+    MaybeUnblockForUnmatch(prefetch_container.key());
     return;
   }
 
   if (prefetch_container.HasPrefetchBeenConsideredToServe()) {
-    MaybeUnblockForUnmatch(prefetch_container.GetPrefetchContainerKey());
+    MaybeUnblockForUnmatch(prefetch_container.key());
     return;
   }
 
   // Got matching and servable.
-  UnblockForMatch(prefetch_container.GetPrefetchContainerKey());
+  UnblockForMatch(prefetch_container.key());
 }
 
 void PrefetchMatchResolver2::OnTimeout(PrefetchContainer::Key prefetch_key) {
