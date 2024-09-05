@@ -9037,6 +9037,21 @@ TEST_F(TouchIdAuthenticatorImplTest, MakeCredential) {
   EXPECT_EQ(metadata.ToPublicKeyCredentialUserEntity(), expected_user);
 }
 
+TEST_F(TouchIdAuthenticatorImplTest, MakeCredentialUnsupportedAlgorithm) {
+  // crbug.com/362766319
+  NavigateAndCommit(GURL(kTestOrigin1));
+  mojo::Remote<blink::mojom::Authenticator> authenticator =
+      ConnectToAuthenticator();
+  auto options = GetTestPublicKeyCredentialCreationOptions();
+  options->authenticator_selection->authenticator_attachment =
+      device::AuthenticatorAttachment::kPlatform;
+  options->public_key_parameters = GetTestPublicKeyCredentialParameters(
+      static_cast<int32_t>(device::CoseAlgorithmIdentifier::kEdDSA));
+  touch_id_test_environment_.SimulateTouchIdPromptSuccess();
+  EXPECT_EQ(AuthenticatorMakeCredential(std::move(options)).status,
+            AuthenticatorStatus::NOT_ALLOWED_ERROR);
+}
+
 TEST_F(TouchIdAuthenticatorImplTest, OptionalUv) {
   NavigateAndCommit(GURL(kTestOrigin1));
   mojo::Remote<blink::mojom::Authenticator> authenticator =
