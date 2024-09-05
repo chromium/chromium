@@ -57,7 +57,9 @@ EqualsSuggestionMetadata(
   return AllOf(
       Field(&AutofillSuggestionDelegate::SuggestionMetadata::row, metadata.row),
       Field(&AutofillSuggestionDelegate::SuggestionMetadata::sub_popup_level,
-            metadata.sub_popup_level));
+            metadata.sub_popup_level),
+      Field(&AutofillSuggestionDelegate::SuggestionMetadata::from_search_result,
+            metadata.from_search_result));
 }
 
 using AutofillPopupControllerImplTest = AutofillSuggestionControllerTestBase<
@@ -585,7 +587,7 @@ TEST_F(AutofillPopupControllerImplTest, HideInMainFrameOnZoomChange) {
 }
 
 TEST_F(AutofillPopupControllerImplTest,
-       SuggestionFiltration_NoFilteringByDefault) {
+       SuggestionFiltering_NoFilteringByDefault) {
   AutofillPopupController& controller = client().popup_controller(manager());
   ShowSuggestions(manager(), {Suggestion(u"abc")});
 
@@ -594,7 +596,7 @@ TEST_F(AutofillPopupControllerImplTest,
 }
 
 TEST_F(AutofillPopupControllerImplTest,
-       SuggestionFiltration_SuggestionChangeNotifications) {
+       SuggestionFiltering_SuggestionChangeNotifications) {
   AutofillPopupController& controller = client().popup_controller(manager());
   ShowSuggestions(manager(), {
                                  Suggestion(u"abc"),
@@ -610,7 +612,7 @@ TEST_F(AutofillPopupControllerImplTest,
   controller.SetFilter(std::nullopt);
 }
 
-TEST_F(AutofillPopupControllerImplTest, SuggestionFiltration_MatchingMainText) {
+TEST_F(AutofillPopupControllerImplTest, SuggestionFiltering_MatchingMainText) {
   AutofillPopupController& controller = client().popup_controller(manager());
   ShowSuggestions(manager(), {
                                  Suggestion(u"abc"),
@@ -643,7 +645,7 @@ TEST_F(AutofillPopupControllerImplTest, SuggestionFiltration_MatchingMainText) {
 }
 
 TEST_F(AutofillPopupControllerImplTest,
-       SuggestionFiltration_SuggestionIsDeletedFromFilteredList) {
+       SuggestionFiltering_SuggestionIsDeletedFromFilteredList) {
   AutofillPopupController& controller = client().popup_controller(manager());
   ShowSuggestions(manager(), {
                                  Suggestion(u"abc"),
@@ -667,7 +669,7 @@ TEST_F(AutofillPopupControllerImplTest,
 }
 
 TEST_F(AutofillPopupControllerImplTest,
-       SuggestionFiltration_StaticSuggestionsAreNotFilteredOut) {
+       SuggestionFiltering_StaticSuggestionsAreNotFilteredOut) {
   using enum SuggestionType;
 
   Suggestion footer_suggestion1 = Suggestion(kSeparator);
@@ -706,7 +708,7 @@ TEST_F(AutofillPopupControllerImplTest,
 }
 
 TEST_F(AutofillPopupControllerImplTest,
-       SuggestionFiltration_HasFilteredOutSuggestions) {
+       SuggestionFiltering_HasFilteredOutSuggestions) {
   using enum SuggestionType;
 
   AutofillPopupController& controller = client().popup_controller(manager());
@@ -724,7 +726,7 @@ TEST_F(AutofillPopupControllerImplTest,
 
 TEST_F(
     AutofillPopupControllerImplTest,
-    SuggestionFiltration_PresentOnlyWithoutFilterSuggestionsAlwaysFilteredOut) {
+    SuggestionFiltering_PresentOnlyWithoutFilterSuggestionsAlwaysFilteredOut) {
   using enum SuggestionType;
   Suggestion suggestion1 = Suggestion(u"abcd", kAddressEntry);
   Suggestion suggestion2 = Suggestion(u"abcd", kAddressEntry);
@@ -738,6 +740,22 @@ TEST_F(
 
   controller.SetFilter(AutofillPopupController::SuggestionFilter(u"ab"));
   EXPECT_EQ(controller.GetSuggestions().size(), 1u);
+}
+
+TEST_F(AutofillPopupControllerImplTest,
+       SuggestionFiltering_NonEmptyFilterStatusIsPassedToDelegateOnAccepting) {
+  AutofillPopupController& controller = client().popup_controller(manager());
+  test_api(static_cast<AutofillPopupControllerImpl&>(controller))
+      .DisableThreshold(true);
+  ShowSuggestions(manager(),
+                  {Suggestion(u"main_text", SuggestionType::kAddressEntry)});
+
+  EXPECT_CALL(manager().external_delegate(),
+              DidAcceptSuggestion(
+                  _, EqualsSuggestionMetadata({.from_search_result = true})));
+
+  controller.SetFilter(AutofillPopupController::SuggestionFilter(u"main_text"));
+  controller.AcceptSuggestion(/*index=*/0);
 }
 
 TEST_F(AutofillPopupControllerImplTest, RemoveSuggestion) {

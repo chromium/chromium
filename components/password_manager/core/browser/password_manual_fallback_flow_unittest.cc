@@ -1205,13 +1205,17 @@ TEST_F(PasswordManualFallbackFlowTest, ShowPasswordDetails) {
 // The first parameter determines whether the suggestion is accepted or not.
 // The second parameter determines whether the field is classified as target
 // filling password or not.
+// The third parameter determines whether the suggestion is taken from a search
+// result list.
 class PasswordManualFallbackFlowFillAfterSuggestionMetricsTest
     : public PasswordManualFallbackFlowTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
   // If true, the test will simulate both showing and accepting a suggestion. If
   // false, the test will simulate only showing the suggestion.
   bool SuggestionAccepted() const { return std::get<0>(GetParam()); }
+
+  bool SuggestionFromSearchResult() const { return std::get<2>(GetParam()); }
 
   bool IsClassifiedAsTargetFillingPassword() const {
     return std::get<1>(GetParam());
@@ -1362,13 +1366,19 @@ TEST_P(PasswordManualFallbackFlowFillAfterSuggestionMetricsTest,
   autofill::Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
       SuggestionType::kPasswordFieldByFieldFilling, u"password");
   if (SuggestionAccepted()) {
-    ShowAndAcceptSuggestion(suggestion,
-                            AutofillSuggestionDelegate::SuggestionMetadata{
-                                .row = 0, .sub_popup_level = 0});
+    ShowAndAcceptSuggestion(
+        suggestion, AutofillSuggestionDelegate::SuggestionMetadata{
+                        .row = 0,
+                        .sub_popup_level = 0,
+                        .from_search_result = SuggestionFromSearchResult()});
+    histograms.ExpectUniqueSample(
+        "PasswordManager.ManualFallback.AcceptedSuggestion.SearchInputUsed",
+        SuggestionFromSearchResult(), 1);
   } else {
     flow().OnSuggestionsShown(base::span_from_ref(suggestion));
   }
-  // The metric is recorded only in the destructor of the metrics recorder.
+
+  // The metric of the metrics recorder is recorded only in the destructor.
   histograms.ExpectTotalCount(MetricName(), 0);
   ResetFlowAndMetricsRecorder();
   histograms.ExpectUniqueSample(MetricName(), SuggestionAccepted(), 1);
@@ -1377,12 +1387,13 @@ TEST_P(PasswordManualFallbackFlowFillAfterSuggestionMetricsTest,
 INSTANTIATE_TEST_SUITE_P(
     PasswordManualFallbackFlowTest,
     PasswordManualFallbackFlowFillAfterSuggestionMetricsTest,
-    ::testing::Combine(testing::Bool(), testing::Bool()),
-    [](const testing::TestParamInfo<std::tuple<bool, bool>>& info) {
+    ::testing::Combine(testing::Bool(), testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<std::tuple<bool, bool, bool>>& info) {
       return base::StrCat(
           {std::get<0>(info.param) ? "SuggestionAccepted" : "SuggestionShown",
            std::get<1>(info.param) ? "_ClassifiedAsTargetFilling"
-                                   : "_NotClassifiedAsTargetFilling"});
+                                   : "_NotClassifiedAsTargetFilling",
+           std::get<2>(info.param) ? "_WithSearchInput" : "_NoSearchInput"});
     });
 
 }  // namespace

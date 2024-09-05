@@ -10,6 +10,7 @@
 #include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
@@ -238,6 +239,11 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
       password_manager_driver_, field_id_);
   manual_fallback_metrics_recorder_->OnDidFillSuggestion(
       IsTriggerFieldRelevantInPasswordForm(form));
+
+  base::UmaHistogramBoolean(
+      "PasswordManager.ManualFallback.AcceptedSuggestion.SearchInputUsed",
+      metadata.from_search_result);
+
   switch (suggestion.type) {
     case autofill::SuggestionType::kPasswordEntry: {
       if (!form) {

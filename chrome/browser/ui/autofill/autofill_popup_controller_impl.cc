@@ -437,9 +437,11 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
   AutofillMetrics::LogPopupInteraction(suggestions_filling_product_,
                                        GetPopupLevel(),
                                        PopupInteraction::kSuggestionAccepted);
-  delegate_->DidAcceptSuggestion(
-      suggestion, AutofillSuggestionDelegate::SuggestionMetadata{
-                      .row = index, .sub_popup_level = GetPopupLevel()});
+  delegate_->DidAcceptSuggestion(suggestion,
+                                 AutofillSuggestionDelegate::SuggestionMetadata{
+                                     .row = index,
+                                     .sub_popup_level = GetPopupLevel(),
+                                     .from_search_result = !!filter_});
 }
 
 gfx::NativeView AutofillPopupControllerImpl::container_view() const {

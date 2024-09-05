@@ -32,6 +32,9 @@ class AutofillSuggestionDelegate {
     // On desktop, it defines the subpopup that contains the suggestion
     // selected.
     int sub_popup_level = 0;
+    // Defines whether the suggestion appeared on a search result list (i.e.
+    // the search input is not empty).
+    bool from_search_result = false;
   };
 
   virtual ~AutofillSuggestionDelegate() = default;
