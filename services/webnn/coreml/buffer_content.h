@@ -8,6 +8,8 @@
 #include <CoreML/CoreML.h>
 
 #include "base/containers/span.h"
+#include "base/functional/callback_forward.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 
 namespace webnn::coreml {
 
@@ -22,11 +24,11 @@ class API_AVAILABLE(macos(12.3)) BufferContent {
 
   ~BufferContent();
 
-  // TODO(crbug.com/333392274): Refactor this method to be async.
-  void Read(base::span<uint8_t> buffer) const;
+  void Read(
+      base::OnceCallback<void(mojo_base::BigBuffer)> result_callback) const;
 
-  // TODO(crbug.com/333392274): Refactor this method to be async.
-  void Write(base::span<const uint8_t> bytes_to_write);
+  void Write(base::span<const uint8_t> bytes_to_write,
+             base::OnceClosure done_closure);
 
   MLFeatureValue* AsFeatureValue() const;
 

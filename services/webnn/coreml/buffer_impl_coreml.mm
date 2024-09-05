@@ -142,18 +142,25 @@ void BufferImplCoreml::ReadBufferImpl(
       base::BindOnce(
           [](size_t bytes_to_read,
              scoped_refptr<QueueableResourceState<BufferContent>> buffer_state,
-             ReadBufferCallback callback,
+             ReadBufferCallback read_buffer_result_callback,
              base::OnceClosure completion_closure) {
             mojo_base::BigBuffer output_buffer(bytes_to_read);
 
-            // Read from the underlying resource, which is kept alive until
-            // `completion_closure` is run below.
-            buffer_state->GetSharedLockedResource().Read(output_buffer);
+            // Read from the underlying buffer contents, which are kept alive
+            // until `completion_closure` is run.
+            buffer_state->GetSharedLockedResource().Read(base::BindOnce(
+                [](base::OnceClosure completion_closure,
+                   ReadBufferCallback read_buffer_result_callback,
+                   mojo_base::BigBuffer output_buffer) {
+                  // Unlock the buffer contents.
+                  std::move(completion_closure).Run();
 
-            std::move(completion_closure).Run();
-
-            std::move(callback).Run(
-                mojom::ReadBufferResult::NewBuffer(std::move(output_buffer)));
+                  std::move(read_buffer_result_callback)
+                      .Run(mojom::ReadBufferResult::NewBuffer(
+                          std::move(output_buffer)));
+                },
+                std::move(completion_closure),
+                std::move(read_buffer_result_callback)));
           },
           /*bytes_to_read=*/PackedByteLength(), buffer_state_,
           std::move(callback)));
@@ -175,11 +182,10 @@ void BufferImplCoreml::WriteBufferImpl(mojo_base::BigBuffer src_buffer) {
           [](scoped_refptr<QueueableResourceState<BufferContent>> buffer_state,
              mojo_base::BigBuffer src_buffer,
              base::OnceClosure completion_closure) {
-            // Write to the underlying resource, which is kept alive until
-            // `completion_closure` is run below.
-            buffer_state->GetExclusivelyLockedResource()->Write(src_buffer);
-
-            std::move(completion_closure).Run();
+            // Write to the underlying buffer contents, which are kept alive
+            // until `completion_closure` is run.
+            buffer_state->GetExclusivelyLockedResource()->Write(
+                src_buffer, std::move(completion_closure));
           },
           buffer_state_, std::move(src_buffer)));
   task->Enqueue();

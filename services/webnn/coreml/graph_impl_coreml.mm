@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/apple/foundation_util.h"
+#include "base/barrier_callback.h"
 #include "base/command_line.h"
 #include "base/dcheck_is_on.h"
 #include "base/files/file.h"
@@ -467,8 +468,24 @@ void GraphImplCoreml::DidPredictFromCompute(
 
   // Read back the outputs.
   base::ElapsedTimer model_output_read_timer;
-  std::vector<std::pair<std::string, mojo_base::BigBuffer>> named_outputs(
-      output_features.featureNames.count);
+
+  auto barrier_callback =
+      base::BarrierCallback<std::pair<std::string, mojo_base::BigBuffer>>(
+          output_features.featureNames.count,
+          base::BindOnce(
+              [](mojom::WebNNGraph::ComputeCallback callback,
+                 base::ElapsedTimer model_output_read_timer,
+                 std::vector<std::pair<std::string, mojo_base::BigBuffer>>
+                     named_outputs) {
+                UMA_HISTOGRAM_MEDIUM_TIMES(
+                    "WebNN.CoreML.TimingMs.ModelOutputRead",
+                    model_output_read_timer.Elapsed());
+
+                std::move(callback).Run(mojom::ComputeResult::NewNamedOutputs(
+                    std::move(named_outputs)));
+              },
+              std::move(callback), std::move(model_output_read_timer)));
+
   for (NSString* feature_name in output_features.featureNames) {
     MLFeatureValue* feature_value =
         [output_features featureValueForName:feature_name];
@@ -479,14 +496,17 @@ void GraphImplCoreml::DidPredictFromCompute(
     mojo_base::BigBuffer output_buffer(compute_resource_info()
                                            .output_names_to_descriptors.at(name)
                                            .PackedByteLength());
-    ReadFromMLMultiArray(multi_array_value, output_buffer);
-    named_outputs.emplace_back(name, std::move(output_buffer));
+    ReadFromMLMultiArray(
+        multi_array_value,
+        base::BindOnce(
+            [](base::OnceCallback<void(
+                   std::pair<std::string, mojo_base::BigBuffer>)> callback,
+               std::string name, mojo_base::BigBuffer buffer) {
+              std::move(callback).Run(
+                  std::make_pair(std::move(name), std::move(buffer)));
+            },
+            barrier_callback, std::move(name)));
   }
-
-  UMA_HISTOGRAM_MEDIUM_TIMES("WebNN.CoreML.TimingMs.ModelOutputRead",
-                             model_output_read_timer.Elapsed());
-  std::move(callback).Run(
-      mojom::ComputeResult::NewNamedOutputs(std::move(named_outputs)));
 }
 
 void GraphImplCoreml::DispatchImpl(

@@ -6,6 +6,7 @@
 
 #import <CoreML/CoreML.h>
 
+#include "base/functional/callback.h"
 #include "services/webnn/coreml/utils_coreml.h"
 
 namespace webnn::coreml {
@@ -15,12 +16,14 @@ BufferContent::BufferContent(MLMultiArray* multi_array)
 
 BufferContent::~BufferContent() = default;
 
-void BufferContent::Read(base::span<uint8_t> buffer) const {
-  ReadFromMLMultiArray(multi_array_, buffer);
+void BufferContent::Read(
+    base::OnceCallback<void(mojo_base::BigBuffer)> result_callback) const {
+  ReadFromMLMultiArray(multi_array_, std::move(result_callback));
 }
 
-void BufferContent::Write(base::span<const uint8_t> bytes_to_write) {
-  WriteToMLMultiArray(multi_array_, bytes_to_write);
+void BufferContent::Write(base::span<const uint8_t> bytes_to_write,
+                          base::OnceClosure done_closure) {
+  WriteToMLMultiArray(multi_array_, bytes_to_write, std::move(done_closure));
 }
 
 MLFeatureValue* BufferContent::AsFeatureValue() const {
