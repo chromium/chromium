@@ -75,6 +75,8 @@ const char kForceHighContrast[] = "force-high-contrast";
 
 // The language file that we want to try to open. Of the form
 // language[-country] where language is the 2 letter code from ISO-639.
+// On Linux, this flag does not work; use the LC_*/LANG environment variables
+// instead.
 const char kLang[] = "lang";
 
 // Transform localized strings to be longer, with beginning and end markers to
