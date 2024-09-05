@@ -458,6 +458,21 @@
             ]
         }
     ],
+    "AndroidHubSearch": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidHubSearch"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidLowLatencyCanvas": [
         {
             "platforms": [

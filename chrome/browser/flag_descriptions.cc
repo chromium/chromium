@@ -4228,6 +4228,10 @@ const char kAndroidHubFloatingActionButtonName[] =
 const char kAndroidHubFloatingActionButtonDescription[] =
     "Makes the main action button of a pane a floating action button.";
 
+const char kAndroidHubSearchName[] = "Android Hub Search";
+const char kAndroidHubSearchDescription[] =
+    "Enables searching through the hub.";
+
 const char kAndroidHubV2Name[] = "Android Hub V2";
 const char kAndroidHubV2Description[] = "Improvements to the Hub UI surface.";
 

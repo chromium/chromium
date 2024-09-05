@@ -2472,6 +2472,9 @@ extern const char kAndroidGoogleSansTextDescription[];
 extern const char kAndroidHubFloatingActionButtonName[];
 extern const char kAndroidHubFloatingActionButtonDescription[];
 
+extern const char kAndroidHubSearchName[];
+extern const char kAndroidHubSearchDescription[];
+
 extern const char kAndroidHubV2Name[];
 extern const char kAndroidHubV2Description[];
 

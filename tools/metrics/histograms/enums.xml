@@ -22049,6 +22049,7 @@ from previous Chrome versions.
   <int value="601875786" label="PageVisibilityPageContentAnnotations:enabled"/>
   <int value="602117675" label="NTPBookmarkSuggestions:enabled"/>
   <int value="602452004" label="WebBluetoothBondOnDemand:disabled"/>
+  <int value="603275624" label="AndroidHubSearch:enabled"/>
   <int value="603326800" label="UsePasswordSeparatedSigninFlow:enabled"/>
   <int value="603897763" label="AutofillPageLanguageDetection:disabled"/>
   <int value="603988014" label="NetworkService:enabled"/>
@@ -24629,6 +24630,7 @@ from previous Chrome versions.
   <int value="1668006393"
       label="AutofillShowAutocompleteDeleteButton:disabled"/>
   <int value="1668611601" label="enable-encrypted-media"/>
+  <int value="1668765771" label="AndroidHubSearch:disabled"/>
   <int value="1669522336"
       label="ExperimentalAccessibilityDictationContextChecking:disabled"/>
   <int value="1669767166" label="NewTabPageBackgrounds:disabled"/>

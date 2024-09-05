@@ -184,6 +184,11 @@
     "expiry_milestone": 131
   },
   {
+    "name": "android-hub-search",
+    "owners": [ "wylieb@google.com", "clank-tab-dev@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "android-hub-v2",
     "owners": [ "clank-hub-dev@google.com" ],
     "expiry_milestone": 131

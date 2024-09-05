@@ -176,6 +176,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidElegantTextHeight,
     &kAndroidGoogleSansText,
     &kAndroidHubFloatingActionButton,
+    &kAndroidHubSearch,
     &kAndroidHubV2,
     &kAndroidImprovedBookmarks,
     &kAndroidNoVisibleHintForDifferentTLD,
@@ -451,6 +452,10 @@ BASE_FEATURE(kAndroidGoogleSansText,
 
 BASE_FEATURE(kAndroidHubFloatingActionButton,
              "AndroidHubFloatingActionButton",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidHubSearch,
+             "AndroidHubSearch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidHubV2, "AndroidHubV2", base::FEATURE_DISABLED_BY_DEFAULT);

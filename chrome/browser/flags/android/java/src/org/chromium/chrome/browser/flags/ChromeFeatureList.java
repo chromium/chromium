@@ -167,6 +167,7 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_GOOGLE_SANS_TEXT = "AndroidGoogleSansText";
     public static final String ANDROID_HUB_FLOATING_ACTION_BUTTON =
             "AndroidHubFloatingActionButton";
+    public static final String ANDROID_HUB_SEARCH = "AndroidHubSearch";
     public static final String ANDROID_HUB_V2 = "AndroidHubV2";
     public static final String ANDROID_IMPROVED_BOOKMARKS = "AndroidImprovedBookmarks";
     public static final String ANDROID_NO_VISIBLE_HINT_FOR_DIFFERENT_TLD =
@@ -556,6 +557,11 @@ public abstract class ChromeFeatureList {
                     ANDROID_HUB_FLOATING_ACTION_BUTTON,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
+    public static final CachedFlag sAndroidHubSearch =
+            newCachedFlag(
+                    ANDROID_HUB_SEARCH,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ false);
     public static final CachedFlag sAndroidHubV2 = newCachedFlag(ANDROID_HUB_V2, false);
     public static final CachedFlag sAndroidTabDeclutterDedupeTabIdsKillSwitch =
             newCachedFlag(ANDROID_TAB_DECLUTTER_DEDUPE_TAB_IDS_KILL_SWITCH, true);
@@ -724,8 +730,9 @@ public abstract class ChromeFeatureList {
                     sAndroidElegantTextHeight,
                     sAndroidGoogleSansText,
                     sAndroidHubFloatingActionButton,
-                    sAndroidTabDeclutterDedupeTabIdsKillSwitch,
+                    sAndroidHubSearch,
                     sAndroidHubV2,
+                    sAndroidTabDeclutterDedupeTabIdsKillSwitch,
                     sAppSpecificHistory,
                     sAsyncNotificationManager,
                     sAuxiliarySearchThirdParty,

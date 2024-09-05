@@ -10887,6 +10887,10 @@ const FeatureEntry kFeatureEntries[] = {
          kAndroidHubFloatingActionButtonVariations,
          "AndroidHubFloatingActionButton")},
 
+    {"android-hub-search", flag_descriptions::kAndroidHubSearchName,
+     flag_descriptions::kAndroidHubSearchDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidHubSearch)},
+
     {"android-hub-v2", flag_descriptions::kAndroidHubV2Name,
      flag_descriptions::kAndroidHubV2Description, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAndroidHubV2,
