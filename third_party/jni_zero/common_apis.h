@@ -25,6 +25,34 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobjectArray> MapToArray(
 JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject> ArrayToMap(
     JNIEnv* env,
     const JavaRef<jobjectArray>& array);
+
+JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject>
+ListGet(JNIEnv* env, const JavaRef<jobject>& list, jint idx);
+
+JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject> ListSet(
+    JNIEnv* env,
+    const JavaRef<jobject>& list,
+    jint idx,
+    const JavaRef<jobject>& value);
+
+JNI_ZERO_COMPONENT_BUILD_EXPORT void ListAdd(JNIEnv* env,
+                                             const JavaRef<jobject>& list,
+                                             const JavaRef<jobject>& value);
+
+JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject>
+MapGet(JNIEnv* env, const JavaRef<jobject>& map, const JavaRef<jobject>& key);
+
+JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject> SetMapAt(
+    JNIEnv* env,
+    const JavaRef<jobject>& map,
+    const JavaRef<jobject>& key,
+    const JavaRef<jobject>& value);
+
+JNI_ZERO_COMPONENT_BUILD_EXPORT jint
+CollectionSize(JNIEnv* env, const JavaRef<jobject>& collection);
+
+JNI_ZERO_COMPONENT_BUILD_EXPORT jint MapSize(JNIEnv* env,
+                                             const JavaRef<jobject>& map);
 }  // namespace jni_zero
 
 #endif  // JNI_ZERO_COMMON_APIS_H_
