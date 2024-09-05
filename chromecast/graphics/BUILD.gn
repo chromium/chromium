@@ -2,8 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/config/ui.gni")
 import("//chromecast/chromecast.gni")
+import("//chromecast/starboard/starboard.gni")
 import("//testing/test.gni")
 
 cast_source_set("graphics") {
@@ -45,6 +47,7 @@ cast_source_set("graphics") {
 
     deps += [
       "//chromecast:chromecast_buildflags",
+      "//chromecast/starboard/chromecast/events:ui_event_source",
       "//components/viz/common",
       "//ui/base/ime/init",
       "//ui/events:gesture_detection",
@@ -53,6 +56,15 @@ cast_source_set("graphics") {
       "//ui/wm",
       "//ui/wm/public",
     ]
+
+    # These deps provide an implementation of UiEventSource::Create().
+    if (enable_starboard_graphics && !remove_starboard_headers) {
+      deps +=
+          [ "//chromecast/starboard/chromecast/events:starboard_event_source" ]
+    } else {
+      deps +=
+          [ "//chromecast/starboard/chromecast/events:dummy_ui_event_source" ]
+    }
   } else {
     public_deps += [ ":default_window_manager" ]
   }

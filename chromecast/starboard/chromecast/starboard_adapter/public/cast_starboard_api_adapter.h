@@ -17,6 +17,7 @@ using SbWindow = void*;
 #include <starboard/egl.h>
 #include <starboard/event.h>
 #include <starboard/export.h>
+#include <starboard/input.h>
 #endif  // BUILDFLAG(REMOVE_STARBOARD_HEADERS)
 
 namespace chromecast {
@@ -44,6 +45,10 @@ class __attribute__((visibility("default"))) CastStarboardApiAdapter {
   virtual void Subscribe(void* context,
                          void (*callback)(void* context,
                                           const SbEvent* event)) = 0;
+
+  // Removes a `context` which was previously provided to `Subscribe`. The
+  // `context` will no longer receive events.
+  virtual void Unsubscribe(void* context) = 0;
 
   // Gets the SbEglDisplay associated with the internally managed context.
   virtual SbEglNativeDisplayType GetEglNativeDisplayType() = 0;

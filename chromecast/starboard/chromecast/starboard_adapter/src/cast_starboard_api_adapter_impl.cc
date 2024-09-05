@@ -47,6 +47,8 @@ void CastStarboardApiAdapterImpl::SbEventHandle(const SbEvent* event) {
 
 #if SB_API_VERSION >= 15
 void CastStarboardApiAdapterImpl::SbEventHandleInternal(const SbEvent* event) {
+  // If multiple instances of Starboard become supported, |event->window| may
+  // need to be checked here for some types before propagating.
   switch (event->type) {
     case kSbEventTypeStart:
       init_p_.set_value(true);
@@ -99,6 +101,11 @@ void CastStarboardApiAdapterImpl::Subscribe(void* context,
                                             CastStarboardApiAdapterImplCB cb) {
   std::lock_guard<decltype(lock_)> lock(lock_);
   subscribers_.insert({context, cb});
+}
+
+void CastStarboardApiAdapterImpl::Unsubscribe(void* context) {
+  std::lock_guard<decltype(lock_)> lock(lock_);
+  subscribers_.erase(context);
 }
 
 SbWindow CastStarboardApiAdapterImpl::GetWindow(

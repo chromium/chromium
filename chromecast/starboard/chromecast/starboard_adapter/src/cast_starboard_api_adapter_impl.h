@@ -39,6 +39,7 @@ class CastStarboardApiAdapterImpl : public CastStarboardApiAdapter {
   bool EnsureInitialized() override;
   void Subscribe(void* context,
                  CastStarboardApiAdapterImplCB callback) override;
+  void Unsubscribe(void* context) override;
   SbEglNativeDisplayType GetEglNativeDisplayType() override;
   SbWindow GetWindow(const SbWindowOptions*) override;
 
