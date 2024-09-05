@@ -344,6 +344,21 @@
             ]
         }
     ],
+    "AndroidAutofillPrefillRequestsForChangePassword": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidAutofillPrefillRequestsForChangePassword"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidBackPressRefactor": [
         {
             "platforms": [
