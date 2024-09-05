@@ -145,6 +145,7 @@ class ManagedUserProfileNoticeHandler
   signin::SigninChoiceWithConfirmationCallback
       process_user_choice_with_confirmation_callback_;
   base::OnceClosure done_callback_;
+  bool canceling_ = false;
   base::WeakPtrFactory<ManagedUserProfileNoticeHandler> weak_ptr_factory_{this};
 };
 
