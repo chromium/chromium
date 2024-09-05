@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_CHROME_BACKUP_AGENT_H_
-#define CHROME_BROWSER_ANDROID_CHROME_BACKUP_AGENT_H_
+#ifndef CHROME_BROWSER_ANDROID_BACKUP_CHROME_BACKUP_AGENT_H_
+#define CHROME_BROWSER_ANDROID_BACKUP_CHROME_BACKUP_AGENT_H_
 
 #include <string>
 
@@ -22,4 +22,4 @@ void SetDict(PrefService* pref_service,
 
 }  // namespace chrome_backup_agent
 
-#endif  // CHROME_BROWSER_ANDROID_CHROME_BACKUP_AGENT_H_
+#endif  // CHROME_BROWSER_ANDROID_BACKUP_CHROME_BACKUP_AGENT_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser;
+package org.chromium.chrome.browser.backup;
 
 import android.app.backup.BackupManager;
 import android.content.Context;
@@ -26,7 +26,7 @@ import org.chromium.components.sync.internal.SyncPrefNames;
  * key/value backup.
  */
 @JNINamespace("android")
-public class ChromeBackupWatcher {
+class ChromeBackupWatcher {
     private final BackupManager mBackupManager;
     private final PrefChangeRegistrar mPrefChangeRegistrar;
 

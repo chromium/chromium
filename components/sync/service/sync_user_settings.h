@@ -20,7 +20,7 @@ namespace syncer {
 
 class Nigori;
 
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.sync
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
