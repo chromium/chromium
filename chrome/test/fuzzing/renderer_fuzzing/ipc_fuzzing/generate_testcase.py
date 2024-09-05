@@ -248,7 +248,12 @@ def run_ipc_dumper(dumper_path: str, out_file: str):
   args = [XVFB_PATH, os.path.abspath(dumper_path)]
   # TODO(349980051): crbug.com/349980051: when ubsan is enabled by default in
   # ASAN enabled builds, we had timeout issues running this binary.
-  subprocess.run(args, capture_output=True, env=env, check=True)
+  try:
+    subprocess.run(args, capture_output=True, env=env, check=True)
+  except subprocess.CalledProcessError as e:
+    raise Exception(f'Command {args} failed (ret {e.returncode}) with:'
+                    f'{e.output.decode(sys.getfilesystemencoding())}'
+                    f'{e.stderr.decode(sys.getfilesystemencoding())}')
 
 
 def generate_interfaces(ipc_interfaces_dumper: str,
