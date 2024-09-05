@@ -95,6 +95,7 @@
           # https://crbug.com/361042311
           '--gtest_filter=-All/SharedStorageChromeBrowserTest.CrossOriginWorklet_SelectURL_Success/*',
         ],
+        'experiment_percentage': 100, # https://crbug.com/345100678
       },
       'android-asan': {
         'swarming': {
