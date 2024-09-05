@@ -34,7 +34,7 @@ const char kHistogramParseStartSuffix[] = "ParseTiming.NavigationToParseStart";
 
 const char kSuffixFirstNavigation[] = ".IsFirstNavigation";
 const char kSuffixSubsequentNavigation[] = ".IsSubsequentNavigation";
-const char kSuffixIsNewTab[] = ".IsNewTab";
+const char kSuffixFromNewTabPage[] = ".FromNewTabPage";
 const char kSuffixIsBrowserStarting[] = ".IsBrowserStarting";
 
 }  // namespace internal

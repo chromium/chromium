@@ -212,6 +212,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/abandoned_page_load_metrics_observer.h:NavigationMilestone) -->
 
+<!-- LINT.IfChange(NavigationSourceTypeEnum) -->
+
+<enum name="NavigationSourceTypeEnum">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kFromNewTabPage"/>
+  <int value="2" label="kStartedInBackground"/>
+  <int value="3" label="kStartedInBackgroundFromNewTabPage"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/gws_page_load_metrics_observer.h:NavigationSourceType) -->
+
 <enum name="OriginTrialStatusChange">
   <int value="0"
       label="kDisabled: Origin-specific origin trial token was disabled (i.e.

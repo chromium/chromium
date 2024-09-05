@@ -42,6 +42,23 @@ extern const char kHistogramGWSDomainLookupEnd[];
 class GWSPageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
+  // The source of the navigation. Specifically keeps track of special cases
+  // such as the navigtation started from NewTabPage, or if the navigation
+  // started in the background.
+  //
+  // These values are persisted to logs. Entries should not be renumbered
+  // and numeric values should never be reused.
+  //
+  // LINT.IfChange(NavigationSourceType)
+  enum NavigationSourceType {
+    kUnknown,
+    kFromNewTabPage,
+    kStartedInBackground,
+    kStartedInBackgroundFromNewTabPage,
+    kMaxValue = kStartedInBackground,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:NavigationSourceTypeEnum)
+
   GWSPageLoadMetricsObserver();
 
   GWSPageLoadMetricsObserver(const GWSPageLoadMetricsObserver&) = delete;
@@ -86,7 +103,7 @@ class GWSPageLoadMetricsObserver
   }
 
   void SetNewTabPageForTesting(bool is_new_tab_page) {
-    is_new_tab_page_ = is_new_tab_page;
+    source_type_ = kFromNewTabPage;
   }
 
  private:
@@ -94,12 +111,18 @@ class GWSPageLoadMetricsObserver
   void RecordNavigationTimingHistograms();
   void RecordLatencyTraceEvents();
 
+  // Records the histograms required before commit. This is to ensure that we
+  // are getting the metrics only for GWS navigations.
+  void RecordPreCommitHistograms();
+
+  bool IsFromNewTabPage(content::NavigationHandle* navigation_handle);
   std::string AddHistogramSuffix(const std::string histogram_name);
 
   content::NavigationHandleTiming navigation_handle_timing_;
 
   bool is_first_navigation_ = false;
-  bool is_new_tab_page_ = false;
+
+  NavigationSourceType source_type_ = kUnknown;
 
   std::optional<base::TimeDelta> aft_start_time_;
   std::optional<base::TimeDelta> aft_end_time_;

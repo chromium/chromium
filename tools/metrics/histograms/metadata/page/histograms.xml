@@ -203,7 +203,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="TabInitializationStatus">
   <variant name="" summary="any"/>
-  <variant name=".IsNewTab" summary="navigation directly after a new tab"/>
+  <variant name=".FromNewTabPage" summary="navigation from new tab page"/>
 </variants>
 
 <!-- LINT.IfChange(TopChromeWebUIName) -->
@@ -1289,6 +1289,17 @@ chromium-metrics-reviews@google.com.
   <token key="BrowserInitializationStatus"
       variants="BrowserInitializationStatus"/>
   <token key="TabInitializationStatus" variants="TabInitializationStatus"/>
+</histogram>
+
+<histogram name="PageLoad.Clients.GoogleSearch.NavigationSourceType"
+    enum="NavigationSourceTypeEnum" expires_after="2025-08-01">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The type of source which the navigation started from, for Google Search page
+    loads. This is only recorded for Search navigations and is recorded once
+    after navigation commit.
+  </summary>
 </histogram>
 
 <histogram

@@ -15,12 +15,14 @@
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/page_load_metrics/observers/histogram_suffixes.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "components/page_load_metrics/google/browser/gws_abandoned_page_load_metrics_observer.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/site_instance.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
@@ -86,7 +88,23 @@ const char kHistogramGWSSCT[] = HISTOGRAM_PREFIX "CSI.SearchContentTime";
 const char kHistogramGWSTimeBetweenHCTAndSCT[] =
     HISTOGRAM_PREFIX "CSI.TimeBetweenHCTAndSCT";
 
+const char kHistogramGWSNavigationSourceType[] =
+    HISTOGRAM_PREFIX "NavigationSourceType";
+
 }  // namespace internal
+
+namespace {
+bool IsNavigationFromNewTabPage(
+    GWSPageLoadMetricsObserver::NavigationSourceType type) {
+  switch (type) {
+    case GWSPageLoadMetricsObserver::kFromNewTabPage:
+    case GWSPageLoadMetricsObserver::kStartedInBackgroundFromNewTabPage:
+      return true;
+    default:
+      return false;
+  }
+}
+}  // namespace
 
 GWSPageLoadMetricsObserver::GWSPageLoadMetricsObserver() {
   static bool is_first_navigation = true;
@@ -100,18 +118,22 @@ GWSPageLoadMetricsObserver::OnStart(
     const GURL& currently_committed_url,
     bool started_in_foreground) {
   navigation_id_ = navigation_handle->GetNavigationId();
-  auto* navigation_userdata =
-      page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
-          *navigation_handle);
-  if (navigation_userdata && navigation_userdata->navigation_type() ==
-                                 page_load_metrics::NavigationHandleUserData::
-                                     InitiatorLocation::kNewTabPage) {
-    is_new_tab_page_ = true;
-  }
-
   if (page_load_metrics::IsGoogleSearchResultUrl(navigation_handle->GetURL())) {
     // Emit a trigger to allow trace collection tied to gws navigations.
     base::trace_event::EmitNamedTrigger("gws-navigation-start");
+  }
+
+  // Determine the source of the navigation. Since `kFromNewTabPage` and
+  // kStartedInBackground` may not be mutual exclusive, we also consider the
+  // case where both cases may be satisfied (i.e. check if the
+  // navigation comes from background and was from NTP).
+  if (IsFromNewTabPage(navigation_handle)) {
+    source_type_ = kFromNewTabPage;
+  }
+  if (!started_in_foreground) {
+    source_type_ = source_type_ == kFromNewTabPage
+                       ? kStartedInBackgroundFromNewTabPage
+                       : kStartedInBackground;
   }
 
   return CONTINUE_OBSERVING;
@@ -126,6 +148,7 @@ GWSPageLoadMetricsObserver::OnCommit(
   }
 
   navigation_handle_timing_ = navigation_handle->GetNavigationHandleTiming();
+  RecordPreCommitHistograms();
   return CONTINUE_OBSERVING;
 }
 
@@ -376,6 +399,25 @@ void GWSPageLoadMetricsObserver::RecordNavigationTimingHistograms() {
       TRACE_ID_LOCAL(this), timing.final_loader_callback_time);
 }
 
+void GWSPageLoadMetricsObserver::RecordPreCommitHistograms() {
+  base::UmaHistogramEnumeration(internal::kHistogramGWSNavigationSourceType,
+                                source_type_);
+}
+
+bool GWSPageLoadMetricsObserver::IsFromNewTabPage(
+    content::NavigationHandle* navigation_handle) {
+  auto* start_instance = navigation_handle->GetStartingSiteInstance();
+  if (!start_instance) {
+    return false;
+  }
+
+  auto origin = start_instance->GetSiteURL();
+
+  GURL ntp_url(chrome::kChromeUINewTabPageURL);
+  return ntp_url.scheme_piece() == origin.scheme_piece() &&
+         ntp_url.host_piece() == origin.host_piece();
+}
+
 std::string GWSPageLoadMetricsObserver::AddHistogramSuffix(
     const std::string histogram_name) {
   std::string suffix =
@@ -385,8 +427,8 @@ std::string GWSPageLoadMetricsObserver::AddHistogramSuffix(
     suffix += internal::kSuffixIsBrowserStarting;
   }
 
-  if (is_new_tab_page_) {
-    suffix += internal::kSuffixIsNewTab;
+  if (IsNavigationFromNewTabPage(source_type_)) {
+    suffix += internal::kSuffixFromNewTabPage;
   }
 
   return histogram_name + suffix;

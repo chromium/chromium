@@ -25,7 +25,7 @@ extern const char kHistogramParseStartSuffix[];
 
 extern const char kSuffixFirstNavigation[];
 extern const char kSuffixSubsequentNavigation[];
-extern const char kSuffixIsNewTab[];
+extern const char kSuffixFromNewTabPage[];
 
 extern const char kSuffixIsBrowserStarting[];
 

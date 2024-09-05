@@ -69,7 +69,7 @@ class GWSPageLoadMetricsObserverTest
 
   std::string AddHistogramSuffix(const std::string& metric_name) {
     return metric_name + internal::kSuffixFirstNavigation +
-           internal::kSuffixIsNewTab;
+           internal::kSuffixFromNewTabPage;
   }
 
  protected:
