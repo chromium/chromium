@@ -206,7 +206,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Add prerendering.
   GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
-  int host_id = prerender_helper().AddPrerender(prerender_url);
+  content::FrameTreeNodeId host_id =
+      prerender_helper().AddPrerender(prerender_url);
   content::RenderFrameHost* prerendered_frame_host =
       prerender_helper().GetPrerenderedMainFrameHost(host_id);
 

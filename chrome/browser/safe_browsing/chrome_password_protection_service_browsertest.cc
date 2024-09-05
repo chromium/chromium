@@ -1253,8 +1253,7 @@ IN_PROC_BROWSER_TEST_F(
   const GURL kPrerenderUrl = embedded_test_server()->GetURL("/simple.html");
   prerender_helper_.AddPrerender(kPrerenderUrl);
 
-  ASSERT_NE(prerender_helper_.GetHostForUrl(kPrerenderUrl),
-            content::RenderFrameHost::kNoFrameTreeNodeId);
+  ASSERT_TRUE(prerender_helper_.GetHostForUrl(kPrerenderUrl));
 
   // Navigate to the prerendered URL. Ensure the activation navigation is
   // deferred until the request finishes without showing a modal.

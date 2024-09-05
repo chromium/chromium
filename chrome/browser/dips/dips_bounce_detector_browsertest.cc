@@ -936,7 +936,8 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   const GURL prerendering_url =
       embedded_test_server()->GetURL("a.test", "/title2.html");
-  const int host_id = prerender_test_helper()->AddPrerender(prerendering_url);
+  const content::FrameTreeNodeId host_id =
+      prerender_test_helper()->AddPrerender(prerendering_url);
   prerender_test_helper()->WaitForPrerenderLoadCompletion(prerendering_url);
   content::test::PrerenderHostObserver observer(*GetActiveWebContents(),
                                                 host_id);
@@ -978,7 +979,8 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
       embedded_test_server()->GetURL("a.test", "/set_cookie_header.html");
   URLCookieAccessObserver observer(GetActiveWebContents(), prerendering_url,
                                    CookieOperation::kChange);
-  const int host_id = prerender_test_helper()->AddPrerender(prerendering_url);
+  const content::FrameTreeNodeId host_id =
+      prerender_test_helper()->AddPrerender(prerendering_url);
   prerender_test_helper()->WaitForPrerenderLoadCompletion(prerendering_url);
   observer.Wait();
 
@@ -2315,7 +2317,8 @@ IN_PROC_BROWSER_TEST_P(DIPSSiteDataAccessDetectorTest,
       content::NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
 
   const GURL prerendering_url = TestServer()->GetURL("a.test", "/title2.html");
-  const int host_id = prerender_test_helper()->AddPrerender(prerendering_url);
+  const content::FrameTreeNodeId host_id =
+      prerender_test_helper()->AddPrerender(prerendering_url);
   prerender_test_helper()->WaitForPrerenderLoadCompletion(prerendering_url);
   content::test::PrerenderHostObserver observer(*GetActiveWebContents(),
                                                 host_id);

@@ -1242,8 +1242,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderDataSaverProtocolTest,
   prerender_helper()->AddPrerenderAsync(prerendering_url);
   observer.WaitForTrigger(prerendering_url);
 
-  int host_id = prerender_helper()->GetHostForUrl(prerendering_url);
-  EXPECT_EQ(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+  content::FrameTreeNodeId host_id =
+      prerender_helper()->GetHostForUrl(prerendering_url);
+  EXPECT_TRUE(host_id.is_null());
 
   SendCommandAsync("Preload.enable");
   const base::Value::Dict result =

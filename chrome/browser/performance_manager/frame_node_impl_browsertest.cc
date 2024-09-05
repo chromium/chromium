@@ -403,7 +403,8 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplPrerenderBrowserTest,
             content::RenderFrameHost::LifecycleState::kActive);
 
   // Create the prerendered frame.
-  int host_id = prerender_test_helper_.AddPrerender(kPrerenderUrl);
+  content::FrameTreeNodeId host_id =
+      prerender_test_helper_.AddPrerender(kPrerenderUrl);
   content::RenderFrameHost* prerender_rfh =
       prerender_test_helper_.GetPrerenderedMainFrameHost(host_id);
   ASSERT_TRUE(prerender_rfh);

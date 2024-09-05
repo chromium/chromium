@@ -511,7 +511,8 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorPrerenderTest,
   // accesses cookies with both response headers and Javascript.
   const GURL prerendering_url =
       embedded_https_test_server_.GetURL(kSiteB, "/set-cookie?name=value");
-  const int host_id = prerender_test_helper()->AddPrerender(prerendering_url);
+  const content::FrameTreeNodeId host_id =
+      prerender_test_helper()->AddPrerender(prerendering_url);
   prerender_test_helper()->WaitForPrerenderLoadCompletion(prerendering_url);
   content::test::PrerenderHostObserver prerender_observer(*web_contents,
                                                           host_id);

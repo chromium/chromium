@@ -793,7 +793,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorPrerenderBrowserTest,
   // Start prerendering. This shouldn't create a NavigationPredictor instance.
   // If it happens, the constructor of NavigationPredictor is called for the
   // non-primary page and the DCHECK there should fail.
-  int host_id = prerender_test_helper().AddPrerender(url);
+  content::FrameTreeNodeId host_id = prerender_test_helper().AddPrerender(url);
   content::test::PrerenderHostObserver host_observer(*GetWebContents(),
                                                      host_id);
   EXPECT_FALSE(host_observer.was_activated());

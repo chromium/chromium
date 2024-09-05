@@ -880,7 +880,8 @@ IN_PROC_BROWSER_TEST_F(AutofillTestPrerendering, DeferWhilePrerendering) {
   GURL initial_url = embedded_test_server()->GetURL("/empty.html");
   prerender_helper().NavigatePrimaryPage(initial_url);
 
-  int host_id = prerender_helper().AddPrerender(prerender_url);
+  content::FrameTreeNodeId host_id =
+      prerender_helper().AddPrerender(prerender_url);
   auto* rfh = prerender_helper().GetPrerenderedMainFrameHost(host_id);
   MockAutofillManager* mock = autofill_manager(rfh);
 

@@ -202,7 +202,8 @@ IN_PROC_BROWSER_TEST_F(ShareServicePrerenderBrowserTest, Text) {
   // Start a prerender.
   const GURL kPrerenderUrl =
       embedded_test_server()->GetURL("/webshare/index.html");
-  const int kPrerenderHostId = prerender_helper_.AddPrerender((kPrerenderUrl));
+  const content::FrameTreeNodeId kPrerenderHostId =
+      prerender_helper_.AddPrerender((kPrerenderUrl));
   ASSERT_EQ(prerender_helper_.GetHostForUrl(kPrerenderUrl), kPrerenderHostId);
 
   content::RenderFrameHost* prerender_rfh =

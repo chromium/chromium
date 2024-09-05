@@ -810,7 +810,8 @@ IN_PROC_BROWSER_TEST_F(ViewSourcePrerenderTest, ViewSourceForPrerender) {
   set_target(content::WebContents::FromRenderFrameHost(referrer_frame));
 
   prerender_test_helper().AddPrerender(prerender_url);
-  int host_id = prerender_test_helper().GetHostForUrl(prerender_url);
+  content::FrameTreeNodeId host_id =
+      prerender_test_helper().GetHostForUrl(prerender_url);
   content::RenderFrameHost* prerender_frame =
       prerender_test_helper().GetPrerenderedMainFrameHost(host_id);
   EXPECT_TRUE(prerender_frame);
