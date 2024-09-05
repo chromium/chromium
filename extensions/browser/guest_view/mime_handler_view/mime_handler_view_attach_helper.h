@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/render_process_host_observer.h"
 
 namespace content {
@@ -56,7 +57,7 @@ class MimeHandlerViewAttachHelper : content::RenderProcessHostObserver {
   // halted until |resume| is invoked. This provides an opportunity for UI
   // thread initializations.
   static std::string OverrideBodyForInterceptedResponse(
-      int32_t navigating_frame_tree_node_id,
+      content::FrameTreeNodeId navigating_frame_tree_node_id,
       const GURL& resource_url,
       const std::string& mime_type,
       const std::string& stream_id,
@@ -108,10 +109,11 @@ class MimeHandlerViewAttachHelper : content::RenderProcessHostObserver {
   // MimeHandlerViewFrameContainer as soon as the observed frame is ready, i.e.,
   // the frame has committed the |resource_url| and its child frame (in the same
   // SiteInstance) has been created.
-  static void CreateFullPageMimeHandlerView(int32_t frame_tree_node_id,
-                                            const GURL& resource_url,
-                                            const std::string& stream_id,
-                                            const std::string& token);
+  static void CreateFullPageMimeHandlerView(
+      content::FrameTreeNodeId frame_tree_node_id,
+      const GURL& resource_url,
+      const std::string& stream_id,
+      const std::string& token);
 
   explicit MimeHandlerViewAttachHelper(
       content::RenderProcessHost* render_process_host);

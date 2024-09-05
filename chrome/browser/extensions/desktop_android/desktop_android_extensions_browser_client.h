@@ -116,7 +116,7 @@ class DesktopAndroidExtensionsBrowserClient : public ExtensionsBrowserClient {
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
   GetControlledFrameEmbedderURLLoader(
       const url::Origin& app_origin,
-      int frame_tree_node_id,
+      content::FrameTreeNodeId frame_tree_node_id,
       content::BrowserContext* browser_context) override;
   std::unique_ptr<ExtensionHostDelegate> CreateExtensionHostDelegate() override;
   bool DidVersionUpdate(content::BrowserContext* context) override;

@@ -76,7 +76,7 @@ class MimeHandlerStreamManager::EmbedderObserver
  public:
   EmbedderObserver(MimeHandlerStreamManager* stream_manager,
                    const std::string& stream_id,
-                   int frame_tree_node_id);
+                   content::FrameTreeNodeId frame_tree_node_id);
 
  private:
   // WebContentsObserver overrides.
@@ -97,7 +97,7 @@ class MimeHandlerStreamManager::EmbedderObserver
 
   const raw_ptr<MimeHandlerStreamManager> stream_manager_;
   const std::string stream_id_;
-  int frame_tree_node_id_;
+  content::FrameTreeNodeId frame_tree_node_id_;
   content::GlobalRenderFrameHostId render_frame_host_id_;
   // We get an initial  load notification for the URL the mime handler is
   // serving. We don't want to clean up the stream here. This field helps us
@@ -121,7 +121,7 @@ MimeHandlerStreamManager* MimeHandlerStreamManager::Get(
 void MimeHandlerStreamManager::AddStream(
     const std::string& stream_id,
     std::unique_ptr<StreamContainer> stream,
-    int frame_tree_node_id) {
+    content::FrameTreeNodeId frame_tree_node_id) {
   streams_by_extension_id_[stream->extension_id()].insert(stream_id);
   auto result = streams_.insert(std::make_pair(stream_id, std::move(stream)));
   DCHECK(result.second);
@@ -161,7 +161,7 @@ void MimeHandlerStreamManager::OnExtensionUnloaded(
 MimeHandlerStreamManager::EmbedderObserver::EmbedderObserver(
     MimeHandlerStreamManager* stream_manager,
     const std::string& stream_id,
-    int frame_tree_node_id)
+    content::FrameTreeNodeId frame_tree_node_id)
     : content::WebContentsObserver(
           content::WebContents::FromFrameTreeNodeId(frame_tree_node_id)),
       stream_manager_(stream_manager),
@@ -179,9 +179,9 @@ void MimeHandlerStreamManager::EmbedderObserver::RenderFrameDeleted(
   // final RenderFrameHost for the navigation has been chosen. When it is later
   // picked, a specualtive RenderFrameHost might be deleted. Do not abort the
   // stream in that case.
-  if (frame_tree_node_id_ != content::RenderFrameHost::kNoFrameTreeNodeId &&
-      !render_frame_host->IsActive())
+  if (frame_tree_node_id_ && !render_frame_host->IsActive()) {
     return;
+  }
 
   AbortStream();
 }
@@ -202,7 +202,7 @@ void MimeHandlerStreamManager::EmbedderObserver::ReadyToCommitNavigation(
   // want to clean up the stream here. Update the RenderFrameHost tracking.
   if (initial_load_for_frame_) {
     initial_load_for_frame_ = false;
-    frame_tree_node_id_ = content::RenderFrameHost::kNoFrameTreeNodeId;
+    frame_tree_node_id_ = content::FrameTreeNodeId();
     render_frame_host_id_ =
         navigation_handle->GetRenderFrameHost()->GetGlobalId();
     return;
@@ -230,7 +230,7 @@ void MimeHandlerStreamManager::EmbedderObserver::RenderFrameHostChanged(
     return;
 
   // If this is an unrelated host, ignore.
-  if ((frame_tree_node_id_ != content::RenderFrameHost::kNoFrameTreeNodeId &&
+  if ((frame_tree_node_id_ &&
        old_host->GetFrameTreeNodeId() != frame_tree_node_id_) ||
       (render_frame_host_id_ &&
        (old_host->GetGlobalId() != render_frame_host_id_))) {
@@ -241,13 +241,12 @@ void MimeHandlerStreamManager::EmbedderObserver::RenderFrameHostChanged(
   // Update the RFH id to that of the new RFH. This ensures
   // that if the new RFH gets deleted before loading the stream, we will
   // abort it.
-  DCHECK(
-      (frame_tree_node_id_ == content::RenderFrameHost::kNoFrameTreeNodeId) ||
-      (frame_tree_node_id_ == new_host_->GetFrameTreeNodeId()));
+  DCHECK(frame_tree_node_id_.is_null() ||
+         (frame_tree_node_id_ == new_host_->GetFrameTreeNodeId()));
   render_frame_host_id_ = new_host_->GetGlobalId();
   // No need to keep this around anymore since we have valid render frame IDs
   // now.
-  frame_tree_node_id_ = content::RenderFrameHost::kNoFrameTreeNodeId;
+  frame_tree_node_id_ = content::FrameTreeNodeId();
 }
 
 void MimeHandlerStreamManager::EmbedderObserver::WebContentsDestroyed() {
@@ -267,7 +266,7 @@ bool MimeHandlerStreamManager::EmbedderObserver::IsTrackedRenderFrameHost(
   if (new_host_ && (render_frame_host != new_host_))
     return false;
 
-  if (frame_tree_node_id_ != content::RenderFrameHost::kNoFrameTreeNodeId) {
+  if (frame_tree_node_id_) {
     return render_frame_host->GetFrameTreeNodeId() == frame_tree_node_id_;
   } else {
     DCHECK(render_frame_host_id_);

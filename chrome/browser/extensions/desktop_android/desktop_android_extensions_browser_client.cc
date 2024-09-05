@@ -201,7 +201,7 @@ DesktopAndroidExtensionsBrowserClient::GetProcessManagerDelegate() const {
 mojo::PendingRemote<network::mojom::URLLoaderFactory>
 DesktopAndroidExtensionsBrowserClient::GetControlledFrameEmbedderURLLoader(
     const url::Origin& app_origin,
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     content::BrowserContext* browser_context) {
   return mojo::PendingRemote<network::mojom::URLLoaderFactory>();
 }
