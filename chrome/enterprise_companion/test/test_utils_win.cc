@@ -15,6 +15,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
+#include "base/win/windows_types.h"
 #include "chrome/enterprise_companion/enterprise_companion_branding.h"
 #include "chrome/enterprise_companion/enterprise_companion_version.h"
 #include "chrome/enterprise_companion/installer.h"
@@ -24,6 +25,9 @@
 namespace enterprise_companion {
 
 namespace {
+
+constexpr wchar_t kRegKeyCompanyCloudManagement[] =
+    L"Software\\Policies\\" COMPANY_SHORTNAME_STRING "\\CloudManagement\\";
 
 class TestMethodsWin : public TestMethods {
  public:
@@ -41,17 +45,22 @@ class TestMethodsWin : public TestMethods {
     std::optional<base::FilePath> alt_install_dir =
         GetInstallDirectoryForAlternateArch();
     if (alt_install_dir) {
-      ASSERT_TRUE(WaitFor(
+      EXPECT_TRUE(WaitFor(
           [&] { return base::DeletePathRecursively(*alt_install_dir); },
           [&] {
             VLOG(1) << "Waiting to delete " << *alt_install_dir << "...";
           }));
     }
 
-    ASSERT_EQ(base::win::RegKey(HKEY_LOCAL_MACHINE, kAppRegKey,
+    EXPECT_EQ(base::win::RegKey(HKEY_LOCAL_MACHINE, kAppRegKey,
                                 KEY_ALL_ACCESS | KEY_WOW64_32KEY)
                   .DeleteKey(L""),
               ERROR_SUCCESS);
+    EXPECT_EQ(
+        base::win::RegKey(HKEY_LOCAL_MACHINE, kRegKeyCompanyCloudManagement,
+                          KEY_ALL_ACCESS | KEY_WOW64_32KEY)
+            .DeleteKey(L""),
+        ERROR_SUCCESS);
   }
 };
 
