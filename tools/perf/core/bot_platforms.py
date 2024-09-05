@@ -375,11 +375,10 @@ def _views_perftests(estimated_runtime=7):
                           estimated_runtime=estimated_runtime)
 
 
-def _crossbench_speedometer3_0(estimated_runtime=60, arguments=None):
+def _crossbench_speedometer3_0(estimated_runtime=60):
   return CrossbenchConfig('speedometer3.crossbench',
                           'speedometer_3.0',
-                          estimated_runtime=estimated_runtime,
-                          arguments=arguments)
+                          estimated_runtime=estimated_runtime)
 
 
 def _crossbench_motionmark1_3(estimated_runtime=360):
@@ -412,7 +411,7 @@ _CROSSBENCH_BENCHMARKS_ALL = frozenset([
 
 # TODO(b/338630584): Remove it when other benchmarks can be run on Android.
 _CROSSBENCH_SPEEDOMETER = frozenset([
-    _crossbench_speedometer3_0(arguments=['--fileserver']),
+    _crossbench_speedometer3_0(),
 ])
 
 _CHROME_HEALTH_BENCHMARK_CONFIGS_DESKTOP = PerfSuite(
