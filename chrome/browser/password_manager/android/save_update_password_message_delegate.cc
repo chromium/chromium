@@ -4,6 +4,7 @@
 
 #include "chrome/browser/password_manager/android/save_update_password_message_delegate.h"
 
+#include <memory>
 #include <optional>
 #include <utility>
 
@@ -17,6 +18,7 @@
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge_impl.h"
 #include "chrome/browser/password_manager/android/password_infobar_utils.h"
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
@@ -27,6 +29,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -70,6 +73,21 @@ void TryToShowPasswordMigrationWarning(
   }
 }
 
+void TryToShowAccessLossWarning(content::WebContents* web_contents,
+                                PasswordAccessLossWarningBridge* bridge) {
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning)) {
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents->GetBrowserContext());
+    PrefService* prefs = profile->GetPrefs();
+    if (profile && bridge->ShouldShowAccessLossNoticeSheet(prefs)) {
+      bridge->MaybeShowAccessLossNoticeSheet(
+          prefs, web_contents->GetTopLevelNativeWindow(), profile);
+    }
+  }
+}
+
 }  // namespace
 
 SaveUpdatePasswordMessageDelegate::SaveUpdatePasswordMessageDelegate()
@@ -87,7 +105,9 @@ SaveUpdatePasswordMessageDelegate::SaveUpdatePasswordMessageDelegate(
     : password_edit_dialog_factory_(std::move(password_edit_dialog_factory)),
       create_migration_warning_callback_(
           std::move(create_migration_warning_callback)),
-      device_lock_bridge_(std::make_unique<DeviceLockBridge>()) {}
+      device_lock_bridge_(std::make_unique<DeviceLockBridge>()),
+      access_loss_bridge_(
+          std::make_unique<PasswordAccessLossWarningBridgeImpl>()) {}
 
 SaveUpdatePasswordMessageDelegate::SaveUpdatePasswordMessageDelegate(
     base::PassKey<class SaveUpdatePasswordMessageDelegateTest>,
@@ -97,10 +117,12 @@ SaveUpdatePasswordMessageDelegate::SaveUpdatePasswordMessageDelegate(
              Profile*,
              password_manager::metrics_util::PasswordMigrationWarningTriggers)>
         create_migration_warning_callback,
-    std::unique_ptr<DeviceLockBridge> device_lock_bridge)
+    std::unique_ptr<DeviceLockBridge> device_lock_bridge,
+    std::unique_ptr<PasswordAccessLossWarningBridge> access_loss_bridge)
     : SaveUpdatePasswordMessageDelegate(password_edit_dialog_factory,
                                         create_migration_warning_callback) {
   device_lock_bridge_ = std::move(device_lock_bridge);
+  access_loss_bridge_ = std::move(access_loss_bridge);
 }
 
 SaveUpdatePasswordMessageDelegate::~SaveUpdatePasswordMessageDelegate() {
@@ -365,6 +387,7 @@ void SaveUpdatePasswordMessageDelegate::SavePasswordAfterDeviceLockUi(
         kUpdateGMSCoreMessageDisplayDelay);
     TryToShowPasswordMigrationWarning(create_migration_warning_callback_,
                                       web_contents_);
+    TryToShowAccessLossWarning(web_contents_, access_loss_bridge_.get());
   }
   ClearState();
 }
@@ -426,6 +449,7 @@ void SaveUpdatePasswordMessageDelegate::HandleMessageDismissed(
     if (dismiss_reason == messages::DismissReason::PRIMARY_ACTION) {
       TryToShowPasswordMigrationWarning(create_migration_warning_callback_,
                                         web_contents_);
+      TryToShowAccessLossWarning(web_contents_, access_loss_bridge_.get());
     }
     ClearState();
   }
@@ -460,6 +484,7 @@ void SaveUpdatePasswordMessageDelegate::HandleDialogDismissed(
         web_contents_->GetNativeView()->GetWindowAndroid())) {
     TryToShowPasswordMigrationWarning(create_migration_warning_callback_,
                                       web_contents_);
+    TryToShowAccessLossWarning(web_contents_, access_loss_bridge_.get());
     ClearState();
   }
 }
