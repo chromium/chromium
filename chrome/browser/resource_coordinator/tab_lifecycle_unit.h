@@ -19,7 +19,6 @@
 class TabStripModel;
 
 namespace content {
-class RenderProcessHost;
 class WebContents;
 }  // namespace content
 
@@ -135,8 +134,16 @@ class TabLifecycleUnitSource::TabLifecycleUnit
   void FinishDiscard(LifecycleUnitDiscardReason discard_reason,
                      uint64_t tab_resident_set_size_estimate);
 
-  // Returns the RenderProcessHost associated with this tab.
-  content::RenderProcessHost* GetRenderProcessHost() const;
+  // Finishes a tab discard and preserves the associated web contents. Used only
+  // when kWebContentsDiscard is enabled.
+  void FinishDiscardAndPreserveWebContents(
+      LifecycleUnitDiscardReason discard_reason,
+      uint64_t tab_resident_set_size_estimate);
+
+  // Attempts to fast kill the process hosting the main frame of `web_contents`
+  // if only hosting the main frame.
+  void AttemptFastKillForDiscard(content::WebContents* web_contents,
+                                 LifecycleUnitDiscardReason discard_reason);
 
   // LifecycleUnitBase:
   void OnLifecycleUnitStateChanged(

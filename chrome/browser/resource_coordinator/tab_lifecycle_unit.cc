@@ -43,6 +43,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mojom.h"
 #include "url/gurl.h"
 
@@ -537,24 +538,7 @@ void TabLifecycleUnitSource::TabLifecycleUnit::FinishDiscard(
   null_contents->GetController().CopyStateFrom(&old_contents->GetController(),
                                                /* needs_reload */ false);
 
-  // First try to fast-kill the process, if it's just running a single tab.
-#if BUILDFLAG(IS_CHROMEOS)
-  if (!GetRenderProcessHost()->FastShutdownIfPossible(1u, false) &&
-      discard_reason == LifecycleUnitDiscardReason::URGENT) {
-    content::RenderFrameHost* main_frame = old_contents->GetPrimaryMainFrame();
-    // We avoid fast shutdown on tabs with beforeunload handlers on the main
-    // frame, as that is often an indication of unsaved user state.
-    DCHECK(main_frame);
-    if (!main_frame->GetSuddenTerminationDisablerState(
-            blink::mojom::SuddenTerminationDisablerType::
-                kBeforeUnloadHandler)) {
-      GetRenderProcessHost()->FastShutdownIfPossible(
-          1u, /* skip_unload_handlers */ true);
-    }
-  }
-#else
-  GetRenderProcessHost()->FastShutdownIfPossible(1u, false);
-#endif
+  AttemptFastKillForDiscard(old_contents, discard_reason);
 
   // Replace the discarded tab with the null version.
   const int index = tab_strip_model_->GetIndexOfWebContents(old_contents);
@@ -580,6 +564,47 @@ void TabLifecycleUnitSource::TabLifecycleUnit::FinishDiscard(
   DCHECK_EQ(GetLoadingState(), LifecycleUnitLoadingState::UNLOADED);
 
   web_contents()->NotifyWasDiscarded();
+}
+
+void TabLifecycleUnitSource::TabLifecycleUnit::
+    FinishDiscardAndPreserveWebContents(
+        LifecycleUnitDiscardReason discard_reason,
+        uint64_t tab_memory_footprint_estimate) {
+  UpdatePreDiscardResourceUsage(web_contents(), discard_reason,
+                                tab_memory_footprint_estimate);
+
+  AttemptFastKillForDiscard(web_contents(), discard_reason);
+
+  web_contents()->Discard();
+
+  SetState(LifecycleUnitState::DISCARDED,
+           DiscardReasonToStateChangeReason(discard_reason));
+}
+
+void TabLifecycleUnitSource::TabLifecycleUnit::AttemptFastKillForDiscard(
+    content::WebContents* web_contents,
+    LifecycleUnitDiscardReason discard_reason) {
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
+  CHECK(main_frame);
+  content::RenderProcessHost* render_process_host = main_frame->GetProcess();
+  CHECK(render_process_host);
+
+  // First try to fast-kill the process, if it's just running a single tab.
+#if BUILDFLAG(IS_CHROMEOS)
+  if (!render_process_host->FastShutdownIfPossible(1u, false) &&
+      discard_reason == LifecycleUnitDiscardReason::URGENT) {
+    // We avoid fast shutdown on tabs with beforeunload handlers on the main
+    // frame, as that is often an indication of unsaved user state.
+    if (!main_frame->GetSuddenTerminationDisablerState(
+            blink::mojom::SuddenTerminationDisablerType::
+                kBeforeUnloadHandler)) {
+      render_process_host->FastShutdownIfPossible(
+          1u, /*skip_unload_handlers=*/true);
+    }
+  }
+#else
+  render_process_host->FastShutdownIfPossible(1u, false);
+#endif
 }
 
 bool TabLifecycleUnitSource::TabLifecycleUnit::Discard(
@@ -613,7 +638,11 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::Discard(
 
   discard_reason_ = reason;
 
-  FinishDiscard(reason, tab_memory_footprint_estimate);
+  if (base::FeatureList::IsEnabled(features::kWebContentsDiscard)) {
+    FinishDiscardAndPreserveWebContents(reason, tab_memory_footprint_estimate);
+  } else {
+    FinishDiscard(reason, tab_memory_footprint_estimate);
+  }
 
   return true;
 }
@@ -672,11 +701,6 @@ void TabLifecycleUnitSource::TabLifecycleUnit::UpdatePreDiscardResourceUsage(
     pre_discard_resource_usage->UpdateDiscardInfo(tab_memory_footprint_estimate,
                                                   discard_reason);
   }
-}
-
-content::RenderProcessHost*
-TabLifecycleUnitSource::TabLifecycleUnit::GetRenderProcessHost() const {
-  return web_contents()->GetPrimaryMainFrame()->GetProcess();
 }
 
 void TabLifecycleUnitSource::TabLifecycleUnit::OnLifecycleUnitStateChanged(
