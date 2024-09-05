@@ -152,11 +152,7 @@ void AddNamesFromFileToMap(
 std::map<std::string_view, double> GetResultsFromMap(
     const std::map<std::string, std::vector<EmojiSearchEntry>, std::less<>>&
         map,
-    const std::u16string_view lowercase_query) {
-  std::vector<std::u16string_view> lowercase_words =
-      base::SplitStringPieceUsingSubstr(
-          lowercase_query, u" ", base::WhitespaceHandling::TRIM_WHITESPACE,
-          base::SplitResult::SPLIT_WANT_NONEMPTY);
+    base::span<const std::u16string_view> lowercase_words) {
   std::map<std::string_view, double> scored_emoji;
   for (const std::u16string_view lowercase_word : lowercase_words) {
     std::map<std::string_view, double> word_scored_emoji;
@@ -378,6 +374,10 @@ EmojiSearchResult EmojiSearch::SearchEmoji(
 
   // Make search case insensitive.
   std::u16string lowercase_query = base::i18n::ToLower(query);
+  std::vector<std::u16string_view> lowercase_words =
+      base::SplitStringPieceUsingSubstr(
+          lowercase_query, u" ", base::WhitespaceHandling::TRIM_WHITESPACE,
+          base::SplitResult::SPLIT_WANT_NONEMPTY);
 
   for (const std::string& code_str : language_codes) {
     std::optional<EmojiLanguageCode> code = GetLanguageCode(code_str);
@@ -387,13 +387,13 @@ EmojiSearchResult EmojiSearch::SearchEmoji(
     if (const auto& it = language_data_.find(*code);
         it != language_data_.end()) {
       std::vector<EmojiSearchEntry> new_emojis = SortEmojiResultsByScore(
-          GetResultsFromMap(it->second.emojis, lowercase_query));
+          GetResultsFromMap(it->second.emojis, lowercase_words));
       MergeResults(emojis, seen_emojis, new_emojis);
       std::vector<EmojiSearchEntry> new_symbols = SortEmojiResultsByScore(
-          GetResultsFromMap(it->second.symbols, lowercase_query));
+          GetResultsFromMap(it->second.symbols, lowercase_words));
       MergeResults(symbols, seen_symbols, new_symbols);
       std::vector<EmojiSearchEntry> new_emoticons = SortEmojiResultsByScore(
-          GetResultsFromMap(it->second.emoticons, lowercase_query));
+          GetResultsFromMap(it->second.emoticons, lowercase_words));
       MergeResults(emoticons, seen_emoticons, new_emoticons);
     }
   }
