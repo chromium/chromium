@@ -1,2 +1,3 @@
 ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0>' caret_offset=1 n_selections=1 selection_start=0 selection_end=1
-++ROLE_SYSTEM_TEXT FOCUSABLE xml-roles:searchbox ia2_hypertext='ARIA role searchbox.' caret_offset=20 n_selections=1 selection_start=0 selection_end=20
+++ROLE_SYSTEM_TEXT value='ARIA role searchbox.' FOCUSABLE xml-roles:searchbox ia2_hypertext='ARIA role searchbox.' caret_offset=20 n_selections=1 selection_start=0 selection_end=20
+++++ROLE_SYSTEM_STATICTEXT name='ARIA role searchbox.' ia2_hypertext='ARIA role searchbox.' n_selections=1 selection_start=0 selection_end=20

@@ -1,4 +1,1 @@
-AXValueChanged on AXTextField AXDescription='initially not editable' AXValue='foo ok'
-AXValueChanged on AXWebArea
 === Start Continuation ===
-AXValueChanged on AXTextArea AXDescription='initially editable' AXValue='foo ok'

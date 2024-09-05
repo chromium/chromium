@@ -2,8 +2,8 @@ rootWebArea name='Done'
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++genericContainer ignored
-++++++genericContainer
-++++++++genericContainer
+++++++genericContainer ignored
+++++++++genericContainer ignored
 ++++++++++genericContainer
 ++++++++++++staticText name='target'
 ++++++++++staticText name='xxx<newline>'

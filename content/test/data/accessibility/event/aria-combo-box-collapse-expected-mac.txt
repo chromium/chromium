@@ -1,3 +1,3 @@
-AXExpandedChanged on AXComboBox
-AXFocusedUIElementChanged on AXComboBox
-AXSelectedChildrenChanged on AXComboBox
+AXExpandedChanged on AXComboBox AXAutocompleteValue='list'
+AXFocusedUIElementChanged on AXComboBox AXAutocompleteValue='list'
+AXSelectedChildrenChanged on AXComboBox AXAutocompleteValue='list'

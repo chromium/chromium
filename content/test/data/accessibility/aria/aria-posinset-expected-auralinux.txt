@@ -20,8 +20,8 @@
 ++[static] name='<newline>'
 ++[radio button] checkable:true posinset:2 setsize:2
 ++[static] name='Banana'
-++[panel] name='Cake' labelled-by setsize:0
-++++[label] label-for
+++[panel] name='Cake' labelled-by=[label] setsize:0
+++++[label] label-for=[panel]
 ++++++[static] name='Cake'
 ++++[radio button] name='Chiffon cakes' checked checkable:true posinset:1 setsize:2
 ++++[static] name='<newline>'
@@ -38,7 +38,7 @@
 ++++++[table cell] name='content' (row=0, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
 ++++++++[static] name='content'
 ++[table] cols=1 headers=(NONE); rows=1 headers=(NONE); caption=false; spans=(all: 1x1)
-++++[table row]
+++++[table row] name='content'
 ++++++[table cell] name='content' (row=0, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
 ++++++++[static] name='content'
 ++[table] cols=1 headers=(NONE); rows=1 headers=(NONE); caption=false; spans=(all: 1x1)

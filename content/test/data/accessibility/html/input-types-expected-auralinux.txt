@@ -20,7 +20,7 @@
 ++++++++++++[spin button] name='Day Date:' labelled-by=[label] current=0.000000 minimum=1.000000 maximum=31.000000
 ++++++++++++[static] name='/'
 ++++++++++++[spin button] name='Year Date:' labelled-by=[label] current=0.000000 minimum=1.000000 maximum=275760.000000
-++++++++[push button] name='Show date picker' description='Show date picker' description-from:tooltip
+++++++++[push button] name='Show date picker'
 ++++[label] label-for=[entry]
 ++++++[static] name='Datetime: '
 ++++++[entry] name='Datetime:' selectable-text labelled-by=[label] text-input-type:datetime
@@ -40,7 +40,7 @@
 ++++++++++++[spin button] name='Minutes Datetime-local:' labelled-by=[label] current=0.000000 minimum=0.000000 maximum=59.000000
 ++++++++++++[static] name=' '
 ++++++++++++[spin button] name='AM/PM Datetime-local:' labelled-by=[label] current=0.000000 minimum=1.000000 maximum=2.000000
-++++++++[push button] name='Show local date and time picker' description='Show local date and time picker' description-from:tooltip
+++++++++[push button] name='Show local date and time picker'
 ++++[label] label-for=[entry]
 ++++++[static] name='Email: '
 ++++++[entry] name='Email:' selectable-text labelled-by=[label] text-input-type:email
@@ -67,7 +67,7 @@
 ++++++++++++[spin button] name='Month Month:' labelled-by=[label] current=0.000000 minimum=1.000000 maximum=12.000000
 ++++++++++++[static] name=' '
 ++++++++++++[spin button] name='Year Month:' labelled-by=[label] current=0.000000 minimum=1.000000 maximum=275760.000000
-++++++++[push button] name='Show month picker' description='Show month picker' description-from:tooltip
+++++++++[push button] name='Show month picker'
 ++++[label] label-for=[spin button]
 ++++++[static] name='Number: '
 ++++++[spin button] name='Number:' selectable-text labelled-by=[label] text-input-type:number current=0.000000 minimum=0.000000 maximum=0.000000
@@ -103,7 +103,7 @@
 ++++++++++++[spin button] name='Minutes Time:' labelled-by=[label] current=0.000000 minimum=0.000000 maximum=59.000000
 ++++++++++++[static] name=' '
 ++++++++++++[spin button] name='AM/PM Time:' labelled-by=[label] current=0.000000 minimum=1.000000 maximum=2.000000
-++++++++[push button] name='Show time picker' description='Show time picker' description-from:tooltip
+++++++++[push button] name='Show time picker'
 ++++[label] label-for=[entry]
 ++++++[static] name='Url: '
 ++++++[entry] name='Url:' selectable-text labelled-by=[label] text-input-type:url
@@ -116,4 +116,4 @@
 ++++++++++++[spin button] name='Week Week:' labelled-by=[label] current=0.000000 minimum=1.000000 maximum=53.000000
 ++++++++++++[static] name=', '
 ++++++++++++[spin button] name='Year Week:' labelled-by=[label] current=0.000000 minimum=1.000000 maximum=275760.000000
-++++++++[push button] name='Show week picker' description='Show week picker' description-from:tooltip
+++++++++[push button] name='Show week picker'
