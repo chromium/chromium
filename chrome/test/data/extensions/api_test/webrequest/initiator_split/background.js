@@ -5,8 +5,9 @@
 self.initiators = [];
 
 function onBeforeRequest(details) {
-  if (details.initiator && details.url.includes('title1.html'))
+  if (details.initiator && details.url.includes('title1.html')) {
     self.initiators.push(details.initiator);
+  }
 }
 
 chrome.webRequest.onBeforeRequest.addListener(

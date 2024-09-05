@@ -35,8 +35,9 @@ loadScript.then(async function() {
   var onHeadersReceivedExtraInfoSpec = ['blocking'];
   if (config.customArg) {
     let args = JSON.parse(config.customArg);
-    if (args.useExtraHeaders)
+    if (args.useExtraHeaders) {
       onHeadersReceivedExtraInfoSpec.push('extraHeaders');
+    }
   }
 
   runTests([

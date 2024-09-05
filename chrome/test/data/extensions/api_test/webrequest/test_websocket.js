@@ -289,8 +289,9 @@ chrome.tabs.getCurrent(function(tab) {
 
         // Test modification.
         for (var i = 0; i < details.requestHeaders.length; i++) {
-          if (details.requestHeaders[i].name == 'User-Agent')
+          if (details.requestHeaders[i].name == 'User-Agent') {
             details.requestHeaders[i].value = 'Foo';
+          }
         }
 
         // Test addition.

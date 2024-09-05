@@ -77,8 +77,9 @@ function runTests(tests) {
       mparchEnabled = args.mparch;
       // Because the extension runs in split mode, only the incognito context
       // should run the tests.
-      if (args.runInIncognito && !chrome.extension.inIncognitoContext)
+      if (args.runInIncognito && !chrome.extension.inIncognitoContext) {
         return;
+      }
     }
 
     var waitForAboutBlank = function(_, info, tab) {
@@ -100,8 +101,9 @@ function runTests(tests) {
 // Returns an URL from the test server, fixing up the port. Must be called
 // from within a test case passed to runTests.
 function getServerURL(opt_path, opt_host, opt_scheme) {
-  if (!testServerPort)
+  if (!testServerPort) {
     throw new Error("Called getServerURL outside of runTests.");
+  }
   var host = opt_host || testServer;
   var scheme = opt_scheme || defaultScheme;
   var path = opt_path || '';
@@ -110,10 +112,12 @@ function getServerURL(opt_path, opt_host, opt_scheme) {
 
 // Throws error if an invalid navigation type was presented.
 function validateNavigationType(navigationType) {
-  if (navigationType == undefined)
+  if (navigationType == undefined) {
     throw new Error("A navigation type must be defined.");
-  if(Object.values(initiators).indexOf(navigationType) === -1)
+  }
+  if(Object.values(initiators).indexOf(navigationType) === -1) {
     throw new Error("Unknown navigation type.");
+  }
 }
 
 // Similar to getURL without the path. The |navigationType| specifies if the
@@ -121,10 +125,11 @@ function validateNavigationType(navigationType) {
 // navigation doesn't have an initiator.
 function getDomain(navigationType) {
   validateNavigationType(navigationType);
-  if (navigationType == initiators.BROWSER_INITIATED)
+  if (navigationType == initiators.BROWSER_INITIATED) {
     return undefined;
-  else
+  } else {
     return getURL('').slice(0,-1);
+  }
 }
 
 // Similar to getServerURL without the path. The |navigationType| specifies if
@@ -132,10 +137,10 @@ function getDomain(navigationType) {
 // initiated navigation doesn't have an initiator.
 function getServerDomain(navigationType, opt_host, opt_scheme) {
   validateNavigationType(navigationType);
-  if (navigationType == initiators.BROWSER_INITIATED)
+  if (navigationType == initiators.BROWSER_INITIATED) {
     return undefined;
-  else
-    return getServerURL(undefined, opt_host, opt_scheme).slice(0, -1);
+  }
+  return getServerURL(undefined, opt_host, opt_scheme).slice(0, -1);
 }
 
 // Helper to advance to the next test only when the tab has finished loading.
@@ -157,10 +162,12 @@ function navigateAndWait(url, callback) {
 }
 
 function deepCopy(obj) {
-  if (obj === null)
+  if (obj === null) {
     return null;
-  if (typeof(obj) != 'object')
+  }
+  if (typeof(obj) != 'object') {
     return obj;
+  }
   if (Array.isArray(obj)) {
     var tmp_array = new Array;
     for (var i = 0; i < obj.length; i++) {
@@ -287,8 +294,9 @@ function checkExpectations() {
 // an expected value. This is a basic check that the request headers are valid.
 function checkUserAgent(headers) {
   for (var i in headers) {
-    if (headers[i].name.toLowerCase() == "user-agent")
+    if (headers[i].name.toLowerCase() == "user-agent") {
       return headers[i].value.toLowerCase().indexOf("chrome") != -1;
+    }
   }
   return false;
 }
@@ -299,8 +307,9 @@ function checkUserAgent(headers) {
 function isUnexpectedDetachedRequest(name, details) {
   // This function is responsible for marking detached requests as unexpected.
   // Non-detached requests are not this function's concern.
-  if (details.tabId !== -1 || details.frameId >= 0)
+  if (details.tabId !== -1 || details.frameId >= 0) {
     return false;
+  }
 
   // Only return true if there is no matching expectation for the given details.
   return !expectedEventData.some(function(exp) {
