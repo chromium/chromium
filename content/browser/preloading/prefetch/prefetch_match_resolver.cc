@@ -351,8 +351,8 @@ void PrefetchMatchResolver2::UnregisterCandidate(
   CHECK(candidate_data->prefetch_container);
   PrefetchContainer& prefetch_container = *candidate_data->prefetch_container;
 
-  prefetch_container.OnUnregisterCandidate(navigated_key_.prefetch_url(),
-                                           is_served, GetBlockedDuration());
+  prefetch_container.OnUnregisterCandidate(navigated_key_.url(), is_served,
+                                           GetBlockedDuration());
   prefetch_container.RemoveObserver(this);
   candidates_.erase(prefetch_key);
 }
@@ -386,9 +386,8 @@ void PrefetchMatchResolver2::OnDeterminedHead(
   // Non-redirect header is received and now the value of
   // `PrefetchContainer::IsNoVarySearchHeaderMatch()` is determined.
   const bool is_match =
-      prefetch_container.IsExactMatch(navigated_key_.prefetch_url()) ||
-      prefetch_container.IsNoVarySearchHeaderMatch(
-          navigated_key_.prefetch_url());
+      prefetch_container.IsExactMatch(navigated_key_.url()) ||
+      prefetch_container.IsNoVarySearchHeaderMatch(navigated_key_.url());
   if (!is_match) {
     MaybeUnblockForUnmatch(prefetch_container.GetPrefetchContainerKey());
     return;

@@ -52,7 +52,7 @@ template <>
 class PrefetchKeyTraits<PrefetchContainer::Key> {
  public:
   static const GURL& GetURL(const PrefetchContainer::Key& key) {
-    return key.prefetch_url();
+    return key.url();
   }
   static PrefetchContainer::Key KeyWithNewURL(
       const PrefetchContainer::Key& old_key,

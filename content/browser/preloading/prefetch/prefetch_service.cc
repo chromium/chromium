@@ -1428,7 +1428,7 @@ PrefetchService::CollectPotentiallyMatchingPrefetchContainers(
                           PrefetchContainer::ServableState::
                               kShouldBlockUntilHeadReceived &&
                       nvs_expected->AreEquivalent(
-                          key.prefetch_url(), prefetch_container->GetURL())) {
+                          key.url(), prefetch_container->GetURL())) {
                     hint_matches->push_back(prefetch_container.get());
                   }
                 }
@@ -1517,7 +1517,7 @@ PrefetchService::HandlePrefetchContainerToServe(
     const PrefetchContainer::Key& key,
     PrefetchContainer& prefetch_container,
     PrefetchMatchResolver& prefetch_match_resolver) {
-  const GURL& url = key.prefetch_url();
+  const GURL& url = key.url();
   DVLOG(1) << "PrefetchService::HandlePrefetchContainerToServe("
            << prefetch_container << "): Start";
 
@@ -1650,7 +1650,7 @@ void PrefetchService::OnMaybeDeterminedHead(
   DVLOG(1) << "PrefetchService::OnMaybeDeterminedHead(" << key
            << "): PrefetchContainer head received for " << prefetch_url << "!";
 
-  const GURL& nav_url = key.prefetch_url();
+  const GURL& nav_url = key.url();
 
   switch (prefetch_container.GetServableState(PrefetchCacheableDuration())) {
     case PrefetchContainer::ServableState::kNotServable:
@@ -1718,7 +1718,7 @@ PrefetchService::ReturnPrefetchToServe(
   if (reader.HaveDefaultContextCookiesChanged()) {
     prefetch_match_resolver
         .FallbackToRegularNavigationWhenMatchedPrefetchCookiesChanged(
-            *prefetch_container, key.prefetch_url());
+            *prefetch_container, key.url());
     return HandlePrefetchContainerResult::kNotToBeServedCookiesChanged;
   }
 
@@ -1729,7 +1729,7 @@ PrefetchService::ReturnPrefetchToServe(
   DVLOG(1) << "PrefetchService::ReturnPrefetchToServe" << *prefetch_container
            << " is served!";
   prefetch_container->OnReturnPrefetchToServe(
-      /*served=*/true, key.prefetch_url());
+      /*served=*/true, key.url());
   prefetch_match_resolver.PrefetchServed(std::move(reader));
   return HandlePrefetchContainerResult::kToBeServed;
 }

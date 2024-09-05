@@ -132,9 +132,9 @@ PreloadingURLMatchCallback PreloadingDataImpl::GetPrefetchServiceMatcher(
       [](base::WeakPtr<PrefetchService> prefetch_service,
          const PrefetchContainer::Key& predicted, const GURL& navigated_url) {
         if (!prefetch_service) {
-          return predicted.prefetch_url() == navigated_url;
+          return predicted.url() == navigated_url;
         }
-        if (predicted.prefetch_url() == navigated_url) {
+        if (predicted.url() == navigated_url) {
           return true;
         }
 

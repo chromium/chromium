@@ -602,18 +602,18 @@ void PrefetchContainer::OnWillBeDestroyed() {
 
 PrefetchContainer::Key::Key(
     std::optional<blink::DocumentToken> referring_document_token,
-    GURL prefetch_url)
+    GURL url)
     : referring_document_token_or_nik_(std::move(referring_document_token)),
-      prefetch_url_(std::move(prefetch_url)) {
+      url_(std::move(url)) {
   CHECK(!PrefetchNIKScopeEnabled());
 }
 
 PrefetchContainer::Key::Key(
     net::NetworkIsolationKey referring_network_isolation_key,
-    GURL prefetch_url)
+    GURL url)
     : referring_document_token_or_nik_(
           std::move(referring_network_isolation_key)),
-      prefetch_url_(std::move(prefetch_url)) {
+      url_(std::move(url)) {
   CHECK(PrefetchNIKScopeEnabled());
 }
 
@@ -1702,7 +1702,7 @@ std::ostream& operator<<(std::ostream& ostream,
                    prefetch_key.referring_document_token_or_nik_)
                    .ToDebugString();
   }
-  ostream << ", " << prefetch_key.prefetch_url() << ")";
+  ostream << ", " << prefetch_key.url() << ")";
   return ostream;
 }
 

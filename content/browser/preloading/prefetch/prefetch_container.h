@@ -124,19 +124,37 @@ class CONTENT_EXPORT PrefetchContainer {
   PrefetchContainer(const PrefetchContainer&) = delete;
   PrefetchContainer& operator=(const PrefetchContainer&) = delete;
 
-  // Defines the key to uniquely identify a prefetch.
-  // DocumentToken will be provided from initiating documents on
-  // renderer-initaited prefetches, while it will be nullopt when
-  // browser-initiated ones.
-  // Please see the doc on crbug.com/40946257 for more context.
-  // TODO(crbug.com/40942681): If kPrefetchBrowserInitiatedTriggers is enabeld,
-  // NetworkIsolationKey will be used instead of DocumentToken.
+  // Key for managing and matching prefetches.
+  //
+  // This key can either represent
+  //
+  // - the key of a prefetch (typically named `prefetch_key`, and its URL is the
+  //   URL of the prefetched main resource); or
+  // - the key of a navigation (typically named `navigated_key`, and its URL is
+  //   the navigation request URL).
+  //
+  // TODO(crbug.com/364751887): This distinction is not perfect. Enforce it as
+  // much as possible.
+  //
+  // For prefetch, non URL part is given as the following:
+  //
+  // - If the prefetch is renderer-initiated, `DocumentToken` of the initiating
+  //   document is used.
+  // - If the prefetch is browser-initiated, `std::nullopt` (for
+  //   `referring_document_token`) is used.
+  // - If the prefetch is embedder-initiated, `net::NetworkIsolationKey` of the
+  //   embedder is used. Only used if `kPrefetchBrowserInitiatedTriggers` is
+  //   enabeld. See crbug.com/40942681.
+  //
+  // For navigation, `std::optional<DocumentToken>` of the initiating document
+  // of the navigation is used.
+  //
+  // See also the doc on crbug.com/40946257 for more context.
   class CONTENT_EXPORT Key {
    public:
     Key() = delete;
-    Key(net::NetworkIsolationKey nik, GURL prefetch_url);
-    Key(std::optional<blink::DocumentToken> referring_document_token,
-        GURL prefetch_url);
+    Key(net::NetworkIsolationKey nik, GURL url);
+    Key(std::optional<blink::DocumentToken> referring_document_token, GURL url);
     ~Key();
 
     Key(const Key&);
@@ -148,10 +166,10 @@ class CONTENT_EXPORT PrefetchContainer {
         return referring_document_token_or_nik_ <
                rhs.referring_document_token_or_nik_;
       }
-      return prefetch_url_ < rhs.prefetch_url_;
+      return url_ < rhs.url_;
     }
 
-    const GURL& prefetch_url() const { return prefetch_url_; }
+    const GURL& url() const { return url_; }
 
     Key WithNewUrl(const GURL& new_url) const {
       return absl::visit([&](const auto& e) { return Key(e, new_url); },
@@ -170,7 +188,7 @@ class CONTENT_EXPORT PrefetchContainer {
     const absl::variant<std::optional<blink::DocumentToken>,
                         net::NetworkIsolationKey>
         referring_document_token_or_nik_;
-    const GURL prefetch_url_;
+    const GURL url_;
   };
 
   // Observer interface to listen to lifecycle events of `PrefetchContainer`.
@@ -206,7 +224,7 @@ class CONTENT_EXPORT PrefetchContainer {
   bool HasSameReferringURLForMetrics(const PrefetchContainer& other) const;
 
   // The initial URL that was requested to be prefetched.
-  const GURL& GetURL() const { return key_.prefetch_url(); }
+  const GURL& GetURL() const { return key_.url(); }
 
   // The current URL being fetched.
   GURL GetCurrentURL() const;
