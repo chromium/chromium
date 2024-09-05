@@ -2513,14 +2513,6 @@
   <message name="IDS_SETTINGS_SEARCH" desc="Name of the settings page which displays search engine preferences.">
     Search engine
   </message>
-  <message name="IDS_SETTINGS_SEARCH_EXPLANATION" desc="Explanation for the search engine dropdown setting.">
-    Search engine used in the address bar.
-  </message>
-  <if expr="is_chromeos">
-    <message name="IDS_SETTINGS_SEARCH_EXPLANATION_PRIMARY_PROFILE" desc="Explanation for the search engine dropdown setting in the primary profile.">
-      Search engine used in the address bar and the launcher.
-    </message>
-  </if>
   <message name="IDS_SETTINGS_SEARCH_EXPLANATION_ACCESSIBILITY_LABEL" desc="Accessibility label for a 'learn more' link which links to an article about setting a default search engine.">
     Learn more about default search engines
   </message>

@@ -335,12 +335,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
         ->FetchPriceEmailPref();
   }
 
-  const bool is_search_engine_choice_settings_ui =
-      search_engines::IsChoiceScreenFlagEnabled(
-          search_engines::ChoicePromo::kAny);
-  html_source->AddBoolean("searchEngineChoiceSettingsUi",
-                          is_search_engine_choice_settings_ui);
-
   search_engines::SearchEngineChoiceService*
       search_engine_choice_dialog_service =
           search_engines::SearchEngineChoiceServiceFactory::GetForProfile(

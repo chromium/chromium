@@ -2335,13 +2335,7 @@ void AddSearchInSettingsStrings(content::WebUIDataSource* html_source) {
   html_source->AddString("searchNoResultsHelp", help_text);
 }
 
-void AddSearchStrings(content::WebUIDataSource* html_source,
-                      Profile* profile
-#if BUILDFLAG(IS_CHROMEOS)
-                      ,
-                      bool for_primary_profile
-#endif  // BUILDFLAG(IS_CHROMEOS)
-) {
+void AddSearchStrings(content::WebUIDataSource* html_source, Profile* profile) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"searchEnginesManageSiteSearch",
        IDS_SETTINGS_SEARCH_MANAGE_SEARCH_ENGINES_AND_SITE_SEARCH},
@@ -2359,20 +2353,6 @@ void AddSearchStrings(content::WebUIDataSource* html_source,
        IDS_SEARCH_ENGINE_CHOICE_SETTINGS_CONFIRMATION_TOAST_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  if (for_primary_profile) {
-    html_source->AddLocalizedString(
-        "searchExplanation", IDS_SETTINGS_SEARCH_EXPLANATION_PRIMARY_PROFILE);
-  } else {
-    html_source->AddLocalizedString("searchExplanation",
-                                    IDS_SETTINGS_SEARCH_EXPLANATION);
-  }
-#else   // !BUILDFLAG(IS_CHROMEOS)
-  html_source->AddLocalizedString("searchExplanation",
-                                  IDS_SETTINGS_SEARCH_EXPLANATION);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
   html_source->AddString("searchExplanationLearnMoreURL",
                          chrome::kOmniboxLearnMoreURL);
 
@@ -3740,16 +3720,7 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
   AddResetStrings(html_source, profile);
   AddSearchEnginesStrings(html_source);
   AddSearchInSettingsStrings(html_source);
-#if BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  const bool for_primary_profile = profile->IsMainProfile();
-#else   // !BUILDFLAG(IS_CHROMEOS_LACROS)
-  const bool for_primary_profile = true;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  AddSearchStrings(html_source, profile, for_primary_profile);
-#else   // !BUILDFLAG(IS_CHROMEOS)
   AddSearchStrings(html_source, profile);
-#endif  // BUILDFLAG(IS_CHROMEOS)
   AddSiteSettingsStrings(html_source, profile);
   AddSiteDataPageStrings(html_source, profile);
   AddStorageAccessStrings(html_source);
