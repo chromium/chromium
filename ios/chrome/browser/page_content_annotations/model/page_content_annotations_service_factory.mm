@@ -44,7 +44,7 @@ std::unique_ptr<KeyedService> BuildPageContentAnnotationsService(
   // The optimization guide and history services must be available for the page
   // content annotations service to work.
   auto* optimization_guide_keyed_service =
-      OptimizationGuideServiceFactory::GetForBrowserState(chrome_browser_state);
+      OptimizationGuideServiceFactory::GetForProfile(chrome_browser_state);
   auto* history_service = ios::HistoryServiceFactory::GetForBrowserState(
       chrome_browser_state, ServiceAccessType::EXPLICIT_ACCESS);
   if (!optimization_guide_keyed_service || !history_service) {

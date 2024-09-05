@@ -43,8 +43,7 @@ OptimizationGuideInternalsUI::OptimizationGuideInternalsUI(
     const std::string& host)
     : web::WebUIIOSController(web_ui, host) {
   ChromeBrowserState* browser_state = ChromeBrowserState::FromWebUIIOS(web_ui);
-  auto* service =
-      OptimizationGuideServiceFactory::GetForBrowserState(browser_state);
+  auto* service = OptimizationGuideServiceFactory::GetForProfile(browser_state);
   if (!service)
     return;
   optimization_guide_logger_ = service->GetOptimizationGuideLogger();
@@ -80,8 +79,7 @@ void OptimizationGuideInternalsUI::RequestDownloadedModelsInfo(
     RequestDownloadedModelsInfoCallback callback) {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromWebUIIOS(web_ui());
-  auto* service =
-      OptimizationGuideServiceFactory::GetForBrowserState(browser_state);
+  auto* service = OptimizationGuideServiceFactory::GetForProfile(browser_state);
   if (!service) {
     std::move(callback).Run({});
     return;

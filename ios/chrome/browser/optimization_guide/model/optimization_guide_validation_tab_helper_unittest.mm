@@ -62,14 +62,12 @@ class OptimizationGuideValidationTabHelperTest : public PlatformTest {
         OptimizationGuideServiceFactory::GetDefaultFactory());
     browser_state_ = std::move(builder).Build();
     optimization_guide_service_ =
-        OptimizationGuideServiceFactory::GetForBrowserState(
-            browser_state_.get());
+        OptimizationGuideServiceFactory::GetForProfile(browser_state_.get());
     optimization_guide_service_->DoFinalInit();
 
     web_state_.SetBrowserState(browser_state_.get());
     optimization_guide_service_ =
-        OptimizationGuideServiceFactory::GetForBrowserState(
-            browser_state_.get());
+        OptimizationGuideServiceFactory::GetForProfile(browser_state_.get());
 
     OptimizationGuideValidationTabHelper::CreateForWebState(&web_state_);
 

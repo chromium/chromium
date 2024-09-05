@@ -143,7 +143,7 @@ class PredictionManagerTestBase : public PlatformTest {
     builder.SetPrefService(std::move(testing_prefs));
     browser_state_ = std::move(builder).Build();
 
-    OptimizationGuideServiceFactory::GetForBrowserState(browser_state_.get())
+    OptimizationGuideServiceFactory::GetForProfile(browser_state_.get())
         ->DoFinalInit(BackgroundDownloadServiceFactory::GetForBrowserState(
             browser_state_.get()));
   }
@@ -154,7 +154,7 @@ class PredictionManagerTestBase : public PlatformTest {
             {TestChromeBrowserState::TestingFactory{
                 OptimizationGuideServiceFactory::GetInstance(),
                 OptimizationGuideServiceFactory::GetDefaultFactory()}});
-    OptimizationGuideServiceFactory::GetForBrowserState(otr_browser_state)
+    OptimizationGuideServiceFactory::GetForProfile(otr_browser_state)
         ->DoFinalInit();
   }
 
@@ -174,7 +174,7 @@ class PredictionManagerTestBase : public PlatformTest {
   }
 
   void RegisterWithKeyedService(ModelFileObserver* model_file_observer) {
-    OptimizationGuideServiceFactory::GetForBrowserState(browser_state_.get())
+    OptimizationGuideServiceFactory::GetForProfile(browser_state_.get())
         ->AddObserverForOptimizationTargetModel(
             optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
             std::nullopt, model_file_observer);
@@ -372,7 +372,7 @@ class PredictionManagerModelDownloadingBrowserTest
 
   void RegisterModelFileObserverWithBrowserState(
       ChromeBrowserState* browser_state = nullptr) {
-    OptimizationGuideServiceFactory::GetForBrowserState(
+    OptimizationGuideServiceFactory::GetForProfile(
         browser_state ? browser_state : browser_state_.get())
         ->AddObserverForOptimizationTargetModel(
             optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,

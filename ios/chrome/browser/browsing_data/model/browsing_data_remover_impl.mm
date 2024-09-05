@@ -801,7 +801,7 @@ void BrowsingDataRemoverImpl::NotifyRemovalComplete() {
     account_consistency_service->OnBrowsingDataRemoved();
   }
   if (OptimizationGuideService* optimization_guide_service =
-          OptimizationGuideServiceFactory::GetForBrowserState(browser_state_)) {
+          OptimizationGuideServiceFactory::GetForProfile(browser_state_)) {
     optimization_guide_service->OnBrowsingDataRemoved();
   }
 

@@ -356,8 +356,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   if (!for_bottom_sheet && !is_off_the_record &&
       IsAboutThisSiteFeatureEnabled()) {
     if (auto* optimization_guide_decider =
-            OptimizationGuideServiceFactory::GetForBrowserState(
-                browser_state)) {
+            OptimizationGuideServiceFactory::GetForProfile(browser_state)) {
       AboutThisSiteTabHelper::CreateForWebState(web_state,
                                                 optimization_guide_decider);
     }

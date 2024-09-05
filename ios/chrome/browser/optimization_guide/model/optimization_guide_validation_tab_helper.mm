@@ -24,7 +24,7 @@ OptimizationGuideValidationTabHelper::OptimizationGuideValidationTabHelper(
   }
 
   if (OptimizationGuideService* optimization_guide_service =
-          OptimizationGuideServiceFactory::GetForBrowserState(
+          OptimizationGuideServiceFactory::GetForProfile(
               ChromeBrowserState::FromBrowserState(
                   web_state->GetBrowserState()))) {
     optimization_guide_service->RegisterOptimizationTypes(
@@ -52,7 +52,7 @@ void OptimizationGuideValidationTabHelper::DidFinishNavigation(
     return;
 
   OptimizationGuideService* optimization_guide_service =
-      OptimizationGuideServiceFactory::GetForBrowserState(
+      OptimizationGuideServiceFactory::GetForProfile(
           ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()));
   if (!optimization_guide_service)
     return;

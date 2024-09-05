@@ -112,7 +112,7 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
   DCHECK(profile);
   const base::FilePath profile_path = profile->GetStatePath();
   auto* optimization_guide =
-      OptimizationGuideServiceFactory::GetForBrowserState(profile);
+      OptimizationGuideServiceFactory::GetForProfile(profile);
 
   auto* protodb_provider = profile->GetProtoDatabaseProvider();
   if (!protodb_provider) {

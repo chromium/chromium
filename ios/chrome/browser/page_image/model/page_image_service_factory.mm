@@ -52,7 +52,7 @@ std::unique_ptr<KeyedService> PageImageServiceFactory::BuildServiceInstanceFor(
   RemoteSuggestionsService* remote_suggestions_service =
       RemoteSuggestionsServiceFactory::GetForBrowserState(browser_state, true);
   OptimizationGuideService* optimization_guide_service =
-      OptimizationGuideServiceFactory::GetForBrowserState(browser_state);
+      OptimizationGuideServiceFactory::GetForProfile(browser_state);
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForBrowserState(browser_state);
   std::unique_ptr<AutocompleteSchemeClassifier> autocomplete_scheme_classifier =

@@ -41,7 +41,7 @@
   optimizationMetadata.SetAnyMetadataForTesting(metadata);
 
   OptimizationGuideService* service =
-      OptimizationGuideServiceFactory::GetForBrowserState(
+      OptimizationGuideServiceFactory::GetForProfile(
           chrome_test_util::GetOriginalBrowserState());
   service->AddHintForTesting(
       GURL(base::SysNSStringToUTF8(url)),

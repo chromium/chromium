@@ -88,7 +88,7 @@ ShoppingPersistedDataTabHelper::GetPriceDrop() {
       IsPriceDropStale(price_drop_->timestamp)) {
     ResetPriceDrop();
     OptimizationGuideService* optimization_guide_service =
-        OptimizationGuideServiceFactory::GetForBrowserState(
+        OptimizationGuideServiceFactory::GetForProfile(
             ChromeBrowserState::FromBrowserState(
                 web_state_->GetBrowserState()));
     if (!optimization_guide_service) {
@@ -131,7 +131,7 @@ ShoppingPersistedDataTabHelper::ShoppingPersistedDataTabHelper(
   web_state_->AddObserver(this);
 
   OptimizationGuideService* optimization_guide_service =
-      OptimizationGuideServiceFactory::GetForBrowserState(
+      OptimizationGuideServiceFactory::GetForProfile(
           ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState()));
 
   if (!optimization_guide_service) {
@@ -184,7 +184,7 @@ void ShoppingPersistedDataTabHelper::DidFinishNavigation(
 
   ResetPriceDrop();
   OptimizationGuideService* optimization_guide_service =
-      OptimizationGuideServiceFactory::GetForBrowserState(
+      OptimizationGuideServiceFactory::GetForProfile(
           ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()));
   if (!optimization_guide_service) {
     return;

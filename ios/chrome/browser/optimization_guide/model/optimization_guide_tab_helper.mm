@@ -37,7 +37,7 @@ void IOSOptimizationGuideNavigationData::NotifyNavigationRedirect(
 
 OptimizationGuideTabHelper::OptimizationGuideTabHelper(web::WebState* web_state)
     : optimization_guide_service_(
-          OptimizationGuideServiceFactory::GetForBrowserState(
+          OptimizationGuideServiceFactory::GetForProfile(
               ChromeBrowserState::FromBrowserState(
                   web_state->GetBrowserState()))) {
   DCHECK(web_state);

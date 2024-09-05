@@ -81,7 +81,7 @@ std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
       GetCurrentCountryCode(GetApplicationContext()->GetVariationsService()),
       GetApplicationContext()->GetApplicationLocale(),
       ios::BookmarkModelFactory::GetForBrowserState(chrome_state),
-      OptimizationGuideServiceFactory::GetForBrowserState(chrome_state),
+      OptimizationGuideServiceFactory::GetForProfile(chrome_state),
       pref_service, IdentityManagerFactory::GetForBrowserState(chrome_state),
       SyncServiceFactory::GetForBrowserState(chrome_state),
       chrome_state->GetSharedURLLoaderFactory(),

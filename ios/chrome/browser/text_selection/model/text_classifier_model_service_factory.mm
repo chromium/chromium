@@ -51,7 +51,7 @@ TextClassifierModelServiceFactory::BuildServiceInstanceFor(
   // The optimization guide service must be available for the text classifier
   // model service to be created.
   auto* opt_guide =
-      OptimizationGuideServiceFactory::GetForBrowserState(browser_state);
+      OptimizationGuideServiceFactory::GetForProfile(browser_state);
   if (!opt_guide) {
     return nullptr;
   }

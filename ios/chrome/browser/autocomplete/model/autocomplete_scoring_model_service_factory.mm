@@ -48,7 +48,7 @@ AutocompleteScoringModelServiceFactory::BuildServiceInstanceFor(
   ChromeBrowserState* chrome_browser_state =
       ChromeBrowserState::FromBrowserState(context);
   OptimizationGuideService* optimization_guide =
-      OptimizationGuideServiceFactory::GetForBrowserState(chrome_browser_state);
+      OptimizationGuideServiceFactory::GetForProfile(chrome_browser_state);
   return optimization_guide ? std::make_unique<AutocompleteScoringModelService>(
                                   optimization_guide)
                             : nullptr;

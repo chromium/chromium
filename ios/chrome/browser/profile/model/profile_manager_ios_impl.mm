@@ -490,7 +490,7 @@ void ProfileManagerIOSImpl::DoFinalInitForServices(ProfileIOS* profile) {
   // IOSChromeMetricsServiceAccessor requires profile to be registered in the
   // ProfileManagerIOS.
   if (optimization_guide::features::IsOptimizationHintsEnabled()) {
-    OptimizationGuideServiceFactory::GetForBrowserState(profile)->DoFinalInit(
+    OptimizationGuideServiceFactory::GetForProfile(profile)->DoFinalInit(
         BackgroundDownloadServiceFactory::GetForBrowserState(profile));
   }
 

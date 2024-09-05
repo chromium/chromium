@@ -45,7 +45,7 @@ PredictionModelDownloadClient::~PredictionModelDownloadClient() = default;
 PredictionModelDownloadManager*
 PredictionModelDownloadClient::GetPredictionModelDownloadManager() {
   OptimizationGuideService* optimization_guide_service =
-      OptimizationGuideServiceFactory::GetForBrowserState(browser_state_);
+      OptimizationGuideServiceFactory::GetForProfile(browser_state_);
   if (!optimization_guide_service)
     return nullptr;
   PredictionManager* prediction_manager =

@@ -106,8 +106,7 @@ class OptimizationGuideServiceTest : public PlatformTest {
     builder.SetPrefService(std::move(testing_prefs));
     browser_state_ = std::move(builder).Build();
     optimization_guide_service_ =
-        OptimizationGuideServiceFactory::GetForBrowserState(
-            browser_state_.get());
+        OptimizationGuideServiceFactory::GetForProfile(browser_state_.get());
     optimization_guide_service_->DoFinalInit(
         BackgroundDownloadServiceFactory::GetForBrowserState(
             browser_state_.get()));
@@ -119,7 +118,7 @@ class OptimizationGuideServiceTest : public PlatformTest {
             {TestChromeBrowserState::TestingFactory{
                 OptimizationGuideServiceFactory::GetInstance(),
                 OptimizationGuideServiceFactory::GetDefaultFactory()}});
-    OptimizationGuideServiceFactory::GetForBrowserState(otr_browser_state)
+    OptimizationGuideServiceFactory::GetForProfile(otr_browser_state)
         ->DoFinalInit();
   }
 
@@ -444,7 +443,7 @@ TEST_F(OptimizationGuideServiceTest, CheckForBlocklistFilter) {
   PushHintsComponentAndWaitForCompletion();
 
   OptimizationGuideService* ogks =
-      OptimizationGuideServiceFactory::GetForBrowserState(browser_state());
+      OptimizationGuideServiceFactory::GetForProfile(browser_state());
 
   {
     base::HistogramTester histogram_tester;
@@ -521,7 +520,7 @@ TEST_F(OptimizationGuideServiceTest, IncognitoCanStillReadFromComponentHints) {
 
   // Instantiate off the record Optimization Guide Service.
   OptimizationGuideService* otr_ogs =
-      OptimizationGuideServiceFactory::GetForBrowserState(otr_browser_state);
+      OptimizationGuideServiceFactory::GetForProfile(otr_browser_state);
   otr_ogs->RegisterOptimizationTypes({optimization_guide::proto::NOSCRIPT});
   // Wait until initialization has stabilized.
   RunUntilIdle();
@@ -550,7 +549,7 @@ TEST_F(OptimizationGuideServiceTest, IncognitoStillProcessesBloomFilter) {
 
   // Instantiate off the record Optimization Guide Service.
   OptimizationGuideService* otr_ogs =
-      OptimizationGuideServiceFactory::GetForBrowserState(otr_browser_state);
+      OptimizationGuideServiceFactory::GetForProfile(otr_browser_state);
   base::HistogramTester histogram_tester;
 
   // Register an optimization type with an optimization filter.

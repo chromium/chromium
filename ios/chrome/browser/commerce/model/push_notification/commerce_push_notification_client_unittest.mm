@@ -287,7 +287,7 @@ TEST_F(CommercePushNotificationClientTest, TestParsing) {
 TEST_F(CommercePushNotificationClientTest, TestHintKeyRemovedUponNotification) {
   MockDelegate mock_delegate;
   OptimizationGuideService* optimization_guide_service =
-      OptimizationGuideServiceFactory::GetForBrowserState(GetBrowserState());
+      OptimizationGuideServiceFactory::GetForProfile(GetBrowserState());
   optimization_guide_service->GetHintsManager()
       ->push_notification_manager()
       ->SetDelegate(&mock_delegate);

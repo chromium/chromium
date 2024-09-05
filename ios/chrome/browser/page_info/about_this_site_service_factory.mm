@@ -52,7 +52,7 @@ AboutThisSiteServiceFactory::BuildServiceInstanceFor(
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
 
   auto* optimization_guide =
-      OptimizationGuideServiceFactory::GetForBrowserState(profile);
+      OptimizationGuideServiceFactory::GetForProfile(profile);
   if (!optimization_guide) {
     return nullptr;
   }

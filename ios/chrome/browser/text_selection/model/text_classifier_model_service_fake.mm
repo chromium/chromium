@@ -18,7 +18,7 @@ TextClassifierModelServiceFake::CreateTextClassifierModelService(
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
   auto* opt_guide =
-      OptimizationGuideServiceFactory::GetForBrowserState(browser_state);
+      OptimizationGuideServiceFactory::GetForProfile(browser_state);
   auto service =
       base::WrapUnique(new TextClassifierModelServiceFake(opt_guide));
   return service;

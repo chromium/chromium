@@ -54,7 +54,7 @@ TranslateModelServiceFactory::BuildServiceInstanceFor(
   // The optimization guide service must be available for the translate model
   // service to be created.
   auto* opt_guide =
-      OptimizationGuideServiceFactory::GetForBrowserState(browser_state);
+      OptimizationGuideServiceFactory::GetForProfile(browser_state);
   if (opt_guide) {
     scoped_refptr<base::SequencedTaskRunner> background_task_runner =
         base::ThreadPool::CreateSequencedTaskRunner(
