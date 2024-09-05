@@ -176,7 +176,7 @@ void BaseAudioContext::Uninitialize() {
   Clear();
 
   DCHECK(!is_resolving_resume_promises_);
-  DCHECK_EQ(resume_resolvers_.size(), 0u);
+  DCHECK_EQ(pending_promises_resolvers_.size(), 0u);
 }
 
 void BaseAudioContext::Dispose() {
@@ -654,7 +654,7 @@ PeriodicWave* BaseAudioContext::GetPeriodicWave(int type) {
 String BaseAudioContext::state() const {
   // These strings had better match the strings for AudioContextState in
   // AudioContext.idl.
-  switch (context_state_) {
+  switch (control_thread_state_) {
     case kSuspended:
       return "suspended";
     case kRunning:
@@ -671,7 +671,7 @@ void BaseAudioContext::SetContextState(AudioContextState new_state) {
 
   // If there's no change in the current state, there's nothing that needs to be
   // done.
-  if (new_state == context_state_) {
+  if (new_state == control_thread_state_) {
     return;
   }
 
@@ -679,17 +679,17 @@ void BaseAudioContext::SetContextState(AudioContextState new_state) {
   // Running->Suspended, and anything->Closed.
   switch (new_state) {
     case kSuspended:
-      DCHECK_EQ(context_state_, kRunning);
+      DCHECK_EQ(control_thread_state_, kRunning);
       break;
     case kRunning:
-      DCHECK_EQ(context_state_, kSuspended);
+      DCHECK_EQ(control_thread_state_, kSuspended);
       break;
     case kClosed:
-      DCHECK_NE(context_state_, kClosed);
+      DCHECK_NE(control_thread_state_, kClosed);
       break;
   }
 
-  context_state_ = new_state;
+  control_thread_state_ = new_state;
 
   if (new_state == kClosed) {
     GetDeferredTaskHandler().StopAcceptingTailProcessing();
@@ -781,8 +781,8 @@ void BaseAudioContext::PerformCleanupOnMainThread() {
   DeferredTaskHandler::GraphAutoLocker locker(this);
 
   if (is_resolving_resume_promises_) {
-    for (auto& resolver : resume_resolvers_) {
-      if (context_state_ == kClosed) {
+    for (auto& resolver : pending_promises_resolvers_) {
+      if (control_thread_state_ == kClosed) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kInvalidStateError,
             "Cannot resume a context that has been closed"));
@@ -791,7 +791,7 @@ void BaseAudioContext::PerformCleanupOnMainThread() {
         resolver->Resolve();
       }
     }
-    resume_resolvers_.clear();
+    pending_promises_resolvers_.clear();
     is_resolving_resume_promises_ = false;
   }
 
@@ -826,11 +826,11 @@ void BaseAudioContext::RejectPendingResolvers() {
   // Audio context is closing down so reject any resume promises that are still
   // pending.
 
-  for (auto& resolver : resume_resolvers_) {
+  for (auto& resolver : pending_promises_resolvers_) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError, "Audio context is going away"));
   }
-  resume_resolvers_.clear();
+  pending_promises_resolvers_.clear();
   is_resolving_resume_promises_ = false;
 
   RejectPendingDecodeAudioDataResolvers();
@@ -852,7 +852,7 @@ void BaseAudioContext::StartRendering() {
   DCHECK(IsMainThread());
   DCHECK(destination_node_);
 
-  if (context_state_ == kSuspended) {
+  if (control_thread_state_ == kSuspended) {
     destination()->GetAudioDestinationHandler().StartRendering();
   }
 }
@@ -860,7 +860,7 @@ void BaseAudioContext::StartRendering() {
 void BaseAudioContext::Trace(Visitor* visitor) const {
   visitor->Trace(destination_node_);
   visitor->Trace(listener_);
-  visitor->Trace(resume_resolvers_);
+  visitor->Trace(pending_promises_resolvers_);
   visitor->Trace(decode_audio_resolvers_);
   visitor->Trace(periodic_wave_sine_);
   visitor->Trace(periodic_wave_square_);

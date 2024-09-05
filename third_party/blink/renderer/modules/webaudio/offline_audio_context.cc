@@ -482,7 +482,7 @@ void OfflineAudioContext::RejectPendingResolvers() {
     }
 
     scheduled_suspends_.clear();
-    DCHECK_EQ(resume_resolvers_.size(), 0u);
+    DCHECK_EQ(pending_promises_resolvers_.size(), 0u);
   }
 
   RejectPendingDecodeAudioDataResolvers();

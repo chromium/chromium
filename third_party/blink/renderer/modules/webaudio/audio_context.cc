@@ -446,7 +446,7 @@ ScriptPromise<IDLUndefined> AudioContext::resumeContext(
   // pulling on the graph again.
   {
     DeferredTaskHandler::GraphAutoLocker locker(this);
-    resume_resolvers_.push_back(resolver);
+    pending_promises_resolvers_.push_back(resolver);
   }
 
   return promise;
@@ -945,7 +945,8 @@ void AudioContext::ResolvePromisesForUnpause() {
   // Resolve any pending promises created by resume(). Only do this if we
   // haven't already started resolving these promises. This gets called very
   // often and it takes some time to resolve the promises in the main thread.
-  if (!is_resolving_resume_promises_ && resume_resolvers_.size() > 0) {
+  if (!is_resolving_resume_promises_ &&
+      pending_promises_resolvers_.size() > 0) {
     is_resolving_resume_promises_ = true;
     ScheduleMainThreadCleanup();
   }

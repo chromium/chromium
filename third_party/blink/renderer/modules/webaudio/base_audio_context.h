@@ -198,7 +198,7 @@ class MODULES_EXPORT BaseAudioContext
     return destination_handler_->CurrentSampleFrame();
   }
 
-  AudioContextState ContextState() const { return context_state_; }
+  AudioContextState ContextState() const { return control_thread_state_; }
 
   // Warn user when creating a node on a closed context.  The node can't do
   // anything useful because the context is closed.
@@ -347,14 +347,6 @@ class MODULES_EXPORT BaseAudioContext
   // they can be collected.
   void HandleStoppableSourceNodes();
 
-  Member<AudioDestinationNode> destination_node_;
-
-  // FIXME(dominicc): Move m_resumeResolvers to AudioContext, because only
-  // it creates these Promises.
-  // Vector of promises created by resume(). It takes time to handle them, so we
-  // collect all of the promises here until they can be resolved or rejected.
-  HeapVector<Member<ScriptPromiseResolver<IDLUndefined>>> resume_resolvers_;
-
   void RejectPendingDecodeAudioDataResolvers();
 
   // When the context goes away, reject any pending script promise resolvers.
@@ -372,6 +364,12 @@ class MODULES_EXPORT BaseAudioContext
   // etc. Actions that should happen, but can happen asynchronously to the
   // audio thread making rendering progress.
   void PerformCleanupOnMainThread();
+
+  // https://webaudio.github.io/web-audio-api/#dom-baseaudiocontext-pending-promises-slot
+  HeapVector<Member<ScriptPromiseResolver<IDLUndefined>>>
+      pending_promises_resolvers_;
+
+  Member<AudioDestinationNode> destination_node_;
 
   // True if we're in the process of resolving promises for resume().  Resolving
   // can take some time and the audio context process loop is very fast, so we
@@ -391,6 +389,9 @@ class MODULES_EXPORT BaseAudioContext
   // haven't finished playing.  Make sure to release them here.
   void ReleaseActiveSourceNodes();
 
+  // https://webaudio.github.io/web-audio-api/#dom-baseaudiocontext-control-thread-state-slot
+  AudioContextState control_thread_state_ = kSuspended;
+
   bool is_cleared_ = false;
 
   // Listener for the PannerNodes
@@ -403,9 +404,6 @@ class MODULES_EXPORT BaseAudioContext
 
   // Graph locking.
   scoped_refptr<DeferredTaskHandler> deferred_task_handler_;
-
-  // The state of the BaseAudioContext.
-  AudioContextState context_state_ = kSuspended;
 
   AsyncAudioDecoder audio_decoder_;
 

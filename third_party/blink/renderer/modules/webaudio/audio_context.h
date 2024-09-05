@@ -262,6 +262,9 @@ class MODULES_EXPORT AudioContext final
 
   void HandleRenderError();
 
+  // https://webaudio.github.io/web-audio-api/#dom-audiocontext-suspended-by-user-slot
+  bool suspended_by_user_ = false;
+
   unsigned context_id_;
   Member<ScriptPromiseResolver<IDLUndefined>> close_resolver_;
 
@@ -295,9 +298,6 @@ class MODULES_EXPORT AudioContext final
 
   // Records if start() was ever called for any source node in this context.
   bool source_node_started_ = false;
-
-  // Represents whether a context is suspended by explicit `context.suspend()`.
-  bool suspended_by_user_ = false;
 
   // baseLatency for this context
   double base_latency_ = 0;
