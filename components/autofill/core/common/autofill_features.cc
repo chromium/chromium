@@ -86,10 +86,10 @@ BASE_FEATURE(kAutofillConsiderPhoneNumberSeparatorsValidLabels,
 
 // If enabled, no prefix matching is applied to filter credit card number
 // suggestions.
-// TODO(crbug.com/338932642): Clean up if launched.
+// TODO(crbug.com/338932642): Clean up.
 BASE_FEATURE(kAutofillDontPrefixMatchCreditCardNumbersOrCvcs,
              "AutofillDontPrefixMatchCreditCardNumbersOrCvcs",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // FormStructure::RetrieveFromCache used to preserve an AutofillField's
 // is_autofilled from the cache of previously parsed forms. This makes little

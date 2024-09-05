@@ -2457,15 +2457,16 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   field.set_value(u"5255-66__-____-____");
   GetAutofillSuggestions(form, field);
 
-  // Test that we sent the right value to the external delegate.
   external_delegate()->CheckSuggestions(
-      field.global_id(), {GetCardSuggestion(kMasterCard), CreateSeparator(),
-                          CreateManageCreditCardsSuggestion(
-                              /*with_gpay_logo=*/false)});
+      field.global_id(),
+      {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard),
+       GetCardSuggestion(kMasterCard), CreateSeparator(),
+       CreateManageCreditCardsSuggestion(
+           /*with_gpay_logo=*/false)});
 }
 
-// Test that we return only matching credit card profile suggestions when the
-// selected form field has been partially filled out.
+// Test that we still return all credit card profile suggestions when the
+// credit card form field has been partially filled out.
 TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
        GetCreditCardSuggestions_MatchCharacter) {
   // Set up our form data.
@@ -2481,7 +2482,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   // Test that we sent the right values to the external delegate.
   external_delegate()->CheckSuggestions(
       cc_number_field.global_id(),
-      {GetCardSuggestion(kVisaCard), CreateSeparator(),
+      {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard),
+       CreateSeparator(),
        CreateManageCreditCardsSuggestion(
            /*with_gpay_logo=*/false)});
 }
@@ -2659,66 +2661,6 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
        CreateSeparator(),
        CreateManageCreditCardsSuggestion(
            /*with_gpay_logo=*/false)});
-}
-
-// Test that we return all credit card suggestions in the case that two cards
-// have the same obfuscated number.
-TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
-       GetCreditCardSuggestions_RepeatedObfuscatedNumber) {
-  // Add a credit card with the same obfuscated number as Elvis's.
-  // |credit_card| will be owned by the mock PersonalDataManager.
-  CreditCard credit_card;
-  test::SetCreditCardInfo(&credit_card, "Elvis Presley",
-                          "5255667890168765",  // Mastercard
-                          "10", "2098", "1");
-  credit_card.set_guid(MakeGuid(7));
-  credit_card.set_use_date(AutofillClock::Now() - base::Days(15));
-  personal_data().payments_data_manager().AddCreditCard(credit_card);
-
-  // Set up our form data.
-  FormData form =
-      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
-  FormsSeen({form});
-
-  GetAutofillSuggestions(form, form.fields()[1]);
-
-  // Test that we sent the right values to the external delegate.
-  external_delegate()->CheckSuggestions(
-      form.fields()[1].global_id(),
-      {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard),
-       GetCardSuggestion(kMasterCard), CreateSeparator(),
-       CreateManageCreditCardsSuggestion(
-           /*with_gpay_logo=*/false)});
-}
-
-// Test that a masked server card is not suggested if more than six digits
-// have been typed in the field.
-TEST_F(BrowserAutofillManagerTest,
-       GetCreditCardSuggestions_MaskedCardWithMoreThan6Digits) {
-  // Add a masked server card.
-  personal_data().test_payments_data_manager().ClearCreditCards();
-
-  CreditCard masked_server_card;
-  test::SetCreditCardInfo(&masked_server_card, "Elvis Presley",
-                          "4234567890123456",  // Visa
-                          "04", "2999", "1");
-  masked_server_card.set_guid(MakeGuid(7));
-  masked_server_card.set_record_type(CreditCard::RecordType::kMaskedServerCard);
-  personal_data().test_payments_data_manager().AddServerCreditCard(
-      masked_server_card);
-  EXPECT_EQ(1U,
-            personal_data().payments_data_manager().GetCreditCards().size());
-
-  // Set up our form data.
-  FormData form =
-      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
-  FormsSeen({form});
-
-  FormFieldData& field = test_api(form).field(1);
-  field.set_value(u"12345678");
-  GetAutofillSuggestions(form, field);
-
-  external_delegate()->CheckNoSuggestions(field.global_id());
 }
 
 // Test that expired cards are ordered by their ranking score and are always
@@ -5590,8 +5532,7 @@ TEST_F(BrowserAutofillManagerTest, OnDidFillAutofillFormDataAndUnfocus_Upload) {
 }
 
 // Test that suggestions are returned for credit card fields with an
-// unrecognized
-// autocomplete attribute.
+// unrecognized autocomplete attribute.
 TEST_F(BrowserAutofillManagerTest,
        GetCreditCardSuggestions_UnrecognizedAttribute) {
   // Set up the form data.
@@ -5624,7 +5565,7 @@ TEST_F(BrowserAutofillManagerTest,
 }
 
 // Test to verify suggestions appears for forms having credit card number split
-// across fields.
+// across fields. No prefix matching is applied.
 TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
        GetCreditCardSuggestions_ForNumberSplitAcrossFields) {
   // Set up our form data with credit card number split across fields.
@@ -5664,7 +5605,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
 
   external_delegate()->CheckSuggestions(
       form.fields()[3].global_id(),
-      {GetCardSuggestion(kVisaCard), CreateSeparator(),
+      {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard),
+       CreateSeparator(),
        CreateManageCreditCardsSuggestion(
            /*with_gpay_logo=*/false)});
 }
