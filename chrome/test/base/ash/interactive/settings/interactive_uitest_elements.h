@@ -157,6 +157,9 @@ WebContentsInteractionTestUtil::DeepQuery ApnSubpageZeroStateContent();
 // The cellular "row" on the top-level internet page.
 WebContentsInteractionTestUtil::DeepQuery CellularSummaryItem();
 
+// The cellular inhibited element in Mobile data subpage.
+WebContentsInteractionTestUtil::DeepQuery CellularInhibitedItem();
+
 // The "add eSIM" dialog.
 WebContentsInteractionTestUtil::DeepQuery EsimDialog();
 

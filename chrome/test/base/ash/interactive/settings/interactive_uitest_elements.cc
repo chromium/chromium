@@ -201,6 +201,11 @@ WebContentsInteractionTestUtil::DeepQuery CellularSummaryItem() {
          "div#networkSummaryItemRow";
 }
 
+WebContentsInteractionTestUtil::DeepQuery CellularInhibitedItem() {
+  return InternetPage() + "settings-internet-subpage" +
+         "cellular-networks-list" + "div#inhibitedSubtext";
+}
+
 WebContentsInteractionTestUtil::DeepQuery AddEsimButton() {
   return InternetPage() + "settings-internet-subpage" +
          "cellular-networks-list" + "cr-icon-button#addESimButton";
