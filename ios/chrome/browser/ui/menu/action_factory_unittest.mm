@@ -66,7 +66,7 @@ TEST_F(ActionFactoryTest, CreateActionWithParameters) {
                                         block:^{
                                         }];
 
-  EXPECT_TRUE([test_title_ isEqualToString:action.title]);
+  EXPECT_NSEQ(test_title_, action.title);
   EXPECT_EQ(mockImage, action.image);
 }
 
@@ -83,7 +83,7 @@ TEST_F(ActionFactoryTest, BookmarkAction) {
   UIAction* action = [factory actionToBookmarkWithBlock:^{
   }];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
 }
 
@@ -100,7 +100,7 @@ TEST_F(ActionFactoryTest, CloseRegularTabAction) {
   UIAction* action = [factory actionToCloseRegularTabWithBlock:^{
   }];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
 }
 
@@ -117,7 +117,7 @@ TEST_F(ActionFactoryTest, ClosePinnedTabAction) {
   UIAction* action = [factory actionToClosePinnedTabWithBlock:^{
   }];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
 }
 
@@ -133,7 +133,7 @@ TEST_F(ActionFactoryTest, CopyAction) {
   CrURL* testURL = [[CrURL alloc] initWithGURL:GURL("https://example.com")];
   UIAction* action = [factory actionToCopyURL:testURL];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
 }
 
@@ -149,7 +149,7 @@ TEST_F(ActionFactoryTest, ShareAction) {
   UIAction* action = [factory actionToShareWithBlock:^{
   }];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
 }
 
@@ -165,7 +165,7 @@ TEST_F(ActionFactoryTest, DeleteAction) {
   UIAction* action = [factory actionToDeleteWithBlock:^{
   }];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
   EXPECT_EQ(UIMenuElementAttributesDestructive, action.attributes);
 }
@@ -183,7 +183,7 @@ TEST_F(ActionFactoryTest, ReadLaterAction) {
   UIAction* action = [factory actionToAddToReadingListWithBlock:^{
   }];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
 }
 
@@ -199,7 +199,7 @@ TEST_F(ActionFactoryTest, RemoveAction) {
   UIAction* action = [factory actionToRemoveWithBlock:^{
   }];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
 }
 
@@ -215,7 +215,7 @@ TEST_F(ActionFactoryTest, EditAction) {
   UIAction* action = [factory actionToEditWithBlock:^{
   }];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
 }
 
@@ -232,7 +232,7 @@ TEST_F(ActionFactoryTest, openAllTabsAction) {
   UIAction* action = [factory actionToOpenAllTabsWithBlock:^{
   }];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
 }
 
@@ -249,7 +249,7 @@ TEST_F(ActionFactoryTest, hideAction) {
   UIAction* action = [factory actionToHideWithBlock:^{
   }];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
 }
 
@@ -267,7 +267,7 @@ TEST_F(ActionFactoryTest, MoveFolderAction) {
   UIAction* action = [factory actionToMoveFolderWithBlock:^{
   }];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_NSEQ(expectedImage, action.image);
 }
 
@@ -285,7 +285,7 @@ TEST_F(ActionFactoryTest, markAsReadAction) {
   UIAction* action = [factory actionToMarkAsReadWithBlock:^{
   }];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
 }
 
@@ -303,7 +303,7 @@ TEST_F(ActionFactoryTest, markAsUnreadAction) {
   UIAction* action = [factory actionToMarkAsUnreadWithBlock:^{
   }];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
 }
 
@@ -322,7 +322,7 @@ TEST_F(ActionFactoryTest, viewOfflineVersion) {
   UIAction* action = [factory actionToOpenOfflineVersionInNewTabWithBlock:^{
   }];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
 }
 
@@ -339,7 +339,7 @@ TEST_F(ActionFactoryTest, SaveImageAction) {
   UIAction* action = [factory actionSaveImageWithBlock:^{
   }];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
 }
 
@@ -356,7 +356,7 @@ TEST_F(ActionFactoryTest, CopyImageAction) {
   UIAction* action = [factory actionCopyImageWithBlock:^{
   }];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
 }
 
@@ -376,7 +376,7 @@ TEST_F(ActionFactoryTest, CloseAllTabsAction) {
   UIAction* action = [factory actionToCloseAllTabsWithBlock:^{
   }];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
 }
 
@@ -393,7 +393,7 @@ TEST_F(ActionFactoryTest, SelectTabsAction) {
   UIAction* action = [factory actionToSelectTabsWithBlock:^{
   }];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
 }
 
@@ -415,7 +415,7 @@ TEST_F(ActionFactoryTest, AddTabsToNewGroupInSubmenuAction) {
                                                                 block:^{
                                                                 }];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
 }
 
@@ -437,7 +437,7 @@ TEST_F(ActionFactoryTest, AddTabsToNewGroupOutOfMenuAction) {
                                                                 block:^{
                                                                 }];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
 }
 
@@ -587,7 +587,7 @@ TEST_F(ActionFactoryTest, UngroupTabGroup) {
   UIAction* action = [factory actionToUngroupTabGroupWithBlock:^{
   }];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
 }
 
@@ -606,7 +606,7 @@ TEST_F(ActionFactoryTest, DeleteTabGroup) {
   UIAction* action = [factory actionToDeleteTabGroupWithBlock:^{
   }];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
   EXPECT_EQ(UIMenuElementAttributesDestructive, action.attributes);
 }
@@ -626,7 +626,7 @@ TEST_F(ActionFactoryTest, CloseTabGroup) {
   UIAction* action = [factory actionToCloseTabGroupWithBlock:^{
   }];
 
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_NSEQ(expectedTitle, action.title);
   EXPECT_EQ(expectedImage, action.image);
   EXPECT_EQ(UIMenuElementAttributesDestructive, action.attributes);
 }
