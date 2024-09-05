@@ -87,9 +87,6 @@ bool ConsumeCommaIncludingWhitespace(CSSParserTokenRange&);
 bool ConsumeCommaIncludingWhitespace(CSSParserTokenStream&);
 bool ConsumeSlashIncludingWhitespace(CSSParserTokenRange&);
 bool ConsumeSlashIncludingWhitespace(CSSParserTokenStream&);
-// ConsumeFunction expects the range starts with a FunctionToken.
-CSSParserTokenRange ConsumeFunction(CSSParserTokenRange&);
-CSSParserTokenRange ConsumeFunction(CSSParserTokenStream&);
 
 // https://drafts.csswg.org/css-syntax/#typedef-any-value
 //
@@ -97,11 +94,6 @@ CSSParserTokenRange ConsumeFunction(CSSParserTokenStream&);
 // for <any-value>.
 CORE_EXPORT void ConsumeAnyValue(CSSParserTokenStream&);
 
-CSSPrimitiveValue* ConsumeInteger(
-    CSSParserTokenRange&,
-    const CSSParserContext&,
-    double minimum_value = -std::numeric_limits<double>::max(),
-    const bool is_percentage_allowed = true);
 CSSPrimitiveValue* ConsumeInteger(
     CSSParserTokenStream&,
     const CSSParserContext&,
@@ -116,23 +108,13 @@ CSSPrimitiveValue* ConsumePositiveInteger(CSSParserTokenStream&,
 bool ConsumeNumberRaw(CSSParserTokenStream&,
                       const CSSParserContext& context,
                       double& result);
-CSSPrimitiveValue* ConsumeNumber(CSSParserTokenRange&,
-                                 const CSSParserContext&,
-                                 CSSPrimitiveValue::ValueRange);
 CSSPrimitiveValue* ConsumeNumber(CSSParserTokenStream&,
                                  const CSSParserContext&,
                                  CSSPrimitiveValue::ValueRange);
-CSSPrimitiveValue* ConsumeLength(CSSParserTokenRange&,
-                                 const CSSParserContext&,
-                                 CSSPrimitiveValue::ValueRange,
-                                 UnitlessQuirk = UnitlessQuirk::kForbid);
 CSSPrimitiveValue* ConsumeLength(CSSParserTokenStream&,
                                  const CSSParserContext&,
                                  CSSPrimitiveValue::ValueRange,
                                  UnitlessQuirk = UnitlessQuirk::kForbid);
-CSSPrimitiveValue* ConsumePercent(CSSParserTokenRange&,
-                                  const CSSParserContext&,
-                                  CSSPrimitiveValue::ValueRange);
 CSSPrimitiveValue* ConsumePercent(CSSParserTokenStream&,
                                   const CSSParserContext&,
                                   CSSPrimitiveValue::ValueRange);
@@ -146,13 +128,6 @@ CSSPrimitiveValue* ConsumeNumberOrPercent(
 CSSPrimitiveValue* ConsumeAlphaValue(CSSParserTokenStream&,
                                      const CSSParserContext&);
 CSSPrimitiveValue* ConsumeLengthOrPercent(
-    CSSParserTokenRange&,
-    const CSSParserContext&,
-    CSSPrimitiveValue::ValueRange,
-    UnitlessQuirk = UnitlessQuirk::kForbid,
-    CSSAnchorQueryTypes = kCSSAnchorQueryTypesNone,
-    AllowCalcSize = AllowCalcSize::kForbid);
-CSSPrimitiveValue* ConsumeLengthOrPercent(
     CSSParserTokenStream&,
     const CSSParserContext&,
     CSSPrimitiveValue::ValueRange,
@@ -164,16 +139,6 @@ CSSPrimitiveValue* ConsumeSVGGeometryPropertyLength(
     const CSSParserContext&,
     CSSPrimitiveValue::ValueRange);
 
-CORE_EXPORT CSSPrimitiveValue* ConsumeAngle(
-    CSSParserTokenRange&,
-    const CSSParserContext&,
-    std::optional<WebFeature> unitless_zero_feature);
-CORE_EXPORT CSSPrimitiveValue* ConsumeAngle(
-    CSSParserTokenRange&,
-    const CSSParserContext&,
-    std::optional<WebFeature> unitless_zero_feature,
-    double minimum_value,
-    double maximum_value);
 CORE_EXPORT CSSPrimitiveValue* ConsumeAngle(
     CSSParserTokenStream&,
     const CSSParserContext&,
@@ -187,10 +152,8 @@ CORE_EXPORT CSSPrimitiveValue* ConsumeAngle(
 CSSPrimitiveValue* ConsumeTime(CSSParserTokenStream&,
                                const CSSParserContext&,
                                CSSPrimitiveValue::ValueRange);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSPrimitiveValue* ConsumeResolution(T&, const CSSParserContext&);
+CSSPrimitiveValue* ConsumeResolution(CSSParserTokenStream&,
+                                     const CSSParserContext&);
 CSSValue* ConsumeRatio(CSSParserTokenStream&, const CSSParserContext&);
 CSSIdentifierValue* ConsumeIdent(CSSParserTokenRange&);
 CSSIdentifierValue* ConsumeIdent(CSSParserTokenStream&);

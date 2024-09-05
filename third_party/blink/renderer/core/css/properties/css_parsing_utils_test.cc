@@ -48,15 +48,13 @@ TEST(CSSParsingUtilsTest, Revert) {
 }
 
 double ConsumeAngleValue(String target) {
-  auto tokens = CSSTokenizer(target).TokenizeToEOF();
-  CSSParserTokenRange range(tokens);
-  return ConsumeAngle(range, *MakeContext(), std::nullopt)->ComputeDegrees();
+  CSSParserTokenStream stream(target);
+  return ConsumeAngle(stream, *MakeContext(), std::nullopt)->ComputeDegrees();
 }
 
 double ConsumeAngleValue(String target, double min, double max) {
-  auto tokens = CSSTokenizer(target).TokenizeToEOF();
-  CSSParserTokenRange range(tokens);
-  return ConsumeAngle(range, *MakeContext(), std::nullopt, min, max)
+  CSSParserTokenStream stream(target);
+  return ConsumeAngle(stream, *MakeContext(), std::nullopt, min, max)
       ->ComputeDegrees();
 }
 

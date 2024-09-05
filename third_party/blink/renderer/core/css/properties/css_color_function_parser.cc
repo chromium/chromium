@@ -246,12 +246,12 @@ CSSValue* ConsumeRelativeColorChannel(
     using Flags = CSSMathExpressionNode::Flags;
 
     // Don't consume the range if the parsing fails.
-    CSSParserSavePoint savepoint(stream);
+    CSSParserTokenStream::RestoringBlockGuard guard(stream);
+    stream.ConsumeWhitespace();
     CSSMathFunctionValue* calc_value = CSSMathFunctionValue::Create(
         CSSMathExpressionNode::ParseMathFunction(
-            token.FunctionId(), css_parsing_utils::ConsumeFunction(stream),
-            context, Flags({AllowPercent}), kCSSAnchorQueryTypesNone,
-            color_channel_map),
+            token.FunctionId(), stream, context, Flags({AllowPercent}),
+            kCSSAnchorQueryTypesNone, color_channel_map),
         CSSPrimitiveValue::ValueRange::kAll);
     if (calc_value) {
       const CalculationResultCategory category = calc_value->Category();
@@ -259,7 +259,8 @@ CSSValue* ConsumeRelativeColorChannel(
         return nullptr;
       }
       // Consume the range, since it has succeeded.
-      savepoint.Release();
+      guard.Release();
+      stream.ConsumeWhitespace();
       return calc_value;
     }
   }

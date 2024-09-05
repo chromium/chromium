@@ -942,26 +942,6 @@ bool ConsumeSlashIncludingWhitespace(CSSParserTokenStream& stream) {
   return true;
 }
 
-CSSParserTokenRange ConsumeFunction(CSSParserTokenRange& range) {
-  DCHECK_EQ(range.Peek().GetType(), kFunctionToken);
-  CSSParserTokenRange contents = range.ConsumeBlock();
-  range.ConsumeWhitespace();
-  contents.ConsumeWhitespace();
-  return contents;
-}
-
-CSSParserTokenRange ConsumeFunction(CSSParserTokenStream& stream) {
-  DCHECK_EQ(stream.Peek().GetType(), kFunctionToken);
-  CSSParserTokenRange contents({});
-  {
-    CSSParserTokenStream::BlockGuard guard(stream);
-    contents = stream.ConsumeUntilPeekedTypeIs<>();
-  }
-  stream.ConsumeWhitespace();
-  contents.ConsumeWhitespace();
-  return contents;
-}
-
 namespace {
 
 bool ConsumeAnyComponentValue(CSSParserTokenStream& stream) {
@@ -996,9 +976,6 @@ void ConsumeAnyValue(CSSParserTokenStream& stream) {
 //
 // TODO(rwlbuis): consider pulling in the parsing logic from
 // css_math_expression_node.cc.
-template <class T = CSSParserTokenRange>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
 class MathFunctionParser {
   STACK_ALLOCATED();
 
@@ -1007,31 +984,32 @@ class MathFunctionParser {
   using Flags = CSSMathExpressionNode::Flags;
 
   MathFunctionParser(
-      T& stream,
+      CSSParserTokenStream& stream,
       const CSSParserContext& context,
       CSSPrimitiveValue::ValueRange value_range,
       const Flags parsing_flags = Flags({Flag::AllowPercent}),
       CSSAnchorQueryTypes allowed_anchor_queries = kCSSAnchorQueryTypesNone,
       const CSSColorChannelMap& color_channel_map = {})
-      : stream_(&stream), savepoint_(Save(stream)) {
+      : stream_(&stream), savepoint_(stream.Save()) {
     const CSSParserToken token = stream.Peek();
     if (token.GetType() == kFunctionToken) {
-      calc_value_ = CSSMathFunctionValue::Create(
-          CSSMathExpressionNode::ParseMathFunction(
-              token.FunctionId(), ConsumeFunction(*stream_), context,
-              parsing_flags, allowed_anchor_queries),
-          value_range);
+      {
+        CSSParserTokenStream::BlockGuard guard(*stream_);
+        stream_->ConsumeWhitespace();
+        calc_value_ = CSSMathFunctionValue::Create(
+            CSSMathExpressionNode::ParseMathFunction(
+                token.FunctionId(), *stream_, context, parsing_flags,
+                allowed_anchor_queries),
+            value_range);
+      }
+      stream_->ConsumeWhitespace();
     }
   }
 
   ~MathFunctionParser() {
     if (!has_consumed_) {
       // Rewind the parser.
-      if constexpr (std::is_same_v<T, CSSParserTokenRange>) {
-        *stream_ = savepoint_;
-      } else {
-        stream_->Restore(savepoint_);
-      }
+      stream_->Restore(savepoint_);
     }
   }
 
@@ -1059,38 +1037,24 @@ class MathFunctionParser {
 
  private:
   bool has_consumed_ = false;
-  T* stream_;
+  CSSParserTokenStream* stream_;
   // For rewinding.
-  std::conditional_t<std::is_same_v<T, CSSParserTokenStream>,
-                     CSSParserTokenStream::State,
-                     CSSParserTokenRange>
-      savepoint_;
+  CSSParserTokenStream::State savepoint_;
   CSSMathFunctionValue* calc_value_ = nullptr;
-
-  decltype(savepoint_) Save(T& stream) {
-    if constexpr (std::is_same_v<T, CSSParserTokenRange>) {
-      return stream;
-    } else {
-      return stream.Save();
-    }
-  }
 };
 
-template <class T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSPrimitiveValue* ConsumeIntegerInternal(T& range,
+CSSPrimitiveValue* ConsumeIntegerInternal(CSSParserTokenStream& stream,
                                           const CSSParserContext& context,
                                           double minimum_value,
                                           const bool is_percentage_allowed) {
-  const CSSParserToken token = range.Peek();
+  const CSSParserToken token = stream.Peek();
   if (token.GetType() == kNumberToken) {
     if (token.GetNumericValueType() == kNumberValueType ||
         token.NumericValue() < minimum_value) {
       return nullptr;
     }
     return CSSNumericLiteralValue::Create(
-        range.ConsumeIncludingWhitespace().NumericValue(),
+        stream.ConsumeIncludingWhitespace().NumericValue(),
         CSSPrimitiveValue::UnitType::kInteger);
   }
 
@@ -1113,7 +1077,7 @@ CSSPrimitiveValue* ConsumeIntegerInternal(T& range,
     parsing_flags.Put(AllowPercent);
   }
 
-  MathFunctionParser<T> math_parser(range, context, value_range, parsing_flags);
+  MathFunctionParser math_parser(stream, context, value_range, parsing_flags);
   if (const CSSMathFunctionValue* math_value = math_parser.Value()) {
     if (math_value->Category() != kCalcNumber) {
       return nullptr;
@@ -1121,14 +1085,6 @@ CSSPrimitiveValue* ConsumeIntegerInternal(T& range,
     return math_parser.ConsumeValue();
   }
   return nullptr;
-}
-
-CSSPrimitiveValue* ConsumeInteger(CSSParserTokenRange& range,
-                                  const CSSParserContext& context,
-                                  double minimum_value,
-                                  const bool is_percentage_allowed) {
-  return ConsumeIntegerInternal(range, context, minimum_value,
-                                is_percentage_allowed);
 }
 
 CSSPrimitiveValue* ConsumeInteger(CSSParserTokenStream& stream,
@@ -1202,29 +1158,6 @@ bool ConsumeNumberRaw(CSSParserTokenStream& stream,
   return math_parser.ConsumeNumberRaw(result);
 }
 
-// TODO(timloh): Work out if this can just call consumeNumberRaw
-CSSPrimitiveValue* ConsumeNumber(CSSParserTokenRange& range,
-                                 const CSSParserContext& context,
-                                 CSSPrimitiveValue::ValueRange value_range) {
-  const CSSParserToken& token = range.Peek();
-  if (token.GetType() == kNumberToken) {
-    if (value_range == CSSPrimitiveValue::ValueRange::kNonNegative &&
-        token.NumericValue() < 0) {
-      return nullptr;
-    }
-    return CSSNumericLiteralValue::Create(
-        range.ConsumeIncludingWhitespace().NumericValue(), token.GetUnitType());
-  }
-  MathFunctionParser math_parser(range, context, value_range);
-  if (const CSSMathFunctionValue* calculation = math_parser.Value()) {
-    if (calculation->Category() != kCalcNumber) {
-      return nullptr;
-    }
-    return math_parser.ConsumeValue();
-  }
-  return nullptr;
-}
-
 CSSPrimitiveValue* ConsumeNumber(CSSParserTokenStream& stream,
                                  const CSSParserContext& context,
                                  CSSPrimitiveValue::ValueRange value_range) {
@@ -1256,15 +1189,11 @@ inline bool ShouldAcceptUnitlessLength(double value,
           unitless == UnitlessQuirk::kAllow);
 }
 
-template <class T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSPrimitiveValue* ConsumeLengthInternal(
-    T& range,
-    const CSSParserContext& context,
-    CSSPrimitiveValue::ValueRange value_range,
-    UnitlessQuirk unitless) {
-  const CSSParserToken token = range.Peek();
+CSSPrimitiveValue* ConsumeLength(CSSParserTokenStream& stream,
+                                 const CSSParserContext& context,
+                                 CSSPrimitiveValue::ValueRange value_range,
+                                 UnitlessQuirk unitless) {
+  const CSSParserToken token = stream.Peek();
   if (token.GetType() == kDimensionToken) {
     switch (token.GetUnitType()) {
       case CSSPrimitiveValue::UnitType::kQuirkyEms:
@@ -1331,7 +1260,8 @@ CSSPrimitiveValue* ConsumeLengthInternal(
       return nullptr;
     }
     return CSSNumericLiteralValue::Create(
-        range.ConsumeIncludingWhitespace().NumericValue(), token.GetUnitType());
+        stream.ConsumeIncludingWhitespace().NumericValue(),
+        token.GetUnitType());
   }
   if (token.GetType() == kNumberToken) {
     if (!ShouldAcceptUnitlessLength(token.NumericValue(), context.Mode(),
@@ -1346,68 +1276,38 @@ CSSPrimitiveValue* ConsumeLengthInternal(
       unit_type = CSSPrimitiveValue::UnitType::kUserUnits;
     }
     return CSSNumericLiteralValue::Create(
-        range.ConsumeIncludingWhitespace().NumericValue(), unit_type);
+        stream.ConsumeIncludingWhitespace().NumericValue(), unit_type);
   }
   if (context.Mode() == kSVGAttributeMode) {
     return nullptr;
   }
-  MathFunctionParser math_parser(range, context, value_range);
+  MathFunctionParser math_parser(stream, context, value_range);
   if (math_parser.Value() && math_parser.Value()->Category() == kCalcLength) {
     return math_parser.ConsumeValue();
   }
   return nullptr;
 }
 
-CSSPrimitiveValue* ConsumeLength(CSSParserTokenRange& range,
-                                 const CSSParserContext& context,
-                                 CSSPrimitiveValue::ValueRange value_range,
-                                 UnitlessQuirk unitless) {
-  return ConsumeLengthInternal(range, context, value_range, unitless);
-}
-
-CSSPrimitiveValue* ConsumeLength(CSSParserTokenStream& stream,
-                                 const CSSParserContext& context,
-                                 CSSPrimitiveValue::ValueRange value_range,
-                                 UnitlessQuirk unitless) {
-  return ConsumeLengthInternal(stream, context, value_range, unitless);
-}
-
-template <class T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSPrimitiveValue* ConsumePercentInternal(
-    T& range,
-    const CSSParserContext& context,
-    CSSPrimitiveValue::ValueRange value_range) {
-  const CSSParserToken token = range.Peek();
+CSSPrimitiveValue* ConsumePercent(CSSParserTokenStream& stream,
+                                  const CSSParserContext& context,
+                                  CSSPrimitiveValue::ValueRange value_range) {
+  const CSSParserToken token = stream.Peek();
   if (token.GetType() == kPercentageToken) {
     if (value_range == CSSPrimitiveValue::ValueRange::kNonNegative &&
         token.NumericValue() < 0) {
       return nullptr;
     }
     return CSSNumericLiteralValue::Create(
-        range.ConsumeIncludingWhitespace().NumericValue(),
+        stream.ConsumeIncludingWhitespace().NumericValue(),
         CSSPrimitiveValue::UnitType::kPercentage);
   }
-  MathFunctionParser math_parser(range, context, value_range);
+  MathFunctionParser math_parser(stream, context, value_range);
   if (const CSSMathFunctionValue* calculation = math_parser.Value()) {
     if (calculation->Category() == kCalcPercent) {
       return math_parser.ConsumeValue();
     }
   }
   return nullptr;
-}
-
-CSSPrimitiveValue* ConsumePercent(CSSParserTokenRange& range,
-                                  const CSSParserContext& context,
-                                  CSSPrimitiveValue::ValueRange value_range) {
-  return ConsumePercentInternal(range, context, value_range);
-}
-
-CSSPrimitiveValue* ConsumePercent(CSSParserTokenStream& stream,
-                                  const CSSParserContext& context,
-                                  CSSPrimitiveValue::ValueRange value_range) {
-  return ConsumePercentInternal(stream, context, value_range);
 }
 
 CSSPrimitiveValue* ConsumeNumberOrPercent(
@@ -1438,11 +1338,8 @@ bool CanConsumeCalcValue(CalculationResultCategory category,
          (css_parser_mode == kSVGAttributeMode && category == kCalcNumber);
 }
 
-template <class T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSPrimitiveValue* ConsumeLengthOrPercentInternal(
-    T& range,
+CSSPrimitiveValue* ConsumeLengthOrPercent(
+    CSSParserTokenStream& stream,
     const CSSParserContext& context,
     CSSPrimitiveValue::ValueRange value_range,
     UnitlessQuirk unitless,
@@ -1451,12 +1348,12 @@ CSSPrimitiveValue* ConsumeLengthOrPercentInternal(
   using enum CSSMathExpressionNode::Flag;
   using Flags = CSSMathExpressionNode::Flags;
 
-  const CSSParserToken& token = range.Peek();
+  const CSSParserToken& token = stream.Peek();
   if (token.GetType() == kDimensionToken || token.GetType() == kNumberToken) {
-    return ConsumeLength(range, context, value_range, unitless);
+    return ConsumeLength(stream, context, value_range, unitless);
   }
   if (token.GetType() == kPercentageToken) {
-    return ConsumePercent(range, context, value_range);
+    return ConsumePercent(stream, context, value_range);
   }
   Flags parsing_flags({AllowPercent});
   switch (allow_calc_size) {
@@ -1472,7 +1369,7 @@ CSSPrimitiveValue* ConsumeLengthOrPercentInternal(
     case AllowCalcSize::kForbid:
       break;
   }
-  MathFunctionParser math_parser(range, context, value_range, parsing_flags,
+  MathFunctionParser math_parser(stream, context, value_range, parsing_flags,
                                  allowed_anchor_queries);
   if (const CSSMathFunctionValue* calculation = math_parser.Value()) {
     if (CanConsumeCalcValue(calculation->Category(), context.Mode())) {
@@ -1480,30 +1377,6 @@ CSSPrimitiveValue* ConsumeLengthOrPercentInternal(
     }
   }
   return nullptr;
-}
-
-CSSPrimitiveValue* ConsumeLengthOrPercent(
-    CSSParserTokenRange& range,
-    const CSSParserContext& context,
-    CSSPrimitiveValue::ValueRange value_range,
-    UnitlessQuirk unitless,
-    CSSAnchorQueryTypes allowed_anchor_queries,
-    AllowCalcSize allow_calc_size) {
-  return ConsumeLengthOrPercentInternal(range, context, value_range, unitless,
-                                        allowed_anchor_queries,
-                                        allow_calc_size);
-}
-
-CSSPrimitiveValue* ConsumeLengthOrPercent(
-    CSSParserTokenStream& stream,
-    const CSSParserContext& context,
-    CSSPrimitiveValue::ValueRange value_range,
-    UnitlessQuirk unitless,
-    CSSAnchorQueryTypes allowed_anchor_queries,
-    AllowCalcSize allow_calc_size) {
-  return ConsumeLengthOrPercentInternal(stream, context, value_range, unitless,
-                                        allowed_anchor_queries,
-                                        allow_calc_size);
 }
 
 namespace {
@@ -1576,14 +1449,13 @@ static CSSPrimitiveValue* ConsumeNumericLiteralAngle(
 }
 
 template <class T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
+  requires std::is_same_v<T, CSSParserTokenStream>
 static CSSPrimitiveValue* ConsumeMathFunctionAngle(
-    T& range,
+    T& stream,
     const CSSParserContext& context,
     double minimum_value,
     double maximum_value) {
-  MathFunctionParser math_parser(range, context,
+  MathFunctionParser math_parser(stream, context,
                                  CSSPrimitiveValue::ValueRange::kAll);
   if (const CSSMathFunctionValue* calculation = math_parser.Value()) {
     if (calculation->Category() != kCalcAngle) {
@@ -1604,14 +1476,11 @@ static CSSPrimitiveValue* ConsumeMathFunctionAngle(
   return nullptr;
 }
 
-template <class T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
 static CSSPrimitiveValue* ConsumeMathFunctionAngle(
-    T& range,
+    CSSParserTokenStream& stream,
     const CSSParserContext& context) {
-  MathFunctionParser<T> math_parser(range, context,
-                                    CSSPrimitiveValue::ValueRange::kAll);
+  MathFunctionParser math_parser(stream, context,
+                                 CSSPrimitiveValue::ValueRange::kAll);
   if (const CSSMathFunctionValue* calculation = math_parser.Value()) {
     if (calculation->Category() != kCalcAngle) {
       return nullptr;
@@ -1632,31 +1501,6 @@ CSSPrimitiveValue* ConsumeAngle(CSSParserTokenStream& stream,
 
   return ConsumeMathFunctionAngle(stream, context, minimum_value,
                                   maximum_value);
-}
-
-CSSPrimitiveValue* ConsumeAngle(CSSParserTokenRange& range,
-                                const CSSParserContext& context,
-                                std::optional<WebFeature> unitless_zero_feature,
-                                double minimum_value,
-                                double maximum_value) {
-  if (auto* result =
-          ConsumeNumericLiteralAngle(range, context, unitless_zero_feature)) {
-    return result;
-  }
-
-  return ConsumeMathFunctionAngle(range, context, minimum_value, maximum_value);
-}
-
-CSSPrimitiveValue* ConsumeAngle(
-    CSSParserTokenRange& range,
-    const CSSParserContext& context,
-    std::optional<WebFeature> unitless_zero_feature) {
-  if (auto* result =
-          ConsumeNumericLiteralAngle(range, context, unitless_zero_feature)) {
-    return result;
-  }
-
-  return ConsumeMathFunctionAngle(range, context);
 }
 
 CSSPrimitiveValue* ConsumeAngle(
@@ -1698,12 +1542,9 @@ CSSPrimitiveValue* ConsumeTime(CSSParserTokenStream& stream,
   return nullptr;
 }
 
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSPrimitiveValue* ConsumeResolution(T& range,
+CSSPrimitiveValue* ConsumeResolution(CSSParserTokenStream& stream,
                                      const CSSParserContext& context) {
-  if (const CSSParserToken& token = range.Peek();
+  if (const CSSParserToken& token = stream.Peek();
       token.GetType() == kDimensionToken) {
     CSSPrimitiveValue::UnitType unit = token.GetUnitType();
     if (!CSSPrimitiveValue::IsResolution(unit) || token.NumericValue() < 0.0) {
@@ -1715,10 +1556,10 @@ CSSPrimitiveValue* ConsumeResolution(T& range,
     }
 
     return CSSNumericLiteralValue::Create(
-        range.ConsumeIncludingWhitespace().NumericValue(), unit);
+        stream.ConsumeIncludingWhitespace().NumericValue(), unit);
   }
 
-  MathFunctionParser math_parser(range, context,
+  MathFunctionParser math_parser(stream, context,
                                  CSSPrimitiveValue::ValueRange::kNonNegative);
   const CSSMathFunctionValue* math_value = math_parser.Value();
   if (math_value && math_value->IsResolution()) {
@@ -1727,11 +1568,6 @@ CSSPrimitiveValue* ConsumeResolution(T& range,
 
   return nullptr;
 }
-
-template CSSPrimitiveValue* ConsumeResolution(CSSParserTokenRange& range,
-                                              const CSSParserContext& context);
-template CSSPrimitiveValue* ConsumeResolution(CSSParserTokenStream& range,
-                                              const CSSParserContext& context);
 
 // https://drafts.csswg.org/css-values-4/#ratio-value
 //
@@ -4618,19 +4454,6 @@ CSSValue* ConsumeMaskMode(CSSParserTokenStream& stream) {
 }
 
 CSSPrimitiveValue* ConsumeLengthOrPercentCountNegative(
-    CSSParserTokenRange& range,
-    const CSSParserContext& context,
-    std::optional<WebFeature> negative_size) {
-  CSSPrimitiveValue* result = ConsumeLengthOrPercent(
-      range, context, CSSPrimitiveValue::ValueRange::kNonNegative,
-      UnitlessQuirk::kForbid);
-  if (!result && negative_size) {
-    context.Count(*negative_size);
-  }
-  return result;
-}
-
-CSSPrimitiveValue* ConsumeLengthOrPercentCountNegative(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     std::optional<WebFeature> negative_size) {
@@ -4641,44 +4464,6 @@ CSSPrimitiveValue* ConsumeLengthOrPercentCountNegative(
     context.Count(*negative_size);
   }
   return result;
-}
-
-CSSValue* ConsumeBackgroundSize(CSSParserTokenRange& range,
-                                const CSSParserContext& context,
-                                std::optional<WebFeature> negative_size,
-                                ParsingStyle parsing_style) {
-  if (IdentMatches<CSSValueID::kContain, CSSValueID::kCover>(
-          range.Peek().Id())) {
-    return ConsumeIdent(range);
-  }
-
-  CSSValue* horizontal = ConsumeIdent<CSSValueID::kAuto>(range);
-  if (!horizontal) {
-    horizontal =
-        ConsumeLengthOrPercentCountNegative(range, context, negative_size);
-  }
-  if (!horizontal) {
-    return nullptr;
-  }
-
-  CSSValue* vertical = nullptr;
-  if (!range.AtEnd()) {
-    if (range.Peek().Id() == CSSValueID::kAuto) {  // `auto' is the default
-      range.ConsumeIncludingWhitespace();
-    } else {
-      vertical =
-          ConsumeLengthOrPercentCountNegative(range, context, negative_size);
-    }
-  } else if (parsing_style == ParsingStyle::kLegacy) {
-    // Legacy syntax: "-webkit-background-size: 10px" is equivalent to
-    // "background-size: 10px 10px".
-    vertical = horizontal;
-  }
-  if (!vertical) {
-    return horizontal;
-  }
-  return MakeGarbageCollected<CSSValuePair>(horizontal, vertical,
-                                            CSSValuePair::kKeepIdenticalValues);
 }
 
 CSSValue* ConsumeBackgroundSize(CSSParserTokenStream& stream,

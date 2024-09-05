@@ -113,7 +113,7 @@ class CORE_EXPORT CSSMathExpressionNode
 
   static CSSMathExpressionNode* ParseMathFunction(
       CSSValueID function_id,
-      CSSParserTokenRange tokens,
+      CSSParserTokenStream& stream,
       const CSSParserContext&,
       const Flags parsing_flags,
       CSSAnchorQueryTypes allowed_anchor_queries,
