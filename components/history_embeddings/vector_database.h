@@ -35,6 +35,28 @@ struct ScoredUrl {
   float score;
 };
 
+struct SearchParams {
+  SearchParams();
+  SearchParams(SearchParams&&);
+  ~SearchParams();
+
+  // Portions of lower-cased query representing terms usable for text search.
+  // Owned std::string instances are used instead of std::string_view into
+  // an owned query instance because this struct can move, and view data
+  // pointers are not guaranteed valid after source string moves.
+  std::vector<std::string> query_terms;
+
+  // Embedding similarity score below which no word matching takes place.
+  float word_match_minimum_embedding_score = 0.0f;
+
+  // Raw score boost, applied per word.
+  float word_match_score_boost_factor = 0.2f;
+
+  // Divides and caps a word match boost. Finding the word more than this many
+  // times won't increase the boost for the word.
+  int word_match_limit = 5;
+};
+
 struct SearchInfo {
   SearchInfo();
   SearchInfo(SearchInfo&&);
@@ -56,6 +78,12 @@ struct SearchInfo {
   // Whether the search completed without interruption. Starting a new search
   // may cause a search to halt, and in that case this member will be false.
   bool completed = false;
+
+  // Time breakdown for metrics: total > scoring > passage_scanning as each
+  // succeeding time value is a portion of the last.
+  base::TimeDelta total_search_time;
+  base::TimeDelta scoring_time;
+  base::TimeDelta passage_scanning_time;
 };
 
 struct UrlPassages {
@@ -98,6 +126,7 @@ class Embedding {
 
   // Compares one embedding with another and returns a similarity measure.
   float ScoreWith(SearchInfo& search_info,
+                  const SearchParams& search_params,
                   const std::string& other_passage,
                   const Embedding& other_embedding) const;
 
@@ -132,7 +161,8 @@ struct UrlEmbeddings {
   // into consideration since some should be skipped. The passages
   // correspond to the embeddings 1:1 by index.
   float BestScoreWith(SearchInfo& search_info,
-                      const Embedding& query,
+                      const SearchParams& search_params,
+                      const Embedding& query_embedding,
                       const proto::PassagesValue& passages,
                       size_t search_minimum_word_count) const;
 
@@ -186,7 +216,8 @@ class VectorDatabase {
   // information about where they were found and how nearly the query matched.
   SearchInfo FindNearest(std::optional<base::Time> time_range_start,
                          size_t count,
-                         const Embedding& query,
+                         const SearchParams& search_params,
+                         const Embedding& query_embedding,
                          base::RepeatingCallback<bool()> is_search_halted);
 };
 

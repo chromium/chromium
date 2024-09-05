@@ -226,6 +226,7 @@ class HistoryEmbeddingsService : public KeyedService,
     std::vector<ScoredUrlRow> Search(
         base::WeakPtr<std::atomic<size_t>> weak_latest_query_id,
         size_t query_id,
+        SearchParams search_params,
         Embedding query_embedding,
         std::optional<base::Time> time_range_start,
         size_t count);
@@ -284,6 +285,7 @@ class HistoryEmbeddingsService : public KeyedService,
   // Invoked after the embedding for the original search query has been
   // computed.
   void OnQueryEmbeddingComputed(SearchResultCallback callback,
+                                SearchParams search_params,
                                 SearchResult result,
                                 std::vector<std::string> query_passages,
                                 std::vector<Embedding> query_embedding,
@@ -339,8 +341,10 @@ class HistoryEmbeddingsService : public KeyedService,
       base::Time time_before_database_access,
       std::optional<UrlPassagesEmbeddings> existing_url_data);
 
-  // Returns true if query should be filtered.
-  bool QueryIsFiltered(const std::string& raw_query) const;
+  // Returns true if query should be filtered. If false, then `search_params`
+  // will have its query_terms set.
+  bool QueryIsFiltered(const std::string& raw_query,
+                       SearchParams& search_params) const;
 
   raw_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 

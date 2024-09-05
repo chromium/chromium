@@ -403,20 +403,29 @@ void HistoryEmbeddingsService::Search(
   result.query = query;
   result.time_range_start = time_range_start;
   result.count = count;
-  if (QueryIsFiltered(query)) {
+
+  SearchParams search_params;
+  if (QueryIsFiltered(query, search_params)) {
     result.count = 0;
     callback.Run(std::move(result));
     return;
   }
+  search_params.word_match_minimum_embedding_score =
+      kWordMatchMinEmbeddingScore.Get();
+  search_params.word_match_score_boost_factor =
+      kWordMatchScoreBoostFactor.Get();
+  search_params.word_match_limit = kWordMatchLimit.Get();
+
   embedder_->ComputePassagesEmbeddings(
       PassageKind::QUERY, {std::move(query)},
       base::BindOnce(&HistoryEmbeddingsService::OnQueryEmbeddingComputed,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(result)));
+                     std::move(search_params), std::move(result)));
 }
 
 void HistoryEmbeddingsService::OnQueryEmbeddingComputed(
     SearchResultCallback callback,
+    SearchParams search_params,
     SearchResult result,
     std::vector<std::string> query_passages,
     std::vector<Embedding> query_embeddings,
@@ -440,8 +449,8 @@ void HistoryEmbeddingsService::OnQueryEmbeddingComputed(
   query_id_++;
   storage_.AsyncCall(&Storage::Search)
       .WithArgs(query_id_weak_ptr_factory_.GetWeakPtr(), query_id_.load(),
-                std::move(query_embeddings.front()), result.time_range_start,
-                result.count)
+                std::move(search_params), std::move(query_embeddings.front()),
+                result.time_range_start, result.count)
       .Then(base::BindOnce(&HistoryEmbeddingsService::OnSearchCompleted,
                            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                            std::move(result)));
@@ -609,12 +618,13 @@ void HistoryEmbeddingsService::Storage::ProcessAndStorePassages(
 std::vector<ScoredUrlRow> HistoryEmbeddingsService::Storage::Search(
     base::WeakPtr<std::atomic<size_t>> weak_latest_query_id,
     size_t query_id,
+    SearchParams search_params,
     Embedding query_embedding,
     std::optional<base::Time> time_range_start,
     size_t count) {
   base::ElapsedTimer timer;
   SearchInfo search_info = sql_database.FindNearest(
-      time_range_start, count, query_embedding,
+      time_range_start, count, search_params, query_embedding,
       base::BindRepeating(
           [](base::WeakPtr<std::atomic<size_t>> weak_latest_query_id,
              size_t query_id) {
@@ -662,7 +672,7 @@ std::vector<ScoredUrlRow> HistoryEmbeddingsService::Storage::Search(
     for (size_t i = 0; i < n; i++) {
       SearchInfo discard_recount;
       scored_url_row.scores.push_back(query_embedding.ScoreWith(
-          discard_recount,
+          discard_recount, search_params,
           scored_url_row.passages_embeddings.url_passages.passages.passages(i),
           scored_url_row.passages_embeddings.url_embeddings.embeddings[i]));
     }
@@ -1042,7 +1052,8 @@ void HistoryEmbeddingsService::RetrievePassagesWithUrlData(
 }
 
 bool HistoryEmbeddingsService::QueryIsFiltered(
-    const std::string& raw_query) const {
+    const std::string& raw_query,
+    SearchParams& search_params) const {
   if (!base::IsStringASCII(raw_query)) {
     RecordQueryFiltered(QueryFiltered::FILTERED_NOT_ASCII);
     return true;
@@ -1059,7 +1070,7 @@ bool HistoryEmbeddingsService::QueryIsFiltered(
   // Erase any query terms that were trimmed to empty so they don't disrupt
   // the two term pairing logic below.
   std::erase(query_terms, "");
-  if (std::ranges::any_of(query_terms, [&](const std::string_view& query_term) {
+  if (std::ranges::any_of(query_terms, [this](std::string_view query_term) {
         uint32_t hash = HashString(query_term);
         return filter_hashes_.contains(hash);
       })) {
@@ -1076,6 +1087,12 @@ bool HistoryEmbeddingsService::QueryIsFiltered(
     }
   }
   RecordQueryFiltered(QueryFiltered::NOT_FILTERED);
+  size_t min_term_length = kWordMatchMinTermLength.Get();
+  for (std::string_view view : query_terms) {
+    if (query_terms.size() >= min_term_length) {
+      search_params.query_terms.emplace_back(view);
+    }
+  }
   return false;
 }
 

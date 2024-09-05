@@ -125,6 +125,12 @@ extern const base::FeatureParam<std::string> kFilterHashes;
 // history embeddings.
 extern const base::FeatureParam<bool> kEnableSidePanel;
 
+// These control score boosting from passage text word matching.
+extern const base::FeatureParam<double> kWordMatchMinEmbeddingScore;
+extern const base::FeatureParam<int> kWordMatchMinTermLength;
+extern const base::FeatureParam<double> kWordMatchScoreBoostFactor;
+extern const base::FeatureParam<int> kWordMatchLimit;
+
 // Whether the history embeddings feature is enabled. This only checks if the
 // feature flags are enabled and does not check the user's opt-in preference.
 // See chrome/browser/history_embeddings/history_embeddings_utils.h.

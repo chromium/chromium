@@ -143,6 +143,24 @@ const base::FeatureParam<bool> kEnableSidePanel(&kHistoryEmbeddings,
                                                 "EnableSidePanel",
                                                 false);
 
+const base::FeatureParam<double> kWordMatchMinEmbeddingScore(
+    &kHistoryEmbeddings,
+    "WordMatchMinEmbeddingScore",
+    1.0);
+
+const base::FeatureParam<int> kWordMatchMinTermLength(&kHistoryEmbeddings,
+                                                      "WordMatchMinTermLength",
+                                                      3);
+
+const base::FeatureParam<double> kWordMatchScoreBoostFactor(
+    &kHistoryEmbeddings,
+    "WordMatchScoreBoostFactor",
+    0.2);
+
+const base::FeatureParam<int> kWordMatchLimit(&kHistoryEmbeddings,
+                                              "WordMatchLimit",
+                                              5);
+
 bool IsHistoryEmbeddingsEnabled() {
 #if BUILDFLAG(IS_CHROMEOS)
   return chromeos::features::IsFeatureManagementHistoryEmbeddingEnabled() &&
