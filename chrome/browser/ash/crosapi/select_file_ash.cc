@@ -14,7 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/crosapi/window_util.h"
-#include "chrome/browser/ui/views/select_file_dialog_extension.h"
+#include "chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension.h"
 #include "chromeos/crosapi/mojom/select_file.mojom-shared.h"
 #include "chromeos/crosapi/mojom/select_file.mojom.h"
 #include "ui/shell_dialogs/select_file_dialog.h"

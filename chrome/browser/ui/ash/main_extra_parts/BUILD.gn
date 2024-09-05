@@ -73,6 +73,7 @@ static_library("main_extra_parts") {
     "//chrome/browser/ui/ash/web_view",
     "//chrome/browser/ui/ash/wm",
     "//chrome/browser/ui/chromeos/read_write_cards:read_write_cards_manager",
+    "//chrome/browser/ui/views/select_file_dialog_extension",
     "//chromeos/ash/components/boca",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/resourced",

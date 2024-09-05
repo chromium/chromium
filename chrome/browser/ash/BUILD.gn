@@ -1062,7 +1062,6 @@ source_set("unit_tests") {
     "../metrics/perf/random_selector_unittest.cc",
     "../policy/default_geolocation_policy_handler_unittest.cc",
     "../ui/browser_finder_chromeos_unittest.cc",
-    "../ui/views/select_file_dialog_extension_unittest.cc",
     "../ui/webui/settings/about_handler_unittest.cc",
     "proxy_config_service_impl_unittest.cc",
     "system_token_cert_db_initializer_unittest.cc",
@@ -1826,6 +1825,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/usb:unit_tests",
     "//chrome/browser/ash/video_conference:unit_tests",
     "//chrome/browser/ash/wallpaper_handlers:unit_tests",
+    "//chrome/browser/ui/views/select_file_dialog_extension:unit_tests",
   ]
 
   if (is_cfm) {

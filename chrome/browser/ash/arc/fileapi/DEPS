@@ -32,5 +32,5 @@ include_rules = [
 
   # Dependencies outside of //chrome:
   # For ArcSelectFilesHandler.
-  "+chrome/browser/ui/views/select_file_dialog_extension.h",
+  "+chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension.h",
 ]

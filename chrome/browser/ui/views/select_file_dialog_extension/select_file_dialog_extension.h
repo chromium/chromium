@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_SELECT_FILE_DIALOG_EXTENSION_H_
-#define CHROME_BROWSER_UI_VIEWS_SELECT_FILE_DIALOG_EXTENSION_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_SELECT_FILE_DIALOG_EXTENSION_SELECT_FILE_DIALOG_EXTENSION_H_
+#define CHROME_BROWSER_UI_VIEWS_SELECT_FILE_DIALOG_EXTENSION_SELECT_FILE_DIALOG_EXTENSION_H_
 
 #include <memory>
 #include <optional>
@@ -203,4 +203,4 @@ class SelectFileDialogExtension : public ui::SelectFileDialog {
   base::WeakPtrFactory<SelectFileDialogExtension> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_SELECT_FILE_DIALOG_EXTENSION_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_SELECT_FILE_DIALOG_EXTENSION_SELECT_FILE_DIALOG_EXTENSION_H_

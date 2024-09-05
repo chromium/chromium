@@ -23,7 +23,7 @@
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/views/select_file_dialog_extension.h"
+#include "chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "content/public/browser/browser_thread.h"

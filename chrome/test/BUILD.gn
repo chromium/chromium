@@ -4617,10 +4617,7 @@ if (!is_android) {
         ]
       }
       if (is_chromeos_ash) {
-        sources += [
-          "../browser/ui/views/frame/system_web_app_non_client_frame_view_browsertest.cc",
-          "../browser/ui/views/select_file_dialog_extension_browsertest.cc",
-        ]
+        sources += [ "../browser/ui/views/frame/system_web_app_non_client_frame_view_browsertest.cc" ]
         deps += [ "//chromeos/ash/services/multidevice_setup/public/cpp:prefs" ]
       } else {
         sources += [ "../browser/ui/views/profiles/profile_customization_bubble_view_browsertest.cc" ]
@@ -4980,6 +4977,7 @@ if (!is_android) {
         "//chrome/browser/ui/views/editor_menu:views",
         "//chrome/browser/ui/views/mahi",
         "//chrome/browser/ui/views/plugin_vm:browser_tests",
+        "//chrome/browser/ui/views/select_file_dialog_extension:browser_tests",
         "//chrome/browser/ui/webui/ash:browser_tests",
         "//chrome/browser/ui/webui/ash/add_supervision",
         "//chrome/browser/ui/webui/ash/add_supervision:mojo_bindings",
