@@ -79,7 +79,7 @@ if (newSemVer.compare(oldSemVer) <= 0) {
 } else if (newSemVer.major === oldSemVer.major) {
   message = `build(chrome): ${message}`;
 } else {
-  message = `feat(chrome): ${message}`;
+  message = `feat(chrome)!: ${message}`;
 }
 
 actions.setOutput('commit', message);
