@@ -79,12 +79,10 @@ suite('settings system page', function() {
         value: {mode: 'system'},
       },
       // <if expr="_google_chrome and is_win">
-      feature_notifications: {
-        enabled: {
-          key: 'feature_notifications_enabled',
-          type: chrome.settingsPrivate.PrefType.BOOLEAN,
-          value: true,
-        },
+      feature_notifications_enabled: {
+        key: 'feature_notifications_enabled',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: true,
       },
       // </if>
     });
@@ -175,6 +173,8 @@ suite('settings system page', function() {
     const toggle = systemPage.shadowRoot!.querySelector<HTMLElement>(
         '#featureNotificationsEnabled');
     assertTrue(!!toggle);
+    assertNotEquals(
+        undefined, systemPage.get('prefs.feature_notifications_enabled'));
     assertTrue(getPrefValue());
 
     toggle.click();
