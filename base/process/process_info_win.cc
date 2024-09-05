@@ -10,13 +10,15 @@
 
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/process/process.h"
 #include "base/win/access_token.h"
 
 namespace base {
 
-IntegrityLevel GetCurrentProcessIntegrityLevel() {
-  std::optional<base::win::AccessToken> token =
-      base::win::AccessToken::FromCurrentProcess();
+namespace {
+
+IntegrityLevel GetProcessIntegrityLevelInternal(
+    std::optional<win::AccessToken> token) {
   if (!token) {
     PLOG(ERROR) << "AccessToken::FromCurrentProcess() failed";
     return INTEGRITY_UNKNOWN;
@@ -38,9 +40,25 @@ IntegrityLevel GetCurrentProcessIntegrityLevel() {
   NOTREACHED();
 }
 
+}  // namespace
+
+IntegrityLevel GetProcessIntegrityLevel(ProcessId process_id) {
+  auto process = Process::OpenWithAccess(process_id, PROCESS_QUERY_INFORMATION);
+  return process.IsValid()
+             ? GetProcessIntegrityLevelInternal(win::AccessToken::FromProcess(
+                   process.Handle(),
+                   /*impersonation=*/false, TOKEN_QUERY_SOURCE))
+             : INTEGRITY_UNKNOWN;
+}
+
+IntegrityLevel GetCurrentProcessIntegrityLevel() {
+  return GetProcessIntegrityLevelInternal(
+      win::AccessToken::FromCurrentProcess());
+}
+
 bool IsCurrentProcessElevated() {
-  std::optional<base::win::AccessToken> token =
-      base::win::AccessToken::FromCurrentProcess();
+  std::optional<win::AccessToken> token =
+      win::AccessToken::FromCurrentProcess();
   if (!token) {
     PLOG(ERROR) << "AccessToken::FromCurrentProcess() failed";
     return false;
@@ -49,8 +67,8 @@ bool IsCurrentProcessElevated() {
 }
 
 bool IsCurrentProcessInAppContainer() {
-  std::optional<base::win::AccessToken> token =
-      base::win::AccessToken::FromCurrentProcess();
+  std::optional<win::AccessToken> token =
+      win::AccessToken::FromCurrentProcess();
   if (!token) {
     PLOG(ERROR) << "AccessToken::FromCurrentProcess() failed";
     return false;
