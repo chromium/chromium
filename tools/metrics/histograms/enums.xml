@@ -28926,6 +28926,7 @@ Called by update_net_error_codes.py.-->
     File name too long on Linux. Operation now in progress on Mac. Resource
     deadlock avoided on Windows.
   </int>
+  <int value="39" label="ENOTEMPTY">Directory not empty</int>
   <int value="45" label="EL2NSYNC/EOPNOTSUPP/_">
     Level 2 not synchronized on Linux. Operation not supported on Mac. Resource
     deadlock avoided on Windows.
