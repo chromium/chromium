@@ -9,6 +9,8 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_group_action_type.h"
+#import "ios/chrome/browser/ui/toolbar/tab_groups/coordinator/tab_group_indicator_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_consumer.h"
 
 @interface TabGroupIndicatorMediator () <WebStateListObserving>
@@ -60,8 +62,7 @@
 
   web::WebState* webState = status.new_active_web_state;
   if ((status.active_web_state_change() || groupUpdate) && webState) {
-    const TabGroup* tabGroup =
-        _webStateList->GetGroupOfWebStateAt(_webStateList->active_index());
+    const TabGroup* tabGroup = [self currentTabGroup];
     if (tabGroup) {
       [_consumer setTabGroupTitle:tabGroup->GetTitle()
                        groupColor:tabGroup->GetColor()];
@@ -69,6 +70,62 @@
       [_consumer setTabGroupTitle:nil groupColor:nil];
     }
   }
+}
+
+#pragma mark - TabGroupIndicatorMutator
+
+- (void)showTabGroupEdition {
+  const TabGroup* tabGroup = [self currentTabGroup];
+  if (!tabGroup) {
+    return;
+  }
+  [_delegate showTabGroupIndicatorEditionForGroup:tabGroup->GetWeakPtr()];
+}
+
+- (void)addNewTabInGroup {
+  const TabGroup* tabGroup = [self currentTabGroup];
+  if (!tabGroup) {
+    return;
+  }
+
+  const auto insertionParams =
+      WebStateList::InsertionParams::Automatic().InGroup(tabGroup);
+  [self insertAndActivateNewWebStateWithInsertionParams:insertionParams];
+}
+
+- (void)unGroup {
+  const TabGroup* tabGroup = [self currentTabGroup];
+  if (!tabGroup) {
+    return;
+  }
+  [_delegate showTabGroupIndicatorConfirmationForAction:TabGroupActionType::
+                                                            kUngroupTabGroup];
+}
+
+- (void)closeGroup {
+  const TabGroup* tabGroup = [self currentTabGroup];
+  if (!tabGroup) {
+    return;
+  }
+  [_delegate showTabGroupIndicatorConfirmationForAction:TabGroupActionType::
+                                                            kDeleteTabGroup];
+}
+
+#pragma mark - Private
+
+// Returns the current tab group.
+- (const TabGroup*)currentTabGroup {
+  if (!_webStateList) {
+    return nil;
+  }
+  return _webStateList->GetGroupOfWebStateAt(_webStateList->active_index());
+}
+
+// Inserts and activate a new WebState opened at `kChromeUINewTabURL` using
+// `insertionParams`.
+- (void)insertAndActivateNewWebStateWithInsertionParams:
+    (WebStateList::InsertionParams)insertionParams {
+  // TODO(crbug.com/361499394): Implement this.
 }
 
 @end

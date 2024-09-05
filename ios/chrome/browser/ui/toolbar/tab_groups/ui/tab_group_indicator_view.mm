@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_constants.h"
+#import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_mutator.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -109,21 +110,22 @@
   button.translatesAutoresizingMaskIntoConstraints = NO;
   button.showsMenuAsPrimaryAction = YES;
 
+  __weak __typeof(self) weakSelf = self;
   ActionFactory* actionFactory = [[ActionFactory alloc]
       initWithScenario:kMenuScenarioHistogramTabGroupIndicatorEntry];
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
   [menuElements addObject:[actionFactory actionToRenameTabGroupWithBlock:^{
-                              // TODO(crbug.com/361499394): Implement this.
-                          }]];
+                  [weakSelf.mutator showTabGroupEdition];
+                }]];
   [menuElements addObject:[actionFactory actionToAddNewTabInGroupWithBlock:^{
-                              // TODO(crbug.com/361499394): Implement this.
-                          }]];
+                  [weakSelf.mutator addNewTabInGroup];
+                }]];
   [menuElements addObject:[actionFactory actionToUngroupTabGroupWithBlock:^{
-                              // TODO(crbug.com/361499394): Implement this.
-                          }]];
+                  [weakSelf.mutator unGroup];
+                }]];
   [menuElements addObject:[actionFactory actionToCloseTabGroupWithBlock:^{
-                              // TODO(crbug.com/361499394): Implement this.
-                          }]];
+                  [weakSelf.mutator closeGroup];
+                }]];
   button.menu = [UIMenu menuWithChildren:menuElements];
   return button;
 }

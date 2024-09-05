@@ -7,11 +7,17 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_mutator.h"
+
 @protocol TabGroupIndicatorConsumer;
+@protocol TabGroupIndicatorCoordinatorDelegate;
 class WebStateList;
 
 // Mediator used to propagate tab group updates to the TabGroupIndicatorView.
-@interface TabGroupIndicatorMediator : NSObject
+@interface TabGroupIndicatorMediator : NSObject <TabGroupIndicatorMutator>
+
+// Delegate for actions happening in the mediator.
+@property(nonatomic, weak) id<TabGroupIndicatorCoordinatorDelegate> delegate;
 
 // Creates an instance of the mediator.
 - (instancetype)initWithConsumer:(id<TabGroupIndicatorConsumer>)consumer

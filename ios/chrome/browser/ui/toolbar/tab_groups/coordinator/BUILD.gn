@@ -6,6 +6,7 @@ source_set("coordinator") {
   sources = [
     "tab_group_indicator_coordinator.h",
     "tab_group_indicator_coordinator.mm",
+    "tab_group_indicator_coordinator_delegate.h",
     "tab_group_indicator_mediator.h",
     "tab_group_indicator_mediator.mm",
   ]
@@ -15,6 +16,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/ui/tab_switcher:tab_group_confirmation",
     "//ios/chrome/browser/ui/toolbar/tab_groups/ui",
   ]
   frameworks = [ "UIKit.framework" ]

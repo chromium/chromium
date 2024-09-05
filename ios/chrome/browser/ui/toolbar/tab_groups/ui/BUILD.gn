@@ -5,6 +5,7 @@
 source_set("ui") {
   sources = [
     "tab_group_indicator_consumer.h",
+    "tab_group_indicator_mutator.h",
     "tab_group_indicator_view.h",
     "tab_group_indicator_view.mm",
   ]
