@@ -1436,16 +1436,6 @@ targets.binaries.generated_script(
     label = "//chrome/test:performance_test_suite_android_clank_trichrome_bundle",
 )
 
-targets.binaries.generated_script(
-    name = "performance_test_suite_eve",
-    label = "//chrome/test:performance_test_suite_eve",
-)
-
-targets.binaries.generated_script(
-    name = "performance_test_suite_octopus",
-    label = "//chrome/test:performance_test_suite_octopus",
-)
-
 targets.binaries.script(
     name = "performance_web_engine_test_suite",
     label = "//content/test:performance_web_engine_test_suite",
@@ -1526,11 +1516,6 @@ targets.binaries.generated_script(
         enable = True,
         result_format = "single",
     ),
-)
-
-targets.binaries.generated_script(
-    name = "resource_sizes_lacros_chrome",
-    label = "//chromeos/lacros:resource_sizes_lacros_chrome",
 )
 
 targets.binaries.console_test_launcher(

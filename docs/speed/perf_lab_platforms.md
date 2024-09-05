@@ -18,11 +18,6 @@
  * [android-pixel6-perf-pgo](https://ci.chromium.org/p/chrome/builders/ci/android-pixel6-perf-pgo): Android U.
  * [android-pixel6-pro-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel6-pro-perf): Android T.
 
-### Chromeos
-
- * [lacros-eve-perf](https://ci.chromium.org/p/chrome/builders/ci/lacros-eve-perf).
- * [lacros-x86-perf](https://ci.chromium.org/p/chrome/builders/ci/lacros-x86-perf).
-
 ### Linux
 
  * [linux-perf](https://ci.chromium.org/p/chrome/builders/ci/linux-perf): Ubuntu-18.04, 8 core, NVIDIA Quadro P400.

@@ -464,12 +464,6 @@ for board, pb_name in _PB_IMAGE_PATHS.items():
                               path='bin/run_sync_performance_tests',
                               additional_flags=FUCHSIA_EXEC_ARGS[board]),
   ])
-_LACROS_EVE_PERF_BENCHMARK_CONFIGS = PerfSuite([
-    _GetBenchmarkConfig('jetstream2'),
-    _GetBenchmarkConfig('speedometer2'),
-    _GetBenchmarkConfig('speedometer3'),
-    _GetBenchmarkConfig('rendering.desktop.notracing'),
-])
 _LINUX_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'blink_perf.display_locking',
     'v8.runtime_stats.top_25',
@@ -664,12 +658,8 @@ _ANDROID_PIXEL_TANGOR_BENCHMARK_CONFIGS = PerfSuite(
     ])
 _ANDROID_PIXEL_TANGOR_EXECUTABLE_CONFIGS = frozenset(
     [_components_perftests(60)])
-_CHROMEOS_KEVIN_FYI_BENCHMARK_CONFIGS = PerfSuite([
-    _GetBenchmarkConfig('rendering.desktop')])
-_LACROS_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
-    'blink_perf.display_locking',
-    'v8.runtime_stats.top_25',
-])
+_CHROMEOS_KEVIN_FYI_BENCHMARK_CONFIGS = PerfSuite(
+    [_GetBenchmarkConfig('rendering.desktop')])
 _FUCHSIA_PERF_NELSON_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('speedometer2'),
     _GetBenchmarkConfig('speedometer3'),
@@ -933,12 +923,7 @@ ANDROID_NEW_PIXEL_PRO_PGO = PerfPlatform('android-new-pixel-pro-perf-pgo',
                                          'android',
                                          pinpoint_only=True)
 
-# Cros/Lacros
-LACROS_EVE_PERF = PerfPlatform('lacros-eve-perf', '',
-                               _LACROS_EVE_PERF_BENCHMARK_CONFIGS, 2,
-                               'chromeos')
-LACROS_X86_PERF = PerfPlatform('lacros-x86-perf', '', _LACROS_BENCHMARK_CONFIGS,
-                               13, 'chromeos')
+# Cros
 FUCHSIA_PERF_NELSON = PerfPlatform('fuchsia-perf-nsn',
                                    '',
                                    _FUCHSIA_PERF_NELSON_BENCHMARK_CONFIGS,
