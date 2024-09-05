@@ -207,7 +207,7 @@ export class MainPage extends ReactiveLitElement {
     } else {
       audio.revoke();
     }
-    navigateTo(`/playback?id=${ev.detail}`);
+    navigateTo('playback', {id: ev.detail});
   }
 
   private onDeleteRecordingClick(ev: CustomEvent<string>) {
@@ -252,14 +252,17 @@ export class MainPage extends ReactiveLitElement {
   private onClickRecordButton() {
     // TODO(shik): Should we let the record page read the store value
     // directly?
+    // TODO(pihsun): The typed route accepts string only as parameters for now.
+    // Have some way to integrate with schema.ts so this is not needed?
     const includeSystemAudio = settings.value.includeSystemAudio.toString();
     const micId = assertExists(
       this.microphoneManager.getSelectedMicId().value,
       'There is no selected microphone.',
     );
-    navigateTo(
-      `/record?includeSystemAudio=${includeSystemAudio}&micId=${micId}`,
-    );
+    navigateTo('record', {
+      includeSystemAudio,
+      micId,
+    });
   }
 
   private renderStartRecordNudge() {

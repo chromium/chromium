@@ -4,10 +4,7 @@
 
 import {RecorderApp} from '../pages/recorder-app.js';
 
-import {
-  usePlatformHandler,
-  useRecordingDataManager,
-} from './lit/context.js';
+import {usePlatformHandler, useRecordingDataManager} from './lit/context.js';
 import {TextToken, Transcription} from './soda/soda.js';
 import {navigateTo} from './state/route.js';
 import {
@@ -55,7 +52,7 @@ export class TestHelper {
    * to start the test.
    */
   static goToMainPage(): void {
-    navigateTo('/');
+    navigateTo('index');
   }
 
   /**
@@ -196,7 +193,9 @@ export class TestHelper {
   static getNthSuggestedTitle(index: number): Element {
     return app()
       .playbackPageForTest.recordingTitleForTest.titleSuggestionForTest
-      .nthSuggestedTitleForTest(index);
+      .nthSuggestedTitleForTest(
+        index,
+      );
   }
 
   /**

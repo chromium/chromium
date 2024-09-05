@@ -570,7 +570,7 @@ export class PlaybackPage extends ReactiveLitElement {
   private deleteRecording() {
     if (this.recordingId !== null) {
       this.recordingDataManager.remove(this.recordingId);
-      navigateTo('/');
+      navigateTo('index');
     }
   }
 
@@ -640,7 +640,7 @@ export class PlaybackPage extends ReactiveLitElement {
       <div id="header" class="sheet">
         <cra-icon-button
           buttonstyle="floating"
-          @click=${() => navigateTo('/')}
+          @click=${() => navigateTo('index')}
           ${ref(this.backButton)}
           aria-label=${i18n.backToMainButtonTooltip}
         >

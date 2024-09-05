@@ -401,7 +401,7 @@ export class RecordPage extends ReactiveLitElement {
         // Permission denied, maybe user clicked cancel. Return to the main
         // page in this case.
         // TODO(pihsun): Better error handling/reporting and ask user to retry.
-        navigateTo('/');
+        navigateTo('index');
       } else {
         console.error(e);
       }
@@ -495,7 +495,7 @@ export class RecordPage extends ReactiveLitElement {
     this.recordingControlQueue.push(async () => {
       const id = await this.stopRecording();
       if (id !== null) {
-        navigateTo(`/playback?id=${id}`);
+        navigateTo('playback', {id});
       }
     });
   }
@@ -579,7 +579,7 @@ export class RecordPage extends ReactiveLitElement {
   private async deleteRecording() {
     // TODO(pihsun): Make this function sync since it's called as event handler.
     await this.cancelRecording();
-    navigateTo('/');
+    navigateTo('index');
   }
 
   private onToggleMuted() {
@@ -712,7 +712,7 @@ export class RecordPage extends ReactiveLitElement {
 
   private async saveAndExitRecording() {
     await this.stopRecording();
-    navigateTo('/');
+    navigateTo('index');
   }
 
   private onSaveClick() {
