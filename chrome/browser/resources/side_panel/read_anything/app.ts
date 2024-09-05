@@ -746,8 +746,8 @@ export class AppElement extends AppElementBase {
   }
 
   getSelection(): any {
-    const selection = document.getSelection();
-    return selection;
+    assert(this.shadowRoot, 'no shadow root');
+    return this.shadowRoot.getSelection();
   }
 
   updateSelection() {

@@ -7,7 +7,7 @@ import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chro
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {currentReadHighlightClass, previousReadHighlightClass} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome-untrusted://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
@@ -66,7 +66,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
     app.updateContent();
   });
 
-  function highlightNode(id: number) {
+  async function highlightNode(id: number) {
     // highlight the previous nodes
     let i = 0;
     while (textNodeIds[i]! !== id) {
@@ -78,9 +78,10 @@ suite('UpdateContentSelectionWithHighlights', () => {
     // highlight given node
     fakeTree.highlightNode(id);
     app.highlightCurrentGranularity([id]);
+    return microtasksFinished();
   }
 
-  function setReadingHighlight(
+  async function setReadingHighlight(
       fromId: number, fromOffset: number, toId: number, toOffset: number) {
     // highlight the previous nodes
     let i = 0;
@@ -97,6 +98,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
       nodeIds.push(toId);
     }
     app.highlightCurrentGranularity(nodeIds);
+    return microtasksFinished();
   }
 
   suite('main panel selection is correct when selecting in the app: ', () => {
@@ -122,7 +124,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
     // Sets the reading mode selection
     async function selectNodes(
         selector: string, anchorOffset: number, fullAnchorText: string,
-        focusOffset: number, fullFocusText?: string): Promise<void> {
+        focusOffset: number, fullFocusText?: string) {
       const anchorText = fullAnchorText.slice(anchorOffset);
       const anchorNode = getTextNode(selector, anchorText);
       const focusText =
@@ -131,7 +133,8 @@ suite('UpdateContentSelectionWithHighlights', () => {
           fullFocusText ? getTextNode(selector, focusText) : anchorNode;
       selection.setBaseAndExtent(
           anchorNode, anchorOffset, focusNode, focusOffset);
-      return flushTasks();
+
+      return microtasksFinished();
     }
 
     setup(() => {
@@ -170,7 +173,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
     });
 
     test('one node selected before single node highlight', async () => {
-      highlightNode(textNodeIds[1]!);
+      await highlightNode(textNodeIds[1]!);
 
       // select a subset of previous node
       const expectedAnchorOffset = 0;
@@ -187,7 +190,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
     });
 
     test('multiple nodes selected before single node highlight', async () => {
-      highlightNode(textNodeIds[2]!);
+      await highlightNode(textNodeIds[2]!);
       // select a subset of previous nodes
       const expectedAnchorOffset = 1;
       const expectedFocusOffset = 7;
@@ -203,7 +206,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
 
     test('one node selected before multiple node highlight', async () => {
       // highlight last two nodes
-      setReadingHighlight(
+      await setReadingHighlight(
           textNodeIds[2]!, 0, textNodeIds[3]!, texts[3]!.length);
 
       // select a subset of one previous node
@@ -222,7 +225,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
 
     test('multiple nodes selected before multiple node highlight', async () => {
       // highlight last two nodes
-      setReadingHighlight(
+      await setReadingHighlight(
           textNodeIds[2]!, 0, textNodeIds[3]!, texts[3]!.length);
 
       // select a subset of previous nodes
@@ -240,7 +243,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
 
     test('one node selected inside single node highlight', async () => {
       const highlightId = textNodeIds[1]!;
-      highlightNode(highlightId);
+      await highlightNode(highlightId);
 
       // select a subset of the highlighted node
       const expectedAnchorOffset = 2;
@@ -257,7 +260,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
 
     test('one node selected inside multiple node highlight', async () => {
       // highlight two nodes
-      setReadingHighlight(
+      await setReadingHighlight(
           textNodeIds[0]!, 0, textNodeIds[1]!, texts[1]!.length);
 
       // select a subset of one of the highlighted nodes
@@ -276,7 +279,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
     test('prefix selected in long reading highlight', async () => {
       const highlightId = textNodeIds[2]!;
       const highlightStart = 11;
-      setReadingHighlight(
+      await setReadingHighlight(
           highlightId, highlightStart, highlightId, texts[2]!.length);
 
       // select node up to where it's highlighted
@@ -294,7 +297,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
     test('suffix selected in long reading highlight', async () => {
       const highlightId = textNodeIds[2]!;
       const highlightEnd = 15;
-      setReadingHighlight(highlightId, 0, highlightId, highlightEnd);
+      await setReadingHighlight(highlightId, 0, highlightId, highlightEnd);
 
       // select node starting after the end of the highlight
       const selectedText = texts[2]!.slice(highlightEnd);
@@ -303,7 +306,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
           (element) => element.textContent!.includes(selectedText));
       const textNode = parentNodeWithText!.lastChild!;
       selection.setBaseAndExtent(textNode, 0, textNode, selectedText.length);
-      await flushTasks();
+      await microtasksFinished();
 
       assertEquals(highlightId, actualAnchorId);
       assertEquals(highlightId, actualFocusId);
@@ -312,7 +315,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
     });
 
     test('one node selected after reading highlight', async () => {
-      highlightNode(textNodeIds[1]!);
+      await highlightNode(textNodeIds[1]!);
 
       // select a subset of node after highlight
       const expectedAnchorOffset = 2;
@@ -327,7 +330,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
     });
 
     test('multiple nodes selected after reading highlight', async () => {
-      highlightNode(textNodeIds[0]!);
+      await highlightNode(textNodeIds[0]!);
 
       // select a subset of nodes after highlight
       const expectedAnchorOffset = 4;
@@ -347,7 +350,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
           // highlight middle of node 7
           const highlightStart = 15;
           const highlightEnd = 25;
-          setReadingHighlight(7, highlightStart, 7, highlightEnd);
+          await setReadingHighlight(7, highlightStart, 7, highlightEnd);
 
           // select all text
           const expectedAnchorOffset = 0;
@@ -357,7 +360,7 @@ suite('UpdateContentSelectionWithHighlights', () => {
           const focusNode = getTextNode('p', focusText);
           selection.setBaseAndExtent(
               anchorNode, 0, focusNode, focusText.length);
-          await flushTasks();
+          await microtasksFinished();
 
           assertEquals(textNodeIds[0]!, actualAnchorId);
           assertEquals(textNodeIds[3]!, actualFocusId);
@@ -371,8 +374,8 @@ suite('UpdateContentSelectionWithHighlights', () => {
       document.onselectionchange = () => {};
     });
 
-    test('one node selected before single node highlight', () => {
-      highlightNode(5);
+    test('one node selected before single node highlight', async () => {
+      await highlightNode(5);
 
       // select a subset of node 3
       const expectedAnchorOffset = 0;
@@ -387,8 +390,8 @@ suite('UpdateContentSelectionWithHighlights', () => {
       assertEquals(expectedFocusOffset, selection.focusOffset);
     });
 
-    test('multiple nodes selected before single node highlight', () => {
-      highlightNode(7);
+    test('multiple nodes selected before single node highlight', async () => {
+      await highlightNode(7);
 
       // select a subset of nodes 3 and 5
       const expectedAnchorOffset = 1;
@@ -403,8 +406,8 @@ suite('UpdateContentSelectionWithHighlights', () => {
       assertEquals(expectedFocusOffset, selection.focusOffset);
     });
 
-    test('one node selected before multiple node highlight', () => {
-      setReadingHighlight(7, 0, 9, texts[3]!.length);
+    test('one node selected before multiple node highlight', async () => {
+      await setReadingHighlight(7, 0, 9, texts[3]!.length);
 
       // select a subset of node 5
       const expectedAnchorOffset = 2;
@@ -419,8 +422,8 @@ suite('UpdateContentSelectionWithHighlights', () => {
       assertEquals(expectedFocusOffset, selection.focusOffset);
     });
 
-    test('multiple nodes selected before multiple node highlight', () => {
-      setReadingHighlight(7, 0, 9, texts[3]!.length);
+    test('multiple nodes selected before multiple node highlight', async () => {
+      await setReadingHighlight(7, 0, 9, texts[3]!.length);
 
       // select a subset of nodes 3 and 5
       const expectedAnchorOffset = 6;
@@ -435,9 +438,9 @@ suite('UpdateContentSelectionWithHighlights', () => {
       assertEquals(expectedFocusOffset, selection.focusOffset);
     });
 
-    test('one node selected inside single node highlight', () => {
+    test('one node selected inside single node highlight', async () => {
       const highlightId = 5;
-      highlightNode(highlightId);
+      await highlightNode(highlightId);
 
       // select a subset of node 5
       const expectedAnchorOffset = 2;
@@ -453,8 +456,8 @@ suite('UpdateContentSelectionWithHighlights', () => {
       assertEquals(expectedFocusOffset, selection.focusOffset);
     });
 
-    test('one node selected inside multiple node highlight', () => {
-      setReadingHighlight(3, 0, 5, texts[2]!.length);
+    test('one node selected inside multiple node highlight', async () => {
+      await setReadingHighlight(3, 0, 5, texts[2]!.length);
 
       // select a subset of node 5
       const expectedAnchorOffset = 2;
@@ -471,8 +474,8 @@ suite('UpdateContentSelectionWithHighlights', () => {
 
     test(
         'multiple nodes selected inside the multiple node reading highlight',
-        () => {
-          setReadingHighlight(3, 0, 5, texts[2]!.length);
+        async () => {
+          await setReadingHighlight(3, 0, 5, texts[2]!.length);
 
           // select a subset of nodes 3 and 5
           const expectedAnchorOffset = 4;
@@ -488,10 +491,10 @@ suite('UpdateContentSelectionWithHighlights', () => {
           assertEquals(expectedFocusOffset, selection.focusOffset);
         });
 
-    test('prefix selected in long reading highlight', () => {
+    test('prefix selected in long reading highlight', async () => {
       const highlightId = 7;
       const highlightStart = 5;
-      setReadingHighlight(
+      await setReadingHighlight(
           highlightId, highlightStart, highlightId, texts[2]!.length);
 
       // select node 7 up to where it's highlighted
@@ -508,10 +511,10 @@ suite('UpdateContentSelectionWithHighlights', () => {
       assertEquals(highlightStart, selection.focusOffset);
     });
 
-    test('suffix selected in long reading highlight', () => {
+    test('suffix selected in long reading highlight', async () => {
       const highlightId = 7;
       const highlightEnd = 5;
-      setReadingHighlight(highlightId, 0, highlightId, highlightEnd);
+      await setReadingHighlight(highlightId, 0, highlightId, highlightEnd);
 
       // select node 7 starting after the end of the highlight
       fakeTree.setSelection(
@@ -530,8 +533,8 @@ suite('UpdateContentSelectionWithHighlights', () => {
       assertEquals(expectedSelectedText.length, selection.focusOffset);
     });
 
-    test('one node selected after reading highlight', () => {
-      highlightNode(5);
+    test('one node selected after reading highlight', async () => {
+      await highlightNode(5);
 
       // select a subset of node 7
       const expectedAnchorOffset = 2;
@@ -546,8 +549,8 @@ suite('UpdateContentSelectionWithHighlights', () => {
       assertEquals(expectedFocusOffset, selection.focusOffset);
     });
 
-    test('multiple nodes selected after reading highlight', () => {
-      highlightNode(3);
+    test('multiple nodes selected after reading highlight', async () => {
+      await highlightNode(3);
 
       // select a subset of nodes 5 and 7
       const expectedAnchorOffset = 4;
@@ -562,21 +565,22 @@ suite('UpdateContentSelectionWithHighlights', () => {
       assertEquals(expectedFocusOffset, selection.focusOffset);
     });
 
-    test('selection across previous, current, and after highlight', () => {
-      // highlight middle of node 7
-      const highlightStart = 15;
-      const highlightEnd = 25;
-      setReadingHighlight(7, highlightStart, 7, highlightEnd);
+    test(
+        'selection across previous, current, and after highlight', async () => {
+          // highlight middle of node 7
+          const highlightStart = 15;
+          const highlightEnd = 25;
+          await setReadingHighlight(7, highlightStart, 7, highlightEnd);
 
-      // select all text
-      fakeTree.setSelection(3, 0, 9, texts[3]!.length);
-      app.updateSelection();
+          // select all text
+          fakeTree.setSelection(3, 0, 9, texts[3]!.length);
+          app.updateSelection();
 
-      const selection = app.getSelection();
-      assertEquals(0, selection.anchorOffset);
-      assertEquals(texts[3]!.length, selection.focusOffset);
-      assertEquals(texts[0]!, selection.anchorNode.textContent);
-      assertEquals(texts[3]!, selection.focusNode.textContent);
-    });
+          const selection = app.getSelection();
+          assertEquals(0, selection.anchorOffset);
+          assertEquals(texts[3]!.length, selection.focusOffset);
+          assertEquals(texts[0]!, selection.anchorNode.textContent);
+          assertEquals(texts[3]!, selection.focusNode.textContent);
+        });
   });
 });

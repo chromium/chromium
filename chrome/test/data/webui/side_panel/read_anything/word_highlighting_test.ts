@@ -122,7 +122,9 @@ suite('WordHighlighting', () => {
       'word highlighting with multiple punctuation marks skips highlight',
       async () => {
         setSimpleAxTreeWithText('.?!\'\",(){}[]');
+        await microtasksFinished();
         app.updateBoundary(10);
+        await microtasksFinished();
         app.playSpeech();
         await microtasksFinished();
 
@@ -135,7 +137,9 @@ suite('WordHighlighting', () => {
       'word highlighting with single alphabet character does not skip highlight',
       async () => {
         setSimpleAxTreeWithText('a');
+        await microtasksFinished();
         app.updateBoundary(0);
+        await microtasksFinished();
         app.playSpeech();
         await microtasksFinished();
 
@@ -151,7 +155,9 @@ suite('WordHighlighting', () => {
 
     for (const char of toTest) {
       setSimpleAxTreeWithText(char);
+      await microtasksFinished();
       app.updateBoundary(0);
+      await microtasksFinished();
       app.playSpeech();
       await microtasksFinished();
       const currentHighlight =
@@ -166,7 +172,9 @@ suite('WordHighlighting', () => {
     const anchorOffset = 0;
     const focusOffset = 1;
     app.playSpeech();
+    await microtasksFinished();
     app.updateBoundary(2);
+    await microtasksFinished();
     app.stopSpeech(PauseActionSource.BUTTON_CLICK);
     await microtasksFinished();
 
@@ -178,9 +186,12 @@ suite('WordHighlighting', () => {
     const range = document.createRange();
     range.setStart(anchor, anchorOffset);
     range.setEnd(focus, focusOffset);
-    const selection = document.getSelection();
+    await microtasksFinished();
+
+    const selection = app.getSelection();
     assertTrue(!!selection);
     selection.addRange(range);
+    await microtasksFinished();
 
     // Play from selection.
     app.playSpeech();
@@ -193,7 +204,6 @@ suite('WordHighlighting', () => {
     assertTrue(!!currentHighlight);
     assertTrue(!!currentHighlight.textContent);
     assertEquals('This ', currentHighlight.textContent);
-
     // Verify that the word boundary state has been reset.
     assertEquals(WordBoundaryMode.NO_BOUNDARIES, app.wordBoundaryState.mode);
   });
@@ -202,7 +212,7 @@ suite('WordHighlighting', () => {
     const selectedVoice =
         createSpeechSynthesisVoice({lang: 'en', name: 'Kristi eSpeak'});
     emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice}});
-
+    await microtasksFinished();
     const sentence = 'Hello, how are you!';
     setSimpleAxTreeWithText(sentence);
     app.updateBoundary(0);

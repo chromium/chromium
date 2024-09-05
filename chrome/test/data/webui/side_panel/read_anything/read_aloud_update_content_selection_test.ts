@@ -7,6 +7,7 @@ import {BrowserProxy} from '//resources/cr_components/color_change_listener/brow
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {PauseActionSource} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {suppressInnocuousErrors, waitForPlayFromSelection} from './common.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
@@ -94,6 +95,7 @@ suite('ReadAloud_UpdateContentSelection', () => {
     document.body.appendChild(app);
     document.onselectionchange = () => {};
     chrome.readingMode.setContentForTesting(axTree, []);
+    return microtasksFinished();
   });
 
   test('inner html of container matches expected html', () => {
@@ -124,9 +126,9 @@ suite('ReadAloud_UpdateContentSelection', () => {
   });
 
   suite('While Read Aloud playing', () => {
-    setup(async () => {
+    setup(() => {
       app.playSpeech();
-      await waitForPlayFromSelection();
+      return waitForPlayFromSelection();
     });
 
     test('inner html of container matches expected html', () => {

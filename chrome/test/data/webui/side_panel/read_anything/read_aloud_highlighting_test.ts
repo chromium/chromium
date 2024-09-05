@@ -222,7 +222,7 @@ suite('ReadAloudHighlight', () => {
         });
   });
 
-  suite('on speaking from selection', () => {
+  suite('on speaking from selection', async () => {
     let currentHighlight: HTMLElement|null;
     let previousHighlights: NodeListOf<Element>;
 
@@ -241,13 +241,15 @@ suite('ReadAloudHighlight', () => {
           },
           axTree);
       chrome.readingMode.setContentForTesting(selectedTree, leafIds);
+      await microtasksFinished();
       app.updateSelection();
+      await microtasksFinished();
       app.playSpeech();
       return waitForPlayFromSelection();
     }
 
-    setup(async () => {
-      await selectAndPlay(3, 1, 3, 5);
+    setup(() => {
+      return selectAndPlay(3, 1, 3, 5);
     });
 
     test('shows correct highlights', () => {
@@ -261,8 +263,8 @@ suite('ReadAloudHighlight', () => {
       assertEquals(sentence1, previousHighlights![0]!.textContent);
     });
 
-    test('next granularity shows correct highlights', () => {
-      emitNextGranularity();
+    test('next granularity shows correct highlights', async () => {
+      await emitNextGranularity();
 
       currentHighlight =
           app.$.container.querySelector('.current-read-highlight');
