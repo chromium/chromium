@@ -3410,9 +3410,7 @@ crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-joinin
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-joining-dl-element-and-another-list.tentative.html?Delete [ Failure Timeout ]
 crbug.com/1462168 external/wpt/input-events/input-events-get-target-ranges-deleting-in-list-items.tentative.html?Backspace,ol [ Crash Failure Timeout ]
 crbug.com/1462168 external/wpt/input-events/input-events-get-target-ranges-deleting-in-list-items.tentative.html?Delete,ol [ Crash Failure Timeout ]
-crbug.com/626703 [ Mac11 Release ] external/wpt/webxr/xr_viewport_scale.https.html [ Failure Timeout ]
-crbug.com/626703 [ Mac12 Release ] external/wpt/webxr/xr_viewport_scale.https.html [ Failure Timeout ]
-crbug.com/626703 [ Mac13 Release ] external/wpt/webxr/xr_viewport_scale.https.html [ Failure Timeout ]
+crbug.com/364455582 crbug.com/364665777 [ Mac ] external/wpt/webxr/xr_viewport_scale.https.html [ Failure Timeout ]
 crbug.com/626703 [ Debug ] external/wpt/infrastructure/testdriver/actions/crossOrigin.sub.html [ Timeout ]
 crbug.com/626703 [ Release ] external/wpt/infrastructure/testdriver/actions/crossOrigin.sub.html [ Timeout ]
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-during-and-after-dispatch.tentative.html [ Failure Timeout ]
@@ -6545,7 +6543,6 @@ crbug.com/1446039 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.
 [ Debug Mac13 ] virtual/threaded-prefer-compositing/fast/scrolling/scrollbar-prevent-default.html [ Skip Timeout ]
 [ Debug Mac13 ] http/tests/devtools/elements/resolve-alien-node.js [ Skip Timeout ]
 [ Debug Mac13 ] http/tests/devtools/oopif/oopif-elements-inspect.js [ Skip Timeout ]
-[ Debug Mac13 ] external/wpt/webxr/xr_viewport_scale.https.html [ Failure ]
 crbug.com/1446040 [ Mac ] virtual/oopr-canvas2d/external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html [ Failure ]
 
 crbug.com/1401170 [ Debug ] external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/access-from-coop-page-to-opener_coop-ro_cross-origin.https.html [ Failure ]
@@ -7100,7 +7097,6 @@ crbug.com/330207209 external/wpt/html/browsers/browsing-the-web/history-traversa
 [ Mac14 ] external/wpt/webtransport/streams-close.https.any.serviceworker.html [ Failure ]
 [ Mac14 ] external/wpt/webtransport/streams-close.https.any.sharedworker.html [ Failure Pass ]
 [ Mac14 ] external/wpt/webtransport/streams-close.https.any.worker.html [ Failure ]
-[ Mac14 ] external/wpt/webxr/xr_viewport_scale.https.html [ Failure Timeout ]
 [ Mac14 ] fast/forms/calendar-picker/calendar-picker-appearance-ru.html [ Failure ]
 [ Mac14 ] fast/forms/datetimelocal/datetimelocal-appearance-l10n.html [ Failure ]
 [ Mac14 ] fullscreen/anonymous-block-merge-crash.html [ Failure ]
@@ -7499,8 +7495,6 @@ crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/simplecall.https.html [ 
 [ Mac15 ] external/wpt/mediacapture-insertable-streams/legacy/MediaStreamTrackGenerator-video.https.html [ Timeout ]
 [ Mac15 ] external/wpt/service-workers/cache-storage/crashtests/cache-response-clone.https.html [ Timeout ]
 [ Mac15 ] external/wpt/video-rvfc/request-video-frame-callback-webrtc.https.html [ Timeout ]
-[ Mac15 ] external/wpt/webxr/xr_viewport_scale.https.html [ Timeout ]
-crbug.com/364665777 [ Mac15-arm64 ] external/wpt/webxr/xr_viewport_scale.https.html [ Timeout ]
 [ Mac15 ] fast/peerconnection/RTCEncodedVideoFrame-set-metadata.html [ Timeout ]
 [ Mac15 ] fast/peerconnection/RTCPeerConnection-applyConstraints-remoteVideoTrack.html [ Timeout ]
 [ Mac15 ] fast/peerconnection/RTCPeerConnection-createDTMFSender.html [ Failure Timeout ]  # Flaky output
@@ -8007,12 +8001,6 @@ crbug.com/363353213 [ Mac ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTr
 
 # TODO(crbug.com/362797911): Re-enable this test
 crbug.com/362797911 [ Linux ] fast/text-autosizing/textarea-fontsize-change.html [ Failure Pass ]
-
-# Gardener 2024-09-04
-crbug.com/364455582 [ Mac11-arm64 ] external/wpt/webxr/xr_viewport_scale.https.html [ Timeout ]
-crbug.com/364455582 [ Mac12-arm64 ] external/wpt/webxr/xr_viewport_scale.https.html [ Timeout ]
-crbug.com/364455582 [ Mac13-arm64 ] external/wpt/webxr/xr_viewport_scale.https.html [ Timeout ]
-crbug.com/364455582 [ Mac14-arm64 ] external/wpt/webxr/xr_viewport_scale.https.html [ Timeout ]
 
 # These tests only pass because wasm type reflection is implied by the
 # experimental JSPI flag. Temporarily disable them as we remove the obsolete
