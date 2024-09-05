@@ -946,26 +946,35 @@ PseudoId ParsePseudoElementLegacy(const String& selector_string,
 }
 
 AtomicString ParsePseudoElementArgument(const String& selector_string) {
-  CSSTokenizer tokenizer(selector_string);
-  const auto tokens = tokenizer.TokenizeToEOF();
-  CSSParserTokenRange range(tokens);
+  CSSParserTokenStream stream(selector_string);
 
   int number_of_colons = 0;
-  while (!range.AtEnd() && range.Peek().GetType() == kColonToken) {
+  while (!stream.AtEnd() && stream.Peek().GetType() == kColonToken) {
     number_of_colons++;
-    range.Consume();
+    stream.Consume();
   }
 
   // TODO(crbug.com/1197620): allowing 0 or 1 preceding colons is not aligned
   // with specs.
-  if (number_of_colons > 2 || range.Peek(0).GetType() != kFunctionToken ||
-      range.Peek(1).GetType() != kIdentToken ||
-      range.Peek(2).GetType() != kRightParenthesisToken ||
-      range.Peek(3).GetType() != kEOFToken) {
+  if (number_of_colons > 2 || stream.Peek().GetType() != kFunctionToken) {
     return g_null_atom;
   }
 
-  return range.Peek(1).Value().ToAtomicString();
+  AtomicString ret;
+  {
+    CSSParserTokenStream::BlockGuard guard(stream);
+    if (stream.Peek().GetType() != kIdentToken) {
+      return g_null_atom;
+    }
+    ret = stream.Consume().Value().ToAtomicString();
+    if (!stream.AtEnd()) {
+      return g_null_atom;
+    }
+  }
+  if (!stream.AtEnd()) {
+    return g_null_atom;
+  }
+  return ret;
 }
 }  // namespace
 
