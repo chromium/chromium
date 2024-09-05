@@ -771,9 +771,6 @@ crbug.com/819617 [ Linux ] virtual/text-antialias/descent-clip-in-scaled-page.ht
 
 crbug.com/1196414 compositing/composited-replaced-subpixel-location.html [ Failure ]
 
-# Triage of WPT css-paint-api tests
-crbug.com/1299442 external/wpt/css/css-paint-api/custom-property-animation-on-main-thread.https.html [ Failure Pass ]
-
 # Flaky virtual/off-main-thread-css-paint tests. Skipping whole test suite for now.
 crbug.com/355693577 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/* [ Failure Skip ]
 
