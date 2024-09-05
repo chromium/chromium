@@ -242,22 +242,25 @@ LayoutUnit WebkitTextAlignAndJustifySelfOffset(
     LayoutUnit available_space,
     const BoxStrut& margins,
     const ChildInlineSizeFunc& child_inline_size_func) {
-  auto FreeSpace = [&]() -> LayoutUnit {
-    return (available_space - child_inline_size_func() - margins.InlineSum())
-        .ClampNegativeToZero();
-  };
   DCHECK(!child_style.MarginInlineStartUsing(style).IsAuto());
   DCHECK(!child_style.MarginInlineEndUsing(style).IsAuto());
 
-  ItemPosition justify_self =
-      child_style
-          .ResolvedJustifySelf(
-              {ItemPosition::kNormal, OverflowAlignment::kDefault}, &style)
-          .GetPosition();
-  if (!RuntimeEnabledFeatures::LayoutJustifySelfForBlocksEnabled() ||
-      justify_self == ItemPosition::kNormal) {
+  const StyleSelfAlignmentData alignment_data = child_style.ResolvedJustifySelf(
+      {ItemPosition::kNormal, OverflowAlignment::kDefault}, &style);
+  ItemPosition justify_self = alignment_data.GetPosition();
+  OverflowAlignment safe = OverflowAlignment::kSafe;
+  if (RuntimeEnabledFeatures::LayoutJustifySelfForBlocksEnabled() &&
+      justify_self != ItemPosition::kNormal) {
+    safe = alignment_data.Overflow();
+  } else {
     justify_self = WebkitTextToItemPosition(style.GetTextAlign());
   }
+  auto FreeSpace = [&]() -> LayoutUnit {
+    const LayoutUnit free_space =
+        available_space - child_inline_size_func() - margins.InlineSum();
+    return safe == OverflowAlignment::kSafe ? free_space.ClampNegativeToZero()
+                                            : free_space;
+  };
 
   auto self_start_end_converter = [&]() -> LogicalToLogical<LayoutUnit> {
     const LayoutUnit free_space = FreeSpace();
@@ -268,7 +271,6 @@ LayoutUnit WebkitTextAlignAndJustifySelfOffset(
   };
 
   bool is_rtl = IsRtl(style.Direction());
-  // TODO(crbug.com/355683658): safe
   switch (justify_self) {
     case ItemPosition::kLeft:
       return is_rtl ? FreeSpace() : LayoutUnit();
