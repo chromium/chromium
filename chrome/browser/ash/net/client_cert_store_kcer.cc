@@ -8,6 +8,8 @@
 #include <iterator>
 #include <utility>
 
+#include "ash/components/kcer/client_cert_identity_kcer.h"
+#include "ash/components/kcer/kcer.h"
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -18,8 +20,6 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/ash/net/client_cert_filter.h"
 #include "chrome/browser/certificate_provider/certificate_provider.h"
-#include "chromeos/components/kcer/client_cert_identity_kcer.h"
-#include "chromeos/components/kcer/kcer.h"
 #include "net/ssl/client_cert_store_nss.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_private_key.h"

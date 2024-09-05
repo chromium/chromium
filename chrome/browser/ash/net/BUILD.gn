@@ -52,6 +52,7 @@ static_library("net") {
 
   deps = [
     "//ash/components/arc",
+    "//ash/components/kcer",
     "//ash/public/cpp",
     "//base",
     "//chrome/browser:browser_process",
@@ -80,7 +81,6 @@ static_library("net") {
     "//chromeos/ash/components/sync_wifi",
     "//chromeos/ash/components/system",
     "//chromeos/ash/services/bluetooth_config:in_process_bluetooth_config",
-    "//chromeos/components/kcer",
     "//chromeos/services/network_config/public/cpp",
     "//components/captive_portal/core",
     "//components/country_codes",
@@ -139,6 +139,7 @@ source_set("unit_tests") {
   deps = [
     ":net",
     ":test_support",
+    "//ash/components/kcer:test_support",
     "//ash/constants",
     "//base",
     "//base/test:test_support",
@@ -158,7 +159,6 @@ source_set("unit_tests") {
     "//chromeos/ash/components/network:test_support",
     "//chromeos/ash/services/network_config",
     "//chromeos/ash/services/network_config:in_process_instance",
-    "//chromeos/components/kcer:test_support",
     "//chromeos/services/network_config/public/cpp:test_support",
     "//components/captive_portal/core",
     "//components/onc",

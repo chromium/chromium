@@ -17,6 +17,7 @@ static_library("nssdb_migration") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
+    "//ash/components/kcer",
     "//ash/constants",
     "//base",
     "//chrome/browser/ash/profiles",
@@ -24,7 +25,6 @@ static_library("nssdb_migration") {
     "//chrome/common",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/tpm",
-    "//chromeos/components/kcer",
     "//chromeos/constants",
     "//components/keyed_service/core",
     "//components/prefs",
@@ -45,6 +45,8 @@ source_set("unit_tests") {
 
   deps = [
     ":nssdb_migration",
+    "//ash/components/kcer",
+    "//ash/components/kcer:test_support",
     "//ash/constants",
     "//base",
     "//base/test:test_support",
@@ -52,8 +54,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/test:test_support",
     "//chromeos/ash/components/browser_context_helper",
-    "//chromeos/components/kcer",
-    "//chromeos/components/kcer:test_support",
     "//chromeos/constants",
     "//components/prefs",
     "//components/sync_preferences",
