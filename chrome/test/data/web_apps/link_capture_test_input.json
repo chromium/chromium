@@ -11165,13 +11165,14 @@
                      "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_a/destination.html"
-                  } ]
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_a/destination.html" ]
                } ]
             } ]
          }
       },
       "CaptureOn_AppWnd_ScopeA2A_Direct_ViaLink_MiddleClick_WithOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -11209,7 +11210,8 @@
                      "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_a/destination.html"
-                  } ]
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_a/destination.html" ]
                } ]
             } ]
          }
@@ -11253,13 +11255,14 @@
                      "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_a/destination.html"
-                  } ]
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_a/destination.html" ]
                } ]
             } ]
          }
       },
       "CaptureOn_AppWnd_ScopeA2A_Direct_ViaLink_MiddleClick_WithOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -11297,7 +11300,8 @@
                      "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_a/destination.html"
-                  } ]
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_a/destination.html" ]
                } ]
             } ]
          }
@@ -11341,7 +11345,8 @@
                      "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_a/destination.html"
-                  } ]
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_a/destination.html" ]
                } ]
             } ]
          }
@@ -11385,7 +11390,8 @@
                      "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_a/destination.html"
-                  } ]
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_a/destination.html" ]
                } ]
             } ]
          }
@@ -11429,7 +11435,8 @@
                      "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_a/destination.html"
-                  } ]
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_a/destination.html" ]
                } ]
             } ]
          }
@@ -11473,7 +11480,8 @@
                      "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_a/destination.html"
-                  } ]
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_a/destination.html" ]
                } ]
             } ]
          }
@@ -11517,7 +11525,8 @@
                      "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_a/destination.html"
-                  } ]
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_a/destination.html" ]
                } ]
             } ]
          }
@@ -11561,7 +11570,8 @@
                      "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_a/destination.html"
-                  } ]
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_a/destination.html" ]
                } ]
             } ]
          }
@@ -11605,7 +11615,8 @@
                      "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_a/destination.html"
-                  } ]
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_a/destination.html" ]
                } ]
             } ]
          }
@@ -11649,7 +11660,8 @@
                      "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_a/destination.html"
-                  } ]
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_a/destination.html" ]
                } ]
             } ]
          }
@@ -11693,7 +11705,8 @@
                      "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_a/destination.html"
-                  } ]
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_a/destination.html" ]
                } ]
             } ]
          }
@@ -11737,7 +11750,8 @@
                      "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_a/destination.html"
-                  } ]
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_a/destination.html" ]
                } ]
             } ]
          }
@@ -11781,7 +11795,8 @@
                      "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_a/destination.html"
-                  } ]
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_a/destination.html" ]
                } ]
             } ]
          }
@@ -11825,7 +11840,8 @@
                      "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_a/destination.html"
-                  } ]
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_a/destination.html" ]
                } ]
             } ]
          }
@@ -13445,7 +13461,8 @@
                      "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_b/destination.html"
-                  } ]
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_b/destination.html" ]
                } ]
             } ]
          }
@@ -13489,7 +13506,8 @@
                      "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_b/destination.html"
-                  } ]
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_b/destination.html" ]
                } ]
             } ]
          }
@@ -13533,7 +13551,8 @@
                      "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_b/destination.html"
-                  } ]
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_b/destination.html" ]
                } ]
             } ]
          }
@@ -13577,7 +13596,8 @@
                      "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_b/destination.html"
-                  } ]
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_b/destination.html" ]
                } ]
             } ]
          }
@@ -13621,7 +13641,8 @@
                      "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_b/destination.html"
-                  } ]
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_b/destination.html" ]
                } ]
             } ]
          }
@@ -13665,7 +13686,8 @@
                      "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_b/destination.html"
-                  } ]
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_b/destination.html" ]
                } ]
             } ]
          }
@@ -13709,7 +13731,8 @@
                      "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_b/destination.html"
-                  } ]
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_b/destination.html" ]
                } ]
             } ]
          }
@@ -13753,7 +13776,8 @@
                      "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "link",
                      "url": "/banners/link_capturing/scope_b/destination.html"
-                  } ]
+                  } ],
+                  "launchParams": [ "/banners/link_capturing/scope_b/destination.html" ]
                } ]
             } ]
          }

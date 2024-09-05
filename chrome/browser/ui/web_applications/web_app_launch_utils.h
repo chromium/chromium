@@ -112,20 +112,24 @@ void LaunchWebApp(apps::AppLaunchParams params,
                   WithAppResources& app_resources,
                   LaunchWebAppDebugValueCallback callback);
 
-// Encapsulates web_app capturing and launching during navigation requests.
-// Returns a valid Browser and tab index if web app handling is appropriate,
-// otherwise nullopt. May create a browser, app window or tab as needed.
+// Returns a Browser, tab index, and a bool indicating whether web application
+// launch params should be enqueued later, after WebContents creation. See
+// https://wicg.github.io/web-app-launch/#launchqueue-interface. May create a
+// browser instance, an app window or a new tab as needed.
 //
 // A value of std::nullopt means that the web app system cannot handle the
 // navigation, and as such, would allow the "normal" workflow to identify a
-// browser to perform navigation in to proceed. See
-// `GetBrowserAndTabForDisposition()` for more information.
-//
-// TODO(crbug.com/351775835): Integrate with web_applications system to
-// determine which browser to complete navigation in based on launch handlers.
-std::optional<std::pair<Browser*, int>> MaybeHandleAppNavigation(
-    Profile* profile,
+// browser to perform navigation in to proceed. See Navigate() for more
+// information.
+std::optional<std::tuple<Browser*, int, bool>> MaybeHandleAppNavigation(
     const NavigateParams& navigate_params);
+
+// Will enqueue the given url in the launch params for this web contents. Does
+// not check if the url is within scope of the app.
+void MaybeEnqueueLaunchParams(content::WebContents* contents,
+                              const webapps::AppId& app_id,
+                              const GURL& url,
+                              bool wait_for_navigation_to_complete);
 
 }  // namespace web_app
 
