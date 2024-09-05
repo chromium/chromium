@@ -427,6 +427,10 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
 
   float GetDeviceScaleForTesting() const { return device_scale_; }
 
+  void SendThumbnailForTesting(base::Value::Dict reply,
+                               int page_index,
+                               Thumbnail thumbnail);
+
   DocumentLoadState document_load_state_for_testing() const {
     return document_load_state_;
   }
@@ -633,7 +637,13 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   void SendPrintPreviewLoadedNotification();
 
   // Sends the thumbnail image data.
-  void SendThumbnail(base::Value::Dict reply, Thumbnail thumbnail);
+  void SendThumbnail(base::Value::Dict reply,
+                     int page_index,
+                     Thumbnail thumbnail);
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  void GenerateAndSendInkThumbnail(int page_index, const gfx::Size& size);
+#endif
 
   // Converts `frame_coordinates` to PDF coordinates.
   gfx::Point FrameToPdfCoordinates(const gfx::PointF& frame_coordinates) const;

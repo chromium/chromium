@@ -2475,9 +2475,72 @@ class PdfViewWebPluginInkTest : public PdfViewWebPluginTest {
         blink::WebInputEventResult::kHandledApplication);
   }
 
+  void SendThumbnail(std::string_view message_id, const gfx::Size& page_size) {
+    base::Value::Dict reply;
+    reply.Set("type", "getThumbnailReply");
+    reply.Set("messageId", message_id);
+    plugin_->SendThumbnailForTesting(
+        std::move(reply), /*page_index=*/0,
+        Thumbnail(page_size, /*device_pixel_ratio=*/1));
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_{features::kPdfInk2};
 };
+
+TEST_F(PdfViewWebPluginInkTest, SendThumbnailUpdatesInkThumbnail) {
+  SetUpWithTrivialInkStrokes();
+
+  EXPECT_CALL(*client_ptr_, PostMessage)
+      .WillOnce([](const base::Value::Dict& dict) {
+        auto expected = base::test::ParseJsonDict(R"({
+            "type": "getThumbnailReply",
+            "messageId": "foo",
+            "width": 216,
+            "height": 108,
+        })");
+        EXPECT_THAT(dict, base::test::DictionaryHasValues(expected));
+
+        // Test `dict` contains the image data, but not the exact value.
+        const auto* blob = dict.FindBlob("imageData");
+        ASSERT_TRUE(blob);
+        EXPECT_FALSE(blob->empty());
+      })
+      .WillOnce([](const base::Value::Dict& dict) {
+        auto expected = base::test::ParseJsonDict(R"({
+            "type": "updateInk2Thumbnail",
+            "pageNumber": 1,
+            "width": 216,
+            "height": 108,
+        })");
+        EXPECT_THAT(dict, base::test::DictionaryHasValues(expected));
+
+        // Test `dict` contains the image data, but not the exact value.
+        const auto* blob = dict.FindBlob("imageData");
+        ASSERT_TRUE(blob);
+        EXPECT_FALSE(blob->empty());
+      });
+  SendThumbnail(/*message_id=*/"foo", /*page_size=*/{50, 25});
+}
+
+TEST_F(PdfViewWebPluginInkTest, SendThumbnailWithNoStrokes) {
+  EXPECT_CALL(*client_ptr_, PostMessage)
+      .WillOnce([](const base::Value::Dict& dict) {
+        auto expected = base::test::ParseJsonDict(R"({
+            "type": "getThumbnailReply",
+            "messageId": "foo",
+            "width": 216,
+            "height": 108,
+        })");
+        EXPECT_THAT(dict, base::test::DictionaryHasValues(expected));
+
+        // Test `dict` contains the image data, but not the exact value.
+        const auto* blob = dict.FindBlob("imageData");
+        ASSERT_TRUE(blob);
+        EXPECT_FALSE(blob->empty());
+      });
+  SendThumbnail(/*message_id=*/"foo", /*page_size=*/{50, 25});
+}
 
 TEST_F(PdfViewWebPluginInkTest, UpdateCursor) {
   UpdatePluginGeometryWithoutWaiting(2.0f, {0, 0, 20, 20});

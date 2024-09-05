@@ -1518,7 +1518,7 @@ void PdfViewWebPlugin::HandleGetThumbnailMessage(
   engine_->RequestThumbnail(
       page_index, device_scale_,
       base::BindOnce(&PdfViewWebPlugin::SendThumbnail,
-                     weak_factory_.GetWeakPtr(), std::move(reply)));
+                     weak_factory_.GetWeakPtr(), std::move(reply), page_index));
 }
 
 void PdfViewWebPlugin::HandlePrintMessage(
@@ -2084,29 +2084,8 @@ void PdfViewWebPlugin::UpdateInkCursorImage(SkBitmap bitmap) {
 }
 
 void PdfViewWebPlugin::UpdateThumbnail(int page_index) {
-  CHECK(ink_module_);
-
-  const gfx::Size size = engine_->GetThumbnailSize(page_index, device_scale_);
-  auto info = SkImageInfo::Make(size.width(), size.height(),
-                                kRGBA_8888_SkColorType, kUnpremul_SkAlphaType);
-  const size_t alloc_size = info.computeMinByteSize();
-  CHECK(!SkImageInfo::ByteSizeOverflowed(alloc_size));
-  std::vector<uint8_t> image_data(alloc_size);
-
-  SkBitmap sk_bitmap;
-  sk_bitmap.installPixels(info, image_data.data(), info.minRowBytes());
-  SkCanvas canvas(sk_bitmap);
-  if (!ink_module_->DrawThumbnail(canvas, page_index)) {
-    return;
-  }
-
-  base::Value::Dict message;
-  message.Set("type", "updateInk2Thumbnail");
-  message.Set("pageNumber", page_index + 1);
-  message.Set("imageData", std::move(image_data));
-  message.Set("width", size.width());
-  message.Set("height", size.height());
-  client_->PostMessage(std::move(message));
+  GenerateAndSendInkThumbnail(
+      page_index, engine_->GetThumbnailSize(page_index, device_scale_));
 }
 
 int PdfViewWebPlugin::VisiblePageIndexFromPoint(const gfx::PointF& point) {
@@ -2554,7 +2533,14 @@ void PdfViewWebPlugin::SendPrintPreviewLoadedNotification() {
   client_->PostMessage(std::move(message));
 }
 
+void PdfViewWebPlugin::SendThumbnailForTesting(base::Value::Dict reply,
+                                               int page_index,
+                                               Thumbnail thumbnail) {
+  SendThumbnail(std::move(reply), page_index, std::move(thumbnail));
+}
+
 void PdfViewWebPlugin::SendThumbnail(base::Value::Dict reply,
+                                     int page_index,
                                      Thumbnail thumbnail) {
   DCHECK_EQ(*reply.FindString("type"), "getThumbnailReply");
   DCHECK(reply.FindString("messageId"));
@@ -2563,7 +2549,42 @@ void PdfViewWebPlugin::SendThumbnail(base::Value::Dict reply,
   reply.Set("width", thumbnail.image_size().width());
   reply.Set("height", thumbnail.image_size().height());
   client_->PostMessage(std::move(reply));
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  if (ink_module_) {
+    GenerateAndSendInkThumbnail(page_index, thumbnail.image_size());
+  }
+#endif
 }
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+void PdfViewWebPlugin::GenerateAndSendInkThumbnail(int page_index,
+                                                   const gfx::Size& size) {
+  CHECK(!size.IsEmpty());
+  CHECK(ink_module_);
+
+  auto info = SkImageInfo::Make(size.width(), size.height(),
+                                kRGBA_8888_SkColorType, kUnpremul_SkAlphaType);
+  const size_t alloc_size = info.computeMinByteSize();
+  CHECK(!SkImageInfo::ByteSizeOverflowed(alloc_size));
+  std::vector<uint8_t> image_data(alloc_size);
+
+  SkBitmap sk_bitmap;
+  sk_bitmap.installPixels(info, image_data.data(), info.minRowBytes());
+  SkCanvas canvas(sk_bitmap);
+  if (!ink_module_->DrawThumbnail(canvas, page_index)) {
+    return;
+  }
+
+  base::Value::Dict message;
+  message.Set("type", "updateInk2Thumbnail");
+  message.Set("pageNumber", page_index + 1);
+  message.Set("imageData", std::move(image_data));
+  message.Set("width", size.width());
+  message.Set("height", size.height());
+  client_->PostMessage(std::move(message));
+}
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 gfx::Point PdfViewWebPlugin::FrameToPdfCoordinates(
     const gfx::PointF& frame_coordinates) const {
