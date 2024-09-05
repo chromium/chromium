@@ -360,22 +360,11 @@ void AutofillExternalDelegate::AttemptToDisplayAutofillSuggestions(
 base::OnceCallback<void(std::vector<Suggestion>,
                         AutofillSuggestionTriggerSource)>
 AutofillExternalDelegate::CreateUpdateSuggestionsCallback() {
-  using SessionId = AutofillClient::SuggestionUiSessionId;
-  const std::optional<SessionId> session_id =
-      manager_->client().GetSessionIdForCurrentAutofillSuggestions();
-  if (!session_id) {
-    return base::DoNothing();
-  }
   return base::BindOnce(
-      [](base::WeakPtr<AutofillExternalDelegate> self, SessionId session_id,
+      [](base::WeakPtr<AutofillExternalDelegate> self,
          std::vector<Suggestion> suggestions,
          AutofillSuggestionTriggerSource trigger_source) {
         if (!self) {
-          return;
-        }
-        if (self->manager_->client()
-                .GetSessionIdForCurrentAutofillSuggestions()
-                .value_or(SessionId()) != session_id) {
           return;
         }
         self->AttemptToDisplayAutofillSuggestions(
@@ -383,7 +372,7 @@ AutofillExternalDelegate::CreateUpdateSuggestionsCallback() {
             /*suggestion_ranking_context=*/std::nullopt, trigger_source,
             /*is_update=*/true);
       },
-      GetWeakPtr(), *session_id);
+      GetWeakPtr());
 }
 
 SuggestionType
