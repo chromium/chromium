@@ -67,6 +67,12 @@
   [self sendNewResult];
 }
 
+- (void)setOcclusionInsets:(UIEdgeInsets)occlusionInsets
+                reposition:(BOOL)reposition
+                  animated:(BOOL)animated {
+  // NO-OP
+}
+
 #pragma mark - Public
 
 - (void)simulateSelectionUpdate {
