@@ -196,4 +196,6 @@ source_set("browser_tests") {
     "//ui/views",
     "//url",
   ]
+
+  data = [ "//chrome/test/data/" ]
 }
