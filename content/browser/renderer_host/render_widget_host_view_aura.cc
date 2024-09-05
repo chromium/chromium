@@ -1356,9 +1356,12 @@ void RenderWidgetHostViewAura::SetCompositionText(
   if (!text_input_manager_ || !text_input_manager_->GetActiveWidget())
     return;
 
+  // Historically we haven't supported selection range with composition string
+  // due to prior bugs. Introducing support for it can reveal issues as seen
+  // with Korean IME in Windows for instance. See crbug.com/363266897
   text_input_manager_->GetActiveWidget()->ImeSetComposition(
       composition.text, composition.ime_text_spans, gfx::Range::InvalidRange(),
-      composition.selection.start(), composition.selection.end());
+      composition.selection.end(), composition.selection.end());
 
   has_composition_text_ = !composition.text.empty();
 }
