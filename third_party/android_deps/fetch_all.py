@@ -488,6 +488,18 @@ def _CreateAarInfos(aar_files):
             raise Exception('Command Failed: {}\n'.format(' '.join(cmd)))
 
 
+def _CopyJarFilesToCipd(android_deps_dir):
+    src_libs_dir = os.path.join(android_deps_dir, _LIBS_DIR)
+    # Match .aar and .jar
+    for src_path in FindInDirectory(src_libs_dir, '*.?ar'):
+        dst_path = os.path.join(android_deps_dir, 'cipd', _LIBS_DIR,
+                                os.path.relpath(src_path, src_libs_dir))
+        logging.debug('mv [%s -> %s]', src_path, dst_path)
+        if os.path.exists(dst_path):
+            os.unlink(dst_path)
+        shutil.move(src_path, dst_path)
+
+
 def main():
     parser = argparse.ArgumentParser(
         description=__doc__,
@@ -511,6 +523,11 @@ def main():
     parser.add_argument('--no-subprojects',
                         action='store_true',
                         help='Ignore subprojects.txt for faster runs.')
+    parser.add_argument('--local',
+                        help='Move .jar and .aar files to cipd/ directory '
+                        'after running (3pp bot requires this to not '
+                        'happen)',
+                        action='store_true')
     parser.add_argument('-v',
                         '--verbose',
                         dest='verbose_count',
@@ -523,6 +540,10 @@ def main():
         level=logging.WARNING - 10 * args.verbose_count,
         format='%(levelname).1s %(relativeCreated)6d %(message)s')
     debug = args.verbose_count >= 2
+
+    if 'SWARMING_TASK_ID' not in os.environ and not args.local:
+        logging.warning(
+            'Detected not running on a bot. You probably want to use --local')
 
     if not os.path.isfile(os.path.join(args.android_deps_dir, _BUILD_GRADLE)):
         raise Exception('--android-deps-dir {} does not contain {}.'.format(
@@ -654,6 +675,9 @@ def main():
             CopyFileOrDirectory(src_pkg_path,
                                 dst_pkg_path,
                                 ignore_extension=".tmp")
+
+        if args.local:
+            _CopyJarFilesToCipd(args.android_deps_dir)
 
         # Useful for printing timestamp.
         logging.info('All Done.')
