@@ -72,7 +72,7 @@ SupervisedUserServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<supervised_user::SupervisedUserService>(
-      IdentityManagerFactory::GetForBrowserState(profile),
+      IdentityManagerFactory::GetForProfile(profile),
       profile->GetSharedURLLoaderFactory(), CHECK_DEREF(profile->GetPrefs()),
       CHECK_DEREF(
           SupervisedUserSettingsServiceFactory::GetForBrowserState(profile)),

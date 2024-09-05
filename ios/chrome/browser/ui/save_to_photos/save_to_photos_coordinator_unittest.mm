@@ -179,7 +179,7 @@ TEST_F(SaveToPhotosCoordinatorTest, StartsAndDisconnectsMediator) {
       ChromeAccountManagerServiceFactory::GetForBrowserState(
           browser_state_.get());
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(browser_state_.get());
+      IdentityManagerFactory::GetForProfile(browser_state_.get());
 
   OCMExpect([mock_save_to_photos_mediator_ alloc])
       .andReturn(mock_save_to_photos_mediator_);

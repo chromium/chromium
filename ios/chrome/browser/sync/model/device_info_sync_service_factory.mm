@@ -185,7 +185,7 @@ DeviceInfoSyncServiceFactory::BuildServiceInstanceFor(
   syncer::SyncInvalidationsService* const sync_invalidations_service =
       SyncInvalidationsServiceFactory::GetForBrowserState(browser_state);
   signin::IdentityManager* const identity_manager =
-      IdentityManagerFactory::GetForBrowserState(browser_state);
+      IdentityManagerFactory::GetForProfile(browser_state);
   auto device_info_sync_client = std::make_unique<DeviceInfoSyncClient>(
       browser_state->GetPrefs(), sync_invalidations_service, identity_manager);
   auto local_device_info_provider =

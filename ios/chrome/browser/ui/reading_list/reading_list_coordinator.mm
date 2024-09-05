@@ -148,7 +148,7 @@
   _applicationCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   _authService = AuthenticationServiceFactory::GetForBrowserState(browserState);
-  _identityManager = IdentityManagerFactory::GetForBrowserState(browserState);
+  _identityManager = IdentityManagerFactory::GetForProfile(browserState);
   _prefService = browserState->GetPrefs();
 
   // Create the table.

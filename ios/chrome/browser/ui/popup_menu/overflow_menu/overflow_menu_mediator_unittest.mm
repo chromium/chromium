@@ -413,7 +413,7 @@ class OverflowMenuMediatorTest : public PlatformTest {
   }
 
   signin::IdentityManager* identity_manager() {
-    return IdentityManagerFactory::GetForBrowserState(browser_state_.get());
+    return IdentityManagerFactory::GetForProfile(browser_state_.get());
   }
 
   FakeSystemIdentityManager* fake_system_identity_manager() {

@@ -31,7 +31,7 @@ bool IsSubjectToParentalControls(ChromeBrowserState* browserState) {
     // to parental controls. Additionally, the retiring prefs-based
     // `IsSubjectToParentalControls` will also return false.
     return IsPrimaryAccountSubjectToParentalControls(
-               IdentityManagerFactory::GetForBrowserState(browserState)) ==
+               IdentityManagerFactory::GetForProfile(browserState)) ==
            signin::Tribool::kTrue;
   } else {
     return IsSubjectToParentalControls(*browserState->GetPrefs());

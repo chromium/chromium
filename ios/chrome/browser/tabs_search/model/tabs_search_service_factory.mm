@@ -64,7 +64,7 @@ std::unique_ptr<KeyedService> TabsSearchServiceFactory::BuildServiceInstanceFor(
   const bool is_off_the_record = browser_state->IsOffTheRecord();
   return std::make_unique<TabsSearchService>(
       is_off_the_record, BrowserListFactory::GetForBrowserState(browser_state),
-      IdentityManagerFactory::GetForBrowserState(browser_state),
+      IdentityManagerFactory::GetForProfile(browser_state),
       SyncServiceFactory::GetForBrowserState(browser_state),
       IOSChromeTabRestoreServiceFactory::GetForBrowserState(browser_state),
       SessionSyncServiceFactory::GetForBrowserState(browser_state),

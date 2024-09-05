@@ -432,7 +432,7 @@ bool HasMachineLevelPolicies() {
   // Create the capability fetcher and start fetching capabilities.
   __weak __typeof(self) weakSelf = self;
   _capabilitiesFetcher = [[HistorySyncCapabilitiesFetcher alloc]
-      initWithIdentityManager:IdentityManagerFactory::GetForBrowserState(
+      initWithIdentityManager:IdentityManagerFactory::GetForProfile(
                                   browserState)];
 
   [_capabilitiesFetcher

@@ -37,7 +37,7 @@ ChildAccountServiceFactory::BuildServiceInstanceFor(
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<supervised_user::ChildAccountService>(
       CHECK_DEREF(profile->GetPrefs()),
-      IdentityManagerFactory::GetForBrowserState(profile),
+      IdentityManagerFactory::GetForProfile(profile),
       profile->GetSharedURLLoaderFactory(),
       // Callback relevant only for Chrome OS.
       /*check_user_child_status_callback=*/base::DoNothing(),

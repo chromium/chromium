@@ -389,7 +389,7 @@ NSString* const kAuthenticationSnackbarCategory =
 
   std::string userEmail = base::SysNSStringToUTF8(identity.userEmail);
   CoreAccountId accountID =
-      IdentityManagerFactory::GetForBrowserState(browserState)
+      IdentityManagerFactory::GetForProfile(browserState)
           ->PickAccountIdForAccount(base::SysNSStringToUTF8(identity.gaiaID),
                                     userEmail);
 

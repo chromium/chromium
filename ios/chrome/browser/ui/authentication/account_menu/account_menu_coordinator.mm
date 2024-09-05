@@ -98,7 +98,7 @@
       AuthenticationServiceFactory::GetForBrowserState(browserState);
   _accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
-  _identityManager = IdentityManagerFactory::GetForBrowserState(browserState);
+  _identityManager = IdentityManagerFactory::GetForProfile(browserState);
   _prefService = browserState->GetPrefs();
   _applicationHandler = HandlerForProtocol(self.browser->GetCommandDispatcher(),
                                            ApplicationCommands);

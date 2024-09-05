@@ -42,7 +42,7 @@ SigninBrowserStateInfoUpdaterFactory::BuildServiceInstanceFor(
   ChromeBrowserState* chrome_browser_state =
       ChromeBrowserState::FromBrowserState(state);
   return std::make_unique<SigninBrowserStateInfoUpdater>(
-      IdentityManagerFactory::GetForBrowserState(chrome_browser_state),
+      IdentityManagerFactory::GetForProfile(chrome_browser_state),
       ios::SigninErrorControllerFactory::GetForBrowserState(
           chrome_browser_state),
       chrome_browser_state->GetProfileName());

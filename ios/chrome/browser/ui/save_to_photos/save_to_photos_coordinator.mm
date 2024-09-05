@@ -87,7 +87,7 @@
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(browserState);
+      IdentityManagerFactory::GetForProfile(browserState);
   _mediator = [[SaveToPhotosMediator alloc]
           initWithPhotosService:photosService
                     prefService:prefService

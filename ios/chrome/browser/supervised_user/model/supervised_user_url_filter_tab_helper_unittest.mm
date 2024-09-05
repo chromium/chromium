@@ -67,7 +67,7 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
   // given parental control capabilities on this account.
   void SignIn(const std::string& email, bool is_subject_to_parental_controls) {
     signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForBrowserState(chrome_browser_state_.get());
+        IdentityManagerFactory::GetForProfile(chrome_browser_state_.get());
     AccountInfo account = signin::MakePrimaryAccountAvailable(
         identity_manager, email, signin::ConsentLevel::kSignin);
     supervised_user::UpdateSupervisionStatusForAccount(

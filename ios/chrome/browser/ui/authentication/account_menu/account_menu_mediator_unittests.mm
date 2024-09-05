@@ -70,7 +70,7 @@ class AccountMenuMediatorTest : public PlatformTest {
             browser_state_.get());
     test_sync_service_ = std::make_unique<syncer::TestSyncService>();
     identity_manager_ =
-        IdentityManagerFactory::GetForBrowserState(browser_state_.get());
+        IdentityManagerFactory::GetForProfile(browser_state_.get());
 
     AddPrimaryIdentity();
     AddSecondaryIdentity();

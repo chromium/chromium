@@ -172,7 +172,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   AuthenticationService* authenticationService = self.authenticationService;
   const bool is_managed_account_migrated_from_syncing =
       browser_sync::WasPrimaryAccountMigratedFromSyncingToSignedIn(
-          IdentityManagerFactory::GetForBrowserState(browserState),
+          IdentityManagerFactory::GetForProfile(browserState),
           browserState->GetPrefs()) &&
       authenticationService->HasPrimaryIdentityManaged(
           signin::ConsentLevel::kSignin);

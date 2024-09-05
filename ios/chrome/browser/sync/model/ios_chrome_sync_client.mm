@@ -135,7 +135,7 @@ PrefService* IOSChromeSyncClient::GetPrefService() {
 
 signin::IdentityManager* IOSChromeSyncClient::GetIdentityManager() {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  return IdentityManagerFactory::GetForBrowserState(browser_state_);
+  return IdentityManagerFactory::GetForProfile(browser_state_);
 }
 
 base::FilePath IOSChromeSyncClient::GetLocalSyncBackendFolder() {

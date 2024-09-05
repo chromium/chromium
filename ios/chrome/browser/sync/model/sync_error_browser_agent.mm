@@ -156,7 +156,7 @@ void SyncErrorBrowserAgent::CreateReSignInInfoBarDelegate(
   std::unique_ptr<ReSignInInfoBarDelegate> delegate =
       ReSignInInfoBarDelegate::Create(
           AuthenticationServiceFactory::GetForBrowserState(browser_state),
-          IdentityManagerFactory::GetForBrowserState(browser_state), app_state,
+          IdentityManagerFactory::GetForProfile(browser_state), app_state,
           signin_presenter_provider_);
   if (delegate) {
     InfoBarManagerImpl::FromWebState(web_state)->AddInfoBar(

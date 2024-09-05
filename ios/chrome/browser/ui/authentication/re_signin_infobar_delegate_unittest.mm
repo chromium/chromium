@@ -87,8 +87,7 @@ class ReSignInInfoBarDelegateTest : public PlatformTest {
   }
 
   signin::IdentityManager* identity_manager() {
-    return IdentityManagerFactory::GetForBrowserState(
-        chrome_browser_state_.get());
+    return IdentityManagerFactory::GetForProfile(chrome_browser_state_.get());
   }
 
   OCMockObject<SigninPresenter>* signin_presenter() {

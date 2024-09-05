@@ -110,7 +110,7 @@
   sync_sessions::SessionSyncService* syncService =
       SessionSyncServiceFactory::GetForBrowserState(browserState);
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(browserState);
+      IdentityManagerFactory::GetForProfile(browserState);
   sessions::TabRestoreService* restoreService =
       IOSChromeTabRestoreServiceFactory::GetForBrowserState(browserState);
   FaviconLoader* faviconLoader =

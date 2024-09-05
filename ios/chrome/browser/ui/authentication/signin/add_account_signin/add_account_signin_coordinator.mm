@@ -115,7 +115,7 @@ using signin_metrics::PromoAction;
   self.addAccountSigninManager = [[AddAccountSigninManager alloc]
       initWithBaseViewController:self.baseViewController
                      prefService:browserState->GetPrefs()
-                 identityManager:IdentityManagerFactory::GetForBrowserState(
+                 identityManager:IdentityManagerFactory::GetForProfile(
                                      browserState)
       identityInteractionManager:identityInteractionManager];
   self.addAccountSigninManager.delegate = self;

@@ -91,7 +91,7 @@
   ChromeBrowserState* browserState =
       chrome_test_util::GetOriginalBrowserState();
   CoreAccountInfo info =
-      IdentityManagerFactory::GetForBrowserState(browserState)
+      IdentityManagerFactory::GetForProfile(browserState)
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
 
   return base::SysUTF8ToNSString(info.gaia);
@@ -100,9 +100,8 @@
 + (NSString*)primaryAccountEmailWithConsent:(signin::ConsentLevel)consentLevel {
   ChromeBrowserState* browserState =
       chrome_test_util::GetOriginalBrowserState();
-  CoreAccountInfo info =
-      IdentityManagerFactory::GetForBrowserState(browserState)
-          ->GetPrimaryAccountInfo(consentLevel);
+  CoreAccountInfo info = IdentityManagerFactory::GetForProfile(browserState)
+                             ->GetPrimaryAccountInfo(consentLevel);
 
   return base::SysUTF8ToNSString(info.email);
 }
@@ -111,7 +110,7 @@
   ChromeBrowserState* browserState =
       chrome_test_util::GetOriginalBrowserState();
 
-  return !IdentityManagerFactory::GetForBrowserState(browserState)
+  return !IdentityManagerFactory::GetForProfile(browserState)
               ->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 }
 
@@ -144,7 +143,7 @@
   ChromeBrowserState* browserState =
       chrome_test_util::GetOriginalBrowserState();
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(browserState);
+      IdentityManagerFactory::GetForProfile(browserState);
   CoreAccountId coreAccountId =
       identityManager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   CHECK(!coreAccountId.empty());

@@ -51,7 +51,7 @@ IOSTrustedVaultServiceFactory::BuildServiceInstanceFor(
       /*chrome_sync_security_domain_client=*/
       std::make_unique<IOSTrustedVaultClient>(
           ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state),
-          IdentityManagerFactory::GetForBrowserState(browser_state),
+          IdentityManagerFactory::GetForProfile(browser_state),
           TrustedVaultClientBackendFactory::GetForBrowserState(browser_state),
           browser_state->GetSharedURLLoaderFactory()));
 }

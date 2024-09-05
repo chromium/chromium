@@ -271,7 +271,7 @@ class MagicStackRankingModelTest : public PlatformTest {
     AuthenticationService* authenticationService =
         AuthenticationServiceFactory::GetForBrowserState(GetBrowserState());
     signin::IdentityManager* identityManager =
-        IdentityManagerFactory::GetForBrowserState(GetBrowserState());
+        IdentityManagerFactory::GetForProfile(GetBrowserState());
 
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
     FakeUrlLoadingBrowserAgent::InjectForBrowser(browser_.get());
