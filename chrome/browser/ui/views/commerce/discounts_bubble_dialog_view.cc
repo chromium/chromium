@@ -239,7 +239,8 @@ void DiscountsBubbleDialogView::OnDialogClosing() {
 
   commerce::metrics::DiscountsMetricCollector::
       DiscountsBubbleCopyStatusOnBubbleClosed(
-          tab_helper->IsDiscountsCouponCodeCopied());
+          tab_helper->IsDiscountsCouponCodeCopied(),
+          tab_helper->GetDiscounts());
 }
 
 BEGIN_METADATA(DiscountsBubbleDialogView)

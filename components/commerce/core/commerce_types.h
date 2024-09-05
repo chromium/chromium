@@ -25,12 +25,17 @@ namespace commerce {
 // Discount cluster types.
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.commerce.core
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(DiscountClusterType)
 enum class DiscountClusterType {
   kUnspecified = 0,
   kOfferLevel = 1,
   kPageLevel = 2,
   kMaxValue = kPageLevel,
 };
+// LINT.ThenChange(/tools/metrics/histograms/enums.xml:DiscountClusterType)
 
 // Discount types.
 // A Java counterpart will be generated for this enum.

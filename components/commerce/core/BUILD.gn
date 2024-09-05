@@ -89,6 +89,7 @@ static_library("metrics") {
 
   deps = [
     ":account_checker",
+    ":commerce_types",
     ":feature_list",
     ":proto",
     "//base",

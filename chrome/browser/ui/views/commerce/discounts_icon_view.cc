@@ -54,7 +54,8 @@ void DiscountsIconView::OnExecuting(
 
   commerce::metrics::DiscountsMetricCollector::
       RecordDiscountsPageActionIconClicked(
-          tab_helper->IsPageActionIconExpanded(PageActionIconType::kDiscounts));
+          tab_helper->IsPageActionIconExpanded(PageActionIconType::kDiscounts),
+          tab_helper->GetDiscounts());
 }
 
 const gfx::VectorIcon& DiscountsIconView::GetVectorIcon() const {
@@ -166,7 +167,8 @@ void DiscountsIconView::MaybeShowBubble(bool from_user) {
 
   commerce::metrics::DiscountsMetricCollector::RecordDiscountBubbleShown(
       should_auto_show,
-      GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
+      GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId(),
+      tab_helper->GetDiscounts());
 }
 
 BEGIN_METADATA(DiscountsIconView)
