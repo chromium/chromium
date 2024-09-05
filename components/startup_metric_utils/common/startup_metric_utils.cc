@@ -141,4 +141,33 @@ void CommonStartupMetricRecorder::AssertFirstCallInSession(
 #endif  // DCHECK_IS_ON()
 }
 
+void CommonStartupMetricRecorder::EmitHistogramWithTraceEvent(
+    HistogramTimeFunction* histogram_function,
+    const char* name,
+    base::TimeTicks begin_ticks,
+    base::TimeTicks end_ticks) {
+  (*histogram_function)(name, end_ticks - begin_ticks);
+  EmitTraceEvent(name, begin_ticks, end_ticks);
+}
+
+void CommonStartupMetricRecorder::EmitTraceEvent(const char* name,
+                                                 base::TimeTicks begin_ticks,
+                                                 base::TimeTicks end_ticks) {
+  // TODO(325307453): Emit the trace events asynchronously onto a
+  // perfetto::Track. Ordering is a problem if doing it simplistically as
+  // the async events are emitted out-of-order with identical start times
+  // and thus Perfetto is unable to sort them in a reasonable parent-child
+  // relationship.
+  TRACE_EVENT_BEGIN("startup", perfetto::StaticString(name),
+                    perfetto::Track(reinterpret_cast<uintptr_t>(name)),
+                    begin_ticks);
+  TRACE_EVENT_END("startup", perfetto::Track(reinterpret_cast<uintptr_t>(name)),
+                  end_ticks);
+}
+
+void CommonStartupMetricRecorder::EmitInstantEvent(const char* name) {
+  TRACE_EVENT_INSTANT("startup", perfetto::StaticString(name),
+                      perfetto::Track(reinterpret_cast<uintptr_t>(name)));
+}
+
 }  // namespace startup_metric_utils
