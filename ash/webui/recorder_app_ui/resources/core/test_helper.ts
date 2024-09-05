@@ -5,6 +5,7 @@
 import {RecorderApp} from '../pages/recorder-app.js';
 
 import {
+  usePlatformHandler,
   useRecordingDataManager,
 } from './lit/context.js';
 import {TextToken, Transcription} from './soda/soda.js';
@@ -112,6 +113,57 @@ export class TestHelper {
       };
       await useRecordingDataManager().createRecording(params, blob);
     }
+  }
+
+  /**
+   * Installs the model used for transcription.
+   */
+  static installTranscriptionModel(): void {
+    usePlatformHandler().installSoda();
+  }
+
+  /**
+   * Returns whether the transcription model is installed.
+   *
+   * @return Boolean indicating if the transcription model is installed.
+   */
+  static isTranscriptionModelInstalled(): boolean {
+    const state = usePlatformHandler().sodaState.value;
+    return state.kind === 'installed';
+  }
+
+  /**
+   * Installs the model used for summarize recordings.
+   */
+  static installSummaryModel(): void {
+    usePlatformHandler().summaryModelLoader.download();
+  }
+
+  /**
+   * Returns whether the summary model is installed.
+   *
+   * @return Boolean indicating if the summary model is installed.
+   */
+  static isSummaryModelInstalled(): boolean {
+    const state = usePlatformHandler().summaryModelLoader.state.value;
+    return state.kind === 'installed';
+  }
+
+  /**
+   * Installs the model used for suggest recording titles.
+   */
+  static installTitleSuggestionModel(): void {
+    usePlatformHandler().titleSuggestionModelLoader.download();
+  }
+
+  /**
+   * Returns whether the title suggestion model is installed.
+   *
+   * @return Boolean indicating if the title suggestion model is installed.
+   */
+  static isTitleSuggestionModelInstalled(): boolean {
+    const state = usePlatformHandler().titleSuggestionModelLoader.state.value;
+    return state.kind === 'installed';
   }
 
   // UI-related functions.
