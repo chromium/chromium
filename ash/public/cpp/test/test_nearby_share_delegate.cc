@@ -60,4 +60,9 @@ std::u16string TestNearbyShareDelegate::GetPlaceholderFeatureName() const {
   return visibility_;
 }
 
+void TestNearbyShareDelegate::SetVisibility(
+    ::nearby_share::mojom::Visibility visibility) {
+  visibility_ = visibility;
+}
+
 }  // namespace ash

@@ -66,6 +66,7 @@ class NearbyShareDelegateImpl
   const gfx::VectorIcon& GetIcon(bool on_icon) const override;
   std::u16string GetPlaceholderFeatureName() const override;
   ::nearby_share::mojom::Visibility GetVisibility() const override;
+  void SetVisibility(::nearby_share::mojom::Visibility visibility) override;
 
   // ash::SessionObserver
   void OnLockStateChanged(bool locked) override;
@@ -77,6 +78,7 @@ class NearbyShareDelegateImpl
   void OnShutdown() override;
 
   void SetNearbyShareServiceForTest(NearbySharingService* service);
+  void SetNearbyShareSettingsForTest(NearbyShareSettings* settings);
   void set_settings_opener_for_test(
       std::unique_ptr<SettingsOpener> settings_opener) {
     settings_opener_ = std::move(settings_opener);

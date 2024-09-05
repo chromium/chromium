@@ -37,6 +37,7 @@ class ASH_PUBLIC_EXPORT TestNearbyShareDelegate : public NearbyShareDelegate {
   const gfx::VectorIcon& GetIcon(bool on_icon) const override;
   std::u16string GetPlaceholderFeatureName() const override;
   ::nearby_share::mojom::Visibility GetVisibility() const override;
+  void SetVisibility(::nearby_share::mojom::Visibility visibility) override;
 
   void set_is_enabled(bool enabled) { is_enabled_ = enabled; }
 

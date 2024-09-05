@@ -122,6 +122,11 @@ void NearbyShareDelegateImpl::SetNearbyShareServiceForTest(
   AddNearbyShareServiceObservers();
 }
 
+void NearbyShareDelegateImpl::SetNearbyShareSettingsForTest(
+    NearbyShareSettings* settings) {
+  nearby_share_settings_ = settings;
+}
+
 // In Quick Share v1, not used.
 // In Quick Share v2, Quick Share should always be 'enabled', though visibility
 // may be set to Hidden.
@@ -245,4 +250,10 @@ std::u16string NearbyShareDelegateImpl::GetPlaceholderFeatureName() const {
   }
 
   return nearby_share_settings_->GetVisibility();
+}
+
+void NearbyShareDelegateImpl::SetVisibility(
+    ::nearby_share::mojom::Visibility visibility) {
+  DCHECK(nearby_share_settings_);
+  return nearby_share_settings_->SetVisibility(visibility);
 }
