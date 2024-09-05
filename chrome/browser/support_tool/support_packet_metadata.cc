@@ -5,6 +5,7 @@
 #include "chrome/browser/support_tool/support_packet_metadata.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -88,16 +89,19 @@ void WriteContentsOnFile(base::FilePath metadata_file,
 }
 }  // namespace
 
-SupportPacketMetadata::SupportPacketMetadata(std::string case_id,
-                                             std::string email_address,
-                                             std::string issue_description) {
+SupportPacketMetadata::SupportPacketMetadata(
+    std::string case_id,
+    std::string email_address,
+    std::string issue_description,
+    std::optional<std::string> upload_id) {
   metadata_[kSupportCaseIdKey] = case_id;
   metadata_[kIssueDescriptionKey] = issue_description;
   if (!email_address.empty()) {
     metadata_[kEmailAddressKey] = email_address;
     pii_[PIIType::kEmail].insert(email_address);
   }
-  metadata_[kSupportPacketGUIDKey] = GetGUIDForSupportPacket();
+  metadata_[kSupportPacketGUIDKey] =
+      upload_id.has_value() ? upload_id.value() : GetGUIDForSupportPacket();
   SetChromeMetadataFields();
 }
 
