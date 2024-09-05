@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_ANDROID_PERSISTED_TAB_DATA_PERSISTED_TAB_DATA_ANDROID_H_
 #define CHROME_BROWSER_ANDROID_PERSISTED_TAB_DATA_PERSISTED_TAB_DATA_ANDROID_H_
 
-#include <deque>
+#include <memory>
 #include <vector>
 
+#include "base/containers/circular_deque.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -18,7 +19,10 @@ class PersistedTabDataAndroidHelper;
 class PersistedTabDataStorageAndroid;
 class TabAndroid;
 
-// Base class for native PersistedTabData. Clients extend off this class.
+struct PersistedTabDataAndroidDeferredRequest;
+
+// Helper base class for native PersistedTabData. This class lives on, and must
+// only be used on, the UI thread.
 class PersistedTabDataAndroid
     : public TabAndroidUserData<PersistedTabDataAndroid> {
  public:
@@ -27,7 +31,7 @@ class PersistedTabDataAndroid
 
   using FromCallback = base::OnceCallback<void(PersistedTabDataAndroid*)>;
   using SupplierCallback =
-      base::OnceCallback<std::unique_ptr<PersistedTabDataAndroid>()>;
+      base::OnceCallback<std::unique_ptr<PersistedTabDataAndroid>(TabAndroid*)>;
 
  protected:
   // Handles PersistedTabData acquisition by:
@@ -35,6 +39,10 @@ class PersistedTabDataAndroid
   // ...
   // - Restore PersistedTabData from disk (if possible). If not there ...
   // - Re-acquire PersistedTabData using the supplier
+  //
+  // `supplier_callback` and `from_callback` will never be synchronously
+  // invoked, i.e. they will not be invoked while the call to `From()` is still
+  // on the stack.
   static void From(base::WeakPtr<TabAndroid> tab_android,
                    const void* user_data_key,
                    SupplierCallback supplier_callback,
@@ -91,25 +99,16 @@ class PersistedTabDataAndroid
   static void OnDeferredStartup();
 
   static std::map<std::string,
-                  std::vector<PersistedTabDataAndroid::FromCallback>>*
+                  std::vector<PersistedTabDataAndroid::FromCallback>>&
   GetCachedCallbackMap();
 
-  static void RunCallbackOnUIThread(
-      base::WeakPtr<TabAndroid> tab_android,
-      const void* user_data_key,
-      PersistedTabDataAndroid* persisted_tab_data_android);
+  void RunCallbackOnUIThread(const TabAndroid* tab_android,
+                             const void* user_data_key);
 
   // PersistedTabData::From requests are delayed until deferred
   // startup occurs to mitigate the risk of jank.
-  struct DeferredRequest {
-    DeferredRequest();
-    ~DeferredRequest();
-    base::WeakPtr<TabAndroid> tab_android;
-    raw_ptr<const void> user_data_key;
-    SupplierCallback supplier_callback;
-    FromCallback from_callback;
-  };
-  static std::deque<std::unique_ptr<DeferredRequest>>* GetDeferredRequests();
+  static base::circular_deque<PersistedTabDataAndroidDeferredRequest>&
+  GetDeferredRequests();
   static bool deferred_startup_complete_;
 
   TAB_ANDROID_USER_DATA_KEY_DECL();
