@@ -14,13 +14,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/proxy/proxy_api_constants.h"
 #include "chrome/browser/extensions/api/proxy/proxy_api_helpers.h"
-#include "chrome/browser/extensions/event_router_forwarder.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
+#include "content/public/browser/browser_context.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "net/base/net_errors.h"
@@ -35,28 +32,26 @@ const char kProxyEventDetailsKey[] = "details";
 const char kProxyEventOnProxyError[] = "proxy.onProxyError";
 
 // Helper method to dispatch an event to a particular profile indicated by
-// `profile_ptr`, but only if that profile is valid.
-void DispatchEventToProfile(void* profile_ptr,
+// `browser_context_ptr`, but only if that BrowserContext is valid.
+void DispatchEventToContext(void* browser_context_ptr,
                             events::HistogramValue histogram_value,
                             const std::string& event_name,
                             base::Value::List event_args) {
-  if (!g_browser_process || !g_browser_process->profile_manager()) {
+  if (!ExtensionsBrowserClient::Get()->IsValidContext(browser_context_ptr)) {
     return;
   }
 
-  if (!g_browser_process->profile_manager()->IsValidProfile(profile_ptr)) {
-    return;
-  }
-  Profile* profile = reinterpret_cast<Profile*>(profile_ptr);
+  content::BrowserContext* context =
+      reinterpret_cast<content::BrowserContext*>(browser_context_ptr);
 
-  auto* event_router = EventRouter::Get(profile);
+  auto* event_router = EventRouter::Get(context);
   // The extension system may not be available in the given profile.
   if (!event_router) {
     return;
   }
 
   auto event = std::make_unique<Event>(histogram_value, event_name,
-                                       std::move(event_args), profile);
+                                       std::move(event_args), context);
   event_router->BroadcastEvent(std::move(event));
 }
 
@@ -73,9 +68,7 @@ ProxyEventRouter::ProxyEventRouter() {
 ProxyEventRouter::~ProxyEventRouter() {
 }
 
-void ProxyEventRouter::OnProxyError(
-    void* profile,
-    int error_code) {
+void ProxyEventRouter::OnProxyError(void* browser_context, int error_code) {
   base::Value::List args;
   base::Value::Dict dict;
   dict.Set(kProxyEventFatalKey, true);
@@ -83,8 +76,8 @@ void ProxyEventRouter::OnProxyError(
   dict.Set(kProxyEventDetailsKey, std::string());
   args.Append(base::Value(std::move(dict)));
 
-  if (profile) {
-    DispatchEventToProfile(profile, events::PROXY_ON_PROXY_ERROR,
+  if (browser_context) {
+    DispatchEventToContext(browser_context, events::PROXY_ON_PROXY_ERROR,
                            kProxyEventOnProxyError, std::move(args));
   } else {
     ExtensionsBrowserClient::Get()->BroadcastEventToRenderers(
@@ -93,7 +86,7 @@ void ProxyEventRouter::OnProxyError(
   }
 }
 
-void ProxyEventRouter::OnPACScriptError(void* profile,
+void ProxyEventRouter::OnPACScriptError(void* browser_context,
                                         int line_number,
                                         const std::u16string& error) {
   base::Value::List args;
@@ -108,8 +101,8 @@ void ProxyEventRouter::OnPACScriptError(void* profile,
   dict.Set(kProxyEventDetailsKey, error_msg);
   args.Append(base::Value(std::move(dict)));
 
-  if (profile) {
-    DispatchEventToProfile(profile, events::PROXY_ON_PROXY_ERROR,
+  if (browser_context) {
+    DispatchEventToContext(browser_context, events::PROXY_ON_PROXY_ERROR,
                            kProxyEventOnProxyError, std::move(args));
   } else {
     ExtensionsBrowserClient::Get()->BroadcastEventToRenderers(

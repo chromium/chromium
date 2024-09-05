@@ -50,9 +50,9 @@ class ProxyEventRouter {
 
   static ProxyEventRouter* GetInstance();
 
-  void OnProxyError(void* profile, int error_code);
+  void OnProxyError(void* browser_context, int error_code);
 
-  void OnPACScriptError(void* profile,
+  void OnPACScriptError(void* browser_context,
                         int line_number,
                         const std::u16string& error);
 
