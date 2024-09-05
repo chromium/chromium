@@ -39,6 +39,15 @@ class UserAnnotationsDatabase {
   // Returns all the annotations from database.
   UserAnnotationsEntryRetrievalResult RetrieveAllEntries();
 
+  // Remove the user annotation entry with `entry_id` and returns whether the
+  // operation completed successfully. Returns true even when no entry is found.
+  bool RemoveEntry(EntryID entry_id);
+
+  // Removes all the user annotation entries and returns whether the
+  // operation completed successfully. Returns true even when there are no
+  // entries to delete.
+  bool RemoveAllEntries();
+
  private:
   sql::InitStatus InitInternal(const base::FilePath& storage_dir);
 

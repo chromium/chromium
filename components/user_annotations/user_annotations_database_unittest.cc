@@ -91,4 +91,29 @@ TEST_F(UserAnnotationsDatabaseTest, StoreAndRetrieve) {
       UnorderedElementsAre(EqualsProto(entries[0]), EqualsProto(entries[1])));
 }
 
+TEST_F(UserAnnotationsDatabaseTest, RemoveEntry) {
+  std::vector<UserAnnotationsEntry> entries;
+  entries.push_back(CreateUserAnnotationsEntry(1, "foo", "foo_value"));
+  entries.push_back(CreateUserAnnotationsEntry(2, "bar", "bar_value"));
+  EXPECT_EQ(UserAnnotationsExecutionResult::kSuccess,
+            database_->UpdateEntries(entries));
+
+  auto db_entries = *database_->RetrieveAllEntries();
+  EXPECT_EQ(2U, db_entries.size());
+  EXPECT_TRUE(database_->RemoveEntry(db_entries[0].entry_id()));
+  EXPECT_TRUE(database_->RemoveEntry(db_entries[1].entry_id()));
+  EXPECT_TRUE(database_->RetrieveAllEntries()->empty());
+}
+
+TEST_F(UserAnnotationsDatabaseTest, RemoveAllEntries) {
+  std::vector<UserAnnotationsEntry> entries;
+  entries.push_back(CreateUserAnnotationsEntry(1, "foo", "foo_value"));
+  entries.push_back(CreateUserAnnotationsEntry(2, "bar", "bar_value"));
+  EXPECT_EQ(UserAnnotationsExecutionResult::kSuccess,
+            database_->UpdateEntries(entries));
+  EXPECT_TRUE(database_->RemoveAllEntries());
+  EXPECT_TRUE(database_->RemoveAllEntries());
+  EXPECT_TRUE(database_->RetrieveAllEntries()->empty());
+}
+
 }  // namespace user_annotations

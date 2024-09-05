@@ -19,6 +19,28 @@ found in the LICENSE file.
   </summary>
 </histogram>
 
+<histogram name="UserAnnotations.RemoveAllEntries.Result"
+    enum="UserAnnotationsExecutionResult" expires_after="M135">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the result of removing all entries from user annotations service.
+    Recorded for each remove all entries call from the database via the
+    management UI.
+  </summary>
+</histogram>
+
+<histogram name="UserAnnotations.RemoveEntry.Result"
+    enum="UserAnnotationsExecutionResult" expires_after="M135">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the result of removing a single entry from user annotations service.
+    Recorded for each user annotation entry removal from the database via the
+    management UI.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

@@ -161,4 +161,19 @@ UserAnnotationsDatabase::RetrieveAllEntries() {
   return entries;
 }
 
+bool UserAnnotationsDatabase::RemoveEntry(EntryID entry_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  sql::Statement delete_statement(db_.GetCachedStatement(
+      SQL_FROM_HERE, "DELETE FROM entries WHERE entry_id=?"));
+  delete_statement.BindInt64(0, entry_id);
+  return delete_statement.Run();
+}
+
+bool UserAnnotationsDatabase::RemoveAllEntries() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  sql::Statement delete_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, "DELETE FROM entries"));
+  return delete_statement.Run();
+}
+
 }  // namespace user_annotations

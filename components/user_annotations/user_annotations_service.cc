@@ -4,6 +4,8 @@
 
 #include "components/user_annotations/user_annotations_service.h"
 
+#include "base/callback_list.h"
+#include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -40,6 +42,15 @@ void ProcessEntryRetrieval(
     return;
   }
   std::move(callback).Run(user_annotations.value());
+}
+
+void RecordRemoveEntryResult(UserAnnotationsExecutionResult result) {
+  base::UmaHistogramEnumeration("UserAnnotations.RemoveEntry.Result", result);
+}
+
+void RecordRemoveAllEntriesResult(UserAnnotationsExecutionResult result) {
+  base::UmaHistogramEnumeration("UserAnnotations.RemoveAllEntries.Result",
+                                result);
 }
 
 }  // namespace
@@ -159,14 +170,69 @@ void UserAnnotationsService::OnModelExecuted(
   }
 
   for (const auto& entry : maybe_response->entries()) {
+    EntryID entry_id = ++entry_id_counter_;
     optimization_guide::proto::UserAnnotationsEntry entry_proto;
+    entry_proto.set_entry_id(entry_id);
     entry_proto.set_key(entry.key());
     entry_proto.set_value(entry.value());
-    entries_.push_back({.entry_id = ++entry_id_counter_,
-                        .entry_proto = std::move(entry_proto)});
+    entries_.push_back(
+        {.entry_id = entry_id, .entry_proto = std::move(entry_proto)});
   }
   RecordUserAnnotationsFormSubmissionResult(
       UserAnnotationsExecutionResult::kSuccess);
+}
+
+void UserAnnotationsService::RemoveEntry(EntryID entry_id,
+                                         base::OnceClosure callback) {
+  if (!ShouldPersistUserAnnotations()) {
+    std::erase_if(entries_, [entry_id](Entry entry) {
+      return entry.entry_id == entry_id;
+    });
+    RecordRemoveEntryResult(UserAnnotationsExecutionResult::kSuccess);
+    std::move(callback).Run();
+    return;
+  }
+  if (!user_annotations_database_) {
+    RecordRemoveEntryResult(
+        UserAnnotationsExecutionResult::kCryptNotInitialized);
+    std::move(callback).Run();
+    return;
+  }
+  user_annotations_database_.AsyncCall(&UserAnnotationsDatabase::RemoveEntry)
+      .WithArgs(entry_id)
+      .Then(base::BindOnce(
+          [](base::OnceClosure callback, bool result) {
+            RecordRemoveEntryResult(
+                result ? UserAnnotationsExecutionResult::kSuccess
+                       : UserAnnotationsExecutionResult::kSqlError);
+            std::move(callback).Run();
+          },
+          std::move(callback)));
+}
+
+void UserAnnotationsService::RemoveAllEntries(base::OnceClosure callback) {
+  if (!ShouldPersistUserAnnotations()) {
+    entries_.clear();
+    RecordRemoveAllEntriesResult(UserAnnotationsExecutionResult::kSuccess);
+    std::move(callback).Run();
+    return;
+  }
+  if (!user_annotations_database_) {
+    RecordRemoveAllEntriesResult(
+        UserAnnotationsExecutionResult::kCryptNotInitialized);
+    std::move(callback).Run();
+    return;
+  }
+  user_annotations_database_
+      .AsyncCall(&UserAnnotationsDatabase::RemoveAllEntries)
+      .Then(base::BindOnce(
+          [](base::OnceClosure callback, bool result) {
+            RecordRemoveAllEntriesResult(
+                result ? UserAnnotationsExecutionResult::kSuccess
+                       : UserAnnotationsExecutionResult::kSqlError);
+            std::move(callback).Run();
+          },
+          std::move(callback)));
 }
 
 }  // namespace user_annotations

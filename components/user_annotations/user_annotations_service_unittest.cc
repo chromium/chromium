@@ -34,6 +34,7 @@ class UserAnnotationsServiceTest : public testing::Test,
                                    public testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
+    InitializeFeatureList();
     CHECK(temp_dir_.CreateUniqueTempDir());
     os_crypt_ = os_crypt_async::GetTestOSCryptAsyncForTesting(
         /*is_sync_for_unittests=*/true);
@@ -76,6 +77,41 @@ TEST_P(UserAnnotationsServiceTest, RetrieveAllEntriesNoDB) {
   EXPECT_TRUE(entries.empty());
 }
 
+struct FormsAnnotationsTestRequest {
+  optimization_guide::proto::Any forms_annotations_response;
+  optimization_guide::proto::AXTreeUpdate ax_tree;
+  autofill::FormData form_data;
+};
+
+// Returns sample annotations for tests.
+FormsAnnotationsTestRequest CreateSampleFormsAnnotationsTestRequest() {
+  optimization_guide::proto::FormsAnnotationsResponse response;
+  optimization_guide::proto::UserAnnotationsEntry* entry1 =
+      response.add_entries();
+  entry1->set_key("label");
+  entry1->set_value("whatever");
+  optimization_guide::proto::UserAnnotationsEntry* entry2 =
+      response.add_entries();
+  entry2->set_key("nolabel");
+  entry2->set_value("value");
+  optimization_guide::proto::Any forms_annotations_response;
+  forms_annotations_response.set_type_url(response.GetTypeName());
+  response.SerializeToString(forms_annotations_response.mutable_value());
+
+  autofill::FormFieldData form_field_data;
+  form_field_data.set_label(u"label");
+  form_field_data.set_value(u"whatever");
+  autofill::FormFieldData form_field_data2;
+  form_field_data2.set_name(u"nolabel");
+  form_field_data2.set_value(u"value");
+  autofill::FormData form_data;
+  form_data.set_fields({form_field_data, form_field_data2});
+  optimization_guide::proto::AXTreeUpdate ax_tree;
+  ax_tree.mutable_tree_data()->set_title("title");
+
+  return {forms_annotations_response, ax_tree, form_data};
+}
+
 TEST_P(UserAnnotationsServiceTest, RetrieveAllEntriesWithInsert) {
   {
     base::HistogramTester histogram_tester;
@@ -105,18 +141,7 @@ TEST_P(UserAnnotationsServiceTest, RetrieveAllEntriesWithInsert) {
     field_proto2->set_form_control_type(
         optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_TEXT);
 
-    optimization_guide::proto::FormsAnnotationsResponse response;
-    optimization_guide::proto::UserAnnotationsEntry* entry1 =
-        response.add_entries();
-    entry1->set_key("label");
-    entry1->set_value("whatever");
-    optimization_guide::proto::UserAnnotationsEntry* entry2 =
-        response.add_entries();
-    entry2->set_key("nolabel");
-    entry2->set_value("value");
-    optimization_guide::proto::Any any;
-    any.set_type_url(response.GetTypeName());
-    response.SerializeToString(any.mutable_value());
+    auto test_request = CreateSampleFormsAnnotationsTestRequest();
     EXPECT_CALL(
         *model_executor(),
         ExecuteModel(
@@ -124,19 +149,10 @@ TEST_P(UserAnnotationsServiceTest, RetrieveAllEntriesWithInsert) {
             EqualsProto(expected_request),
             An<optimization_guide::
                    OptimizationGuideModelExecutionResultCallback>()))
-        .WillOnce(base::test::RunOnceCallback<2>(any, /*log_entry=*/nullptr));
+        .WillOnce(base::test::RunOnceCallback<2>(
+            test_request.forms_annotations_response, /*log_entry=*/nullptr));
 
-    autofill::FormFieldData form_field_data;
-    form_field_data.set_label(u"label");
-    form_field_data.set_value(u"whatever");
-    autofill::FormFieldData form_field_data2;
-    form_field_data2.set_name(u"nolabel");
-    form_field_data2.set_value(u"value");
-    autofill::FormData form_data;
-    form_data.set_fields({form_field_data, form_field_data2});
-    optimization_guide::proto::AXTreeUpdate ax_tree;
-    ax_tree.mutable_tree_data()->set_title("title");
-    service()->AddFormSubmission(ax_tree, form_data);
+    service()->AddFormSubmission(test_request.ax_tree, test_request.form_data);
 
     base::test::TestFuture<UserAnnotationsEntries> test_future;
     service()->RetrieveAllEntries(test_future.GetCallback());
@@ -191,7 +207,7 @@ TEST_P(UserAnnotationsServiceTest, RetrieveAllEntriesWithInsert) {
   }
 }
 
-TEST_F(UserAnnotationsServiceTest, ExecuteFailed) {
+TEST_P(UserAnnotationsServiceTest, ExecuteFailed) {
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(
@@ -223,7 +239,7 @@ TEST_F(UserAnnotationsServiceTest, ExecuteFailed) {
                                     0);
 }
 
-TEST_F(UserAnnotationsServiceTest, UnexpectedResponseType) {
+TEST_P(UserAnnotationsServiceTest, UnexpectedResponseType) {
   base::HistogramTester histogram_tester;
 
   optimization_guide::proto::Any any;
@@ -250,6 +266,79 @@ TEST_F(UserAnnotationsServiceTest, UnexpectedResponseType) {
                                     0);
 }
 
+TEST_P(UserAnnotationsServiceTest, RemoveEntry) {
+  base::HistogramTester histogram_tester;
+  auto test_request = CreateSampleFormsAnnotationsTestRequest();
+  EXPECT_CALL(
+      *model_executor(),
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, _,
+          An<optimization_guide::
+                 OptimizationGuideModelExecutionResultCallback>()))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          test_request.forms_annotations_response, /*log_entry=*/nullptr));
+
+  service()->AddFormSubmission(test_request.ax_tree, test_request.form_data);
+
+  base::test::TestFuture<
+      std::vector<optimization_guide::proto::UserAnnotationsEntry>>
+      test_future_retrieve;
+  service()->RetrieveAllEntries(test_future_retrieve.GetCallback());
+  auto entries = test_future_retrieve.Take();
+  EXPECT_EQ(2u, entries.size());
+
+  base::test::TestFuture<void> test_future_remove_entry;
+  service()->RemoveEntry(entries[0].entry_id(),
+                         test_future_remove_entry.GetCallback());
+  EXPECT_TRUE(test_future_remove_entry.Wait());
+  test_future_remove_entry.Clear();
+  service()->RetrieveAllEntries(test_future_retrieve.GetCallback());
+  EXPECT_TRUE(test_future_retrieve.Wait());
+  EXPECT_EQ(1u, test_future_retrieve.Take().size());
+  histogram_tester.ExpectUniqueSample("UserAnnotations.RemoveEntry.Result",
+                                      UserAnnotationsExecutionResult::kSuccess,
+                                      1);
+
+  service()->RemoveEntry(entries[1].entry_id(),
+                         test_future_remove_entry.GetCallback());
+  EXPECT_TRUE(test_future_remove_entry.Wait());
+  histogram_tester.ExpectUniqueSample("UserAnnotations.RemoveEntry.Result",
+                                      UserAnnotationsExecutionResult::kSuccess,
+                                      2);
+  service()->RetrieveAllEntries(test_future_retrieve.GetCallback());
+  EXPECT_TRUE(test_future_retrieve.Take().empty());
+}
+
+TEST_P(UserAnnotationsServiceTest, RemoveAllEntries) {
+  base::HistogramTester histogram_tester;
+  auto test_request = CreateSampleFormsAnnotationsTestRequest();
+  EXPECT_CALL(
+      *model_executor(),
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, _,
+          An<optimization_guide::
+                 OptimizationGuideModelExecutionResultCallback>()))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          test_request.forms_annotations_response, /*log_entry=*/nullptr));
+
+  service()->AddFormSubmission(test_request.ax_tree, test_request.form_data);
+
+  base::test::TestFuture<
+      std::vector<optimization_guide::proto::UserAnnotationsEntry>>
+      test_future_retrieve;
+  service()->RetrieveAllEntries(test_future_retrieve.GetCallback());
+  EXPECT_EQ(2u, test_future_retrieve.Take().size());
+
+  base::test::TestFuture<void> test_future_remove_entry;
+  service()->RemoveAllEntries(test_future_remove_entry.GetCallback());
+  EXPECT_TRUE(test_future_remove_entry.Wait());
+  histogram_tester.ExpectUniqueSample("UserAnnotations.RemoveAllEntries.Result",
+                                      UserAnnotationsExecutionResult::kSuccess,
+                                      1);
+  service()->RetrieveAllEntries(test_future_retrieve.GetCallback());
+  EXPECT_TRUE(test_future_retrieve.Take().empty());
+}
+
 INSTANTIATE_TEST_SUITE_P(All, UserAnnotationsServiceTest, ::testing::Bool());
 
 class UserAnnotationsServiceReplaceAnnotationsTest
@@ -273,36 +362,17 @@ class UserAnnotationsServiceReplaceAnnotationsTest
 TEST_P(UserAnnotationsServiceReplaceAnnotationsTest,
        RetrieveAllEntriesWithInsertShouldReplace) {
   {
-    optimization_guide::proto::FormsAnnotationsResponse response;
-    optimization_guide::proto::UserAnnotationsEntry* entry1 =
-        response.add_entries();
-    entry1->set_key("label");
-    entry1->set_value("whatever");
-    optimization_guide::proto::UserAnnotationsEntry* entry2 =
-        response.add_entries();
-    entry2->set_key("nolabel");
-    entry2->set_value("value");
-    optimization_guide::proto::Any any;
-    any.set_type_url(response.GetTypeName());
-    response.SerializeToString(any.mutable_value());
+    auto test_request = CreateSampleFormsAnnotationsTestRequest();
     EXPECT_CALL(
         *model_executor(),
         ExecuteModel(
             optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, _,
             An<optimization_guide::
                    OptimizationGuideModelExecutionResultCallback>()))
-        .WillOnce(base::test::RunOnceCallback<2>(any, /*log_entry=*/nullptr));
+        .WillOnce(base::test::RunOnceCallback<2>(
+            test_request.forms_annotations_response, /*log_entry=*/nullptr));
 
-    autofill::FormFieldData form_field_data;
-    form_field_data.set_label(u"label");
-    form_field_data.set_value(u"whatever");
-    autofill::FormFieldData form_field_data2;
-    form_field_data2.set_name(u"nolabel");
-    form_field_data2.set_value(u"value");
-    autofill::FormData form_data;
-    form_data.set_fields({form_field_data, form_field_data2});
-    optimization_guide::proto::AXTreeUpdate ax_tree;
-    service()->AddFormSubmission(ax_tree, form_data);
+    service()->AddFormSubmission(test_request.ax_tree, test_request.form_data);
 
     base::test::TestFuture<UserAnnotationsEntries> test_future;
     service()->RetrieveAllEntries(test_future.GetCallback());

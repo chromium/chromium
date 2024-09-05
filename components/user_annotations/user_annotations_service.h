@@ -7,7 +7,7 @@
 
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
-#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
@@ -53,6 +53,14 @@ class UserAnnotationsService : public KeyedService {
   // Virtual for testing.
   virtual void RetrieveAllEntries(
       base::OnceCallback<void(UserAnnotationsEntries)> callback);
+
+  // Remove the user annotation entry with `entry_id` and calls `callback` upon
+  // completion.
+  void RemoveEntry(EntryID entry_id, base::OnceClosure callback);
+
+  // Removes all the user annotation entries` and calls `callback` upon
+  // completion.
+  void RemoveAllEntries(base::OnceClosure callback);
 
   // KeyedService:
   void Shutdown() override;
