@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_row_prediction_improvements_feedback_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_with_button_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
@@ -636,6 +637,18 @@ std::unique_ptr<PopupRowWithButtonView> CreateNewPlusAddressInlineSuggestion(
       PopupRowWithButtonView::ButtonBehavior::kShowOnHoverOrSelect);
 }
 
+// Creates the row for the `SuggestionType::kPredictionImprovementsFeedback`
+// suggestion.
+std::unique_ptr<PopupRowPredictionImprovementsFeedbackView>
+CreatePredictionImprovementsFeedbackRow(
+    base::WeakPtr<AutofillPopupController> controller,
+    PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate,
+    PopupRowView::SelectionDelegate& selection_delegate,
+    int line_number) {
+  return std::make_unique<PopupRowPredictionImprovementsFeedbackView>(
+      a11y_selection_delegate, selection_delegate, controller, line_number);
+}
+
 }  // namespace
 
 std::unique_ptr<PopupRowView> CreatePopupRowView(
@@ -653,6 +666,11 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
 
   if (type == SuggestionType::kAutocompleteEntry) {
     return CreateAutocompleteRowWithDeleteButton(
+        controller, a11y_selection_delegate, selection_delegate, line_number);
+  }
+
+  if (type == SuggestionType::kPredictionImprovementsFeedback) {
+    return CreatePredictionImprovementsFeedbackRow(
         controller, a11y_selection_delegate, selection_delegate, line_number);
   }
 

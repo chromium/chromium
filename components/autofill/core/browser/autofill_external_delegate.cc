@@ -64,7 +64,6 @@
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/suggestion_button_action.h"
 
 namespace autofill {
 
@@ -229,6 +228,7 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kPasswordAccountStorageOptInAndGenerate:
     case SuggestionType::kPasswordAccountStorageReSignin:
     case SuggestionType::kPasswordEntry:
+    case SuggestionType::kPredictionImprovementsFeedback:
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kTitle:
@@ -661,6 +661,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kFillPassword:
+    case SuggestionType::kPredictionImprovementsFeedback:
     case SuggestionType::kViewPasswordDetails:
       NOTREACHED();  // Should be handled elsewhere.
   }
@@ -824,6 +825,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kFillPassword:
+    case SuggestionType::kPredictionImprovementsFeedback:
     case SuggestionType::kViewPasswordDetails:
     case SuggestionType::kPredictionImprovementsLoadingState:
       NOTREACHED();  // Should be handled elsewhere.
@@ -953,6 +955,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kDevtoolsTestAddressEntry:
     case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kPasswordFieldByFieldFilling:
+    case SuggestionType::kPredictionImprovementsFeedback:
     case SuggestionType::kFillPassword:
     case SuggestionType::kViewPasswordDetails:
     case SuggestionType::kRetrievePredictionImprovements:

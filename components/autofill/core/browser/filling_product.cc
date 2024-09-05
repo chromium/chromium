@@ -95,6 +95,8 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kFillExistingPlusAddress:
     case SuggestionType::kManagePlusAddress:
       return FillingProduct::kPlusAddresses;
+    case SuggestionType::kPredictionImprovementsFeedback:
+      return FillingProduct::kPredictionImprovements;
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kTitle:
     case SuggestionType::kSeparator:

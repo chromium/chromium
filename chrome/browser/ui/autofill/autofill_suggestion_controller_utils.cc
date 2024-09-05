@@ -93,6 +93,7 @@ bool IsFooterSuggestionType(SuggestionType type) {
     case SuggestionType::kMixedFormMessage:
     case SuggestionType::kPasswordEntry:
     case SuggestionType::kPasswordFieldByFieldFilling:
+    case SuggestionType::kPredictionImprovementsFeedback:
     case SuggestionType::kSeparator:
     case SuggestionType::kTitle:
     case SuggestionType::kVirtualCreditCardEntry:

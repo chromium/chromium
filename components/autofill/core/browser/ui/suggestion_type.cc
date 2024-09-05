@@ -122,6 +122,8 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kPredictionImprovementsLoadingState";
     case SuggestionType::kFillPredictionImprovements:
       return "kFillPredictionImprovements";
+    case SuggestionType::kPredictionImprovementsFeedback:
+      return "kPredictionImprovementsFeedback";
   }
   NOTREACHED();
 }
