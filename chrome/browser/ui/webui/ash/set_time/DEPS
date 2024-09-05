@@ -5,11 +5,16 @@ include_rules = [
 
   # This directory is in //chrome, which violates the rule above. Allow this
   # directory to #include its own files.
-  "+chrome/browser/ui/webui/ash/set_time_dialog",
+  "+chrome/browser/ui/webui/ash/set_time",
 
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
+  "+chrome/browser/ash/child_accounts/parent_access_code",
+  "+chrome/browser/ash/system",
+  "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/webui/ash/system_web_dialog",
+  "+chrome/browser/ui/webui/webui_util.h",
   "+chrome/common",
+  "+chrome/grit",
 ]

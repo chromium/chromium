@@ -5225,6 +5225,7 @@ static_library("browser") {
       "//chrome/browser/ui/webui/ash/office_fallback",
       "//chrome/browser/ui/webui/ash/parent_access",
       "//chrome/browser/ui/webui/ash/sensor_info",
+      "//chrome/browser/ui/webui/ash/set_time",
       "//chrome/browser/ui/webui/ash/settings",
       "//chrome/browser/ui/webui/ash/settings/calculator",
       "//chrome/browser/ui/webui/ash/settings/pages/a11y",

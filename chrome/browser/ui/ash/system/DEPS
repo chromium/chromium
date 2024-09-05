@@ -45,7 +45,7 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/bluetooth",
   "+chrome/browser/ui/webui/ash/internet",
   "+chrome/browser/ui/webui/ash/multidevice_setup",
-  "+chrome/browser/ui/webui/ash/set_time_dialog",
+  "+chrome/browser/ui/webui/ash/set_time",
   "+chrome/browser/upgrade_detector",
   "+chrome/browser/web_applications",
   "+chrome/common",

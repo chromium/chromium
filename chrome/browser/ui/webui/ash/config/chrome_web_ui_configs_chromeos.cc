@@ -105,7 +105,7 @@
 #include "chrome/browser/ui/webui/ash/power_ui/power_ui.h"
 #include "chrome/browser/ui/webui/ash/remote_maintenance_curtain_ui.h"
 #include "chrome/browser/ui/webui/ash/sensor_info/sensor_info_ui.h"
-#include "chrome/browser/ui/webui/ash/set_time_ui.h"
+#include "chrome/browser/ui/webui/ash/set_time/set_time_ui.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_ui.h"
 #include "chrome/browser/ui/webui/ash/slow/slow_trace_ui.h"
 #include "chrome/browser/ui/webui/ash/slow/slow_ui.h"

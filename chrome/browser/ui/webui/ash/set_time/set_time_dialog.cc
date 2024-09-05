@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/ash/set_time_dialog/set_time_dialog.h"
+#include "chrome/browser/ui/webui/ash/set_time/set_time_dialog.h"
 
 #include <string>
 

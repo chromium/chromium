@@ -39,7 +39,7 @@ static_library("system") {
     "//chrome/browser/ui/webui/ash/bluetooth",
     "//chrome/browser/ui/webui/ash/internet",
     "//chrome/browser/ui/webui/ash/multidevice_setup",
-    "//chrome/browser/ui/webui/ash/set_time_dialog",
+    "//chrome/browser/ui/webui/ash/set_time",
     "//chrome/browser/web_applications",
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
