@@ -6,8 +6,10 @@ package org.chromium.chrome.browser.password_manager.settings;
 
 import static org.chromium.chrome.browser.password_manager.settings.PasswordAccessLossExportDialogProperties.CLOSE_BUTTON_CALLBACK;
 import static org.chromium.chrome.browser.password_manager.settings.PasswordAccessLossExportDialogProperties.EXPORT_AND_DELETE_BUTTON_CALLBACK;
+import static org.chromium.chrome.browser.password_manager.settings.PasswordAccessLossExportDialogProperties.TITLE;
 
 import android.view.View;
+import android.widget.TextView;
 
 import org.chromium.chrome.browser.password_manager.R;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -21,7 +23,9 @@ class PasswordAccessLossExportDialogBinder {
     private PasswordAccessLossExportDialogBinder() {}
 
     static void bind(PropertyModel model, View dialogView, PropertyKey propertyKey) {
-        if (propertyKey == EXPORT_AND_DELETE_BUTTON_CALLBACK) {
+        if (propertyKey == TITLE) {
+            ((TextView) dialogView.findViewById(R.id.title)).setText(model.get(TITLE));
+        } else if (propertyKey == EXPORT_AND_DELETE_BUTTON_CALLBACK) {
             dialogView
                     .findViewById(R.id.positive_button)
                     .setOnClickListener(v -> model.get(EXPORT_AND_DELETE_BUTTON_CALLBACK).run());

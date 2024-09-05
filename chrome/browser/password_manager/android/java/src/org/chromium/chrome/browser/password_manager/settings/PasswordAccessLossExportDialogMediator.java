@@ -59,6 +59,15 @@ class PasswordAccessLossExportDialogMediator
         mExportDialogObserver = exportDialogObserver;
     }
 
+    public String getDialogTitle() {
+        PrefService prefService = UserPrefs.get(mProfile);
+        if (PasswordManagerHelper.getAccessLossWarningType(prefService)
+                == PasswordAccessLossWarningType.NO_GMS_CORE) {
+            return mActivity.getString(R.string.access_loss_export_dialog_title_no_gms);
+        }
+        return mActivity.getString(R.string.access_loss_export_dialog_title);
+    }
+
     public void handlePositiveButtonClicked() {
         PasswordManagerHandlerProvider.getForProfile(mProfile).addObserver(this);
         mExportFlow = new ExportFlow();

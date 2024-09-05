@@ -26,7 +26,6 @@ import android.widget.TextView;
 
 import androidx.fragment.app.FragmentActivity;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -72,6 +71,9 @@ import java.io.OutputStream;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @Batch(Batch.PER_CLASS)
+@EnableFeatures(
+        ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
+@DisableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)
 public class PasswordAccessLossExportDialogCoordinatorTest {
     private static final Uri TEMP_EXPORT_FILE_URI = Uri.parse("tmp/fake/test/path/file.ext");
     private static final Uri SAVED_EXPORT_FILE_URI = Uri.parse("fake/test/path/file.ext");
@@ -92,13 +94,13 @@ public class PasswordAccessLossExportDialogCoordinatorTest {
     @Mock private PasswordAccessLossExportDialogCoordinator.Observer mPasswordsDeletionFinished;
     private FakePasswordManagerHandler mPasswordManagerHandler;
 
-    @Before
-    public void setUp() {
+    public void setUp(@PasswordAccessLossWarningType int type) {
         mJniMocker.mock(PasswordStoreBridgeJni.TEST_HOOKS, mPasswordStoreBridgeJniMock);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
         mJniMocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeJniMock);
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        setUpAccessLossWarningType(type);
 
         mActivity =
                 Robolectric.buildActivity(BrowserUiDummyFragmentActivity.class)
@@ -159,7 +161,8 @@ public class PasswordAccessLossExportDialogCoordinatorTest {
     }
 
     @Test
-    public void testExportDialogStrings() {
+    public void testExportDialogStringsForNewGmsCoreAndMigrationFailed() {
+        setUp(PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED);
         mCoordinator.showExportDialog();
         mActivity.getSupportFragmentManager().executePendingTransactions();
 
@@ -180,16 +183,35 @@ public class PasswordAccessLossExportDialogCoordinatorTest {
     }
 
     @Test
-    @EnableFeatures(
-            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
-    @DisableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)
+    public void testExportDialogStringsForNoGmsCore() {
+        setUp(PasswordAccessLossWarningType.NO_GMS_CORE);
+        mCoordinator.showExportDialog();
+        mActivity.getSupportFragmentManager().executePendingTransactions();
+
+        Resources resources = RuntimeEnvironment.getApplication().getResources();
+        Dialog dialog = ShadowDialog.getLatestDialog();
+        assertEquals(
+                resources.getString(R.string.access_loss_export_dialog_title_no_gms),
+                ((TextView) dialog.findViewById(R.id.title)).getText());
+        assertEquals(
+                resources.getString(R.string.access_loss_export_dialog_message),
+                ((TextView) dialog.findViewById(R.id.message)).getText());
+        assertEquals(
+                resources.getString(R.string.access_loss_export_dialog_positive_button_text),
+                ((Button) dialog.findViewById(R.id.positive_button)).getText());
+        assertEquals(
+                resources.getString(R.string.cancel),
+                ((Button) dialog.findViewById(R.id.negative_button)).getText());
+    }
+
+    @Test
     public void testExportFlow() throws IOException {
+        setUp(PasswordAccessLossWarningType.NO_GMS_CORE);
         mCoordinator.showExportDialog();
         setUpPasswordManagerHandler();
         setUpPasswordStoreBridge();
         setUpReauthenticationManager();
         setUpContentResolver();
-        setUpAccessLossWarningType(PasswordAccessLossWarningType.NO_GMS_CORE);
         mActivity.getSupportFragmentManager().executePendingTransactions();
 
         Dialog dialog = ShadowDialog.getLatestDialog();
@@ -233,10 +255,8 @@ public class PasswordAccessLossExportDialogCoordinatorTest {
     }
 
     @Test
-    @EnableFeatures(
-            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
-    @DisableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)
     public void testDialogIsDismissedWhenExportFails() {
+        setUp(PasswordAccessLossWarningType.NO_GMS_CORE);
         mCoordinator.showExportDialog();
         setUpPasswordManagerHandler();
         setUpReauthenticationManager();
@@ -263,13 +283,10 @@ public class PasswordAccessLossExportDialogCoordinatorTest {
     }
 
     @Test
-    @EnableFeatures(
-            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
-    @DisableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)
     public void testPasswordsAreNotDeletedIfUseUpmLocalAndSeparateStoresIsOn() {
         // This test checks the edge case, when the export dialog was displayed, but the migration
         // succeeded in while it was showing.
-        setUpAccessLossWarningType(PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED);
+        setUp(PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED);
         when(mPrefService.getInteger(Pref.PASSWORDS_USE_UPM_LOCAL_AND_SEPARATE_STORES))
                 .thenReturn(/* UseUpmLocalAndSeparateStoresState::kOn */ 2);
         // Notification that the export flow succeeded should trigger passwords deletion.
@@ -282,10 +299,8 @@ public class PasswordAccessLossExportDialogCoordinatorTest {
     }
 
     @Test
-    @EnableFeatures(
-            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
-    @DisableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)
     public void testExportDialogNegativeButtonClick() {
+        setUp(PasswordAccessLossWarningType.NO_GMS_CORE);
         mCoordinator.showExportDialog();
         mActivity.getSupportFragmentManager().executePendingTransactions();
 

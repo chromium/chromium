@@ -12,6 +12,9 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 class PasswordAccessLossExportDialogProperties {
     private PasswordAccessLossExportDialogProperties() {}
 
+    static final PropertyModel.ReadableObjectPropertyKey<String> TITLE =
+            new ReadableObjectPropertyKey<>("dialog title");
+
     static final PropertyModel.ReadableObjectPropertyKey<Runnable>
             EXPORT_AND_DELETE_BUTTON_CALLBACK =
                     new ReadableObjectPropertyKey<>("export and delete button callback");
@@ -19,6 +22,6 @@ class PasswordAccessLossExportDialogProperties {
             new ReadableObjectPropertyKey<>("close button callback");
 
     static final PropertyKey[] ALL_KEYS = {
-        EXPORT_AND_DELETE_BUTTON_CALLBACK, CLOSE_BUTTON_CALLBACK
+        TITLE, EXPORT_AND_DELETE_BUTTON_CALLBACK, CLOSE_BUTTON_CALLBACK
     };
 }
