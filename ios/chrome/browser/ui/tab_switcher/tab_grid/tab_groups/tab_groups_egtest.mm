@@ -241,12 +241,8 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
   config.features_enabled.push_back(kTabGroupsInGrid);
   config.features_enabled.push_back(kTabGroupsIPad);
   config.features_enabled.push_back(kModernTabStrip);
+  config.features_enabled.push_back(kTabGroupSync);
   config.features_enabled.push_back(kTabGroupIndicator);
-  if ([self isRunningTest:@selector(testCloseFromSelectionSyncDisabled)]) {
-    config.features_disabled.push_back(kTabGroupSync);
-  } else {
-    config.features_enabled.push_back(kTabGroupSync);
-  }
   return config;
 }
 
@@ -492,7 +488,7 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
                                               IDS_IOS_TAB_GROUP_TABS_NUMBER, 1),
                                           1)] assertWithMatcher:grey_nil()];
 
-  // Check that the snackbar is not displayed.
+  // Check that the snackbar is not dislpayed.
   [[EarlGrey selectElementWithMatcher:TabGroupSnackBar(1)]
       assertWithMatcher:grey_nil()];
 }
@@ -515,7 +511,7 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
                                               IDS_IOS_TAB_GROUP_TABS_NUMBER, 1),
                                           1)] assertWithMatcher:grey_nil()];
 
-  // Check that the snackbar is displayed.
+  // Check that the snackbar is dislpayed.
   [[EarlGrey selectElementWithMatcher:TabGroupSnackBar(1)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
@@ -875,7 +871,7 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
                                               IDS_IOS_TAB_GROUP_TABS_NUMBER, 1),
                                           1)] assertWithMatcher:grey_nil()];
 
-  // Check that the snackbar is displayed.
+  // Check that the snackbar is dislpayed.
   [[EarlGrey selectElementWithMatcher:TabGroupSnackBar(1)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
@@ -1323,85 +1319,6 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
       assertWithMatcher:grey_nil()];
 
   [ChromeEarlGrey closeAllExtraWindows];
-}
-
-// Tests closing a group in grid using the selection mode.
-- (void)testCloseFromSelection {
-  // Create a tab cell with `Tab 1` as its title.
-  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
-  [ChromeEarlGreyUI openTabGrid];
-
-  CreateDefaultFirstGroupFromTabCellAtIndex(0);
-
-  // Tap on "Edit" then "Select tabs".
-  [[EarlGrey selectElementWithMatcher:TabGridEditButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:TabGridSelectTabsMenuButton()]
-      performAction:grey_tap()];
-
-  // Select the group.
-  [[EarlGrey selectElementWithMatcher:TabGridGroupCellWithName(
-                                          l10n_util::GetPluralNSStringF(
-                                              IDS_IOS_TAB_GROUP_TABS_NUMBER, 1),
-                                          1)] performAction:grey_tap()];
-
-  // Tap on the "Close Tab" button and confirm.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::TabGridEditCloseTabsButton()]
-      performAction:grey_tap()];
-  NSString* closeTabsButtonText =
-      base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
-          IDS_IOS_TAB_GRID_CLOSE_ALL_TABS_CONFIRMATION,
-          /*number=*/1));
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabel(
-                                   closeTabsButtonText)]
-      performAction:grey_tap()];
-
-  // Make sure that the tab grid is empty.
-  [ChromeEarlGrey waitForMainTabCount:0 inWindowWithNumber:0];
-
-  // Check that the snackbar is displayed.
-  [[EarlGrey selectElementWithMatcher:TabGroupSnackBar(1)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests closing a group in grid using the selection mode with kTabGroupSync
-// disabled.
-- (void)testCloseFromSelectionSyncDisabled {
-  // Create a tab cell with `Tab 1` as its title.
-  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
-  [ChromeEarlGreyUI openTabGrid];
-
-  CreateDefaultFirstGroupFromTabCellAtIndex(0);
-
-  // Tap on "Edit" then "Select tabs".
-  [[EarlGrey selectElementWithMatcher:TabGridEditButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:TabGridSelectTabsMenuButton()]
-      performAction:grey_tap()];
-
-  // Select the group.
-  [[EarlGrey selectElementWithMatcher:TabGridGroupCellWithName(
-                                          l10n_util::GetPluralNSStringF(
-                                              IDS_IOS_TAB_GROUP_TABS_NUMBER, 1),
-                                          1)] performAction:grey_tap()];
-
-  // Tap on the "Close Tab" button and confirm.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::TabGridEditCloseTabsButton()]
-      performAction:grey_tap()];
-  NSString* closeTabsButtonText =
-      base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
-          IDS_IOS_TAB_GRID_CLOSE_ALL_TABS_CONFIRMATION,
-          /*number=*/1));
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabel(
-                                   closeTabsButtonText)]
-      performAction:grey_tap()];
-
-  // Make sure that the tab grid is empty.
-  [ChromeEarlGrey waitForMainTabCount:0 inWindowWithNumber:0];
 }
 
 @end

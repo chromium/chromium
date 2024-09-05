@@ -1090,18 +1090,15 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
   WebStateList* webStateList = self.webStateList;
   int closedGroupsCount = groupIDs.size();
 
-  if (closedGroupsCount > 0) {
-    tab_groups::TabGroupSyncService* syncService = nil;
-    if (IsTabGroupSyncEnabled()) {
-      syncService = tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-    }
+  if (IsTabGroupSyncEnabled() && closedGroupsCount > 0) {
+    tab_groups::TabGroupSyncService* syncService =
+        tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
+            self.browser->GetBrowserState());
 
     // Find and close all groups in `groupIDs`.
     for (const TabGroup* group : webStateList->GetGroups()) {
       tab_groups::TabGroupId groupID = group->tab_group_id();
       if (groupIDs.contains(groupID)) {
-        // CloseTabGroupLocally handles it correctly when syncService is nil.
         tab_groups::utils::CloseTabGroupLocally(group, webStateList,
                                                 syncService);
       }
