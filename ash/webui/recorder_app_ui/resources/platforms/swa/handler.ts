@@ -154,7 +154,9 @@ export class PlatformHandler extends PlatformHandlerBase {
       // `video: false` can be used here with the special permission
       // DISPLAY_MEDIA_SYSTEM_AUDIO.
       video: false,
-      audio: true,
+      audio: {
+        autoGainControl: {ideal: false},
+      },
       systemAudio: 'include',
     });
   }

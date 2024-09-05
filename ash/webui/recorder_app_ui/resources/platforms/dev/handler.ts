@@ -466,7 +466,9 @@ export class PlatformHandler extends PlatformHandlerBase {
     // DISPLAY_MEDIA_SYSTEM_AUDIO permission is not granted, so we need to
     // remove the video tracks manually.
     const stream = await navigator.mediaDevices.getDisplayMedia({
-      audio: true,
+      audio: {
+        autoGainControl: {ideal: false},
+      },
       systemAudio: 'include',
     });
     const videoTracks = stream.getVideoTracks();
