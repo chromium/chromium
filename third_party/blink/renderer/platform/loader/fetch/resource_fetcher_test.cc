@@ -43,6 +43,7 @@
 #include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/loader/lcp_critical_path_predictor_util.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
@@ -111,6 +112,9 @@ class ResourceFetcherTest : public testing::Test {
   ResourceFetcherTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     Resource::SetClockForTesting(task_environment_.GetMockClock());
+    // The state of global LcppEnabled flag depends on several feature flags
+    // which can be enabled/disabled in tests. Clear the global flag value.
+    ResetLcppEnabledForTesting();
   }
   ~ResourceFetcherTest() override {
     MemoryCache::Get()->EvictResources();

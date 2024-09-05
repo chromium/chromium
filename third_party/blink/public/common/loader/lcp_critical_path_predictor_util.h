@@ -10,6 +10,7 @@
 namespace blink {
 
 BLINK_COMMON_EXPORT bool LcppEnabled();
+BLINK_COMMON_EXPORT void ResetLcppEnabledForTesting();
 BLINK_COMMON_EXPORT bool LcppScriptObserverEnabled();
 
 }  // namespace blink
