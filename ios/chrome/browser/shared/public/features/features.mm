@@ -978,15 +978,20 @@ BASE_FEATURE(kIdentityConfirmationSnackbar,
 
 // Feature parameters for kIdentityConfirmationSnackbar.
 constexpr base::FeatureParam<base::TimeDelta>
-    kIdentityConfirmationMinDisplayInterval{
+    kIdentityConfirmationMinDisplayInterval1{
         &kIdentityConfirmationSnackbar,
-        /*name=*/"IdentityConfirmationMinDisplayInterval",
-        /*default_value=*/base::Days(14)};
+        /*name=*/"IdentityConfirmationMinDisplayInterval1",
+        /*default_value=*/base::Days(1)};
 constexpr base::FeatureParam<base::TimeDelta>
-    kIdentityConfirmationMinTimeSinceSignin{
+    kIdentityConfirmationMinDisplayInterval2{
         &kIdentityConfirmationSnackbar,
-        /*name=*/"IdentityConfirmationMinTimeSinceSignin",
-        /*default_value=*/base::Hours(24)};
+        /*name=*/"IdentityConfirmationMinDisplayInterval2",
+        /*default_value=*/base::Days(7)};
+constexpr base::FeatureParam<base::TimeDelta>
+    kIdentityConfirmationMinDisplayInterval3{
+        &kIdentityConfirmationSnackbar,
+        /*name=*/"IdentityConfirmationMinDisplayInterval3",
+        /*default_value=*/base::Days(30)};
 
 BASE_FEATURE(kEnableTraitCollectionRegistration,
              "EnableTraitCollectionRegistration",

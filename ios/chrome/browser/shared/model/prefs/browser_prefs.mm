@@ -893,9 +893,11 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Register prefs used to skip too frequent History Sync Opt-In prompt.
   history_sync::RegisterBrowserStatePrefs(registry);
 
-  // Pref used to skip too frequent identity confirmation snackbar prompt.
+  // Prefs used to skip too frequent identity confirmation snackbar prompt.
   registry->RegisterTimePref(prefs::kIdentityConfirmationSnackbarLastPromptTime,
                              base::Time());
+  registry->RegisterIntegerPref(
+      prefs::kIdentityConfirmationSnackbarDisplayCount, 0);
 
   registry->RegisterBooleanPref(prefs::kPasswordSharingFlowHasBeenEntered,
                                 false);

@@ -954,8 +954,9 @@ const FeatureEntry::FeatureVariation kContextualPanelEntrypointArmVariations[] =
 };
 
 const FeatureEntry::FeatureParam kIdentityConfirmationSnackbarTestingConfig[] =
-    {{"IdentityConfirmationMinDisplayInterval", "0"},
-     {"IdentityConfirmationMinTimeSinceSignin", "0"}};
+    {{"IdentityConfirmationMinDisplayInterval1", "0"},
+     {"IdentityConfirmationMinDisplayInterval2", "0"},
+     {"IdentityConfirmationMinDisplayInterval3", "0"}};
 const FeatureEntry::FeatureVariation
     kIdentityConfirmationSnackbarTestingVariations[] = {
         {" - for testing", kIdentityConfirmationSnackbarTestingConfig,

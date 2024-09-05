@@ -774,16 +774,14 @@ bool IsRichBubbleWithoutImageEnabled();
 // Feature flag to enable account confirmation snackbar on startup.
 BASE_DECLARE_FEATURE(kIdentityConfirmationSnackbar);
 
-// Feature param to specify how much time between identity confirmation snackbar
-// triggers to avoid over-prompting. Overridable through Finch.
+// Feature params to specify how much time between identity confirmation
+// snackbar triggers to avoid over-prompting. Overridable through Finch.
 extern const base::FeatureParam<base::TimeDelta>
-    kIdentityConfirmationMinDisplayInterval;
-
-// Feature param to specify how much time to keep between the identity
-// confirmation snackbar and the last sign-in to avoid over-prompting.
-// Overridable through Finch.
+    kIdentityConfirmationMinDisplayInterval1;
 extern const base::FeatureParam<base::TimeDelta>
-    kIdentityConfirmationMinTimeSinceSignin;
+    kIdentityConfirmationMinDisplayInterval2;
+extern const base::FeatureParam<base::TimeDelta>
+    kIdentityConfirmationMinDisplayInterval3;
 
 // Feature flag to enable the registration of customized UITrait arrays. This
 // feature flag is related to the effort to remove invocations of

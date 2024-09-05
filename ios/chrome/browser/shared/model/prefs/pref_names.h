@@ -643,6 +643,11 @@ inline constexpr char kHomeCustomizationMagicStackSafetyCheckIssuesCount[] =
 inline constexpr char kIdentityConfirmationSnackbarLastPromptTime[] =
     "ios.identity_confirmation_snackbar_last_prompt_time";
 
+// Integer storing the latest display iteration of the identity confirmation
+// snackbar. Used to limit the frequency of this snackbar.
+inline constexpr char kIdentityConfirmationSnackbarDisplayCount[] =
+    "ios.identity_confirmation_snackbar_display_count";
+
 // The number of times that the new badge has been shown on the Home
 // Customization menu's entrypoint.
 inline constexpr char kNTPHomeCustomizationNewBadgeImpressionCount[] =

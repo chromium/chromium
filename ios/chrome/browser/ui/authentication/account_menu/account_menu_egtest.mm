@@ -96,24 +96,33 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 }
 
 - (void)tearDown {
-  base::TimeDelta marginToAllowIdentityConfirmationSnackbar = base::Days(20);
-  [ChromeEarlGrey
-      setTimeValue:base::Time::FromDeltaSinceWindowsEpoch(
-                       marginToAllowIdentityConfirmationSnackbar)
-       forUserPref:prefs::kIdentityConfirmationSnackbarLastPromptTime];
   [ChromeEarlGrey signOutAndClearIdentities];
   [super tearDown];
 }
 
-// Update the last sign-in to be long enough in the past that we should display
-// the account snackbar.
-- (void)updateLastSignInToPastDate {
-  base::TimeDelta marginBetweenLastSigninAndIdentityConfirmationPrompt =
-      base::Days(20);
+// Update the identity snackbar params based on its last count, to allow
+// displaying it.
+- (void)prepareSnackbarParamsForNextDisplayWithLastCount:(int)lastCount {
   [ChromeEarlGrey
-      setTimeValue:base::Time::FromDeltaSinceWindowsEpoch(
-                       marginBetweenLastSigninAndIdentityConfirmationPrompt)
-       forUserPref:prefs::kLastSigninTimestamp];
+      setIntegerValue:lastCount
+          forUserPref:prefs::kIdentityConfirmationSnackbarDisplayCount];
+
+  if (lastCount == 0) {
+    // Set params for reminder after 1 day.
+    [ChromeEarlGrey
+        setTimeValue:base::Time::Now() - base::Days(1)
+         forUserPref:prefs::kIdentityConfirmationSnackbarLastPromptTime];
+  } else if (lastCount == 1) {
+    // Set params for reminder after 7 days.
+    [ChromeEarlGrey
+        setTimeValue:base::Time::Now() - base::Days(7)
+         forUserPref:prefs::kIdentityConfirmationSnackbarLastPromptTime];
+  } else if (lastCount == 2) {
+    // Set params for reminder after 30 days.
+    [ChromeEarlGrey
+        setTimeValue:base::Time::Now() - base::Days(30)
+         forUserPref:prefs::kIdentityConfirmationSnackbarLastPromptTime];
+  }
 }
 
 // Select the identity disc particle.
@@ -355,26 +364,27 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 #pragma mark - Test snackbar
 
 // Verifies identity confirmation snackbar shows on startup with multiple
-// identities on device.
+// identities on device after 1 day.
 - (void)testMultipleIdentities_IdentityConfirmationToast {
-  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   // Add multiple identities and sign in with one of them.
+  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   [SigninEarlGrey addFakeIdentity:kSecondaryIdentity];
-  [self updateLastSignInToPastDate];
+  [self prepareSnackbarParamsForNextDisplayWithLastCount:0];
 
   // Background then foreground the app.
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
 
-  // Confirm the snackbar shows.
+  // Confirm the snackbar shows after 1 day of signing in with multi identities
+  // on device.
   [self assertSnackbarShown:kPrimaryIdentity];
 }
 
 // Verifies no identity confirmation snackbar shows on startup with only one
 // identity on device.
 - (void)testSingleIdentity_IdentityConfirmationToast {
-  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   // Add multiple identities and sign in with one of them.
-  [self updateLastSignInToPastDate];
+  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
+  [self prepareSnackbarParamsForNextDisplayWithLastCount:0];
 
   // Background then foreground the app.
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
@@ -386,9 +396,22 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 // identity on the device but the user is signed-out.
 - (void)testNoIdentity_IdentityConfirmationToast {
   [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
-  // Keep the identity but sign-out.
+
+  // Keep the identity on device but sign-out.
   [SigninEarlGrey signOut];
-  [self updateLastSignInToPastDate];
+  [self prepareSnackbarParamsForNextDisplayWithLastCount:0];
+
+  // Background then foreground the app.
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+  [self assertSnackbarNotShown];
+}
+
+// Verifies identity confirmation snackbar on startup does not show after a
+// recent sign-in.
+- (void)testRecentSignin_IdentityConfirmationToast {
+  // Add multiple identities and sign in with one of them.
+  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
+  [SigninEarlGrey addFakeIdentity:kSecondaryIdentity];
 
   // Background then foreground the app.
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
@@ -398,15 +421,13 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 // Verifies identity confirmation snackbar shows on startup with multiple
 // identities on device with frequency limitations.
 - (void)testFrequencyLimitation_IdentityConfirmationToast {
-  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   // Add multiple identities and sign in with one of them.
+  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   [SigninEarlGrey addFakeIdentity:kSecondaryIdentity];
-  [self updateLastSignInToPastDate];
 
-  // Background then foreground the app.
+  // Snackbar shows after 1 day of signing in.
+  [self prepareSnackbarParamsForNextDisplayWithLastCount:0];
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
-
-  // Confirm the snackbar shows.
   [self assertSnackbarShown:kPrimaryIdentity];
 
   // Dismiss the snackabr.
@@ -415,18 +436,35 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 
   // Background then foreground the app again.
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
-
   [self assertSnackbarNotShown];
-}
 
-// Verifies identity confirmation snackbar on startup does not show after a
-// recent sign-in.
-- (void)testRecentSignin_IdentityConfirmationToast {
-  [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
-  // Add multiple identities and sign in with one of them.
-  [SigninEarlGrey addFakeIdentity:kSecondaryIdentity];
+  // Update params to be ready for a second display after 7 days.
+  [self prepareSnackbarParamsForNextDisplayWithLastCount:1];
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+  [self assertSnackbarShown:kPrimaryIdentity];
 
-  // Background then foreground the app.
+  // Dismiss the snackabr.
+  [[EarlGrey selectElementWithMatcher:snackbarMessageMatcher(kPrimaryIdentity)]
+      performAction:grey_tap()];
+
+  // Background then foreground the app again.
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+  [self assertSnackbarNotShown];
+
+  // Update params to be ready for a third display after 30 days.
+  [self prepareSnackbarParamsForNextDisplayWithLastCount:2];
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+  [self assertSnackbarShown:kPrimaryIdentity];
+
+  // Dismiss the snackabr.
+  [[EarlGrey selectElementWithMatcher:snackbarMessageMatcher(kPrimaryIdentity)]
+      performAction:grey_tap()];
+
+  // Update params after third display.
+  [self prepareSnackbarParamsForNextDisplayWithLastCount:3];
+
+  // Background then foreground the app again, the snackbar does not show after
+  // third display.
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
   [self assertSnackbarNotShown];
 }

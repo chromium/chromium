@@ -113,18 +113,37 @@
   }
 
   PrefService* prefService = browser->GetBrowserState()->GetPrefs();
-  base::Time lastSignin = prefService->GetTime(prefs::kLastSigninTimestamp);
-  if (base::Time::Now() - lastSignin <
-      kIdentityConfirmationMinTimeSinceSignin.Get()) {
+
+  const int displayCount =
+      prefService->GetInteger(prefs::kIdentityConfirmationSnackbarDisplayCount);
+  const base::Time lastPrompted =
+      prefService->GetTime(prefs::kIdentityConfirmationSnackbarLastPromptTime);
+
+  base::TimeDelta identityConfirmationMinDisplayInterval;
+  if (displayCount == 0) {
+    // Wait 1 day before the first reminder.
+    // Note: lastPrompted in this case is equal to kLastSigninTimestamp.
+    identityConfirmationMinDisplayInterval =
+        kIdentityConfirmationMinDisplayInterval1.Get();
+  } else if (displayCount == 1) {
+    // Wait 7 days before the second reminder.
+    identityConfirmationMinDisplayInterval =
+        kIdentityConfirmationMinDisplayInterval2.Get();
+  } else if (displayCount == 2) {
+    // Wait 30 days before the third reminder.
+    identityConfirmationMinDisplayInterval =
+        kIdentityConfirmationMinDisplayInterval3.Get();
+  } else {
+    // Stop showing after the third reminder.
     return;
   }
 
-  const base::Time lastPrompted =
-      prefService->GetTime(prefs::kIdentityConfirmationSnackbarLastPromptTime);
   if (base::Time::Now() - lastPrompted <
-      kIdentityConfirmationMinDisplayInterval.Get()) {
+      identityConfirmationMinDisplayInterval) {
     return;
   }
+  prefService->SetInteger(prefs::kIdentityConfirmationSnackbarDisplayCount,
+                          displayCount + 1);
   prefService->SetTime(prefs::kIdentityConfirmationSnackbarLastPromptTime,
                        base::Time::Now());
 
