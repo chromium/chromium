@@ -153,7 +153,7 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
   // true if the `parent_script_template` is for a data url frame, so that this
   // function doesn't have to infer that from the template.
   void VerifySandboxedSubframeHasResourceAccessButMaybeApiAccess(
-      const std::string& parent_script_template,
+      std::string_view parent_script_template,
       const bool is_subframe_data_url,
       const bool expects_api_access);
 
@@ -998,7 +998,7 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
 // Function implementation defined here to be close to the tests that use it.
 void ProcessMapBrowserTest::
     VerifySandboxedSubframeHasResourceAccessButMaybeApiAccess(
-        const std::string& parent_script_template,
+        std::string_view parent_script_template,
         const bool is_subframe_data_url,
         const bool expects_api_access) {
   const Extension* extension = AddExtensionWithResource();
@@ -1010,9 +1010,8 @@ void ProcessMapBrowserTest::
   content::WebContents* web_contents = GetActiveTab();
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   // Use JS to add content to the child frame.
-  const std::string parent_script =
-      base::StringPrintf(parent_script_template.c_str(),
-                         extension->origin().GetURL().spec().c_str());
+  const std::string parent_script = base::StringPrintfNonConstexpr(
+      parent_script_template, extension->origin().GetURL().spec().c_str());
   content::TestNavigationObserver observer(web_contents);
   EXPECT_TRUE(content::ExecJs(main_frame, parent_script));
   observer.Wait();

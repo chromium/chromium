@@ -337,7 +337,6 @@ source_set("extensions") {
     "api/tabs/app_window_controller.h",
     "api/tabs/tabs_api.cc",
     "api/tabs/tabs_api.h",
-    "api/tabs/tabs_constants.cc",
     "api/tabs/tabs_constants.h",
     "api/tabs/tabs_event_router.cc",
     "api/tabs/tabs_event_router.h",
