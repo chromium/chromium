@@ -36,7 +36,7 @@ ContentAutofillDriverFactoryTestApi::ExchangeDriver(
   return old_driver;
 }
 
-ContentAutofillDriver* ContentAutofillDriverFactoryTestApi::GetOrCreateDriver(
+ContentAutofillDriver* ContentAutofillDriverFactoryTestApi::DriverForFrame(
     content::RenderFrameHost* rfh) {
   return factory().DriverForFrame(rfh);
 }

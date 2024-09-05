@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_AUTOFILL_IOS_BROWSER_AUTOFILL_DRIVER_IOS_FACTORY_H_
 #define COMPONENTS_AUTOFILL_IOS_BROWSER_AUTOFILL_DRIVER_IOS_FACTORY_H_
 
+#import <map>
 #import <memory>
 #import <string>
 
-#import "base/containers/flat_map.h"
 #import "base/memory/raw_ptr.h"
 #import "base/types/pass_key.h"
 #import "components/autofill/core/browser/autofill_client.h"
@@ -74,6 +74,7 @@ class AutofillDriverIOSFactory final
 
  private:
   friend class web::WebStateUserData<AutofillDriverIOSFactory>;
+  friend class AutofillDriverIOSFactoryTestApi;
 
   // Creates a AutofillDriverIOSFactory that will store all the
   // needed to create a AutofillDriverIOS.
@@ -116,7 +117,10 @@ class AutofillDriverIOSFactory final
   // lifecycle state of the RenderFrameHost to decide if an AutofillDriver can
   // be created for the frame. Unlike RenderFrameHost, WebFrames do not expose a
   // lifecycle state.
-  base::flat_map<std::string, std::unique_ptr<AutofillDriverIOS>> driver_map_;
+  //
+  // The map type must be so that `driver_map_.emplace()` does *not* invalidate
+  // references. Otherwise, recursive DriverForFrame() calls are unsafe.
+  std::map<std::string, std::unique_ptr<AutofillDriverIOS>> driver_map_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };

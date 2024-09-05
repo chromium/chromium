@@ -90,7 +90,7 @@ void AutofillDriverIOSFactory::WebFrameBecameAvailable(
   // Remove the null driver for `web_frame` to unblock DriverForFrame() from
   // creating a driver for the available frame.
   // Also clean up the null drivers for deleted WebFrames.
-  base::EraseIf(driver_map_, [&](const auto& p) {
+  std::erase_if(driver_map_, [&](const auto& p) {
     const std::string& frame_id = p.first;
     const AutofillDriverIOS* driver = p.second.get();
     return driver == nullptr &&
