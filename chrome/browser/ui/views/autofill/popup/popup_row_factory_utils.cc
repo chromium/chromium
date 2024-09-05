@@ -382,9 +382,8 @@ std::unique_ptr<views::Label> CreatePasswordDescriptionLabel(
   return label;
 }
 
-std::vector<std::unique_ptr<views::View>> CreateAndTrackPasswordSubtextViews(
-    const Suggestion& suggestion,
-    PopupRowContentView& content_view) {
+std::unique_ptr<views::View> CreatePasswordSubtextView(
+    const Suggestion& suggestion) {
   CHECK_EQ(suggestion.labels.size(), 1u);
   CHECK_EQ(suggestion.labels[0].size(), 1u);
 
@@ -408,10 +407,7 @@ std::vector<std::unique_ptr<views::View>> CreateAndTrackPasswordSubtextViews(
     label_view->SetElideBehavior(gfx::ELIDE_HEAD);
     label_view->SetMaximumWidthSingleLine(kAutofillPopupUsernameMaxWidth);
   }
-
-  std::vector<std::unique_ptr<views::View>> result;
-  result.push_back(std::move(label_view));
-  return result;
+  return label_view;
 }
 
 // If the `Suggestion::custom_icon` holds the `FaviconDetails` alternative,
@@ -457,10 +453,11 @@ std::unique_ptr<PopupRowContentView> CreatePasswordPopupRowContentView(
                                        filter_match->main_text_match);
   }
 
+  std::vector<std::unique_ptr<views::View>> subtext_views;
+  subtext_views.push_back(CreatePasswordSubtextView(suggestion));
   popup_cell_utils::AddSuggestionContentToView(
       suggestion, std::move(main_text_label), CreateMinorTextLabel(suggestion),
-      CreatePasswordDescriptionLabel(suggestion),
-      CreateAndTrackPasswordSubtextViews(suggestion, *view),
+      CreatePasswordDescriptionLabel(suggestion), std::move(subtext_views),
       GetPasswordIconView(suggestion, favicon_loader), *view);
 
   return view;
