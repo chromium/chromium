@@ -329,7 +329,7 @@ gfx::BufferFormat GpuMemoryBufferFormat(
       return gfx::BufferFormat::YVU_420;
     case GpuVideoAcceleratorFactories::OutputFormat::P010:
       return gfx::BufferFormat::P010;
-    case GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB:
+    case GpuVideoAcceleratorFactories::OutputFormat::NV12:
       return gfx::BufferFormat::YUV_420_BIPLANAR;
     case GpuVideoAcceleratorFactories::OutputFormat::XR30:
       return gfx::BufferFormat::BGRA_1010102;
@@ -354,7 +354,7 @@ viz::SharedImageFormat OutputFormatToSharedImageFormat(
       return viz::MultiPlaneFormat::kYV12;
     case GpuVideoAcceleratorFactories::OutputFormat::P010:
       return viz::MultiPlaneFormat::kP010;
-    case GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB:
+    case GpuVideoAcceleratorFactories::OutputFormat::NV12:
       return viz::MultiPlaneFormat::kNV12;
     case GpuVideoAcceleratorFactories::OutputFormat::XR30:
       return viz::SinglePlaneFormat::kBGRA_1010102;
@@ -376,7 +376,7 @@ VideoPixelFormat VideoFormat(
   switch (format) {
     case GpuVideoAcceleratorFactories::OutputFormat::YV12:
       return PIXEL_FORMAT_YV12;
-    case GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB:
+    case GpuVideoAcceleratorFactories::OutputFormat::NV12:
       return PIXEL_FORMAT_NV12;
     case GpuVideoAcceleratorFactories::OutputFormat::P010:
       return PIXEL_FORMAT_P010LE;
@@ -649,7 +649,7 @@ gfx::Size CodedSize(const VideoFrame* video_frame,
   switch (output_format) {
     case GpuVideoAcceleratorFactories::OutputFormat::YV12:
     case GpuVideoAcceleratorFactories::OutputFormat::P010:
-    case GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB:
+    case GpuVideoAcceleratorFactories::OutputFormat::NV12:
       DCHECK_EQ(video_frame->visible_rect().x() % 2, 0);
       DCHECK_EQ(video_frame->visible_rect().y() % 2, 0);
       if (!gfx::IsOddWidthMultiPlanarBuffersAllowed())
@@ -1044,7 +1044,7 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CopyRowsToBuffer(
           scoped_mapping ? scoped_mapping->Stride(1) : buffer->stride(1));
       break;
 
-    case GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB: {
+    case GpuVideoAcceleratorFactories::OutputFormat::NV12: {
       const size_t rows_to_copy_y = VideoFrame::Rows(
           VideoFrame::Plane::kY, VideoFormat(output_format), rows_to_copy);
       const size_t rows_to_copy_uv = VideoFrame::Rows(
@@ -1245,15 +1245,15 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
   bool allow_overlay = false;
 #if BUILDFLAG(IS_WIN)
   // Windows direct composition path only supports NV12 video overlays.
-  allow_overlay = output_format_ ==
-                  GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB;
+  allow_overlay =
+      output_format_ == GpuVideoAcceleratorFactories::OutputFormat::NV12;
 #else
   switch (output_format_) {
     case GpuVideoAcceleratorFactories::OutputFormat::YV12:
       allow_overlay = video_frame_allow_overlay;
       break;
     case GpuVideoAcceleratorFactories::OutputFormat::P010:
-    case GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB:
+    case GpuVideoAcceleratorFactories::OutputFormat::NV12:
       allow_overlay = true;
       break;
     case GpuVideoAcceleratorFactories::OutputFormat::XR30:

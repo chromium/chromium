@@ -352,20 +352,20 @@ GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormatImpl(
   // Fuchsia devices.
   CHECK(capabilities.image_ycbcr_420v);
   CHECK(shared_image_capabilities.supports_native_nv12_mappable_shared_images);
-  return OutputFormat::NV12_SINGLE_GMB;
+  return OutputFormat::NV12;
 #else
 
   if (capabilities.image_ycbcr_420v &&
       shared_image_capabilities.supports_native_nv12_mappable_shared_images) {
-    return OutputFormat::NV12_SINGLE_GMB;
+    return OutputFormat::NV12;
   }
 
   // For ChromeOS, if above hardware support for NV12 is not present then
   // fallback to pixel upload.
 #if !BUILDFLAG(IS_CHROMEOS)
   if (capabilities.texture_rg) {
-    // Use NV12_SINGLE_GMB for Mac, Windows, Linux and CastOS platforms.
-    return OutputFormat::NV12_SINGLE_GMB;
+    // Use NV12 for Mac, Windows, Linux and CastOS platforms.
+    return OutputFormat::NV12;
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

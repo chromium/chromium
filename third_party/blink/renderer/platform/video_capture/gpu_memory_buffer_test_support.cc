@@ -66,7 +66,7 @@ TestingPlatformSupportForGpuMemoryBuffer::
   // create fake GMBs internally.
   sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
   gpu_factories_->SetVideoFrameOutputFormat(
-      media::GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB);
+      media::GpuVideoAcceleratorFactories::OutputFormat::NV12);
   media_thread_.Start();
   ON_CALL(*gpu_factories_, GetTaskRunner())
       .WillByDefault(Return(media_thread_.task_runner()));

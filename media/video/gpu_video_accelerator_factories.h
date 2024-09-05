@@ -65,9 +65,9 @@ class MEDIA_EXPORT GpuVideoAcceleratorFactories {
     UNDEFINED = 0,  // Unset state
     // DEPRECATED: I420 is no longer used and deprecated. Use YV12 instead.
     // I420 = 1,             // 3 x R8 GMBs
-    NV12_SINGLE_GMB = 2,  // One NV12 GMB
+    NV12 = 2,  // One NV12 GMB
     // DEPRECATED: NV12_DUAL_GMB is no longer used and deprecated. Use
-    // NV12_SINGLE_GMB instead.
+    // NV12 instead.
     // NV12_DUAL_GMB = 3,  // One R8, one RG88 GMB
     XR30 = 4,  // 10:10:10:2 BGRX in one GMB (Usually Mac)
     XB30 = 5,  // 10:10:10:2 RGBX in one GMB

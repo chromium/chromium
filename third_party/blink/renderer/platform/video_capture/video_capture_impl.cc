@@ -569,7 +569,7 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
           ->VideoFrameOutputFormat(
               video_frame_init_data.ready_buffer->info->pixel_format);
   DCHECK(output_format ==
-         media::GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB);
+         media::GpuVideoAcceleratorFactories::OutputFormat::NV12);
 
   // The SharedImages here are used to back VideoFrames. They may be read by the
   // raster interface for format conversion (e.g., for 2-copy import into WebGL)
