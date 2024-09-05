@@ -41,7 +41,7 @@
       [[BrowsingDataCounterWrapperProducer alloc]
           initWithBrowserState:browserState];
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(browserState);
+      IdentityManagerFactory::GetForProfile(browserState);
   BrowsingDataRemover* browsingDataRemover =
       BrowsingDataRemoverFactory::GetForBrowserState(browserState);
   DiscoverFeedService* discoverFeedService =

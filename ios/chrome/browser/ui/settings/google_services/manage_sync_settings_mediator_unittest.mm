@@ -97,7 +97,7 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
     [consumer_ loadModel];
     mediator_ = [[ManageSyncSettingsMediator alloc]
           initWithSyncService:sync_service_mock_
-              identityManager:IdentityManagerFactory::GetForBrowserState(
+              identityManager:IdentityManagerFactory::GetForProfile(
                                   browser_state_.get())
         authenticationService:AuthenticationServiceFactory::GetForBrowserState(
                                   browser_state_.get())

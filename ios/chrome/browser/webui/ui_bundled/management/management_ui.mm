@@ -34,7 +34,7 @@ std::optional<std::u16string> GetManagementMessage(web::WebUIIOS* web_ui) {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromWebUIIOS(web_ui)->GetOriginalChromeBrowserState();
   ManagementState state = GetManagementState(
-      IdentityManagerFactory::GetForBrowserState(browser_state),
+      IdentityManagerFactory::GetForProfile(browser_state),
       AuthenticationServiceFactory::GetForBrowserState(browser_state),
       browser_state->GetPrefs());
 

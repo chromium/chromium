@@ -63,7 +63,7 @@
       initWithAccountManagerService:ChromeAccountManagerServiceFactory::
                                         GetForBrowserState(browserState)
                         prefService:browserState->GetPrefs()
-                    identityManager:IdentityManagerFactory::GetForBrowserState(
+                    identityManager:IdentityManagerFactory::GetForProfile(
                                         browserState)];
 
   _downloadsSettingsTableViewController =

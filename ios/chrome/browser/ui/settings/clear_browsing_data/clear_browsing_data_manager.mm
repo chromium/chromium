@@ -702,7 +702,7 @@ BOOL UIIsBlocking(Browser* browser) {
 
 // An identity manager
 - (signin::IdentityManager*)identityManager {
-  return IdentityManagerFactory::GetForBrowserState(self.browserState);
+  return IdentityManagerFactory::GetForProfile(self.browserState);
 }
 
 // Whether user is currently logged-in.

@@ -57,7 +57,7 @@ UnifiedConsentServiceFactory::BuildServiceInstanceFor(
       profile->GetSyncablePrefs();
 
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(profile);
+      IdentityManagerFactory::GetForProfile(profile);
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForBrowserState(profile);
 

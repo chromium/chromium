@@ -99,7 +99,7 @@ class SaveToPhotosSettingsMediatorTest : public PlatformTest {
     system_identity_manager->AddIdentity(fake_identity_b_);
 
     signin::MakeAccountAvailable(
-        IdentityManagerFactory::GetForBrowserState(browser_state_.get()),
+        IdentityManagerFactory::GetForProfile(browser_state_.get()),
         signin::AccountAvailabilityOptionsBuilder()
             .AsPrimary(signin::ConsentLevel::kSignin)
             .WithGaiaId(base::SysNSStringToUTF8(fake_identity_a_.gaiaID))
@@ -116,7 +116,7 @@ class SaveToPhotosSettingsMediatorTest : public PlatformTest {
         ChromeAccountManagerServiceFactory::GetForBrowserState(
             browser_state_.get());
     signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForBrowserState(browser_state_.get());
+        IdentityManagerFactory::GetForProfile(browser_state_.get());
     mediator_ = [[SaveToPhotosSettingsMediator alloc]
         initWithAccountManagerService:account_manager_service
                           prefService:pref_service
@@ -307,7 +307,7 @@ TEST_F(SaveToPhotosSettingsMediatorTest, HidesSettingsIfUserSignsOut) {
   mediator.delegate = fake_delegate;
 
   signin::ClearPrimaryAccount(
-      IdentityManagerFactory::GetForBrowserState(browser_state_.get()));
+      IdentityManagerFactory::GetForProfile(browser_state_.get()));
 
   EXPECT_TRUE(fake_delegate.hideSaveToPhotosSettingsCalled);
 

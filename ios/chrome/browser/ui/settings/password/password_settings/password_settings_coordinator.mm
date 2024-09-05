@@ -178,8 +178,8 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
       bulkMovePasswordsToAccountHandler:self
                           exportHandler:self
                             prefService:browserState->GetPrefs()
-                        identityManager:IdentityManagerFactory::
-                                            GetForBrowserState(browserState)
+                        identityManager:IdentityManagerFactory::GetForProfile(
+                                            browserState)
                             syncService:SyncServiceFactory::GetForBrowserState(
                                             browserState)];
 

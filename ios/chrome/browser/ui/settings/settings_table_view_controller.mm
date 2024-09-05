@@ -346,7 +346,7 @@ struct EnhancedSafeBrowsingActivePromoData
         self,
         ios::TemplateURLServiceFactory::GetForBrowserState(_browserState)));
     signin::IdentityManager* identityManager =
-        IdentityManagerFactory::GetForBrowserState(_browserState);
+        IdentityManagerFactory::GetForProfile(_browserState);
     _accountManagerService =
         ChromeAccountManagerServiceFactory::GetForBrowserState(_browserState);
     // It is expected that `identityManager` should never be nil except in

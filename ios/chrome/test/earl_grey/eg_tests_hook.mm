@@ -203,7 +203,7 @@ GetOverriddenPlusAddressService(ProfileIOS* profile) {
   }
 
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(profile);
+      IdentityManagerFactory::GetForProfile(profile);
   return std::make_unique<plus_addresses::FakePlusAddressService>(
       profile->GetPrefs(), identity_manager,
       PlusAddressSettingServiceFactory::GetForProfile(profile));

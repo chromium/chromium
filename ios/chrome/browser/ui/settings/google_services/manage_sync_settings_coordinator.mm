@@ -159,8 +159,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 
   self.mediator = [[ManageSyncSettingsMediator alloc]
         initWithSyncService:self.syncService
-            identityManager:IdentityManagerFactory::GetForBrowserState(
-                                browserState)
+            identityManager:IdentityManagerFactory::GetForProfile(browserState)
       authenticationService:self.authService
       accountManagerService:ChromeAccountManagerServiceFactory::
                                 GetForBrowserState(browserState)

@@ -15,7 +15,7 @@ namespace web_ui {
 
 signin::IdentityManager* GetIdentityManagerForWebUI(web::WebUIIOS* web_ui) {
   ChromeBrowserState* browser_state = ChromeBrowserState::FromWebUIIOS(web_ui);
-  return IdentityManagerFactory::GetForBrowserState(
+  return IdentityManagerFactory::GetForProfile(
       browser_state->GetOriginalChromeBrowserState());
 }
 

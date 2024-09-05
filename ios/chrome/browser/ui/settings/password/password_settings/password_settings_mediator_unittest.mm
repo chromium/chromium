@@ -77,9 +77,8 @@ class PasswordSettingsMediatorTest : public PlatformTest {
             bulk_move_passwords_to_account_handler_
                             exportHandler:export_handler_
                               prefService:browser_state_->GetPrefs()
-                          identityManager:IdentityManagerFactory::
-                                              GetForBrowserState(
-                                                  browser_state_.get())
+                          identityManager:IdentityManagerFactory::GetForProfile(
+                                              browser_state_.get())
                               syncService:&sync_service_];
     mediator_.consumer = consumer_;
   }

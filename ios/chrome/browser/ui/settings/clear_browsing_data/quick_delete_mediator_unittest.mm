@@ -75,7 +75,7 @@ class QuickDeleteMediatorTest : public PlatformTest {
             initWithBrowserState:browser_state_.get()];
 
     signin::IdentityManager* identityManager =
-        IdentityManagerFactory::GetForBrowserState(browser_state_.get());
+        IdentityManagerFactory::GetForProfile(browser_state_.get());
     BrowsingDataRemover* browsing_data_remover =
         BrowsingDataRemoverFactory::GetForBrowserState(browser_state_.get());
     DiscoverFeedService* discover_feed_service =

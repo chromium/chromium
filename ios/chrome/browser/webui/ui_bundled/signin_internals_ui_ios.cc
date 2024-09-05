@@ -90,7 +90,7 @@ void SignInInternalsHandlerIOS::HandleGetSignInInfo(
   base::ValueView return_args[] = {callback, success, status};
   web_ui()->CallJavascriptFunction("cr.webUIResponse", return_args);
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(browser_state);
+      IdentityManagerFactory::GetForProfile(browser_state);
   signin::AccountsInCookieJarInfo accounts_in_cookie_jar =
       identity_manager->GetAccountsInCookieJar();
   if (accounts_in_cookie_jar.accounts_are_fresh) {

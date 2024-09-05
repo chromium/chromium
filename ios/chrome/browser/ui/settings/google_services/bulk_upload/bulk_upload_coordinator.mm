@@ -53,7 +53,7 @@
 
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(browserState);
+      IdentityManagerFactory::GetForProfile(browserState);
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(browserState);
   _mediator = [[BulkUploadMediator alloc] initWithSyncService:syncService

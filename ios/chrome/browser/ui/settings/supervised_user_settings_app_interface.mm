@@ -222,7 +222,7 @@ bool isShowingInterstitialForState(web::WebState* web_state) {
   ChromeBrowserState* browser_state = ChromeBrowserState::FromBrowserState(
       chrome_test_util::GetOriginalBrowserState());
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(browser_state);
+      IdentityManagerFactory::GetForProfile(browser_state);
   CHECK(identity_manager);
 
   supervised_user::SupervisedUserService* supervised_user_service =

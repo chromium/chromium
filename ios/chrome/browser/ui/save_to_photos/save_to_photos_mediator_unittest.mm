@@ -171,7 +171,7 @@ class SaveToPhotosMediatorTest : public PlatformTest {
         ChromeAccountManagerServiceFactory::GetForBrowserState(
             browser_state_.get());
     signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForBrowserState(browser_state_.get());
+        IdentityManagerFactory::GetForProfile(browser_state_.get());
     return [[SaveToPhotosMediator alloc]
             initWithPhotosService:photos_service
                       prefService:pref_service
@@ -184,7 +184,7 @@ class SaveToPhotosMediatorTest : public PlatformTest {
   // Sign-in with a fake account.
   void SignIn() {
     signin::MakePrimaryAccountAvailable(
-        IdentityManagerFactory::GetForBrowserState(browser_state_.get()),
+        IdentityManagerFactory::GetForProfile(browser_state_.get()),
         base::SysNSStringToUTF8(fake_identity_.userEmail),
         signin::ConsentLevel::kSignin);
   }

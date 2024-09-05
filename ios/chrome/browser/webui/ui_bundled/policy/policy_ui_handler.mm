@@ -143,7 +143,7 @@ void PolicyUIHandler::RegisterMessages() {
   policy::UserCloudPolicyManager* user_cloud_policy_manager =
       browser_state->GetUserCloudPolicyManager();
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(browser_state);
+      IdentityManagerFactory::GetForProfile(browser_state);
   if (user_cloud_policy_manager && user_cloud_policy_manager->core() &&
       identity_manager) {
     user_policy_status_provider_ =

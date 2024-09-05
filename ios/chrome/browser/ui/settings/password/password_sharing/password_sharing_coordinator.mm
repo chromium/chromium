@@ -98,7 +98,7 @@ using password_manager::FetchFamilyMembersRequestStatus;
   self.mediator = [[PasswordSharingMediator alloc]
              initWithDelegate:self
        sharedURLLoaderFactory:browserState->GetSharedURLLoaderFactory()
-              identityManager:IdentityManagerFactory::GetForBrowserState(
+              identityManager:IdentityManagerFactory::GetForProfile(
                                   browserState)
       savedPasswordsPresenter:_savedPasswordsPresenter
         passwordSenderService:IOSChromePasswordSenderServiceFactory::

@@ -89,7 +89,7 @@ using signin_metrics::PromoAction;
       AuthenticationService::ServiceStatus::SigninForcedByPolicy;
   self.viewController = viewController;
   self.mediator = [[GoogleServicesSettingsMediator alloc]
-      initWithIdentityManager:IdentityManagerFactory::GetForBrowserState(
+      initWithIdentityManager:IdentityManagerFactory::GetForProfile(
                                   self.browser->GetBrowserState())
               userPrefService:self.browser->GetBrowserState()->GetPrefs()
              localPrefService:GetApplicationContext()->GetLocalState()];
@@ -142,8 +142,7 @@ using signin_metrics::PromoAction;
 }
 
 - (signin::IdentityManager*)identityManager {
-  return IdentityManagerFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
+  return IdentityManagerFactory::GetForProfile(self.browser->GetBrowserState());
 }
 
 #pragma mark - GoogleServicesSettingsCommandHandler

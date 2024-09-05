@@ -112,7 +112,7 @@ using signin_metrics::PromoAction;
                                 GetForBrowserState(browserState)
                 authService:AuthenticationServiceFactory::GetForBrowserState(
                                 browserState)
-            identityManager:IdentityManagerFactory::GetForBrowserState(
+            identityManager:IdentityManagerFactory::GetForProfile(
                                 browserState)];
 
   if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu) &&

@@ -99,7 +99,7 @@ class AccountsTableViewControllerTest
 
   // Identity Services
   signin::IdentityManager* identity_manager() {
-    return IdentityManagerFactory::GetForBrowserState(browser_state_.get());
+    return IdentityManagerFactory::GetForProfile(browser_state_.get());
   }
 
   AuthenticationService* authentication_service() {

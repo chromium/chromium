@@ -125,7 +125,7 @@ const CGFloat kSpinnerButtonPadding = 18;
 
   _identityManagerObserver =
       std::make_unique<signin::IdentityManagerObserverBridge>(
-          IdentityManagerFactory::GetForBrowserState(browserState), self);
+          IdentityManagerFactory::GetForProfile(browserState), self);
   return self;
 }
 

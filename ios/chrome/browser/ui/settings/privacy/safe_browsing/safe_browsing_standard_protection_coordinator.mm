@@ -50,7 +50,7 @@
       initWithUserPrefService:self.browser->GetBrowserState()->GetPrefs()
                   authService:AuthenticationServiceFactory::GetForBrowserState(
                                   self.browser->GetBrowserState())
-              identityManager:IdentityManagerFactory::GetForBrowserState(
+              identityManager:IdentityManagerFactory::GetForProfile(
                                   self.browser->GetBrowserState())];
   self.mediator.consumer = self.viewController;
   self.viewController.modelDelegate = self.mediator;

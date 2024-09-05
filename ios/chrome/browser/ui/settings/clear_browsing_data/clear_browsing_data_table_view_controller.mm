@@ -106,8 +106,7 @@
     _dataManager.consumer = self;
     _identityManagerObserverBridge.reset(
         new signin::IdentityManagerObserverBridge(
-            IdentityManagerFactory::GetForBrowserState(self.browserState),
-            self));
+            IdentityManagerFactory::GetForProfile(self.browserState), self));
   }
   return self;
 }
