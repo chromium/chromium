@@ -9,11 +9,14 @@ import {BrowserProxyImpl} from 'chrome-untrusted://lens/browser_proxy.js';
 import {CenterRotatedBox_CoordinateType} from 'chrome-untrusted://lens/geometry.mojom-webui.js';
 import type {CenterRotatedBox} from 'chrome-untrusted://lens/geometry.mojom-webui.js';
 import type {LensPageRemote} from 'chrome-untrusted://lens/lens.mojom-webui.js';
+import {UserAction} from 'chrome-untrusted://lens/lens.mojom-webui.js';
 import type {OverlayObject} from 'chrome-untrusted://lens/overlay_object.mojom-webui.js';
 import {ScreenshotBitmapBrowserProxyImpl} from 'chrome-untrusted://lens/screenshot_bitmap_browser_proxy.js';
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens/selection_overlay.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import type {MetricsTracker} from 'chrome-untrusted://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome-untrusted://webui-test/metrics_test_support.js';
 import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -29,6 +32,7 @@ suite('SelectionOverlay', function() {
   let selectionOverlayElement: SelectionOverlayElement;
   let callbackRouterRemote: LensPageRemote;
   let objects: OverlayObject[];
+  let metrics: MetricsTracker;
 
   setup(async () => {
     // Resetting the HTML needs to be the first thing we do in setup to
@@ -47,6 +51,8 @@ suite('SelectionOverlay', function() {
 
     selectionOverlayElement = document.createElement('lens-selection-overlay');
     document.body.appendChild(selectionOverlayElement);
+    metrics = fakeMetricsPrivate();
+
     // Since the size of the Selection Overlay is based on the screenshot which
     // is not loaded in the test, we need to force the overlay to take up the
     // viewport.
@@ -872,6 +878,16 @@ suite('SelectionOverlay', function() {
         assertDeepEquals('wow', textQuery);
         assertEquals(
             0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
+        assertEquals(
+            1,
+            metrics.count(
+                'Lens.Overlay.Overlay.UserAction',
+                UserAction.kTranslateTextSelection));
+        assertEquals(
+            1,
+            metrics.count(
+                'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
+                UserAction.kTranslateTextSelection));
       });
 
   test(
@@ -955,6 +971,16 @@ suite('SelectionOverlay', function() {
         assertDeepEquals('wow', textQuery);
         assertEquals(
             0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
+        assertEquals(
+            1,
+            metrics.count(
+                'Lens.Overlay.Overlay.UserAction',
+                UserAction.kTranslateTextSelection));
+        assertEquals(
+            1,
+            metrics.count(
+                'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
+                UserAction.kTranslateTextSelection));
       });
 
   test(
@@ -981,6 +1007,16 @@ suite('SelectionOverlay', function() {
         assertDeepEquals('wow', textQuery);
         assertEquals(
             0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
+        assertEquals(
+            1,
+            metrics.count(
+                'Lens.Overlay.Overlay.UserAction',
+                UserAction.kTranslateTextSelection));
+        assertEquals(
+            1,
+            metrics.count(
+                'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
+                UserAction.kTranslateTextSelection));
       });
 
   test(
@@ -1002,6 +1038,16 @@ suite('SelectionOverlay', function() {
         assertDeepEquals('translation', textQuery);
         assertEquals(
             0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
+        assertEquals(
+            1,
+            metrics.count(
+                'Lens.Overlay.Overlay.UserAction',
+                UserAction.kTranslateTextSelection));
+        assertEquals(
+            1,
+            metrics.count(
+                'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
+                UserAction.kTranslateTextSelection));
       });
 
   test(
@@ -1030,6 +1076,16 @@ suite('SelectionOverlay', function() {
             0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
         assertFalse(
             selectionOverlayElement.getShowDetectedTextContextMenuForTesting());
+        assertEquals(
+            1,
+            metrics.count(
+                'Lens.Overlay.Overlay.UserAction',
+                UserAction.kTranslateTextSelection));
+        assertEquals(
+            1,
+            metrics.count(
+                'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
+                UserAction.kTranslateTextSelection));
       });
 
   test(

@@ -14,6 +14,9 @@ import type {BrowserProxy} from './browser_proxy.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {LanguageBrowserProxyImpl} from './language_browser_proxy.js';
 import type {LanguageBrowserProxy} from './language_browser_proxy.js';
+import {UserAction} from './lens.mojom-webui.js';
+import {INVOCATION_SOURCE} from './lens_overlay_app.js';
+import {recordLensOverlayInteraction} from './metrics_utils.js';
 import {getTemplate} from './translate_button.html.js';
 
 // The language codes that are supported to be translated by the server.
@@ -133,6 +136,8 @@ export class TranslateButtonElement extends PolymerElement {
     this.sourceLanguage = null;
     this.hideLanguagePickerMenus();
     this.maybeIssueTranslateRequest();
+    recordLensOverlayInteraction(
+        INVOCATION_SOURCE, UserAction.kTranslateSourceLanguageChanged);
   }
 
   private onSourceLanguageButtonClick() {
@@ -152,6 +157,8 @@ export class TranslateButtonElement extends PolymerElement {
     this.sourceLanguage = newSourceLanguage;
     this.hideLanguagePickerMenus();
     this.maybeIssueTranslateRequest();
+    recordLensOverlayInteraction(
+        INVOCATION_SOURCE, UserAction.kTranslateSourceLanguageChanged);
   }
 
   private onTargetLanguageMenuItemClick(event: PointerEvent) {
@@ -161,6 +168,8 @@ export class TranslateButtonElement extends PolymerElement {
     this.targetLanguage = newTargetLanguage;
     this.hideLanguagePickerMenus();
     this.maybeIssueTranslateRequest();
+    recordLensOverlayInteraction(
+        INVOCATION_SOURCE, UserAction.kTranslateTargetLanguageChanged);
     // Dispatch event to let other components know the overlay translate mode
     // state.
     this.dispatchEvent(new CustomEvent('translate-mode-state-changed', {
@@ -177,6 +186,10 @@ export class TranslateButtonElement extends PolymerElement {
     // Toggle translate mode on button click.
     this.isTranslateModeEnabled = !this.isTranslateModeEnabled;
     this.maybeIssueTranslateRequest();
+    recordLensOverlayInteraction(
+        INVOCATION_SOURCE,
+        this.isTranslateModeEnabled ? UserAction.kTranslateButtonEnableAction :
+                                      UserAction.kTranslateButtonDisableAction);
     // Dispatch event to let other components know the overlay translate mode
     // state.
     this.dispatchEvent(new CustomEvent('translate-mode-state-changed', {

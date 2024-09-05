@@ -6,10 +6,13 @@ import 'chrome-untrusted://lens/translate_button.js';
 
 import {BrowserProxyImpl} from 'chrome-untrusted://lens/browser_proxy.js';
 import {LanguageBrowserProxyImpl} from 'chrome-untrusted://lens/language_browser_proxy.js';
+import {UserAction} from 'chrome-untrusted://lens/lens.mojom-webui.js';
 import type {TranslateButtonElement} from 'chrome-untrusted://lens/translate_button.js';
 import type {CrButtonElement} from 'chrome-untrusted://resources/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import type {MetricsTracker} from 'chrome-untrusted://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome-untrusted://webui-test/metrics_test_support.js';
 import {flushTasks} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -20,6 +23,7 @@ suite('OverlayTranslateButton', function() {
   let overlayTranslateButtonElement: TranslateButtonElement;
   let testBrowserProxy: TestLensOverlayBrowserProxy;
   let testLanguageBrowserProxy: TestLanguageBrowserProxy;
+  let metrics: MetricsTracker;
 
   setup(async () => {
     // Resetting the HTML needs to be the first thing we do in setup to
@@ -36,6 +40,7 @@ suite('OverlayTranslateButton', function() {
 
     overlayTranslateButtonElement = document.createElement('translate-button');
     document.body.appendChild(overlayTranslateButtonElement);
+    metrics = fakeMetricsPrivate();
     await flushTasks();
   });
 
@@ -65,6 +70,26 @@ suite('OverlayTranslateButton', function() {
     assertEquals(
         1,
         testBrowserProxy.handler.getCallCount('issueTranslateFullPageRequest'));
+    assertEquals(
+        1,
+        metrics.count(
+            'Lens.Overlay.Overlay.UserAction',
+            UserAction.kTranslateButtonEnableAction));
+    assertEquals(
+        1,
+        metrics.count(
+            'Lens.Overlay.Overlay.UserAction',
+            UserAction.kTranslateButtonDisableAction));
+    assertEquals(
+        1,
+        metrics.count(
+            'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
+            UserAction.kTranslateButtonEnableAction));
+    assertEquals(
+        1,
+        metrics.count(
+            'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
+            UserAction.kTranslateButtonDisableAction));
 
     // Language picker should be hidden again.
     assertFalse(isVisible(overlayTranslateButtonElement.$.languagePicker));
@@ -185,6 +210,17 @@ suite('OverlayTranslateButton', function() {
     targetLanguage = args[1];
     assertEquals(sourceLanguage, 'auto');
     assertEquals(targetLanguage, expectedTargetLanguage);
+    // Verify that two source languages changes were recorded in this test.
+    assertEquals(
+        2,
+        metrics.count(
+            'Lens.Overlay.Overlay.UserAction',
+            UserAction.kTranslateSourceLanguageChanged));
+    assertEquals(
+        2,
+        metrics.count(
+            'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
+            UserAction.kTranslateSourceLanguageChanged));
   });
 
   test('TargetLanguageMenuItemClick', async () => {
@@ -242,5 +278,17 @@ suite('OverlayTranslateButton', function() {
         isVisible(overlayTranslateButtonElement.$.targetLanguagePickerMenu));
     assertFalse(
         isVisible(overlayTranslateButtonElement.$.sourceLanguagePickerMenu));
+
+    // Verify that target language change was recorded in this test.
+    assertEquals(
+        1,
+        metrics.count(
+            'Lens.Overlay.Overlay.UserAction',
+            UserAction.kTranslateTargetLanguageChanged));
+    assertEquals(
+        1,
+        metrics.count(
+            'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
+            UserAction.kTranslateTargetLanguageChanged));
   });
 });

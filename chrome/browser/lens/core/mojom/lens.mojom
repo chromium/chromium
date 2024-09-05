@@ -32,6 +32,11 @@ enum UserAction {
   kLearnMore = 7,
   kSendFeedback = 8,
   kTapRegionSelection = 9,
+  kTranslateButtonEnableAction = 10,
+  kTranslateButtonDisableAction = 11,
+  kTranslateSourceLanguageChanged = 12,
+  kTranslateTargetLanguageChanged = 13,
+  kTranslateTextSelection = 14,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayUserAction)
