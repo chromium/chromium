@@ -12,6 +12,10 @@ buildconfig = "//build/config/BUILDCONFIG.gn"
 # for python3.exe and python3.bat.
 script_executable = "python3"
 
+# This reduces the number of stamp actions, use phony rule as far as possible
+# instead.
+no_stamp_files = true
+
 # These arguments override the default values for items in a declare_args
 # block. "gn args" in turn can override these.
 #
