@@ -63,6 +63,8 @@ chromium-metrics-reviews@google.com.
       label="Attempt to delete cookies with matching top_frame_site_keys
              failed"/>
   <int value="6" label="Hash verification of encrypted value failed"/>
+  <int value="7"
+      label="Cookie was encrypted but no crypto delegate was passed"/>
 </enum>
 
 <enum name="CookiePrefix">

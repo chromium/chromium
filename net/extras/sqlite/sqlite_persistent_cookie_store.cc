@@ -21,7 +21,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -67,40 +66,55 @@ base::Value::Dict CookieKeyedLoadNetLogParams(
 // Used to populate a histogram for problems when loading cookies.
 //
 // Please do not reorder or remove entries. New entries must be added to the
-// end of the list, just before COOKIE_LOAD_PROBLEM_LAST_ENTRY.
-enum CookieLoadProblem {
-  COOKIE_LOAD_PROBLEM_DECRYPT_FAILED = 0,
+// end of the list, just before kMaxValue.
+enum class CookieLoadProblem {
+  // Entry decryption failed.
+  kDecryptFailed = 0,
   // Deprecated 03/2021.
   // COOKIE_LOAD_PROBLEM_DECRYPT_TIMEOUT = 1,
-  COOKIE_LOAD_PROBLEM_NON_CANONICAL = 2,
-  COOKIE_LOAD_PROBLEM_OPEN_DB = 3,
-  COOKIE_LOAD_PROBLEM_RECOVERY_FAILED = 4,
-  COOKIE_LOAD_DELETE_COOKIE_PARTITION_FAILED = 5,
-  COOKIE_LOAD_PROBLEM_HASH_FAILED = 6,
-  COOKIE_LOAD_PROBLEM_LAST_ENTRY
+  // Cookie canonical form check failed.
+  kNotCanonical = 2,
+  // Could not open or initialize database.
+  kOpenDb = 3,
+  // Attempt to delete broken (and related) rows failed.
+  KRecoveryFailed = 4,
+  // Attempt to delete cookies with matching top_frame_site_keys failed.
+  kDeleteCookiePartitionFailed = 5,
+  // Hash verification of encrypted value failed.
+  kHashFailed = 6,
+  // Cookie was encrypted but no crypto delegate was passed.
+  kNoCrypto = 7,
+  kMaxValue = kNoCrypto,
 };
 
 // Used to populate a histogram for problems when committing cookies.
 //
 // Please do not reorder or remove entries. New entries must be added to the
-// end of the list, just before COOKIE_COMMIT_PROBLEM_LAST_ENTRY.
-enum CookieCommitProblem {
-  COOKIE_COMMIT_PROBLEM_ENCRYPT_FAILED = 0,
-  COOKIE_COMMIT_PROBLEM_ADD = 1,
-  COOKIE_COMMIT_PROBLEM_UPDATE_ACCESS = 2,
-  COOKIE_COMMIT_PROBLEM_DELETE = 3,
-  COOKIE_COMMIT_PROBLEM_TRANSACTION_COMMIT = 4,
-  COOKIE_COMMIT_PROBLEM_LAST_ENTRY
+// end of the list, just before kMaxValue.
+enum class CookieCommitProblem {
+  // Entry encryption failed.
+  kEncryptFailed = 0,
+  // Adding cookie to DB failed.
+  kAdd = 1,
+  // Updating access time of cookie failed.
+  kUpdateAccess = 2,
+  // Deleting cookie failed.
+  kDelete = 3,
+  // Committing the transaction failed.
+  kTransactionCommit = 4,
+  kMaxValue = kTransactionCommit,
 };
 
 void RecordCookieLoadProblem(CookieLoadProblem event) {
-  UMA_HISTOGRAM_ENUMERATION("Cookie.LoadProblem", event,
-                            COOKIE_LOAD_PROBLEM_LAST_ENTRY);
+  UMA_HISTOGRAM_ENUMERATION("Cookie.LoadProblem2", event);
+  if (event > CookieLoadProblem::kDeleteCookiePartitionFailed) {
+    return;
+  }
+  UMA_HISTOGRAM_ENUMERATION("Cookie.LoadProblem", event);
 }
 
 void RecordCookieCommitProblem(CookieCommitProblem event) {
-  UMA_HISTOGRAM_ENUMERATION("Cookie.CommitProblem", event,
-                            COOKIE_COMMIT_PROBLEM_LAST_ENTRY);
+  UMA_HISTOGRAM_ENUMERATION("Cookie.CommitProblem", event);
 }
 
 // Records metrics around the age in hours of a cookie loaded from the store via
@@ -463,11 +477,11 @@ class SQLitePersistentCookieStore::Backend
   void FinishedLoadingCookies(LoadedCallback loaded_callback, bool success);
 
   void RecordOpenDBProblem() override {
-    RecordCookieLoadProblem(COOKIE_LOAD_PROBLEM_OPEN_DB);
+    RecordCookieLoadProblem(CookieLoadProblem::kOpenDb);
   }
 
   void RecordDBMigrationProblem() override {
-    RecordCookieLoadProblem(COOKIE_LOAD_PROBLEM_OPEN_DB);
+    RecordCookieLoadProblem(CookieLoadProblem::kOpenDb);
   }
 
   typedef std::list<std::unique_ptr<PendingOperation>> PendingOperationsForKey;
@@ -980,7 +994,7 @@ bool SQLitePersistentCookieStore::Backend::LoadCookiesForDomains(
       delete_statement.BindString(0, domain);
       if (!delete_statement.Run()) {
         // TODO(morlovich): Is something more drastic called for here?
-        RecordCookieLoadProblem(COOKIE_LOAD_PROBLEM_RECOVERY_FAILED);
+        RecordCookieLoadProblem(CookieLoadProblem::KRecoveryFailed);
       }
       delete_statement.Reset(true);
     }
@@ -1002,7 +1016,7 @@ void SQLitePersistentCookieStore::Backend::DeleteTopFrameSiteKeys(
   for (const std::string& key : top_frame_site_keys) {
     delete_statement.BindString(0, key);
     if (!delete_statement.Run())
-      RecordCookieLoadProblem(COOKIE_LOAD_DELETE_COOKIE_PARTITION_FAILED);
+      RecordCookieLoadProblem(CookieLoadProblem::kDeleteCookiePartitionFailed);
     delete_statement.Reset(true);
   }
 }
@@ -1015,25 +1029,28 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
   bool ok = true;
   while (statement.Step()) {
     std::string domain = statement.ColumnString(1);
-    std::string value;
+    std::string value = statement.ColumnString(4);
     std::string encrypted_value = statement.ColumnString(13);
-    if (!encrypted_value.empty() && crypto_) {
+    if (!encrypted_value.empty()) {
+      if (!crypto_) {
+        RecordCookieLoadProblem(CookieLoadProblem::kNoCrypto);
+        ok = false;
+        continue;
+      }
       bool decrypt_ok = crypto_->DecryptString(encrypted_value, &value);
       if (!decrypt_ok) {
-        RecordCookieLoadProblem(COOKIE_LOAD_PROBLEM_DECRYPT_FAILED);
+        RecordCookieLoadProblem(CookieLoadProblem::kDecryptFailed);
         ok = false;
         continue;
       }
       std::string correct_hash = crypto::SHA256HashString(domain);
       if (!base::StartsWith(value, correct_hash,
                             base::CompareCase::SENSITIVE)) {
-        RecordCookieLoadProblem(COOKIE_LOAD_PROBLEM_HASH_FAILED);
+        RecordCookieLoadProblem(CookieLoadProblem::kHashFailed);
         ok = false;
         continue;
       }
       value = value.substr(correct_hash.length());
-    } else {
-      value = statement.ColumnString(4);
     }
 
     // If we can't create a CookiePartitionKey from SQL values, we delete any
@@ -1087,7 +1104,7 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
       HistogramCookieAge(*cc);
       cookies.push_back(std::move(cc));
     } else {
-      RecordCookieLoadProblem(COOKIE_LOAD_PROBLEM_NON_CANONICAL);
+      RecordCookieLoadProblem(CookieLoadProblem::kNotCanonical);
       ok = false;
     }
   }
@@ -1380,7 +1397,7 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
         std::string encrypted_value = select_smt.ColumnString(2);
         std::string decrypted_value;
         if (!crypto_->DecryptString(encrypted_value, &decrypted_value)) {
-          RecordCookieLoadProblem(COOKIE_LOAD_PROBLEM_DECRYPT_FAILED);
+          RecordCookieLoadProblem(CookieLoadProblem::kDecryptFailed);
           continue;
         }
         std::string new_encrypted_value;
@@ -1389,7 +1406,7 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
                 base::StrCat(
                     {crypto::SHA256HashString(domain), decrypted_value}),
                 &new_encrypted_value)) {
-          RecordCookieCommitProblem(COOKIE_COMMIT_PROBLEM_ENCRYPT_FAILED);
+          RecordCookieCommitProblem(CookieCommitProblem::kEncryptFailed);
           continue;
         }
         encrypted_values[rowid] = new_encrypted_value;
@@ -1565,7 +1582,7 @@ void SQLitePersistentCookieStore::Backend::DoCommit() {
                                   po->cc().Value()}),
                     &encrypted_value)) {
               DLOG(WARNING) << "Could not encrypt a cookie, skipping add.";
-              RecordCookieCommitProblem(COOKIE_COMMIT_PROBLEM_ENCRYPT_FAILED);
+              RecordCookieCommitProblem(CookieCommitProblem::kEncryptFailed);
               continue;
             }
             add_statement.BindCString(4, "");  // value
@@ -1597,7 +1614,7 @@ void SQLitePersistentCookieStore::Backend::DoCommit() {
 
           if (!add_statement.Run()) {
             DLOG(WARNING) << "Could not add a cookie to the DB.";
-            RecordCookieCommitProblem(COOKIE_COMMIT_PROBLEM_ADD);
+            RecordCookieCommitProblem(CookieCommitProblem::kAdd);
           }
           break;
 
@@ -1617,7 +1634,7 @@ void SQLitePersistentCookieStore::Backend::DoCommit() {
           if (!update_access_statement.Run()) {
             DLOG(WARNING)
                 << "Could not update cookie last access time in the DB.";
-            RecordCookieCommitProblem(COOKIE_COMMIT_PROBLEM_UPDATE_ACCESS);
+            RecordCookieCommitProblem(CookieCommitProblem::kUpdateAccess);
           }
           break;
 
@@ -1635,7 +1652,7 @@ void SQLitePersistentCookieStore::Backend::DoCommit() {
               6, serialized_partition_key->has_cross_site_ancestor());
           if (!delete_statement.Run()) {
             DLOG(WARNING) << "Could not delete a cookie from the DB.";
-            RecordCookieCommitProblem(COOKIE_COMMIT_PROBLEM_DELETE);
+            RecordCookieCommitProblem(CookieCommitProblem::kDelete);
           }
           break;
 
@@ -1647,7 +1664,7 @@ void SQLitePersistentCookieStore::Backend::DoCommit() {
   }
   bool commit_ok = transaction.Commit();
   if (!commit_ok) {
-    RecordCookieCommitProblem(COOKIE_COMMIT_PROBLEM_TRANSACTION_COMMIT);
+    RecordCookieCommitProblem(CookieCommitProblem::kTransactionCommit);
   }
 }
 

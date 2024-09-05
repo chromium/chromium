@@ -2332,8 +2332,8 @@ TEST_F(SQLitePersistentCookieStoreTest, CannotModifyHostName) {
     ASSERT_EQ(cookies[0]->Name(), "A");
     ASSERT_EQ(cookies[0]->Value(), "B");
     DestroyStore();
-    histogram_tester.ExpectBucketCount(
-        "Cookie.LoadProblem", /*COOKIE_LOAD_PROBLEM_HASH_FAILED*/ 6, 1);
+    histogram_tester.ExpectBucketCount("Cookie.LoadProblem2",
+                                       /*CookieLoadProblem::kHashFailed*/ 6, 1);
   }
   {
     base::HistogramTester histogram_tester;
@@ -2348,6 +2348,7 @@ TEST_F(SQLitePersistentCookieStoreTest, CannotModifyHostName) {
     // The hash failure should only appear once, during the first read, as the
     // invalid cookie gets deleted afterwards.
     histogram_tester.ExpectTotalCount("Cookie.LoadProblem", 0);
+    histogram_tester.ExpectTotalCount("Cookie.LoadProblem2", 0);
   }
 }
 
@@ -2390,8 +2391,8 @@ TEST_F(SQLitePersistentCookieStoreTest, ShortHash) {
     ASSERT_EQ(cookies[0]->Name(), "A");
     ASSERT_EQ(cookies[0]->Value(), "B");
     DestroyStore();
-    histogram_tester.ExpectBucketCount(
-        "Cookie.LoadProblem", /*COOKIE_LOAD_PROBLEM_HASH_FAILED*/ 6, 1);
+    histogram_tester.ExpectBucketCount("Cookie.LoadProblem2",
+                                       /*CookieLoadProblem::kHashFailed*/ 6, 1);
   }
   {
     base::HistogramTester histogram_tester;
@@ -2406,6 +2407,7 @@ TEST_F(SQLitePersistentCookieStoreTest, ShortHash) {
     // The hash failure should only appear once, during the first read, as the
     // invalid cookie gets deleted afterwards.
     histogram_tester.ExpectTotalCount("Cookie.LoadProblem", 0);
+    histogram_tester.ExpectTotalCount("Cookie.LoadProblem2", 0);
   }
 }
 
@@ -2834,6 +2836,21 @@ TEST_F(SQLitePersistentCookieStoreTest,
     EXPECT_EQ(cookie_pair.first.Name(), verify_stmt.ColumnString(0));
     // Confirm that exactly one cookie matches the SQL query
     EXPECT_FALSE(verify_stmt.Step());
+  }
+}
+
+TEST_F(SQLitePersistentCookieStoreTest, NoCryptoForDecryption) {
+  InitializeStore(/*crypt=*/true, /*restore_old_session_cookies=*/false);
+  AddCookie("X", "Y", "foo.bar", "/", base::Time::Now());
+  DestroyStore();
+
+  {
+    base::HistogramTester histogram_tester;
+    const auto cookies =
+        CreateAndLoad(/*crypt=*/false, /*restore_old_session_cookies=*/false);
+    ASSERT_TRUE(cookies.empty());
+    histogram_tester.ExpectBucketCount("Cookie.LoadProblem2",
+                                       /*CookieLoadProblem::kNoCrypto*/ 7, 1);
   }
 }
 
