@@ -134,7 +134,8 @@ TEST_F(SharedImagePoolTest, TokenConsistencyOnReuse) {
 
   auto image = pool->GetImage();
   gpu::SyncToken release_token = test_sii_->GenUnverifiedSyncToken();
-  pool->ReleaseImage(std::move(image), release_token);
+  image->SetReleaseSyncToken(release_token);
+  pool->ReleaseImage(std::move(image));
 
   auto reused_image = pool->GetImage();
   EXPECT_EQ(reused_image->GetSyncToken(), release_token);
@@ -153,11 +154,13 @@ TEST_F(SharedImagePoolTest, ProperTokenHandlingBeforeReuse) {
 
   // |image1| will be cached in the pool.
   gpu::SyncToken release_token1 = test_sii_->GenUnverifiedSyncToken();
-  pool->ReleaseImage(std::move(image1), release_token1);
+  image1->SetReleaseSyncToken(release_token1);
+  pool->ReleaseImage(std::move(image1));
 
   // |image2| will be destroyed since the cache is full.
   gpu::SyncToken release_token2 = test_sii_->GenUnverifiedSyncToken();
-  pool->ReleaseImage(std::move(image2), release_token2);
+  image2->SetReleaseSyncToken(release_token2);
+  pool->ReleaseImage(std::move(image2));
 
   // |image3| will be re-used from the pool.
   auto image3 = pool->GetImage();
@@ -243,6 +246,29 @@ TEST_F(SharedImagePoolTest, ReconfigurePool) {
   ASSERT_TRUE(new_image);
   EXPECT_EQ(new_image->GetSharedImage()->size(), new_info.size);
   EXPECT_EQ(new_image->GetSharedImage()->format(), new_info.format);
+}
+
+// Test for setting the release sync token in ClientImage.
+TEST_F(SharedImagePoolTest, SetReleaseSyncToken) {
+  ImageInfo info = {
+      gfx::Size(1024, 768), viz::SinglePlaneFormat::kRGBA_8888, {}};
+  auto pool = SharedImagePool<TestClientImage>::Create(info, test_sii_);
+
+  // Create a new ClientImage object from the pool.
+  auto client_image = pool->GetImage();
+
+  // Verify that the client image was successfully created.
+  EXPECT_TRUE(client_image != nullptr);
+
+  // Create a dummy SyncToken to simulate release.
+  SyncToken release_sync_token(gpu::CommandBufferNamespace::GPU_IO,
+                               gpu::CommandBufferId::FromUnsafeValue(1), 12345);
+
+  // Set the release SyncToken.
+  client_image->SetReleaseSyncToken(release_sync_token);
+
+  // Verify that the release SyncToken was set correctly.
+  EXPECT_EQ(client_image->GetSyncToken(), release_sync_token);
 }
 
 }  // namespace gpu

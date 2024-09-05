@@ -71,14 +71,19 @@ class GPU_EXPORT ClientImage : public base::RefCounted<ClientImage> {
   // Gets the ref on the underlying shared image.
   scoped_refptr<ClientSharedImage> GetSharedImage() const;
 
-  // Clients need to wait on this token before using the shared image.
+  // Returns a sync token which should be waited upon before using this image.
   const SyncToken& GetSyncToken() const;
+
+  // Sets the sync token which will be waited upon before releasing this image
+  // for re-use or destruction.
+  void SetReleaseSyncToken(SyncToken release_sync_token);
 
  protected:
   friend class base::RefCounted<ClientImage>;
   friend class SharedImagePoolBase;
   virtual ~ClientImage();
 
+ private:
   scoped_refptr<ClientSharedImage> shared_image_;
 
   // This token has to be waited upon before using/re-using the |shared_image_|.
@@ -106,8 +111,7 @@ class GPU_EXPORT SharedImagePoolBase {
 
   scoped_refptr<ClientSharedImage> CreateSharedImageInternal();
   scoped_refptr<ClientImage> GetImageFromPoolInternal();
-  void ReleaseImageInternal(scoped_refptr<ClientImage> image,
-                            SyncToken release_sync_token);
+  void ReleaseImageInternal(scoped_refptr<ClientImage> image);
   void ClearInternal();
   void ReconfigureInternal(const ImageInfo& image_info);
 
@@ -164,11 +168,15 @@ class GPU_EXPORT SharedImagePool : public SharedImagePoolBase {
     return base::MakeRefCounted<ClientImageType>(std::move(shared_image));
   }
 
-  void ReleaseImage(scoped_refptr<ClientImageType> image,
-                    SyncToken release_sync_token = SyncToken()) {
-    ReleaseImageInternal(std::move(image), std::move(release_sync_token));
+  // Releases an |image| to the Pool. The |image| will be released/destroyed if
+  // the pool is full or will be recycled back into the pool for re-use. Clients
+  // can optionally set an release sync token via ::SetReleaseSyncToken() which
+  // will be waited upon before releasing or re-using this |image|.
+  void ReleaseImage(scoped_refptr<ClientImageType> image) {
+    ReleaseImageInternal(std::move(image));
   }
 
+  // Clears the whole pool and destroys all the images.
   void Clear() { ClearInternal(); }
 
   // Used to reconfigure the pool with new |image_info|. If this info is same as

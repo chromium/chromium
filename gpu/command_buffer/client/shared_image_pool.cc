@@ -22,10 +22,15 @@ namespace gpu {
 
 // Implementation of the ClientImage class.
 ClientImage::ClientImage(scoped_refptr<ClientSharedImage> shared_image)
-    : shared_image_(std::move(shared_image)),
-      sync_token_(shared_image_->creation_sync_token()) {}
+    : shared_image_(std::move(shared_image)) {
+  CHECK(shared_image_);
+  sync_token_ = shared_image_->creation_sync_token();
+}
 
-ClientImage::~ClientImage() = default;
+ClientImage::~ClientImage() {
+  CHECK(shared_image_);
+  shared_image_->UpdateDestructionSyncToken(std::move(sync_token_));
+}
 
 scoped_refptr<ClientSharedImage> ClientImage::GetSharedImage() const {
   return shared_image_;
@@ -33,6 +38,10 @@ scoped_refptr<ClientSharedImage> ClientImage::GetSharedImage() const {
 
 const SyncToken& ClientImage::GetSyncToken() const {
   return sync_token_;
+}
+
+void ClientImage::SetReleaseSyncToken(SyncToken release_sync_token) {
+  sync_token_ = std::move(release_sync_token);
 }
 
 SharedImagePoolBase::SharedImagePoolBase(
@@ -70,8 +79,8 @@ scoped_refptr<ClientImage> SharedImagePoolBase::GetImageFromPoolInternal() {
   return nullptr;
 }
 
-void SharedImagePoolBase::ReleaseImageInternal(scoped_refptr<ClientImage> image,
-                                               SyncToken release_sync_token) {
+void SharedImagePoolBase::ReleaseImageInternal(
+    scoped_refptr<ClientImage> image) {
   if (!image || (GetImageInfo(image) != image_info_)) {
     return;
   }
@@ -80,21 +89,11 @@ void SharedImagePoolBase::ReleaseImageInternal(scoped_refptr<ClientImage> image,
   // this |image|.
   CHECK(image->HasOneRef());
 
-  // Ensure proper cleanup of the image if the pool is full.
-  if (max_pool_size_.has_value() &&
-      image_pool_.size() >= max_pool_size_.value()) {
-    // Pool is now full, so delete the image and its underlying shared image.
-    // We only need to update the shared image with destruction sync token.
-    auto shared_image = image->GetSharedImage();
-    CHECK(shared_image);
-    shared_image->UpdateDestructionSyncToken(std::move(release_sync_token));
-  } else {
-    // If the image is being recycled for reuse, we should ensure that previous
-    // user has finished using it before it is re-used. This is done by setting
-    // the |image->sync_token| to |release_sync_token| as
-    // the new user waits on the |image->sync_token| before using the
-    // |image|.
-    image->sync_token_ = std::move(release_sync_token);
+  // Recycle the image into the pool only if the pool is not full or if
+  // |max_pool_size_| is not specified. Otherwise the last ref of |image| here
+  // will get destroyed automatically.
+  if (!max_pool_size_.has_value() ||
+      image_pool_.size() < max_pool_size_.value()) {
     image_pool_.push_back(std::move(image));
   }
 }
