@@ -484,6 +484,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/tab_switcher/tab_strip/coordinator:unit_tests",
     "//ios/chrome/browser/ui/tab_switcher/tab_strip/ui:unit_tests",
     "//ios/chrome/browser/ui/toolbar:unit_tests",
+    "//ios/chrome/browser/ui/toolbar/buttons:unit_tests",
     "//ios/chrome/browser/ui/toolbar/fullscreen:unit_tests",
     "//ios/chrome/browser/ui/whats_new/cells:unit_tests",
     "//ios/chrome/browser/ui/whats_new/data_source:unit_tests",

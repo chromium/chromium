@@ -424,6 +424,9 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
 }
 
 - (void)setOverflowMenuBlueDot:(BOOL)hasBlueDot {
+  // Blue dot should also use the highlighted icon.
+  self.view.toolsMenuButton.iphHighlighted = hasBlueDot;
+
   self.view.toolsMenuButton.hasBlueDot = hasBlueDot;
 }
 

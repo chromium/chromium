@@ -20,6 +20,7 @@ source_set("buttons") {
     "toolbar_tab_grid_button.mm",
   ]
   deps = [
+    ":constants",
     "//base",
     "//components/feature_engagement/public",
     "//components/strings",
@@ -48,4 +49,25 @@ source_set("buttons") {
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("constants") {
+  sources = [
+    "buttons_constants.h",
+    "buttons_constants.mm",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "toolbar_button_unittest.mm" ]
+  deps = [
+    ":buttons",
+    ":constants",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/ui/toolbar/public",
+    "//testing/gtest",
+    "//ui/base",
+  ]
 }
