@@ -168,15 +168,17 @@ void LinkHandlerModel::NotifyObserver(
     const ArcIconCacheDelegate::ActivityName activity(
         handlers_[i].package_name, handlers_[i].activity_name);
     const auto it = icons_.find(activity);
-    if (it != icons_.end())
+    if (it != icons_.end()) {
       icon = it->second.icon16;
+    }
     // Use the handler's index as an ID.
     LinkHandlerInfo handler = {base::UTF8ToUTF16(handlers_[i].name), icon,
                                static_cast<uint32_t>(i)};
     handlers.push_back(handler);
   }
-  for (auto& observer : observer_list_)
+  for (auto& observer : observer_list_) {
     observer.ModelChanged(handlers);
+  }
 }
 
 // static
