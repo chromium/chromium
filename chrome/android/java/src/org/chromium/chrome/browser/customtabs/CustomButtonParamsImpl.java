@@ -146,7 +146,7 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
                         LayoutInflater.from(context)
                                 .inflate(R.layout.custom_tabs_bottombar_item, parent, false);
         button.setId(mId);
-        button.setImageBitmap(mIcon);
+        button.setImageDrawable(getIcon(context));
         button.setContentDescription(mDescription);
         if (mPendingIntent == null) {
             button.setEnabled(false);
