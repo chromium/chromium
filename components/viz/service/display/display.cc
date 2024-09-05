@@ -1061,10 +1061,6 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
                                  swapped_trace_id_, "WaitForSwap");
     swapped_since_resize_ = true;
 
-    ui::LatencyInfo::TraceIntermediateFlowEvents(
-        frame.latency_info,
-        perfetto::protos::pbzero::ChromeLatencyInfo::STEP_DRAW_AND_SWAP);
-
     IssueDisplayRenderingStatsEvent();
     DirectRenderer::SwapFrameData swap_frame_data;
     swap_frame_data.latency_info = std::move(frame.latency_info);
