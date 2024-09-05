@@ -84,22 +84,6 @@ ThreadGroup::BaseScopedCommandsExecutor::~BaseScopedCommandsExecutor() {
   Flush();
 }
 
-void ThreadGroup::BaseScopedCommandsExecutor::FlushWorkerCreation(
-    CheckedLock* held_lock) {
-  // This function crucially only wakes up workers, rather than also signaling
-  // them, and therefore, does not call FlushImpl(). FlushImpl() requires not
-  // holding any locks on the calling thread, while a TaskSource Transaction
-  // lock can be held while calling this function.
-  CheckedAutoUnlock auto_unlock(*held_lock);
-  if (workers_to_start_.empty()) {
-    return;
-  }
-
-  Flush();
-  workers_to_start_.clear();
-  must_schedule_adjust_max_tasks_ = false;
-}
-
 void ThreadGroup::BaseScopedCommandsExecutor::Flush() {
   // Start workers. Happens after wake ups (implemented by children and thus
   // called on their destructor, i.e. before this) to prevent the case where a

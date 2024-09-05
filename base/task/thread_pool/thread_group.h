@@ -237,8 +237,6 @@ class BASE_EXPORT ThreadGroup {
     void ScheduleStart(scoped_refptr<WorkerThread> worker);
     void ScheduleAdjustMaxTasks();
     void ScheduleReleaseTaskSource(RegisteredTaskSource task_source);
-    // Unlocks held_lock. Flushes this executor.
-    void FlushWorkerCreation(CheckedLock* held_lock);
 
    protected:
     explicit BaseScopedCommandsExecutor(ThreadGroup* outer);
