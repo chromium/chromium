@@ -40,15 +40,15 @@ TEST_F(ManualFillCreditCardiOSTest, Creation) {
                                       recordType:LOCAL_CARD_RECORD_TYPE
                                  canFillDirectly:true];
   EXPECT_TRUE(card);
-  EXPECT_TRUE([GUID isEqualToString:card.GUID]);
-  EXPECT_TRUE([network isEqualToString:card.network]);
+  EXPECT_NSEQ(GUID, card.GUID);
+  EXPECT_NSEQ(network, card.network);
   EXPECT_NSEQ(icon, card.icon);
-  EXPECT_TRUE([cardHolder isEqualToString:card.cardHolder]);
-  EXPECT_TRUE([number isEqualToString:card.number]);
-  EXPECT_TRUE([obfuscatedNumber isEqualToString:card.obfuscatedNumber]);
-  EXPECT_TRUE([expirationYear isEqualToString:card.expirationYear]);
-  EXPECT_TRUE([expirationMonth isEqualToString:card.expirationMonth]);
-  EXPECT_TRUE([CVC isEqualToString:card.CVC]);
+  EXPECT_NSEQ(cardHolder, card.cardHolder);
+  EXPECT_NSEQ(number, card.number);
+  EXPECT_NSEQ(obfuscatedNumber, card.obfuscatedNumber);
+  EXPECT_NSEQ(expirationYear, card.expirationYear);
+  EXPECT_NSEQ(expirationMonth, card.expirationMonth);
+  EXPECT_NSEQ(CVC, card.CVC);
   EXPECT_EQ(card.recordType, LOCAL_CARD_RECORD_TYPE);
 }
 
