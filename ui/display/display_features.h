@@ -61,6 +61,11 @@ COMPONENT_EXPORT(DISPLAY_FEATURES) BASE_DECLARE_FEATURE(kTiledDisplaySupport);
 
 COMPONENT_EXPORT(DISPLAY_FEATURES) bool IsTiledDisplaySupportEnabled();
 
+COMPONENT_EXPORT(DISPLAY_FEATURES)
+BASE_DECLARE_FEATURE(kExcludeDisplayInMirrorMode);
+
+COMPONENT_EXPORT(DISPLAY_FEATURES) bool IsExcludeDisplayInMirrorModeEnabled();
+
 }  // namespace features
 }  // namespace display
 

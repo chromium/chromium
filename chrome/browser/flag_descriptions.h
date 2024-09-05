@@ -3936,6 +3936,9 @@ extern const char kEolResetDismissedPrefsDescription[];
 extern const char kEventBasedLogUpload[];
 extern const char kEventBasedLogUploadDescription[];
 
+extern const char kExcludeDisplayInMirrorModeName[];
+extern const char kExcludeDisplayInMirrorModeDescription[];
+
 extern const char kExoGamepadVibrationName[];
 extern const char kExoGamepadVibrationDescription[];
 

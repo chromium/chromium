@@ -11866,6 +11866,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDevToolsPrivacyUIDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kDevToolsPrivacyUI)},
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"exclude-display-in-mirror-mode",
+     flag_descriptions::kExcludeDisplayInMirrorModeName,
+     flag_descriptions::kExcludeDisplayInMirrorModeDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(display::features::kExcludeDisplayInMirrorMode)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

@@ -6820,6 +6820,11 @@ const char kEventBasedLogUploadDescription[] =
     "(e.g. crashes) occur on the device. The feature is guarded by "
     "LogUploadEnabled policy.";
 
+const char kExcludeDisplayInMirrorModeName[] =
+    "Enable feature to exclude a display in mirror mode.";
+const char kExcludeDisplayInMirrorModeDescription[] =
+    "Show toggles in Display Settings to exclude a display in mirror mode.";
+
 const char kExoGamepadVibrationName[] = "Gamepad Vibration for Exo Clients";
 const char kExoGamepadVibrationDescription[] =
     "Allow Exo clients like Android to request vibration events for gamepads "

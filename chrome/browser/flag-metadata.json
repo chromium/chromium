@@ -4400,6 +4400,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "exclude-display-in-mirror-mode",
+    "owners": ["vincentchiang@chromium.org", "cros-ui-foundation@google.com"],
+    "expiry_milestone": 134
+  },
+  {
     "name": "exo-gamepad-vibration",
     "owners": [ "prabirmsp@chromium.org" ],
     "expiry_milestone": 90

@@ -114,5 +114,13 @@ bool IsTiledDisplaySupportEnabled() {
   return base::FeatureList::IsEnabled(kTiledDisplaySupport);
 }
 
+BASE_FEATURE(kExcludeDisplayInMirrorMode,
+             "ExcludeDisplayInMirrorMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsExcludeDisplayInMirrorModeEnabled() {
+  return base::FeatureList::IsEnabled(kExcludeDisplayInMirrorMode);
+}
+
 }  // namespace features
 }  // namespace display
