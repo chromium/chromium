@@ -7203,27 +7203,8 @@
             ],
             "experiments": [
                 {
-                    "name": "BothEnabled",
+                    "name": "Enabled_20240904",
                     "enable_features": [
-                        "CoalesceStorageAreaCommits",
-                        "DomStorageSmartFlushing"
-                    ]
-                },
-                {
-                    "name": "CoalescingEnabled",
-                    "enable_features": [
-                        "CoalesceStorageAreaCommits"
-                    ],
-                    "disable_features": [
-                        "DomStorageSmartFlushing"
-                    ]
-                },
-                {
-                    "name": "CheckpointingEnabled",
-                    "enable_features": [
-                        "DomStorageSmartFlushing"
-                    ],
-                    "disable_features": [
                         "CoalesceStorageAreaCommits"
                     ]
                 }
