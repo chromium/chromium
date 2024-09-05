@@ -69,9 +69,7 @@ class UserAnnotationsServiceTest : public testing::Test,
 };
 
 TEST_P(UserAnnotationsServiceTest, RetrieveAllEntriesNoDB) {
-  base::test::TestFuture<
-      std::vector<optimization_guide::proto::UserAnnotationsEntry>>
-      test_future;
+  base::test::TestFuture<UserAnnotationsEntries> test_future;
   service()->RetrieveAllEntries(test_future.GetCallback());
 
   auto entries = test_future.Take();
@@ -140,9 +138,7 @@ TEST_P(UserAnnotationsServiceTest, RetrieveAllEntriesWithInsert) {
     ax_tree.mutable_tree_data()->set_title("title");
     service()->AddFormSubmission(ax_tree, form_data);
 
-    base::test::TestFuture<
-        std::vector<optimization_guide::proto::UserAnnotationsEntry>>
-        test_future;
+    base::test::TestFuture<UserAnnotationsEntries> test_future;
     service()->RetrieveAllEntries(test_future.GetCallback());
 
     auto entries = test_future.Take();
@@ -177,9 +173,7 @@ TEST_P(UserAnnotationsServiceTest, RetrieveAllEntriesWithInsert) {
     optimization_guide::proto::AXTreeUpdate ax_tree;
     service()->AddFormSubmission(ax_tree, empty_form_data);
 
-    base::test::TestFuture<
-        std::vector<optimization_guide::proto::UserAnnotationsEntry>>
-        test_future;
+    base::test::TestFuture<UserAnnotationsEntries> test_future;
     service()->RetrieveAllEntries(test_future.GetCallback());
 
     // Entries should still remain.
@@ -310,9 +304,7 @@ TEST_P(UserAnnotationsServiceReplaceAnnotationsTest,
     optimization_guide::proto::AXTreeUpdate ax_tree;
     service()->AddFormSubmission(ax_tree, form_data);
 
-    base::test::TestFuture<
-        std::vector<optimization_guide::proto::UserAnnotationsEntry>>
-        test_future;
+    base::test::TestFuture<UserAnnotationsEntries> test_future;
     service()->RetrieveAllEntries(test_future.GetCallback());
 
     auto entries = test_future.Take();
@@ -340,9 +332,7 @@ TEST_P(UserAnnotationsServiceReplaceAnnotationsTest,
     optimization_guide::proto::AXTreeUpdate ax_tree;
     service()->AddFormSubmission(ax_tree, empty_form_data);
 
-    base::test::TestFuture<
-        std::vector<optimization_guide::proto::UserAnnotationsEntry>>
-        test_future;
+    base::test::TestFuture<UserAnnotationsEntries> test_future;
     service()->RetrieveAllEntries(test_future.GetCallback());
 
     // Entries should be cleared since there were no fields to replace with.

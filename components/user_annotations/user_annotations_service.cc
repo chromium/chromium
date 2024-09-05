@@ -32,8 +32,7 @@ void RecordUserAnnotationsFormSubmissionResult(
 }
 
 void ProcessEntryRetrieval(
-    base::OnceCallback<void(
-        std::vector<optimization_guide::proto::UserAnnotationsEntry>)> callback,
+    base::OnceCallback<void(UserAnnotationsEntries)> callback,
     UserAnnotationsEntryRetrievalResult user_annotations) {
   // TODO: b/36169665 - Record the entry retrieval result metrics.
   if (!user_annotations.has_value()) {
@@ -83,9 +82,7 @@ void UserAnnotationsService::AddFormSubmission(
 }
 
 void UserAnnotationsService::RetrieveAllEntries(
-    base::OnceCallback<
-        void(std::vector<optimization_guide::proto::UserAnnotationsEntry>)>
-        callback) {
+    base::OnceCallback<void(UserAnnotationsEntries)> callback) {
   if (ShouldPersistUserAnnotations()) {
     if (!user_annotations_database_) {
       // TODO: b/361696651 - Record the failure.
@@ -97,7 +94,7 @@ void UserAnnotationsService::RetrieveAllEntries(
     return;
   }
 
-  std::vector<optimization_guide::proto::UserAnnotationsEntry> entries_protos;
+  UserAnnotationsEntries entries_protos;
   entries_protos.reserve(entries_.size());
   for (const auto& entry : entries_) {
     entries_protos.push_back(entry.entry_proto);
@@ -143,7 +140,7 @@ void UserAnnotationsService::OnModelExecuted(
       return;
     }
 
-    std::vector<optimization_guide::proto::UserAnnotationsEntry> entries_protos;
+    UserAnnotationsEntries entries_protos;
     for (const auto& entry : maybe_response->entries()) {
       optimization_guide::proto::UserAnnotationsEntry entry_proto;
       entry_proto.set_key(entry.key());

@@ -13,6 +13,7 @@
 #include "base/threading/sequence_bound.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/user_annotations/user_annotations_types.h"
 
 namespace autofill {
 class FormData;
@@ -51,9 +52,7 @@ class UserAnnotationsService : public KeyedService {
   // Retrieves all entries from the database. Invokes `callback` when complete.
   // Virtual for testing.
   virtual void RetrieveAllEntries(
-      base::OnceCallback<
-          void(std::vector<optimization_guide::proto::UserAnnotationsEntry>)>
-          callback);
+      base::OnceCallback<void(UserAnnotationsEntries)> callback);
 
   // KeyedService:
   void Shutdown() override;

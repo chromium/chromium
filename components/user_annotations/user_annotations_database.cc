@@ -102,8 +102,7 @@ sql::InitStatus UserAnnotationsDatabase::InitInternal(
 }
 
 UserAnnotationsExecutionResult UserAnnotationsDatabase::UpdateEntries(
-    const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
-        entries) {
+    const UserAnnotationsEntries& entries) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   sql::Transaction transaction(&db_);
@@ -142,7 +141,7 @@ UserAnnotationsEntryRetrievalResult
 UserAnnotationsDatabase::RetrieveAllEntries() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::vector<optimization_guide::proto::UserAnnotationsEntry> entries;
+  UserAnnotationsEntries entries;
   static constexpr char kSqlSelectAllEntries[] =
       "SELECT entry_id, key, value FROM entries";
   sql::Statement statement(

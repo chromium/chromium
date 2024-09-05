@@ -5,6 +5,7 @@
 #include "components/user_annotations/test_user_annotations_service.h"
 
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/user_annotations/user_annotations_types.h"
 
 namespace user_annotations {
 
@@ -12,14 +13,12 @@ TestUserAnnotationsService::TestUserAnnotationsService() = default;
 TestUserAnnotationsService::~TestUserAnnotationsService() = default;
 
 void TestUserAnnotationsService::ReplaceAllEntries(
-    std::vector<optimization_guide::proto::UserAnnotationsEntry> entries) {
+    UserAnnotationsEntries entries) {
   entries_ = std::move(entries);
 }
 
 void TestUserAnnotationsService::RetrieveAllEntries(
-    base::OnceCallback<
-        void(std::vector<optimization_guide::proto::UserAnnotationsEntry>)>
-        callback) {
+    base::OnceCallback<void(UserAnnotationsEntries)> callback) {
   std::move(callback).Run(entries_);
 }
 

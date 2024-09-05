@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_PREDICTION_IMPROVEMENTS_CORE_BROWSER_AUTOFILL_PREDICTION_IMPROVEMENTS_FILLING_ENGINE_IMPL_H_
 
 #include <memory>
-#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -14,6 +13,7 @@
 #include "base/types/expected.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_filling_engine.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/user_annotations/user_annotations_types.h"
 
 namespace autofill {
 class FormData;
@@ -22,7 +22,6 @@ class FormData;
 namespace optimization_guide::proto {
 class AXTreeUpdate;
 class FilledFormData;
-class UserAnnotationsEntry;
 }  // namespace optimization_guide::proto
 
 namespace user_annotations {
@@ -50,8 +49,7 @@ class AutofillPredictionImprovementsFillingEngineImpl
       autofill::FormData form_data,
       optimization_guide::proto::AXTreeUpdate ax_tree_update,
       PredictionsReceivedCallback callback,
-      std::vector<optimization_guide::proto::UserAnnotationsEntry>
-          user_annotations);
+      user_annotations::UserAnnotationsEntries user_annotations);
 
   // Invokes `callback` when model execution response has been returned.
   void OnModelExecuted(

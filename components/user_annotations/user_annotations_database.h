@@ -34,8 +34,7 @@ class UserAnnotationsDatabase {
 
   // Updates the `entries` to database and returns whether it succeeded.
   UserAnnotationsExecutionResult UpdateEntries(
-      const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
-          entries);
+      const UserAnnotationsEntries& entries);
 
   // Returns all the annotations from database.
   UserAnnotationsEntryRetrievalResult RetrieveAllEntries();

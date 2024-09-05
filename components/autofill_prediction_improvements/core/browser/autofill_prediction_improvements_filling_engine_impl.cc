@@ -49,8 +49,7 @@ void AutofillPredictionImprovementsFillingEngineImpl::
         autofill::FormData form_data,
         optimization_guide::proto::AXTreeUpdate ax_tree_update,
         PredictionsReceivedCallback callback,
-        std::vector<optimization_guide::proto::UserAnnotationsEntry>
-            user_annotations) {
+        user_annotations::UserAnnotationsEntries user_annotations) {
   // If no user annotations, just return the callback with the original form.
   if (user_annotations.empty()) {
     std::move(callback).Run(std::move(form_data));

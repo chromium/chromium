@@ -5,12 +5,17 @@
 #ifndef COMPONENTS_USER_ANNOTATIONS_USER_ANNOTATIONS_TYPES_H_
 #define COMPONENTS_USER_ANNOTATIONS_USER_ANNOTATIONS_TYPES_H_
 
+#include <vector>
+
 #include "base/types/expected.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 
 namespace user_annotations {
 
 typedef int64_t EntryID;
+
+typedef std::vector<optimization_guide::proto::UserAnnotationsEntry>
+    UserAnnotationsEntries;
 
 struct Entry {
   // The row ID of this entry from the user annotations database. This is
