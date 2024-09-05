@@ -2641,6 +2641,9 @@ crbug.com/364677549 external/wpt/css/css-properties-values-api/register-property
 crbug.com/364754341 external/wpt/css/css-text/parsing/tab-size-computed.html [ Crash Pass ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac14 ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-encoded-transform.https.html [ Timeout ]
+[ Mac12 ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-encoded-transform.https.html [ Timeout ]
+[ Linux ] wpt_internal/html/semantics/forms/the-select-element/stylable-select/select-only-picker-opt-in.tentative.html [ Failure ]
 crbug.com/40571175 external/wpt/html/dom/elements/global-attributes/dir-shadow-39.html [ Failure ]
 crbug.com/364744930 external/wpt/css/css-nesting/contextually-invalid-selectors.html [ Failure ]
 crbug.com/364665775 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-016.html [ Failure ]
@@ -8010,7 +8013,14 @@ crbug.com/336354179 [ Linux ] http/tests/origin_trials/valid-token-window-open-m
 crbug.com/362787721 [ Win11 ] external/wpt/fullscreen/api/element-request-fullscreen-timing.html [ Failure ]
 
 # Gardener 2024-09-02
-crbug.com/363353213 [ Mac ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-encoded-transform.https.html [ Failure Pass ]
+crbug.com/363353213 [ Mac11 ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-encoded-transform.https.html [ Failure Pass ]
+crbug.com/363353213 [ Mac11-arm64 ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-encoded-transform.https.html [ Failure Pass ]
+crbug.com/363353213 [ Mac12-arm64 ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-encoded-transform.https.html [ Failure Pass ]
+crbug.com/363353213 [ Mac13 ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-encoded-transform.https.html [ Failure Pass ]
+crbug.com/363353213 [ Mac13-arm64 ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-encoded-transform.https.html [ Failure Pass ]
+crbug.com/363353213 [ Mac14-arm64 ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-encoded-transform.https.html [ Failure Pass ]
+crbug.com/363353213 [ Mac15 ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-encoded-transform.https.html [ Failure Pass ]
+crbug.com/363353213 [ Mac15-arm64 ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-encoded-transform.https.html [ Failure Pass ]
 
 # TODO(crbug.com/362797911): Re-enable this test
 crbug.com/362797911 [ Linux ] fast/text-autosizing/textarea-fontsize-change.html [ Failure Pass ]
