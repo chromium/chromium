@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CONFIG_PROVIDER_HELPER_H_
-#define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CONFIG_PROVIDER_HELPER_H_
+#ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CORE_HOST_HELPER_H_
+#define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CORE_HOST_HELPER_H_
 
 #include <memory>
 #include <string>
@@ -21,7 +21,7 @@ struct BlindSignToken;
 
 namespace ip_protection {
 
-// Contains static variables and methods for IpProtectionConfigProviders.
+// Contains static variables and methods for IpProtectionCoreHosts.
 //
 // It is the implementation's job to actually get the IP protection tokens on
 // demand for the network service. This interface defines methods and variables
@@ -29,9 +29,9 @@ namespace ip_protection {
 // contain instances of `IpProtectionProxyConfigRetriever`,
 // `quiche::BlindSignAuth`, and some implementation of
 // `quiche::BlindSignMessageInterface`.
-class IpProtectionConfigProviderHelper {
+class IpProtectionCoreHostHelper {
  public:
-  virtual ~IpProtectionConfigProviderHelper() = default;
+  virtual ~IpProtectionCoreHostHelper() = default;
 
   // Creates a blind-signed auth token by converting token fetched using the
   // `quiche::BlindSignAuth` library to a `ip_protection::BlindSignedAuthToken`.
@@ -68,4 +68,4 @@ class IpProtectionConfigProviderHelper {
 
 }  // namespace ip_protection
 
-#endif  // COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CONFIG_PROVIDER_HELPER_H_
+#endif  // COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CORE_HOST_HELPER_H_

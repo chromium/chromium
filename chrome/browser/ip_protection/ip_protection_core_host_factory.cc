@@ -1,10 +1,10 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ip_protection/ip_protection_config_provider_factory.h"
+#include "chrome/browser/ip_protection/ip_protection_core_host_factory.h"
 
-#include "chrome/browser/ip_protection/ip_protection_config_provider.h"
+#include "chrome/browser/ip_protection/ip_protection_core_host.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
@@ -13,22 +13,22 @@
 #include "content/public/browser/storage_partition.h"
 
 // static
-IpProtectionConfigProvider* IpProtectionConfigProviderFactory::GetForProfile(
+IpProtectionCoreHost* IpProtectionCoreHostFactory::GetForProfile(
     Profile* profile) {
-  return static_cast<IpProtectionConfigProvider*>(
+  return static_cast<IpProtectionCoreHost*>(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
 
 // static
-IpProtectionConfigProviderFactory*
-IpProtectionConfigProviderFactory::GetInstance() {
-  static base::NoDestructor<IpProtectionConfigProviderFactory> instance;
+IpProtectionCoreHostFactory*
+IpProtectionCoreHostFactory::GetInstance() {
+  static base::NoDestructor<IpProtectionCoreHostFactory> instance;
   return instance.get();
 }
 
 // static
-ProfileSelections IpProtectionConfigProviderFactory::CreateProfileSelections() {
-  if (!IpProtectionConfigProvider::CanIpProtectionBeEnabled()) {
+ProfileSelections IpProtectionCoreHostFactory::CreateProfileSelections() {
+  if (!IpProtectionCoreHost::CanIpProtectionBeEnabled()) {
     return ProfileSelections::BuildNoProfilesSelected();
   }
   // IP Protection usage requires that a Gaia account is available when
@@ -50,31 +50,31 @@ ProfileSelections IpProtectionConfigProviderFactory::CreateProfileSelections() {
       .Build();
 }
 
-IpProtectionConfigProviderFactory::IpProtectionConfigProviderFactory()
-    : ProfileKeyedServiceFactory("IpProtectionConfigProviderFactory",
+IpProtectionCoreHostFactory::IpProtectionCoreHostFactory()
+    : ProfileKeyedServiceFactory("IpProtectionCoreHostFactory",
                                  CreateProfileSelections()) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(TrackingProtectionSettingsFactory::GetInstance());
 }
 
-IpProtectionConfigProviderFactory::~IpProtectionConfigProviderFactory() =
+IpProtectionCoreHostFactory::~IpProtectionCoreHostFactory() =
     default;
 
 std::unique_ptr<KeyedService>
-IpProtectionConfigProviderFactory::BuildServiceInstanceForBrowserContext(
+IpProtectionCoreHostFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return std::make_unique<IpProtectionConfigProvider>(
+  return std::make_unique<IpProtectionCoreHost>(
       IdentityManagerFactory::GetForProfile(profile),
       TrackingProtectionSettingsFactory::GetForProfile(profile),
       profile->GetPrefs(), profile);
 }
 
-bool IpProtectionConfigProviderFactory::ServiceIsCreatedWithBrowserContext()
+bool IpProtectionCoreHostFactory::ServiceIsCreatedWithBrowserContext()
     const {
   // Auth tokens will be requested soon after `Profile()` creation (after the
   // per-profile `NetworkContext()` gets created) so instantiate the
-  // `IpProtectionConfigProvider()` so that it already exists by the time
+  // `IpProtectionCoreHost()` so that it already exists by the time
   // that request is made.
   return true;
 }

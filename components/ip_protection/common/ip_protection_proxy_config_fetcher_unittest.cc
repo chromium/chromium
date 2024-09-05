@@ -13,7 +13,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "components/ip_protection/common/ip_protection_config_provider_helper.h"
+#include "components/ip_protection/common/ip_protection_core_host_helper.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"

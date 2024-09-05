@@ -1,9 +1,9 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_IP_PROTECTION_IP_PROTECTION_CONFIG_PROVIDER_H_
-#define CHROME_BROWSER_IP_PROTECTION_IP_PROTECTION_CONFIG_PROVIDER_H_
+#ifndef CHROME_BROWSER_IP_PROTECTION_IP_PROTECTION_CORE_HOST_H_
+#define CHROME_BROWSER_IP_PROTECTION_IP_PROTECTION_CORE_HOST_H_
 
 #include <memory>
 #include <optional>
@@ -14,9 +14,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
-#include "chrome/browser/ip_protection/ip_protection_config_provider_factory.h"
-#include "components/ip_protection/common/ip_protection_config_provider_helper.h"
-#include "components/ip_protection/common/ip_protection_data_types.h"
+#include "chrome/browser/ip_protection/ip_protection_core_host_factory.h"
+#include "components/ip_protection/common/ip_protection_core_host_helper.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_retriever.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
@@ -48,19 +47,19 @@ struct BlindSignToken;
 // This class handles both requesting OAuth2 tokens for the signed-in user, and
 // fetching blind-signed auth tokens for that user. It may only be used on the
 // UI thread.
-class IpProtectionConfigProvider
+class IpProtectionCoreHost
     : public KeyedService,
       public network::mojom::IpProtectionConfigGetter,
       public signin::IdentityManager::Observer,
       public privacy_sandbox::TrackingProtectionSettingsObserver {
  public:
-  IpProtectionConfigProvider(
+  IpProtectionCoreHost(
       signin::IdentityManager* identity_manager,
       privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
       PrefService* pref_service,
       Profile* profile);
 
-  ~IpProtectionConfigProvider() override;
+  ~IpProtectionCoreHost() override;
 
   // IpProtectionConfigGetter:
 
@@ -87,9 +86,9 @@ class IpProtectionConfigProvider
   // KeyedService:
   void Shutdown() override;
 
-  static IpProtectionConfigProvider* Get(Profile* profile);
+  static IpProtectionCoreHost* Get(Profile* profile);
 
-  mojo::ReceiverSet<network::mojom::IpProtectionConfigGetter>&
+mojo::ReceiverSet<network::mojom::IpProtectionConfigGetter>&
   receivers_for_testing() {
     return receivers_;
   }
@@ -110,11 +109,11 @@ class IpProtectionConfigProvider
       std::unique_ptr<quiche::BlindSignAuthInterface> bsa);
 
  private:
-  friend class IpProtectionConfigProviderTest;
-  FRIEND_TEST_ALL_PREFIXES(IpProtectionConfigProviderTest, CalculateBackoff);
-  FRIEND_TEST_ALL_PREFIXES(IpProtectionConfigProviderIdentityBrowserTest,
+  friend class IpProtectionCoreHostTest;
+  FRIEND_TEST_ALL_PREFIXES(IpProtectionCoreHostTest, CalculateBackoff);
+  FRIEND_TEST_ALL_PREFIXES(IpProtectionCoreHostIdentityBrowserTest,
                            BackoffTimeResetAfterProfileAvailabilityChange);
-  FRIEND_TEST_ALL_PREFIXES(IpProtectionConfigProviderUserSettingBrowserTest,
+  FRIEND_TEST_ALL_PREFIXES(IpProtectionCoreHostUserSettingBrowserTest,
                            OnIpProtectionEnabledChanged);
 
   // Set up `ip_protection_proxy_config_fetcher_`,
@@ -197,7 +196,7 @@ class IpProtectionConfigProvider
   // nullptr after `Shutdown()` is called.
   raw_ptr<PrefService> pref_service_;
   // The `Profile` object associated with this
-  // `IpProtectionConfigProvider()`. Will be reset to nullptr after
+  // `IpProtectionCoreHost()`. Will be reset to nullptr after
   // `Shutdown()` is called.
   // NOTE: If this is used in any `GetForProfile()` call, ensure that there is a
   // corresponding dependency (if needed) registered in the factory class.
@@ -270,7 +269,7 @@ class IpProtectionConfigProvider
   mojo::RemoteSetElementId remote_id_for_testing_;
 
   // This must be the last member in this class.
-  base::WeakPtrFactory<IpProtectionConfigProvider> weak_ptr_factory_{this};
+  base::WeakPtrFactory<IpProtectionCoreHost> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_IP_PROTECTION_IP_PROTECTION_CONFIG_PROVIDER_H_
+#endif  // CHROME_BROWSER_IP_PROTECTION_IP_PROTECTION_CORE_HOST_H_

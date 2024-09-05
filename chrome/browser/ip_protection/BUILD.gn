@@ -11,10 +11,10 @@ static_library("ip_protection") {
   ]
 
   sources = [
-    "ip_protection_config_provider.cc",
-    "ip_protection_config_provider.h",
-    "ip_protection_config_provider_factory.cc",
-    "ip_protection_config_provider_factory.h",
+    "ip_protection_core_host.cc",
+    "ip_protection_core_host.h",
+    "ip_protection_core_host_factory.cc",
+    "ip_protection_core_host_factory.h",
     "ip_protection_switches.cc",
     "ip_protection_switches.h",
   ]
@@ -51,8 +51,8 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "ip_protection_config_provider_factory_unittest.cc",
-    "ip_protection_config_provider_unittest.cc",
+    "ip_protection_core_host_factory_unittest.cc",
+    "ip_protection_core_host_unittest.cc",
   ]
 
   deps = [
@@ -80,7 +80,7 @@ source_set("unit_tests") {
 source_set("browser_tests") {
   testonly = true
 
-  sources = [ "ip_protection_config_provider_browsertest.cc" ]
+  sources = [ "ip_protection_core_host_browsertest.cc" ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 

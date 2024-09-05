@@ -641,7 +641,7 @@ test("android_webview_unittests") {
     "../browser/gfx/test/invalidate_test.cc",
     "../browser/gfx/test/rendering_test.cc",
     "../browser/gfx/test/rendering_test.h",
-    "../browser/ip_protection/aw_ip_protection_config_provider_unittest.cc",
+    "../browser/ip_protection/aw_ip_protection_core_host_unittest.cc",
     "../browser/lifecycle/aw_contents_lifecycle_notifier_unittest.cc",
     "../browser/metrics/android_metrics_provider_unittest.cc",
     "../browser/metrics/aw_component_metrics_provider_delegate_unittests.cc",

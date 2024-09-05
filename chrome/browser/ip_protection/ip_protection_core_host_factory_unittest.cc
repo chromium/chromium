@@ -1,15 +1,15 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ip_protection/ip_protection_config_provider_factory.h"
+#include "chrome/browser/ip_protection/ip_protection_core_host_factory.h"
 
 #include <string_view>
 
 #include "base/strings/string_util.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ip_protection/ip_protection_config_provider.h"
+#include "chrome/browser/ip_protection/ip_protection_core_host.h"
 #include "chrome/browser/ip_protection/ip_protection_switches.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -42,20 +42,20 @@ class ScopedInitCommandLine {
 };
 }  // namespace
 
-class IpProtectionConfigProviderFactoryTest : public testing::Test {
+class IpProtectionCoreHostFactoryTest : public testing::Test {
  protected:
-  explicit IpProtectionConfigProviderFactoryTest(
+  explicit IpProtectionCoreHostFactoryTest(
       bool feature_enabled = true,
       const char* command_line_switch = "")
       // Note that the order of initialization is important here - we want to
       // set the value of the feature before anything else since it's used by
-      // the `IpProtectionConfigProviderFactory` logic. Same for the command
+      // the `IpProtectionCoreHostFactory` logic. Same for the command
       // line switch, if specified.
       : scoped_feature_(net::features::kEnableIpProtectionProxy,
                         feature_enabled),
         scoped_command_line_(command_line_switch),
-        profile_selections_(IpProtectionConfigProviderFactory::GetInstance(),
-                            IpProtectionConfigProviderFactory::
+        profile_selections_(IpProtectionCoreHostFactory::GetInstance(),
+                            IpProtectionCoreHostFactory::
                                 CreateProfileSelectionsForTesting()) {}
 
   void SetUp() override {
@@ -77,53 +77,53 @@ class IpProtectionConfigProviderFactoryTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
 };
 
-TEST_F(IpProtectionConfigProviderFactoryTest,
+TEST_F(IpProtectionCoreHostFactoryTest,
        ServiceCreationSucceedsWhenFlagEnabled) {
-  IpProtectionConfigProvider* service =
-      IpProtectionConfigProviderFactory::GetForProfile(profile());
+  IpProtectionCoreHost* service =
+      IpProtectionCoreHostFactory::GetForProfile(profile());
   ASSERT_TRUE(service);
   service->Shutdown();
 }
 
-TEST_F(IpProtectionConfigProviderFactoryTest, OtrProfileUsesPrimaryProfile) {
+TEST_F(IpProtectionCoreHostFactoryTest, OtrProfileUsesPrimaryProfile) {
   Profile* otr_profile =
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
   // The regular profile and the off-the-record profile must be different.
   ASSERT_NE(profile(), otr_profile);
 
-  // The same `IpProtectionConfigProvider` should be used for both the main
+  // The same `IpProtectionCoreHost` should be used for both the main
   // profile and the corresponding OTR profile.
-  EXPECT_EQ(IpProtectionConfigProviderFactory::GetForProfile(profile()),
-            IpProtectionConfigProviderFactory::GetForProfile(otr_profile));
+  EXPECT_EQ(IpProtectionCoreHostFactory::GetForProfile(profile()),
+            IpProtectionCoreHostFactory::GetForProfile(otr_profile));
 }
 
-class IpProtectionConfigProviderFactoryFeatureDisabledTest
-    : public IpProtectionConfigProviderFactoryTest {
+class IpProtectionCoreHostFactoryFeatureDisabledTest
+    : public IpProtectionCoreHostFactoryTest {
  public:
-  IpProtectionConfigProviderFactoryFeatureDisabledTest()
-      : IpProtectionConfigProviderFactoryTest(/*feature_enabled=*/false) {}
+  IpProtectionCoreHostFactoryFeatureDisabledTest()
+      : IpProtectionCoreHostFactoryTest(/*feature_enabled=*/false) {}
 };
 
-TEST_F(IpProtectionConfigProviderFactoryFeatureDisabledTest,
+TEST_F(IpProtectionCoreHostFactoryFeatureDisabledTest,
        ServiceCreationFailsWhenFlagDisabled) {
-  IpProtectionConfigProvider* service =
-      IpProtectionConfigProviderFactory::GetForProfile(profile());
+  IpProtectionCoreHost* service =
+      IpProtectionCoreHostFactory::GetForProfile(profile());
   ASSERT_FALSE(service);
 }
 
-class IpProtectionConfigProviderFactoryOptOutEnabled
-    : public IpProtectionConfigProviderFactoryTest {
+class IpProtectionCoreHostFactoryOptOutEnabled
+    : public IpProtectionCoreHostFactoryTest {
  public:
-  IpProtectionConfigProviderFactoryOptOutEnabled()
-      : IpProtectionConfigProviderFactoryTest(
+  IpProtectionCoreHostFactoryOptOutEnabled()
+      : IpProtectionCoreHostFactoryTest(
             /*feature_enabled=*/true,
             /*command_line_switch=*/switches::kDisableIpProtectionProxy) {}
 };
 
-TEST_F(IpProtectionConfigProviderFactoryOptOutEnabled,
+TEST_F(IpProtectionCoreHostFactoryOptOutEnabled,
        ServiceCreationFailsWhenUserOptedOut) {
-  IpProtectionConfigProvider* service =
-      IpProtectionConfigProviderFactory::GetForProfile(profile());
+  IpProtectionCoreHost* service =
+      IpProtectionCoreHostFactory::GetForProfile(profile());
   ASSERT_FALSE(service);
 }

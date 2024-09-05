@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ANDROID_WEBVIEW_BROWSER_IP_PROTECTION_AW_IP_PROTECTION_CONFIG_PROVIDER_H_
-#define ANDROID_WEBVIEW_BROWSER_IP_PROTECTION_AW_IP_PROTECTION_CONFIG_PROVIDER_H_
+#ifndef ANDROID_WEBVIEW_BROWSER_IP_PROTECTION_AW_IP_PROTECTION_CORE_HOST_H_
+#define ANDROID_WEBVIEW_BROWSER_IP_PROTECTION_AW_IP_PROTECTION_CORE_HOST_H_
 
 #include <memory>
 #include <optional>
@@ -19,7 +19,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "components/ip_protection/android/ip_protection_token_ipc_fetcher.h"
-#include "components/ip_protection/common/ip_protection_config_provider_helper.h"
+#include "components/ip_protection/common/ip_protection_core_host_helper.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_retriever.h"
@@ -44,19 +44,19 @@ namespace android_webview {
 // Fetches IP protection tokens and proxy list on demand for the network
 // service.
 
-// TODO(b/346997109): Refactor AwIpProtectionConfigProvider to reduce code
+// TODO(b/346997109): Refactor AwIpProtectionCoreHost to reduce code
 // duplication once a common implementation of IpProtectionConfigGetter is
 // added.
-class AwIpProtectionConfigProvider
+class AwIpProtectionCoreHost
     : public KeyedService,
       public network::mojom::IpProtectionConfigGetter {
  public:
-  explicit AwIpProtectionConfigProvider(AwBrowserContext* aw_browser_context);
+  explicit AwIpProtectionCoreHost(AwBrowserContext* aw_browser_context);
 
-  ~AwIpProtectionConfigProvider() override;
+  ~AwIpProtectionCoreHost() override;
 
-  AwIpProtectionConfigProvider(const AwIpProtectionConfigProvider&) = delete;
-  AwIpProtectionConfigProvider& operator=(const AwIpProtectionConfigProvider&) =
+  AwIpProtectionCoreHost(const AwIpProtectionCoreHost&) = delete;
+  AwIpProtectionCoreHost& operator=(const AwIpProtectionCoreHost&) =
       delete;
 
   // IpProtectionConfigGetter:
@@ -77,7 +77,7 @@ class AwIpProtectionConfigProvider
   // once.
   void Shutdown() override;
 
-  static AwIpProtectionConfigProvider* Get(
+  static AwIpProtectionCoreHost* Get(
       AwBrowserContext* aw_browser_context);
 
   static bool CanIpProtectionBeEnabled();
@@ -170,9 +170,9 @@ class AwIpProtectionConfigProvider
   mojo::RemoteSet<network::mojom::IpProtectionProxyDelegate> remotes_;
 
   // This must be the last member in this class.
-  base::WeakPtrFactory<AwIpProtectionConfigProvider> weak_ptr_factory_{this};
+  base::WeakPtrFactory<AwIpProtectionCoreHost> weak_ptr_factory_{this};
 };
 
 }  // namespace android_webview
 
-#endif  // ANDROID_WEBVIEW_BROWSER_IP_PROTECTION_AW_IP_PROTECTION_CONFIG_PROVIDER_H_
+#endif  // ANDROID_WEBVIEW_BROWSER_IP_PROTECTION_AW_IP_PROTECTION_CORE_HOST_H_

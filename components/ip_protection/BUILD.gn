@@ -51,8 +51,8 @@ source_set("browser") {
   sources = [
     "common/ip_protection_config_http.cc",
     "common/ip_protection_config_http.h",
-    "common/ip_protection_config_provider_helper.cc",
-    "common/ip_protection_config_provider_helper.h",
+    "common/ip_protection_core_host_helper.cc",
+    "common/ip_protection_core_host_helper.h",
     "common/ip_protection_proxy_config_fetcher.cc",
     "common/ip_protection_proxy_config_fetcher.h",
     "common/ip_protection_proxy_config_retriever.cc",

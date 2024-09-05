@@ -1,8 +1,8 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ip_protection/ip_protection_config_provider.h"
+#include "chrome/browser/ip_protection/ip_protection_core_host.h"
 
 #include <memory>
 #include <optional>
@@ -22,8 +22,7 @@
 #include "chrome/browser/ip_protection/ip_protection_switches.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
-#include "components/ip_protection/common/ip_protection_config_provider_helper.h"
-#include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/common/ip_protection_core_host_helper.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/ip_protection/common/ip_protection_token_direct_fetcher.h"
@@ -49,7 +48,7 @@
 
 using ::ip_protection::TryGetAuthTokensResult;
 
-IpProtectionConfigProvider::IpProtectionConfigProvider(
+IpProtectionCoreHost::IpProtectionCoreHost(
     signin::IdentityManager* identity_manager,
     privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
     PrefService* pref_service,
@@ -68,7 +67,7 @@ IpProtectionConfigProvider::IpProtectionConfigProvider(
   tracking_protection_settings_->AddObserver(this);
 }
 
-void IpProtectionConfigProvider::SetUp() {
+void IpProtectionCoreHost::SetUp() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!ip_protection_token_direct_fetcher_) {
     if (!url_loader_factory_) {
@@ -84,12 +83,12 @@ void IpProtectionConfigProvider::SetUp() {
     ip_protection_proxy_config_fetcher_ =
         std::make_unique<ip_protection::IpProtectionProxyConfigFetcher>(
             url_loader_factory_.get(),
-            ip_protection::IpProtectionConfigProviderHelper::kChromeIpBlinding,
+            ip_protection::IpProtectionCoreHostHelper::kChromeIpBlinding,
             google_apis::GetAPIKey(chrome::GetChannel()));
   }
 }
 
-void IpProtectionConfigProvider::SetUpForTesting(
+void IpProtectionCoreHost::SetUpForTesting(
     std::unique_ptr<ip_protection::IpProtectionProxyConfigRetriever>
         ip_protection_proxy_config_retriever,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -109,9 +108,9 @@ void IpProtectionConfigProvider::SetUpForTesting(
           std::move(ip_protection_proxy_config_retriever));
 }
 
-IpProtectionConfigProvider::~IpProtectionConfigProvider() = default;
+IpProtectionCoreHost::~IpProtectionCoreHost() = default;
 
-void IpProtectionConfigProvider::TryGetAuthTokens(
+void IpProtectionCoreHost::TryGetAuthTokens(
     uint32_t batch_size,
     network::mojom::IpProtectionProxyLayer proxy_layer,
     TryGetAuthTokensCallback callback) {
@@ -155,7 +154,7 @@ void IpProtectionConfigProvider::TryGetAuthTokens(
           ? quiche::ProxyLayer::kProxyA
           : quiche::ProxyLayer::kProxyB;
   auto request_token_callback = base::BindOnce(
-      &IpProtectionConfigProvider::
+      &IpProtectionCoreHost::
           OnRequestOAuthTokenCompletedForTryGetAuthTokens,
       weak_ptr_factory_.GetWeakPtr(), batch_size, quiche_proxy_layer,
       std::move(callback), oauth_token_fetch_start_time);
@@ -163,7 +162,7 @@ void IpProtectionConfigProvider::TryGetAuthTokens(
   RequestOAuthToken(std::move(request_token_callback));
 }
 
-void IpProtectionConfigProvider::GetProxyList(GetProxyListCallback callback) {
+void IpProtectionCoreHost::GetProxyList(GetProxyListCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(!is_shutting_down_);
   SetUp();
@@ -203,14 +202,14 @@ void IpProtectionConfigProvider::GetProxyList(GetProxyListCallback callback) {
     return;
   }
   auto request_token_callback =
-      base::BindOnce(&IpProtectionConfigProvider::
+      base::BindOnce(&IpProtectionCoreHost::
                          OnRequestOAuthTokenCompletedForGetProxyConfig,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
 
   RequestOAuthToken(std::move(request_token_callback));
 }
 
-void IpProtectionConfigProvider::RequestOAuthToken(
+void IpProtectionCoreHost::RequestOAuthToken(
     RequestOAuthTokenCallback callback) {
   // TODO(crbug.com/40267788): Add a client side account capabilities
   // check to compliment the server-side checks.
@@ -234,12 +233,12 @@ void IpProtectionConfigProvider::RequestOAuthToken(
           mode, signin::ConsentLevel::kSignin);
   auto* oauth_token_fetcher_ptr = oauth_token_fetcher.get();
   oauth_token_fetcher_ptr->Start(
-      base::BindOnce(&IpProtectionConfigProvider::OnRequestOAuthTokenCompleted,
+      base::BindOnce(&IpProtectionCoreHost::OnRequestOAuthTokenCompleted,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(oauth_token_fetcher), std::move(callback)));
 }
 
-void IpProtectionConfigProvider::OnRequestOAuthTokenCompleted(
+void IpProtectionCoreHost::OnRequestOAuthTokenCompleted(
     std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
         oauth_token_fetcher,
     RequestOAuthTokenCallback callback,
@@ -253,7 +252,7 @@ void IpProtectionConfigProvider::OnRequestOAuthTokenCompleted(
   std::move(callback).Run(error, access_token_info);
 }
 
-void IpProtectionConfigProvider::
+void IpProtectionCoreHost::
     OnRequestOAuthTokenCompletedForTryGetAuthTokens(
         uint32_t batch_size,
         quiche::ProxyLayer quiche_proxy_layer,
@@ -282,7 +281,7 @@ void IpProtectionConfigProvider::
                         std::move(callback));
 }
 
-void IpProtectionConfigProvider::OnRequestOAuthTokenCompletedForGetProxyConfig(
+void IpProtectionCoreHost::OnRequestOAuthTokenCompletedForGetProxyConfig(
     GetProxyListCallback callback,
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
@@ -296,7 +295,7 @@ void IpProtectionConfigProvider::OnRequestOAuthTokenCompletedForGetProxyConfig(
       std::move(callback), access_token_info.token);
 }
 
-void IpProtectionConfigProvider::FetchBlindSignedToken(
+void IpProtectionCoreHost::FetchBlindSignedToken(
     std::optional<signin::AccessTokenInfo> access_token_info,
     uint32_t batch_size,
     quiche::ProxyLayer quiche_proxy_layer,
@@ -309,12 +308,12 @@ void IpProtectionConfigProvider::FetchBlindSignedToken(
       .WithArgs(
           std::move(access_token), batch_size, quiche_proxy_layer,
           base::BindPostTaskToCurrentDefault(base::BindOnce(
-              &IpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted,
+              &IpProtectionCoreHost::OnFetchBlindSignedTokenCompleted,
               weak_ptr_factory_.GetWeakPtr(), bsa_get_tokens_start_time,
               std::move(callback))));
 }
 
-void IpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
+void IpProtectionCoreHost::OnFetchBlindSignedTokenCompleted(
     base::TimeTicks bsa_get_tokens_start_time,
     TryGetAuthTokensCallback callback,
     absl::StatusOr<std::vector<quiche::BlindSignToken>> tokens) {
@@ -356,7 +355,7 @@ void IpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
   std::vector<ip_protection::BlindSignedAuthToken> bsa_tokens;
   for (const quiche::BlindSignToken& token : tokens.value()) {
     std::optional<ip_protection::BlindSignedAuthToken> converted_token =
-        ip_protection::IpProtectionConfigProviderHelper::
+        ip_protection::IpProtectionCoreHostHelper::
             CreateBlindSignedAuthToken(token);
     if (!converted_token.has_value() || converted_token->token.empty()) {
       TryGetAuthTokensComplete(std::nullopt, std::move(callback),
@@ -373,7 +372,7 @@ void IpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
                            current_time - bsa_get_tokens_start_time);
 }
 
-void IpProtectionConfigProvider::TryGetAuthTokensComplete(
+void IpProtectionCoreHost::TryGetAuthTokensComplete(
     std::optional<std::vector<ip_protection::BlindSignedAuthToken>> bsa_tokens,
     TryGetAuthTokensCallback callback,
     TryGetAuthTokensResult result,
@@ -393,7 +392,7 @@ void IpProtectionConfigProvider::TryGetAuthTokensComplete(
   std::move(callback).Run(std::move(bsa_tokens), try_again_after);
 }
 
-void IpProtectionConfigProvider::InvalidateNetworkContextTryAgainAfterTime() {
+void IpProtectionCoreHost::InvalidateNetworkContextTryAgainAfterTime() {
   if (!profile_) {
     // `profile_` will be nullptr if `Shutdown()` was called or if this is
     // called in unit tests.
@@ -405,7 +404,7 @@ void IpProtectionConfigProvider::InvalidateNetworkContextTryAgainAfterTime() {
   }
 }
 
-std::optional<base::TimeDelta> IpProtectionConfigProvider::CalculateBackoff(
+std::optional<base::TimeDelta> IpProtectionCoreHost::CalculateBackoff(
     TryGetAuthTokensResult result) {
   using enum TryGetAuthTokensResult;
   std::optional<base::TimeDelta> backoff;
@@ -429,20 +428,20 @@ std::optional<base::TimeDelta> IpProtectionConfigProvider::CalculateBackoff(
       // Eligibility, whether determined locally or on the server, is unlikely
       // to change quickly.
       backoff =
-          ip_protection::IpProtectionConfigProviderHelper::kNotEligibleBackoff;
+          ip_protection::IpProtectionCoreHostHelper::kNotEligibleBackoff;
       break;
     case kFailedOAuthTokenTransient:
     case kFailedBSAOther:
       // Transient failure to fetch an OAuth token, or some other error from
       // BSA that is probably transient.
       backoff =
-          ip_protection::IpProtectionConfigProviderHelper::kTransientBackoff;
+          ip_protection::IpProtectionCoreHostHelper::kTransientBackoff;
       exponential = true;
       break;
     case kFailedBSA400:
     case kFailedBSA401:
       // Both 400 and 401 suggest a bug, so do not retry aggressively.
-      backoff = ip_protection::IpProtectionConfigProviderHelper::kBugBackoff;
+      backoff = ip_protection::IpProtectionCoreHostHelper::kBugBackoff;
       exponential = true;
       break;
     case kFailedOAuthTokenDeprecated:
@@ -487,7 +486,7 @@ std::optional<base::TimeDelta> IpProtectionConfigProvider::CalculateBackoff(
   return backoff;
 }
 
-void IpProtectionConfigProvider::Shutdown() {
+void IpProtectionCoreHost::Shutdown() {
   if (is_shutting_down_) {
     return;
   }
@@ -508,11 +507,11 @@ void IpProtectionConfigProvider::Shutdown() {
 }
 
 /*static*/
-IpProtectionConfigProvider* IpProtectionConfigProvider::Get(Profile* profile) {
-  return IpProtectionConfigProviderFactory::GetForProfile(profile);
+IpProtectionCoreHost* IpProtectionCoreHost::Get(Profile* profile) {
+  return IpProtectionCoreHostFactory::GetForProfile(profile);
 }
 
-void IpProtectionConfigProvider::AddNetworkService(
+void IpProtectionCoreHost::AddNetworkService(
     mojo::PendingReceiver<network::mojom::IpProtectionConfigGetter>
         pending_receiver,
     mojo::PendingRemote<network::mojom::IpProtectionProxyDelegate>
@@ -531,7 +530,7 @@ void IpProtectionConfigProvider::AddNetworkService(
   // they are eventually cleaned up.
 }
 
-void IpProtectionConfigProvider::ClearOAuthTokenProblemBackoff() {
+void IpProtectionCoreHost::ClearOAuthTokenProblemBackoff() {
   // End the backoff period if it was caused by account-related issues. Also,
   // tell the `IpProtectionConfigCache()` in the Network Service so that it
   // will begin making token requests.
@@ -541,7 +540,7 @@ void IpProtectionConfigProvider::ClearOAuthTokenProblemBackoff() {
   }
 }
 
-void IpProtectionConfigProvider::OnPrimaryAccountChanged(
+void IpProtectionCoreHost::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
   auto signin_event_type = event.GetEventTypeFor(signin::ConsentLevel::kSignin);
   VLOG(2) << "IPATP::OnPrimaryAccountChanged kSignin event type: "
@@ -563,7 +562,7 @@ void IpProtectionConfigProvider::OnPrimaryAccountChanged(
   }
 }
 
-void IpProtectionConfigProvider::OnErrorStateOfRefreshTokenUpdatedForAccount(
+void IpProtectionCoreHost::OnErrorStateOfRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info,
     const GoogleServiceAuthError& error,
     signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
@@ -583,7 +582,7 @@ void IpProtectionConfigProvider::OnErrorStateOfRefreshTokenUpdatedForAccount(
   }
 }
 
-bool IpProtectionConfigProvider::CanRequestOAuthToken() {
+bool IpProtectionCoreHost::CanRequestOAuthToken() {
   if (is_shutting_down_) {
     return false;
   }
@@ -592,14 +591,14 @@ bool IpProtectionConfigProvider::CanRequestOAuthToken() {
 }
 
 // static
-bool IpProtectionConfigProvider::CanIpProtectionBeEnabled() {
+bool IpProtectionCoreHost::CanIpProtectionBeEnabled() {
   return base::FeatureList::IsEnabled(
              net::features::kEnableIpProtectionProxy) &&
          !base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kDisableIpProtectionProxy);
 }
 
-bool IpProtectionConfigProvider::IsIpProtectionEnabled() {
+bool IpProtectionCoreHost::IsIpProtectionEnabled() {
   if (is_shutting_down_) {
     return false;
   }
@@ -623,7 +622,7 @@ bool IpProtectionConfigProvider::IsIpProtectionEnabled() {
   return tracking_protection_settings_->IsIpProtectionEnabled();
 }
 
-void IpProtectionConfigProvider::OnIpProtectionEnabledChanged() {
+void IpProtectionCoreHost::OnIpProtectionEnabledChanged() {
   if (is_shutting_down_) {
     return;
   }

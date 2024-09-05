@@ -34,7 +34,7 @@
 #include "chrome/browser/domain_reliability/service_factory.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
-#include "chrome/browser/ip_protection/ip_protection_config_provider.h"
+#include "chrome/browser/ip_protection/ip_protection_core_host.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
@@ -77,6 +77,7 @@
 #include "crypto/crypto_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/features.h"
+#include "net/cert/asn1_util.h"
 #include "net/http/http_auth_preferences.h"
 #include "net/http/http_util.h"
 #include "net/net_buildflags.h"
@@ -89,7 +90,6 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "third_party/blink/public/common/features.h"
-#include "net/cert/asn1_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/certificate_provider/certificate_provider.h"
@@ -1324,16 +1324,15 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
       profile_->GetPrefs()->GetBoolean(
           prefs::kAccessControlAllowMethodsInCORSPreflightSpecConformant);
 
-  IpProtectionConfigProvider* ipp_config_provider =
-      IpProtectionConfigProvider::Get(profile_);
-  if (ipp_config_provider) {
-    ipp_config_provider->AddNetworkService(
+  IpProtectionCoreHost* ipp_core_host = IpProtectionCoreHost::Get(profile_);
+  if (ipp_core_host) {
+    ipp_core_host->AddNetworkService(
         network_context_params->ip_protection_config_getter
             .InitWithNewPipeAndPassReceiver(),
         network_context_params->ip_protection_proxy_delegate
             .InitWithNewPipeAndPassRemote());
     network_context_params->enable_ip_protection =
-        ipp_config_provider->IsIpProtectionEnabled();
+        ipp_core_host->IsIpProtectionEnabled();
   }
 
   network_context_params->device_bound_sessions_enabled =

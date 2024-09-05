@@ -81,7 +81,7 @@
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 #endif
 
-#include "chrome/browser/ip_protection/ip_protection_config_provider_factory.h"
+#include "chrome/browser/ip_protection/ip_protection_core_host_factory.h"
 #include "chrome/browser/k_anonymity_service/k_anonymity_service_factory.h"
 #include "chrome/browser/language/accept_languages_service_factory.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
@@ -940,7 +940,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if !BUILDFLAG(IS_ANDROID)
   InstantServiceFactory::GetInstance();
 #endif
-  IpProtectionConfigProviderFactory::GetInstance();
+  IpProtectionCoreHostFactory::GetInstance();
 #if BUILDFLAG(IS_WIN)
   JumpListFactory::GetInstance();
 #endif

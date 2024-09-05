@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/ip_protection/common/ip_protection_config_provider_helper.h"
+#include "components/ip_protection/common/ip_protection_core_host_helper.h"
 
 #include <optional>
 #include <string>
@@ -25,7 +25,7 @@ namespace ip_protection {
 
 // static
 std::optional<ip_protection::BlindSignedAuthToken>
-IpProtectionConfigProviderHelper::CreateBlindSignedAuthToken(
+IpProtectionCoreHostHelper::CreateBlindSignedAuthToken(
     const quiche::BlindSignToken& bsa_token) {
   // If a GeoHint's country code is empty, the token is invalid. Return a
   // nullptr.
@@ -63,7 +63,7 @@ IpProtectionConfigProviderHelper::CreateBlindSignedAuthToken(
 
 // static
 privacy::ppn::PrivacyPassTokenData
-IpProtectionConfigProviderHelper::CreatePrivacyPassTokenForTesting(
+IpProtectionCoreHostHelper::CreatePrivacyPassTokenForTesting(
     std::string token_value) {
   privacy::ppn::PrivacyPassTokenData privacy_pass_token_data;
 
@@ -81,7 +81,7 @@ IpProtectionConfigProviderHelper::CreatePrivacyPassTokenForTesting(
 }
 
 quiche::BlindSignToken
-IpProtectionConfigProviderHelper::CreateBlindSignTokenForTesting(
+IpProtectionCoreHostHelper::CreateBlindSignTokenForTesting(
     std::string token_value,
     base::Time expiration,
     const ip_protection::GeoHint& geo_hint) {
@@ -105,7 +105,7 @@ IpProtectionConfigProviderHelper::CreateBlindSignTokenForTesting(
 }
 
 std::optional<ip_protection::BlindSignedAuthToken>
-IpProtectionConfigProviderHelper::CreateMockBlindSignedAuthTokenForTesting(
+IpProtectionCoreHostHelper::CreateMockBlindSignedAuthTokenForTesting(
     std::string token_value,
     base::Time expiration,
     const ip_protection::GeoHint& geo_hint) {

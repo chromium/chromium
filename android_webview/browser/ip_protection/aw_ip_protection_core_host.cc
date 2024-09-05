@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "android_webview/browser/ip_protection/aw_ip_protection_config_provider.h"
+#include "android_webview/browser/ip_protection/aw_ip_protection_core_host.h"
 
 #include <memory>
 #include <optional>
@@ -11,7 +11,7 @@
 
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_browser_process.h"
-#include "android_webview/browser/ip_protection/aw_ip_protection_config_provider_factory.h"
+#include "android_webview/browser/ip_protection/aw_ip_protection_core_host_factory.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -27,7 +27,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
 #include "components/ip_protection/android/ip_protection_token_ipc_fetcher.h"
-#include "components/ip_protection/common/ip_protection_config_provider_helper.h"
+#include "components/ip_protection/common/ip_protection_core_host_helper.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
@@ -51,16 +51,16 @@ namespace android_webview {
 
 using ::ip_protection::TryGetAuthTokensAndroidResult;
 
-AwIpProtectionConfigProvider::AwIpProtectionConfigProvider(
+AwIpProtectionCoreHost::AwIpProtectionCoreHost(
     AwBrowserContext* aw_browser_context)
     : aw_browser_context_(aw_browser_context),
       token_fetcher_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {}
 
-AwIpProtectionConfigProvider::~AwIpProtectionConfigProvider() = default;
+AwIpProtectionCoreHost::~AwIpProtectionCoreHost() = default;
 
-void AwIpProtectionConfigProvider::SetUp() {
+void AwIpProtectionCoreHost::SetUp() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!ip_protection_token_ipc_fetcher_) {
     ip_protection_token_ipc_fetcher_ =
@@ -75,12 +75,12 @@ void AwIpProtectionConfigProvider::SetUp() {
             aw_browser_context_->GetDefaultStoragePartition()
                 ->GetURLLoaderFactoryForBrowserProcess()
                 .get(),
-            ip_protection::IpProtectionConfigProviderHelper::kWebViewIpBlinding,
+            ip_protection::IpProtectionCoreHostHelper::kWebViewIpBlinding,
             google_apis::GetAPIKey(version_info::android::GetChannel()));
   }
 }
 
-void AwIpProtectionConfigProvider::SetUpForTesting(
+void AwIpProtectionCoreHost::SetUpForTesting(
     std::unique_ptr<ip_protection::IpProtectionProxyConfigRetriever>
         ip_protection_proxy_config_retriever,
     std::unique_ptr<quiche::BlindSignAuthInterface> bsa) {
@@ -96,7 +96,7 @@ void AwIpProtectionConfigProvider::SetUpForTesting(
           std::move(ip_protection_proxy_config_retriever));
 }
 
-void AwIpProtectionConfigProvider::GetProxyList(GetProxyListCallback callback) {
+void AwIpProtectionCoreHost::GetProxyList(GetProxyListCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(!is_shutting_down_);
   SetUp();
@@ -112,7 +112,7 @@ void AwIpProtectionConfigProvider::GetProxyList(GetProxyListCallback callback) {
       std::move(callback), /*oauth_token=*/std::nullopt);
 }
 
-void AwIpProtectionConfigProvider::TryGetAuthTokens(
+void AwIpProtectionCoreHost::TryGetAuthTokens(
     uint32_t batch_size,
     network::mojom::IpProtectionProxyLayer proxy_layer,
     TryGetAuthTokensCallback callback) {
@@ -143,7 +143,7 @@ void AwIpProtectionConfigProvider::TryGetAuthTokens(
                         std::move(callback));
 }
 
-void AwIpProtectionConfigProvider::FetchBlindSignedToken(
+void AwIpProtectionCoreHost::FetchBlindSignedToken(
     int batch_size,
     quiche::ProxyLayer quiche_proxy_layer,
     TryGetAuthTokensCallback callback) {
@@ -154,12 +154,12 @@ void AwIpProtectionConfigProvider::FetchBlindSignedToken(
       .WithArgs(
           /*access_token=*/std::nullopt, batch_size, quiche_proxy_layer,
           base::BindPostTaskToCurrentDefault(base::BindOnce(
-              &AwIpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted,
+              &AwIpProtectionCoreHost::OnFetchBlindSignedTokenCompleted,
               weak_ptr_factory_.GetWeakPtr(), bsa_get_tokens_start_time,
               std::move(callback))));
 }
 
-void AwIpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
+void AwIpProtectionCoreHost::OnFetchBlindSignedTokenCompleted(
     base::TimeTicks bsa_get_tokens_start_time,
     TryGetAuthTokensCallback callback,
     absl::StatusOr<std::vector<quiche::BlindSignToken>> tokens) {
@@ -180,7 +180,7 @@ void AwIpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
         result = TryGetAuthTokensAndroidResult::kFailedBSAOther;
         break;
     }
-    VLOG(2) << "AwIpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted "
+    VLOG(2) << "AwIpProtectionCoreHost::OnFetchBlindSignedTokenCompleted "
                "got an error: "
             << static_cast<int>(result);
     TryGetAuthTokensComplete(/*bsa_tokens=*/std::nullopt, std::move(callback),
@@ -189,7 +189,7 @@ void AwIpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
   }
 
   if (tokens.value().size() == 0) {
-    VLOG(2) << "AwIpProtectionConfigProvider::"
+    VLOG(2) << "AwIpProtectionCoreHost::"
                "OnFetchBlindSignedTokenCompleted called with no tokens";
     TryGetAuthTokensComplete(
         /*bsa_tokens=*/std::nullopt, std::move(callback),
@@ -200,10 +200,10 @@ void AwIpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
   std::vector<ip_protection::BlindSignedAuthToken> bsa_tokens;
   for (const quiche::BlindSignToken& token : tokens.value()) {
     std::optional<ip_protection::BlindSignedAuthToken> converted_token =
-        ip_protection::IpProtectionConfigProviderHelper::
+        ip_protection::IpProtectionCoreHostHelper::
             CreateBlindSignedAuthToken(token);
     if (!converted_token.has_value() || converted_token->token.empty()) {
-      VLOG(2) << "AwIpProtectionConfigProvider::"
+      VLOG(2) << "AwIpProtectionCoreHost::"
                  "OnFetchBlindSignedTokenCompleted failed to convert "
                  "`quiche::BlindSignAuth` token to a "
                  "`network::mojom::BlindSignedAuthToken`";
@@ -222,7 +222,7 @@ void AwIpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
                            current_time - bsa_get_tokens_start_time);
 }
 
-void AwIpProtectionConfigProvider::TryGetAuthTokensComplete(
+void AwIpProtectionCoreHost::TryGetAuthTokensComplete(
     std::optional<std::vector<ip_protection::BlindSignedAuthToken>> bsa_tokens,
     TryGetAuthTokensCallback callback,
     ip_protection::TryGetAuthTokensAndroidResult result,
@@ -246,7 +246,7 @@ void AwIpProtectionConfigProvider::TryGetAuthTokensComplete(
   std::move(callback).Run(std::move(bsa_tokens), try_again_after);
 }
 
-std::optional<base::TimeDelta> AwIpProtectionConfigProvider::CalculateBackoff(
+std::optional<base::TimeDelta> AwIpProtectionCoreHost::CalculateBackoff(
     TryGetAuthTokensAndroidResult result) {
   std::optional<base::TimeDelta> backoff;
   switch (result) {
@@ -259,7 +259,7 @@ std::optional<base::TimeDelta> AwIpProtectionConfigProvider::CalculateBackoff(
     case TryGetAuthTokensAndroidResult::kFailedBSATransient:
     case TryGetAuthTokensAndroidResult::kFailedBSAOther:
       backoff =
-          ip_protection::IpProtectionConfigProviderHelper::kTransientBackoff;
+          ip_protection::IpProtectionCoreHostHelper::kTransientBackoff;
       // Note that we calculate the backoff assuming that we've waited for
       // `last_try_get_auth_tokens_backoff_` time already, but this may not be
       // the case when:
@@ -283,7 +283,7 @@ std::optional<base::TimeDelta> AwIpProtectionConfigProvider::CalculateBackoff(
   return backoff;
 }
 
-void AwIpProtectionConfigProvider::Shutdown() {
+void AwIpProtectionCoreHost::Shutdown() {
   if (is_shutting_down_) {
     return;
   }
@@ -296,13 +296,13 @@ void AwIpProtectionConfigProvider::Shutdown() {
 }
 
 // static
-AwIpProtectionConfigProvider* AwIpProtectionConfigProvider::Get(
+AwIpProtectionCoreHost* AwIpProtectionCoreHost::Get(
     AwBrowserContext* aw_browser_context) {
-  return AwIpProtectionConfigProviderFactory::GetForAwBrowserContext(
+  return AwIpProtectionCoreHostFactory::GetForAwBrowserContext(
       aw_browser_context);
 }
 
-void AwIpProtectionConfigProvider::AddNetworkService(
+void AwIpProtectionCoreHost::AddNetworkService(
     mojo::PendingReceiver<network::mojom::IpProtectionConfigGetter>
         pending_receiver,
     mojo::PendingRemote<network::mojom::IpProtectionProxyDelegate>
@@ -314,12 +314,12 @@ void AwIpProtectionConfigProvider::AddNetworkService(
 }
 
 // static
-bool AwIpProtectionConfigProvider::CanIpProtectionBeEnabled() {
+bool AwIpProtectionCoreHost::CanIpProtectionBeEnabled() {
   return base::FeatureList::IsEnabled(net::features::kEnableIpProtectionProxy);
 }
 
 // TODO(b/335420700): Update to return feature flag.
-bool AwIpProtectionConfigProvider::IsIpProtectionEnabled() {
+bool AwIpProtectionCoreHost::IsIpProtectionEnabled() {
   if (is_shutting_down_) {
     return false;
   }

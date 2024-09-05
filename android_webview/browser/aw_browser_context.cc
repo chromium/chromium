@@ -20,7 +20,7 @@
 #include "android_webview/browser/aw_quota_manager_bridge.h"
 #include "android_webview/browser/aw_web_ui_controller_factory.h"
 #include "android_webview/browser/cookie_manager.h"
-#include "android_webview/browser/ip_protection/aw_ip_protection_config_provider.h"
+#include "android_webview/browser/ip_protection/aw_ip_protection_core_host.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/browser/network_service/net_helpers.h"
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_allowlist_manager.h"
@@ -581,16 +581,15 @@ void AwBrowserContext::ConfigureNetworkContextParams(
   context_params->check_clear_text_permitted =
       AwContentBrowserClient::get_check_cleartext_permitted();
 
-  AwIpProtectionConfigProvider* aw_ipp_config_provider =
-      AwIpProtectionConfigProvider::Get(this);
-  if (aw_ipp_config_provider) {
-    aw_ipp_config_provider->AddNetworkService(
+  AwIpProtectionCoreHost* aw_ipp_core_host = AwIpProtectionCoreHost::Get(this);
+  if (aw_ipp_core_host) {
+    aw_ipp_core_host->AddNetworkService(
         context_params->ip_protection_config_getter
             .InitWithNewPipeAndPassReceiver(),
         context_params->ip_protection_proxy_delegate
             .InitWithNewPipeAndPassRemote());
     context_params->enable_ip_protection =
-        aw_ipp_config_provider->IsIpProtectionEnabled();
+        aw_ipp_core_host->IsIpProtectionEnabled();
   }
 
   // Add proxy settings
