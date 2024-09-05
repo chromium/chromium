@@ -458,28 +458,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Platform.Storage.Flash.BadBlocks"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="BatchStunPingParameters" separator=".">
-  <suffix name="1ms.1" label="1ms gap, 1st batch"/>
-  <suffix name="1ms.2" label="1ms gap, 2nd batch"/>
-  <suffix name="1ms.3" label="1ms gap, 3rd batch"/>
-  <suffix name="5ms.1" label="5ms gap, 1st batch"/>
-  <suffix name="5ms.2" label="5ms gap, 2nd batch"/>
-  <suffix name="5ms.3" label="5ms gap, 3rd batch"/>
-  <suffix name="10ms.1" label="10ms gap, 1st batch"/>
-  <suffix name="10ms.2" label="10ms gap, 2nd batch"/>
-  <suffix name="10ms.3" label="10ms gap, 3rd batch"/>
-  <suffix name="25ms.1" label="25ms gap, 1st batch"/>
-  <suffix name="25ms.2" label="25ms gap, 2nd batch"/>
-  <suffix name="25ms.3" label="25ms gap, 3rd batch"/>
-  <suffix name="50ms.1" label="50ms gap, 1st batch"/>
-  <suffix name="50ms.2" label="50ms gap, 2nd batch"/>
-  <suffix name="50ms.3" label="50ms gap, 3rd batch"/>
-  <affected-histogram name="WebRTC.Stun.BatchSuccessPercent.NoNAT"/>
-  <affected-histogram name="WebRTC.Stun.BatchSuccessPercent.NonSymNAT"/>
-  <affected-histogram name="WebRTC.Stun.BatchSuccessPercent.SymNAT"/>
-  <affected-histogram name="WebRTC.Stun.BatchSuccessPercent.UnknownNAT"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="BlinkUpdateTimeSuffixes" separator=".">
   <suffix name="AggregatedPreFCP"
       label="All the time spent Pre First Contentful Paint in this component"/>
@@ -4211,29 +4189,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Startup.FirstWebContents.NonEmptyPaint3"/>
   <affected-histogram name="Startup.LoadTime.ApplicationStartToChromeMain"/>
   <affected-histogram name="Startup.LoadTime.ProcessCreateToApplicationStart"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="StunPingInternal" separator=".">
-  <suffix name="0ms" label="0ms between requests"/>
-  <suffix name="5ms" label="5ms between requests"/>
-  <suffix name="10ms" label="10ms between requests"/>
-  <suffix name="15ms" label="15ms between requests"/>
-  <suffix name="20ms" label="20ms between requests"/>
-  <suffix name="25ms" label="25ms between requests"/>
-  <suffix name="30ms" label="30ms between requests"/>
-  <suffix name="35ms" label="35ms between requests"/>
-  <suffix name="40ms" label="40ms between requests"/>
-  <suffix name="45ms" label="45ms between requests"/>
-  <suffix name="50ms" label="50ms between requests"/>
-  <suffix name="100ms" label="100ms between requests"/>
-  <affected-histogram name="WebRTC.Stun.ResponseLatency.NoNAT"/>
-  <affected-histogram name="WebRTC.Stun.ResponseLatency.NonSymNAT"/>
-  <affected-histogram name="WebRTC.Stun.ResponseLatency.SymNAT"/>
-  <affected-histogram name="WebRTC.Stun.ResponseLatency.UnknownNAT"/>
-  <affected-histogram name="WebRTC.Stun.SuccessPercent.NoNAT"/>
-  <affected-histogram name="WebRTC.Stun.SuccessPercent.NonSymNAT"/>
-  <affected-histogram name="WebRTC.Stun.SuccessPercent.SymNAT"/>
-  <affected-histogram name="WebRTC.Stun.SuccessPercent.UnknownNAT"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="SystemNotificationAgeType" separator=".">

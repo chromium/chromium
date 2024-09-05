@@ -1646,23 +1646,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.Stun.BatchSuccessPercent{NatType}" units="%"
-    expires_after="M85">
-  <owner>qingsi@google.com</owner>
-  <owner>jeroendb@google.com</owner>
-  <summary>
-    For clients using a shared source port per STUN binding request toward the
-    specified servers, success rate for requests which received a response with
-    various intervals between requests. Only the first instance of renderers
-    will conduct the trial and log this result. The STUN binding requests are
-    grouped into multiple batches and the success rate is calculated for an
-    individual batch. {NatType}
-  </summary>
-  <token key="NatType" variants="NatType">
-    <variant name=""/>
-  </token>
-</histogram>
-
 <histogram name="WebRTC.Stun.Integrity.{StunPacketType}"
     enum="WebRtcStunIntegrityOutcome" expires_after="2024-10-13">
   <owner>hta@chromium.org</owner>
@@ -1685,36 +1668,6 @@ chromium-metrics-reviews@google.com.
     <variant name="Indication"/>
     <variant name="Request"/>
     <variant name="Response"/>
-  </token>
-</histogram>
-
-<histogram name="WebRTC.Stun.ResponseLatency{NatType}" units="ms"
-    expires_after="M85">
-  <owner>qingsi@google.com</owner>
-  <owner>jeroendb@google.com</owner>
-  <summary>
-    For clients using a shared source port per STUN binding request, average RTT
-    for requests which received a response with various intervals between
-    requests. Only the first instance of renderers will conduct the trial and
-    log this result. {NatType}
-  </summary>
-  <token key="NatType" variants="NatType">
-    <variant name=""/>
-  </token>
-</histogram>
-
-<histogram name="WebRTC.Stun.SuccessPercent{NatType}" units="%"
-    expires_after="M85">
-  <owner>qingsi@google.com</owner>
-  <owner>jeroendb@google.com</owner>
-  <summary>
-    For clients using a shared source port per STUN binding request, success
-    rate for requests which received a response with various intervals between
-    requests. Only the first instance of renderers will conduct the trial and
-    log this result. {NatType}
-  </summary>
-  <token key="NatType" variants="NatType">
-    <variant name=""/>
   </token>
 </histogram>
 
