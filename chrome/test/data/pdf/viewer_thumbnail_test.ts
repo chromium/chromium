@@ -12,39 +12,44 @@ function createThumbnail() {
   return thumbnail;
 }
 
+function createPdfCanvas(
+    thumbnail: ViewerThumbnailElement, imageSize: number[]) {
+  thumbnail.image = new ImageData(imageSize[0]!, imageSize[1]!);
+  return thumbnail.shadowRoot!.querySelector('canvas')!;
+}
+
+function checkThumbnailAncestorDivSize(
+    canvas: HTMLCanvasElement, divSize: number[]) {
+  const div = canvas.parentElement!;
+  chrome.test.assertEq(divSize[0], div.offsetWidth);
+  chrome.test.assertEq(divSize[1], div.offsetHeight);
+}
+
+function checkThumbnailSize(canvas: HTMLCanvasElement, canvasSize: number[]) {
+  chrome.test.assertEq(`${canvasSize[0]}px`, canvas.style.width);
+  chrome.test.assertEq(`${canvasSize[1]}px`, canvas.style.height);
+}
+
 function testThumbnailSize(
     thumbnail: ViewerThumbnailElement, imageSize: number[],
     canvasSize: number[]) {
-  const imageData = new ImageData(imageSize[0]!, imageSize[1]!);
-  thumbnail.image = imageData;
+  const canvas = createPdfCanvas(thumbnail, imageSize);
+  checkThumbnailSize(canvas, canvasSize);
 
-  const canvas = thumbnail.shadowRoot!.querySelector('canvas')!;
-  chrome.test.assertEq(`${canvasSize[0]}px`, canvas.style.width);
-  chrome.test.assertEq(`${canvasSize[1]}px`, canvas.style.height);
-
-  // The div containing the canvas should be resized to fit.
-  const div = canvas.parentElement!;
-  chrome.test.assertEq(canvasSize[0], div.offsetWidth);
-  chrome.test.assertEq(canvasSize[1], div.offsetHeight);
+  // The thumbnail div ancestor containing the canvas should be resized to fit.
+  checkThumbnailAncestorDivSize(canvas, canvasSize);
 }
 
-async function testThumbnailRotation(
-    thumbnail: ViewerThumbnailElement, clockwiseRotations: number,
-    divSize: number[]) {
-  thumbnail.clockwiseRotations = clockwiseRotations;
-  await microtasksFinished();
-
-  const canvas = thumbnail.shadowRoot!.querySelector('canvas')!;
+function checkRotatedThumbnailSizeAndTransform(
+    canvas: HTMLCanvasElement, clockwiseRotations: number, divSize: number[]) {
   const halfTurn = clockwiseRotations % 2 === 0;
   chrome.test.assertEq(
       `${halfTurn ? divSize[0] : divSize[1]}px`, canvas.style.width);
   chrome.test.assertEq(
       `${halfTurn ? divSize[1] : divSize[0]}px`, canvas.style.height);
 
-  // The div containing the rotated canvas should be resized to fit.
-  const div = canvas.parentElement!;
-  chrome.test.assertEq(divSize[0], div.offsetWidth);
-  chrome.test.assertEq(divSize[1], div.offsetHeight);
+  // The thumbnail div ancestor containing the canvas should be resized to fit.
+  checkThumbnailAncestorDivSize(canvas, divSize);
 
   chrome.test.assertEq(
       `rotate(${clockwiseRotations * 90}deg)`, canvas.style.transform);
@@ -53,13 +58,14 @@ async function testThumbnailRotation(
 async function testThumbnailRotations(
     imageSize: number[], rotatedDivSizes: number[][]) {
   const thumbnail = createThumbnail();
-  const imageData = new ImageData(imageSize[0]!, imageSize[1]!);
-  thumbnail.image = imageData;
+  const canvas = createPdfCanvas(thumbnail, imageSize);
 
   chrome.test.assertEq(4, rotatedDivSizes.length);
   for (let rotations = 0; rotations < rotatedDivSizes.length; rotations++) {
-    await testThumbnailRotation(
-        thumbnail, rotations, rotatedDivSizes[rotations]!);
+    thumbnail.clockwiseRotations = rotations;
+    await microtasksFinished();
+    checkRotatedThumbnailSizeAndTransform(
+        canvas, rotations, rotatedDivSizes[rotations]!);
   }
 }
 
@@ -180,9 +186,7 @@ const tests = [
   },
   async function testContextMenuDisabled() {
     // Set some image data so a canvas is created inside the thumbnail.
-    const thumbnail = createThumbnail();
-    thumbnail.image = new ImageData(108, 140);
-    const canvas = thumbnail.shadowRoot!.querySelector('canvas')!;
+    const canvas = createPdfCanvas(createThumbnail(), [108, 140]);
 
     const whenContextMenu = eventToPromise('contextmenu', canvas);
     canvas.dispatchEvent(new CustomEvent('contextmenu', {cancelable: true}));
