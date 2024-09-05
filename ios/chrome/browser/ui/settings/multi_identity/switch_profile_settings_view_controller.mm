@@ -127,6 +127,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // switch profile within the same window.
   if (!base::ios::IsMultipleScenesSupported()) {
     switchProfileButtonItem.enabled = NO;
+
+    switchProfileButtonItem.text =
+        @"Profile switching isn't supported on iPhones at this time.";
+    switchProfileButtonItem.textAlignment = NSTextAlignmentNatural;
   }
 
   [model addItem:switchProfileButtonItem
