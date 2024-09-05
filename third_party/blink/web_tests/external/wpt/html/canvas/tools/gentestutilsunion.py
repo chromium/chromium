@@ -262,13 +262,13 @@ class _TemplateType(str, enum.Enum):
 
 @dataclasses.dataclass
 class _OutputPaths:
-    element: str
-    offscreen: str
+    element: pathlib.Path
+    offscreen: pathlib.Path
 
     def sub_path(self, sub_dir: str):
         """Create a new _OutputPaths that is a subpath of this _OutputPath."""
-        return _OutputPaths(element=os.path.join(self.element, sub_dir),
-                            offscreen=os.path.join(self.offscreen, sub_dir))
+        return _OutputPaths(element=self.element / sub_dir,
+                            offscreen=self.offscreen / sub_dir)
 
 
 def _validate_test(test: _TestParams):
@@ -795,7 +795,8 @@ def _check_uniqueness(tested: DefaultDict[str, Set[_CanvasType]], name: str,
 
 def generate_test_files(name_to_dir_file: str) -> None:
     """Generate Canvas tests from YAML file definition."""
-    output_dirs = _OutputPaths(element='../element', offscreen='../offscreen')
+    output_dirs = _OutputPaths(element=pathlib.Path('..') / 'element',
+                               offscreen=pathlib.Path('..') / 'offscreen')
 
     jinja_env = jinja2.Environment(
         loader=jinja2.PackageLoader('gentestutilsunion'),
@@ -835,8 +836,8 @@ def generate_test_files(name_to_dir_file: str) -> None:
     # Ensure the test output directories exist.
     test_dirs = [output_dirs.element, output_dirs.offscreen]
     for sub_dir in set(name_to_sub_dir.values()):
-        test_dirs.append(f'{output_dirs.element}/{sub_dir}')
-        test_dirs.append(f'{output_dirs.offscreen}/{sub_dir}')
+        test_dirs.append(output_dirs.element / sub_dir)
+        test_dirs.append(output_dirs.offscreen / sub_dir)
     for d in test_dirs:
         try:
             os.mkdir(d)
