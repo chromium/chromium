@@ -5707,14 +5707,6 @@ crbug.com/326122314 external/wpt/css/css-viewport/zoom/scroll-top-test-with-zoom
 # Disable step failure trigger flaky tests
 crbug.com/1358333 [ Mac ] external/wpt/webmessaging/event.origin.sub.htm [ Failure Pass ]
 
-
-
-
-# Disable scrolling flake on win
-crbug.com/1359541 [ Win ] virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/mouse-scrolling-on-div-custom-scrollbar.html [ Failure Pass Timeout ]
-
-
-
 # Disable flakes on mac builders
 crbug.com/1363708 [ Mac12 Release ] http/tests/media/gc-while-network-loading.html [ Pass Timeout ]
 crbug.com/1363683 [ Mac12 ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-2d-drawImage.html [ Failure Pass ]
