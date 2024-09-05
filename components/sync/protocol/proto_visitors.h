@@ -1287,6 +1287,7 @@ VISIT_PROTO_FIELDS(const sync_pb::SendTabToSelfSpecifics& proto) {
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SessionHeader& proto) {
+  VISIT(session_start_time_unix_epoch_millis);
   VISIT_REP(window);
   VISIT(client_name);
   VISIT_ENUM(device_type);

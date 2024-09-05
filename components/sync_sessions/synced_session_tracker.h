@@ -176,6 +176,11 @@ class SyncedSessionTracker {
       sync_pb::SyncEnums_DeviceType local_device_type,
       syncer::DeviceInfo::FormFactor local_device_form_factor);
 
+  // Populate the start-time of the local session. This should be called once,
+  // when syncing of sessions gets enabled (and then never again, unless syncing
+  // of sessions gets disabled and enabled again).
+  void SetLocalSessionStartTime(base::Time local_session_start_time);
+
   // Gets the session tag previously set with InitLocalSession().
   const std::string& GetLocalSessionTag() const;
 

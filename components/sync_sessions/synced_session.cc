@@ -223,6 +223,14 @@ const std::string& SyncedSession::GetSessionName() const {
   return session_name_;
 }
 
+void SyncedSession::SetStartTime(base::Time start_time) {
+  start_time_ = start_time;
+}
+
+std::optional<base::Time> SyncedSession::GetStartTime() const {
+  return start_time_;
+}
+
 void SyncedSession::SetModifiedTime(const base::Time& modified_time) {
   modified_time_ = modified_time;
 }
@@ -247,6 +255,10 @@ sync_pb::SessionHeader SyncedSession::ToSessionHeaderProto() const {
   for (const auto& [window_id, window] : windows) {
     sync_pb::SessionWindow* w = header.add_window();
     w->CopyFrom(window->ToSessionWindowProto());
+  }
+  if (start_time_) {
+    header.set_session_start_time_unix_epoch_millis(
+        start_time_->InMillisecondsSinceUnixEpoch());
   }
   header.set_client_name(session_name_);
   header.set_device_type(device_type);

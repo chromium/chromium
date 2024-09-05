@@ -143,13 +143,15 @@ std::optional<syncer::ModelError> SessionSyncBridge::MergeFullSyncData(
   DCHECK(!syncing_);
   DCHECK(change_processor()->IsTrackingMetadata());
 
-  StartLocalSessionEventHandler();
+  store_->mutable_tracker()->SetLocalSessionStartTime(base::Time::Now());
+
+  StartLocalSessionEventHandler(/*is_new_session=*/true);
 
   return ApplyIncrementalSyncChanges(std::move(metadata_change_list),
                                      std::move(entity_data));
 }
 
-void SessionSyncBridge::StartLocalSessionEventHandler() {
+void SessionSyncBridge::StartLocalSessionEventHandler(bool is_new_session) {
   // We should be ready to propagate local state to sync.
   DCHECK(change_processor()->IsTrackingMetadata());
   DCHECK(!syncing_);
@@ -161,7 +163,8 @@ void SessionSyncBridge::StartLocalSessionEventHandler() {
   // store.
   syncing_->local_session_event_handler =
       std::make_unique<LocalSessionEventHandlerImpl>(
-          /*delegate=*/this, sessions_client_, store_->mutable_tracker());
+          /*delegate=*/this, sessions_client_, store_->mutable_tracker(),
+          is_new_session);
 
   syncing_->open_tabs_ui_delegate = std::make_unique<OpenTabsUIDelegateImpl>(
       sessions_client_, store_->tracker(),
@@ -364,7 +367,7 @@ void SessionSyncBridge::OnSyncStarting(
     // If initial sync was already done, MergeFullSyncData() will never be
     // called so we need to start syncing local changes.
     if (change_processor()->IsTrackingMetadata()) {
-      StartLocalSessionEventHandler();
+      StartLocalSessionEventHandler(/*is_new_session=*/false);
     }
     return;
   }
@@ -396,7 +399,7 @@ void SessionSyncBridge::OnStoreInitialized(
   // If initial sync was already done, MergeFullSyncData() will never be called
   // so we need to start syncing local changes.
   if (change_processor()->IsTrackingMetadata()) {
-    StartLocalSessionEventHandler();
+    StartLocalSessionEventHandler(/*is_new_session=*/false);
   }
 }
 

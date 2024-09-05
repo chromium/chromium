@@ -317,23 +317,88 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, Sanity) {
   ScopedWindowMap old_windows;
   GURL url = embedded_test_server()->GetURL("/sync/simple.html");
   ASSERT_TRUE(OpenTab(0, url));
-  ASSERT_TRUE(GetLocalWindows(0, &old_windows));
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  EXPECT_TRUE(GetLocalWindows(0, &old_windows));
+  EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
 
   // Get foreign session data from client 0.
   SyncedSessionVector sessions;
-  ASSERT_FALSE(GetSessionData(0, &sessions));
-  ASSERT_EQ(0U, sessions.size());
+  EXPECT_FALSE(GetSessionData(0, &sessions));
+  EXPECT_EQ(0U, sessions.size());
 
   // Verify client didn't change.
   ScopedWindowMap new_windows;
   ASSERT_TRUE(GetLocalWindows(0, &new_windows));
-  ASSERT_TRUE(WindowsMatch(old_windows, new_windows));
+  EXPECT_TRUE(WindowsMatch(old_windows, new_windows));
 
   WaitForURLOnServer(url);
 
   EXPECT_THAT(GetFakeServer()->GetCommittedHistoryURLs(),
               UnorderedElementsAre(url.spec()));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, PRE_SessionStartTime) {
+  const base::Time initial_time = base::Time::Now();
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  ASSERT_TRUE(CheckInitialState(0));
+
+  // Add a tab and wait for it to sync.
+  GURL url =
+      embedded_test_server()->GetURL("www.host1.com", "/sync/simple.html");
+  ASSERT_TRUE(OpenTab(0, url));
+  EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+
+  WaitForURLOnServer(url);
+
+  // Ensure the session start time was properly populated in the header.
+  std::vector<sync_pb::SyncEntity> entities =
+      fake_server_->GetSyncEntitiesByDataType(syncer::SESSIONS);
+  EXPECT_EQ(entities.size(), 2u);
+  bool found_header = false;
+  for (const sync_pb::SyncEntity& entity : entities) {
+    const sync_pb::SessionSpecifics session = entity.specifics().session();
+    if (session.has_header()) {
+      found_header = true;
+      EXPECT_TRUE(session.header().has_session_start_time_unix_epoch_millis());
+      EXPECT_GE(base::Time::FromMillisecondsSinceUnixEpoch(
+                    session.header().session_start_time_unix_epoch_millis()),
+                initial_time);
+    }
+  }
+  EXPECT_TRUE(found_header);
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, SessionStartTime) {
+  const base::Time initial_time = base::Time::Now();
+  ASSERT_TRUE(SetupClients()) << "SetupSync() failed.";
+
+  // Open another tab and wait for it to sync, just to ensure everything's up
+  // to date.
+  GURL url =
+      embedded_test_server()->GetURL("www.host2.com", "/sync/simple.html");
+  ASSERT_TRUE(OpenTab(0, url));
+  EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+
+  WaitForURLOnServer(url);
+
+  // Ensure the session start time in the header was *not* updated.
+  std::vector<sync_pb::SyncEntity> entities =
+      fake_server_->GetSyncEntitiesByDataType(syncer::SESSIONS);
+  EXPECT_EQ(entities.size(), 2u);
+  bool found_header = false;
+  for (const sync_pb::SyncEntity& entity : entities) {
+    const sync_pb::SessionSpecifics session = entity.specifics().session();
+    if (session.has_header()) {
+      found_header = true;
+      EXPECT_TRUE(session.header().has_session_start_time_unix_epoch_millis());
+      // `initial_time` is after the browser restart, so the session start time
+      // should be before that.
+      EXPECT_LT(base::Time::FromMillisecondsSinceUnixEpoch(
+                    session.header().session_start_time_unix_epoch_millis()),
+                initial_time);
+    }
+  }
+  EXPECT_TRUE(found_header);
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, NavigateInTab) {

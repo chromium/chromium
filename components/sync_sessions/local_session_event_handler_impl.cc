@@ -113,7 +113,8 @@ LocalSessionEventHandlerImpl::Delegate::~Delegate() = default;
 LocalSessionEventHandlerImpl::LocalSessionEventHandlerImpl(
     Delegate* delegate,
     SyncSessionsClient* sessions_client,
-    SyncedSessionTracker* session_tracker)
+    SyncedSessionTracker* session_tracker,
+    bool is_new_session)
     : delegate_(delegate),
       sessions_client_(sessions_client),
       session_tracker_(session_tracker) {
@@ -123,6 +124,10 @@ LocalSessionEventHandlerImpl::LocalSessionEventHandlerImpl(
 
   current_session_tag_ = session_tracker_->GetLocalSessionTag();
   DCHECK(!current_session_tag_.empty());
+
+  if (is_new_session) {
+    session_tracker_->SetLocalSessionStartTime(base::Time::Now());
+  }
 
   if (!IsSessionRestoreInProgress(sessions_client)) {
     OnSessionRestoreComplete();
