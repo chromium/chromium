@@ -576,11 +576,10 @@ void PlusAddressService::OnClickedRefreshInlineSuggestion(
                                  /*is_off_the_record=*/false)
       .RefreshPlusAddressForSuggestion(
           updated_suggestions[current_suggestion_index]);
-  // TODO(crbug.com/362445807): Introduce a new trigger source and exempt it
-  // from timing checks and popup paint checks.
   std::move(update_suggestions_callback)
       .Run(std::move(updated_suggestions),
-           autofill::AutofillSuggestionTriggerSource::kUnspecified);
+           autofill::AutofillSuggestionTriggerSource::
+               kPlusAddressUpdatedInBrowserProcess);
 }
 
 void PlusAddressService::OnShowedInlineSuggestion(
@@ -613,7 +612,8 @@ void PlusAddressService::OnShowedInlineSuggestion(
             profile_or_error->plus_address, suggestions[suggestion_index]);
         std::move(update_callback)
             .Run(std::move(suggestions),
-                 autofill::AutofillSuggestionTriggerSource::kUnspecified);
+                 autofill::AutofillSuggestionTriggerSource::
+                     kPlusAddressUpdatedInBrowserProcess);
       },
       std::vector<Suggestion>(current_suggestions.begin(),
                               current_suggestions.end()),

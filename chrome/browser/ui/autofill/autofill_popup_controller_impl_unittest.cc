@@ -147,6 +147,28 @@ TEST_F(AutofillPopupControllerImplTest,
   client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
 }
 
+// Tests that reshowing the suggestions does not update the threshold if the
+// trigger source is `kPlusAddressUpdatedInBrowserProcess`.
+TEST_F(AutofillPopupControllerImplTest,
+       AcceptSuggestionTimeoutIsNotUpdatedOnPlusAddressUpdate) {
+  EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion);
+
+  ShowSuggestions(manager(), {SuggestionType::kCreateNewPlusAddressInline});
+
+  client().popup_controller(manager()).OnPopupPainted();
+  // Calls before the threshold are ignored.
+  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
+  task_environment()->FastForwardBy(base::Milliseconds(400));
+
+  // Update the suggestions.
+  ShowSuggestions(
+      manager(), {SuggestionType::kCreateNewPlusAddressInline},
+      AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess);
+  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
+}
+
 TEST_F(AutofillPopupControllerImplTest, SubPopupIsCreatedWithViewFromParent) {
   base::WeakPtr<AutofillSuggestionController> sub_controller =
       client().popup_controller(manager()).OpenSubPopup(
@@ -389,6 +411,17 @@ TEST_F(AutofillPopupControllerImplTest,
   // testing the popup here.
   test::GenerateTestAutofillPopup(&manager().external_delegate());
 
+  EXPECT_TRUE(client()
+                  .popup_controller(manager())
+                  .ShouldIgnoreMouseObservedOutsideItemBoundsCheck());
+}
+
+TEST_F(AutofillPopupControllerImplTest,
+       PlusAddressUpdateTriggerSource_IgnoresClickOutsideCheck) {
+  ShowSuggestions(
+      manager(), {SuggestionType::kAddressEntry},
+      AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess);
+  test::GenerateTestAutofillPopup(&manager().external_delegate());
   EXPECT_TRUE(client()
                   .popup_controller(manager())
                   .ShouldIgnoreMouseObservedOutsideItemBoundsCheck());

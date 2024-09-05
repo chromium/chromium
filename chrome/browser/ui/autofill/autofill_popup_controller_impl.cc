@@ -36,6 +36,7 @@
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/compose/core/browser/config.h"
@@ -58,6 +59,19 @@
 namespace autofill {
 
 namespace {
+
+// Trigger sources for which no paint checks are enforced on the popup row
+// level.
+constexpr DenseSet<AutofillSuggestionTriggerSource>
+    kTriggerSourcesExemptFromPaintChecks = {
+        AutofillSuggestionTriggerSource::kManualFallbackAddress,
+        AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess};
+
+// Trigger sources for which the `NextIdleBarrier` is not reset. Note that this
+// requires that the trigger sources is only used to update the popup.
+constexpr DenseSet<AutofillSuggestionTriggerSource>
+    kTriggerSourcesExemptFromTimeReset = {
+        AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess};
 
 using SuggestionFiltrationResult =
     std::pair<std::vector<Suggestion>,
@@ -118,6 +132,7 @@ bool ShouldLogPopupInteractionShown(
     case AutofillSuggestionTriggerSource::kTextFieldDidChange:
     case AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge:
     case AutofillSuggestionTriggerSource::kPredictionImprovements:
+    case AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess:
       return false;
   }
 }
@@ -231,9 +246,10 @@ void AutofillPopupControllerImpl::Show(
 
   trigger_source_ = trigger_source;
   should_ignore_mouse_observed_outside_item_bounds_check_ =
-      trigger_source_ ==
-      AutofillSuggestionTriggerSource::kManualFallbackAddress;
-  barrier_for_accepting_.reset();
+      kTriggerSourcesExemptFromPaintChecks.contains(trigger_source_);
+  if (!kTriggerSourcesExemptFromTimeReset.contains(trigger_source_)) {
+    barrier_for_accepting_.reset();
+  }
 
   if (view_) {
     OnSuggestionsChanged();
