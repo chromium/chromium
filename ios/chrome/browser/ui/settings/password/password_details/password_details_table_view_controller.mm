@@ -1722,8 +1722,8 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
       initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                            target:self
                            action:@selector(dismissView)];
-  self.backButtonItem = cancelButton;
-  self.navigationItem.leftBarButtonItem = self.backButtonItem;
+  self.customLeftBarButtonItem = cancelButton;
+  self.navigationItem.leftBarButtonItem = self.customLeftBarButtonItem;
 }
 
 // TODO(crbug.com/322967526): Add timer to display the spinner for min amount of

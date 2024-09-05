@@ -593,8 +593,8 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
   [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
       performAction:grey_tap()];
 
-  // Tap Cancel Button.
-  [[EarlGrey selectElementWithMatcher:NavigationBarCancelButton()]
+  // Tap the "Done" button to dismiss the view.
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
       performAction:grey_tap()];
 
   // Check that the address details page is no longer visible.

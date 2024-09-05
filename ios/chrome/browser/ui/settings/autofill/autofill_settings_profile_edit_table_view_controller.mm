@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/autofill/autofill_settings_profile_edit_table_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/common/features.h"
@@ -16,6 +17,7 @@
 #import "ios/chrome/browser/ui/settings/autofill/autofill_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_settings_profile_edit_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
+#import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -72,6 +74,36 @@ const CGFloat kSymbolSize = 22;
   self.tableView.accessibilityIdentifier = kAutofillProfileEditTableViewId;
 
   [self loadModel];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+
+  SettingsNavigationController* navigationController =
+      base::apple::ObjCCast<SettingsNavigationController>(
+          self.navigationController);
+  if (!navigationController) {
+    return;
+  }
+
+  // Add a "Done" button to the navigation bar if this view controller is the
+  // first in the navigation stack. This "Done" button's purpose being to
+  // dismiss the presented view.
+  if (navigationController.viewControllers.count > 0 &&
+      navigationController.viewControllers.firstObject == self) {
+    UIBarButtonItem* doneButton = [navigationController doneButton];
+
+    // If not in edit mode, set the newly created "Done" button as the left bar
+    // button item. Otherwise, don't override the "Cancel" button that's shown
+    // when in edit mode.
+    if (!self.tableView.editing) {
+      self.navigationItem.leftBarButtonItem = doneButton;
+    }
+
+    // Set `customLeftBarButtonItem` with the "Done" button, so that it'll be
+    // used as the left bar button item when exiting edit mode.
+    self.customLeftBarButtonItem = doneButton;
+  }
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -141,6 +173,10 @@ const CGFloat kSymbolSize = 22;
                   itemsInSectionWithIdentifier:
                       AutofillProfileDetailsSectionIdentifierMigrationButton]];
   }
+}
+
+- (BOOL)showCancelDuringEditing {
+  return YES;
 }
 
 #pragma mark - UITableViewDataSource

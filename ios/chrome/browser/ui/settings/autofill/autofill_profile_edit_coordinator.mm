@@ -106,15 +106,6 @@
   }
 
   CHECK(self.baseNavigationController);
-  // Add a "Cancel" button to the navigation bar if there's no other view
-  // controller in the navigation stack.
-  if (self.baseNavigationController.viewControllers.count == 0) {
-    SettingsNavigationController* settingsNavigationController =
-        base::apple::ObjCCastStrict<SettingsNavigationController>(
-            self.baseNavigationController);
-    self.viewController.navigationItem.leftBarButtonItem =
-        [settingsNavigationController cancelButton];
-  }
   [self.baseNavigationController pushViewController:self.viewController
                                            animated:YES];
 }
