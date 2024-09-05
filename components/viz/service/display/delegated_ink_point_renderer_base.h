@@ -14,10 +14,10 @@
 #include "components/viz/service/display/delegated_ink_trail_data.h"
 #include "components/viz/service/viz_service_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/mojom/delegated_ink_point_renderer.mojom.h"
 
 namespace gfx {
-class DelegatedInkMetadata;
 class DelegatedInkPoint;
 }  // namespace gfx
 
@@ -52,7 +52,7 @@ class VIZ_SERVICE_EXPORT DelegatedInkPointRendererBase
   // This function is called after Delegated Ink's points are submitted to be
   // drawn on screen, and fires a histogram with the time between points' event
   // creation and the points' draw submission to the OS.
-  void ReportPointsDrawn() const;
+  void ReportPointsDrawn();
 
  protected:
   // `pointer_ids_` is not emptied each time after the points are drawn, because
@@ -98,6 +98,15 @@ class VIZ_SERVICE_EXPORT DelegatedInkPointRendererBase
   std::unordered_map<int32_t, DelegatedInkTrailData> pointer_ids_;
 
   mojo::Receiver<gfx::mojom::DelegatedInkPointRenderer> receiver_{this};
+
+  // The timestamp in which a Delegated Ink point that matches the metadata was
+  // first painted.
+  std::optional<base::TimeTicks> metadata_paint_time_;
+
+  // `metadata_` gets deleted and re-set on every paint cycle. This variable
+  // persists the metadata value to avoid incorrect repetitions of histogram
+  // fires for the same metadata.
+  std::optional<gfx::DelegatedInkMetadata> previous_metadata_;
 };
 
 }  // namespace viz

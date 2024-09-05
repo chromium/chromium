@@ -31,6 +31,7 @@ inline constexpr int kMaximumNumberOfDelegatedInkPoints = 128;
 class GFX_EXPORT DelegatedInkMetadata {
  public:
   DelegatedInkMetadata() = default;
+  bool operator==(const DelegatedInkMetadata& o) const = default;
   DelegatedInkMetadata(const PointF& pt,
                        double diameter,
                        SkColor color,

@@ -1662,8 +1662,8 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
     return GetPointsForPointerId(pointer_id).size();
   }
 
-  const std::map<base::TimeTicks, gfx::PointF>& GetPointsForPointerId(
-      int32_t pointer_id) {
+  const std::map<base::TimeTicks, gfx::DelegatedInkPoint>&
+  GetPointsForPointerId(int32_t pointer_id) {
     DCHECK(ink_renderer()->GetPointsMapForTest().find(pointer_id) !=
            ink_renderer()->GetPointsMapForTest().end());
     return ink_renderer()
@@ -1869,9 +1869,9 @@ TEST_F(SkiaDelegatedInkRendererTest, SkiaDelegatedInkRendererFilteringPoints) {
   EXPECT_EQ(kInitialDelegatedPoints - kInkPointForMetadata,
             StoredPointsForPointerId(kPointerId));
   EXPECT_EQ(metadata.point(),
-            GetPointsForPointerId(kPointerId).begin()->second);
+            GetPointsForPointerId(kPointerId).begin()->second.point());
   EXPECT_EQ(last_ink_point(kPointerId).point(),
-            GetPointsForPointerId(kPointerId).rbegin()->second);
+            GetPointsForPointerId(kPointerId).rbegin()->second.point());
   EXPECT_EQ(ink_point(0).pointer_id(), kPointerId);
 
   // Confirm that the metadata is cleared when DrawDelegatedInkTrail() is
@@ -1890,9 +1890,9 @@ TEST_F(SkiaDelegatedInkRendererTest, SkiaDelegatedInkRendererFilteringPoints) {
   EXPECT_EQ(gfx::kMaximumNumberOfDelegatedInkPoints,
             StoredPointsForPointerId(kPointerId));
   EXPECT_EQ(ink_point(kPointsBeyondMaxAllowed).point(),
-            GetPointsForPointerId(kPointerId).begin()->second);
+            GetPointsForPointerId(kPointerId).begin()->second.point());
   EXPECT_EQ(last_ink_point(kPointerId).point(),
-            GetPointsForPointerId(kPointerId).rbegin()->second);
+            GetPointsForPointerId(kPointerId).rbegin()->second.point());
   EXPECT_EQ(last_ink_point(kPointerId).pointer_id(), kPointerId);
 
   // Now send metadata with a timestamp before all of the points that are
@@ -1972,9 +1972,9 @@ TEST_F(SkiaDelegatedInkRendererTest,
   EXPECT_EQ(kNumPointsForPointerId0 - kInkPointForMetadata,
             StoredPointsForPointerId(kPointerIds[0]));
   EXPECT_EQ(metadata.point(),
-            GetPointsForPointerId(kPointerIds[0]).begin()->second);
+            GetPointsForPointerId(kPointerIds[0]).begin()->second.point());
   EXPECT_EQ(last_ink_point(kPointerIds[0]).point(),
-            GetPointsForPointerId(kPointerIds[0]).rbegin()->second);
+            GetPointsForPointerId(kPointerIds[0]).rbegin()->second.point());
 
   // Confirm that neither of the other pointer ids were impacted.
   for (uint64_t i = 1; i < kPointerIds.size(); ++i) {
@@ -2195,6 +2195,76 @@ TEST_F(SkiaDelegatedInkRendererTest, SkiaDelegatedInkTimeToDrawMillis) {
                                   kPointerId);
   ink_renderer()->ReportPointsDrawn();
   histogram_tester.ExpectTotalCount(kHistogramName, 4);
+}
+
+TEST_F(SkiaDelegatedInkRendererTest,
+       SkiaDelegatedInkTimeFromDelegatedInkToApiPaint) {
+  const std::string kHistogramName =
+      "Renderer.DelegatedInkTrail.Skia.TimeFromDelegatedInkToApiPaint";
+  const base::HistogramTester histogram_tester;
+  constexpr int32_t kPointerId = 1u;
+  const auto create_metadata = [](gfx::PointF& p, base::TimeTicks& t) {
+    return gfx::DelegatedInkMetadata(p, /*diameter=*/45.f, SK_ColorBLACK, t,
+                                     gfx::RectF(0, 0, 100, 100), t,
+                                     /*hovering=*/false);
+  };
+  SetUpRenderers();
+
+  ink_renderer()->ReportPointsDrawn();
+  // No histogram should be fired when `metadata_paint_time_` is not set.
+  histogram_tester.ExpectTotalCount(kHistogramName, 0);
+
+  // Original timestamp and coordinates to be advanced for subsequent points
+  // sent.
+  base::TimeTicks timestamp = base::TimeTicks::Now();
+  gfx::PointF point(45.f, 78.f);
+  const auto advance_point = [&]() {
+    timestamp += base::Milliseconds(10);
+    point += gfx::Vector2d(3.f, 3.f);
+  };
+
+  // Set up a trail, create a point and a metadata and call ReportPointsDrawn.
+  CreateAndStoreDelegatedInkPoint(point, timestamp, kPointerId);
+  SendMetadata(create_metadata(point, timestamp));
+  ink_renderer()->ReportPointsDrawn();
+  EXPECT_NE(std::nullopt, GetPointsForPointerId(kPointerId)
+                              .find(timestamp)
+                              ->second.paint_timestamp());
+  ink_renderer()->ReportPointsDrawn();
+
+  // Add two delegated ink points to the trail and paint them.
+  advance_point();
+  CreateAndStoreDelegatedInkPoint(point, timestamp, kPointerId);
+  advance_point();
+  CreateAndStoreDelegatedInkPoint(point, timestamp, kPointerId);
+  ink_renderer()->ReportPointsDrawn();
+  // After drawing the points, all of them should have a `paint_timestamp_` set.
+  for (auto& [_, p] : GetPointsForPointerId(kPointerId)) {
+    EXPECT_NE(std::nullopt, p.paint_timestamp());
+  }
+
+  // Send a metadata that matches the last painted point.
+  SendMetadata(create_metadata(point, timestamp));
+  ink_renderer()->ReportPointsDrawn();
+  histogram_tester.ExpectTotalCount(kHistogramName, 1);
+
+  // The histogram should not be fired when the metadata has not been updated.
+  ink_renderer()->ReportPointsDrawn();
+  histogram_tester.ExpectTotalCount(kHistogramName, 1);
+  // Send same metadata as before and report drawing. The histogram should not
+  // be fired.
+  SendMetadata(create_metadata(point, timestamp));
+  ink_renderer()->ReportPointsDrawn();
+  histogram_tester.ExpectTotalCount(kHistogramName, 1);
+
+  // Send a new point, draw, a new metadata that matches the new point, draw
+  // again and ensure that a new histogram is fired.
+  advance_point();
+  CreateAndStoreDelegatedInkPoint(point, timestamp, kPointerId);
+  ink_renderer()->ReportPointsDrawn();
+  SendMetadata(create_metadata(point, timestamp));
+  ink_renderer()->ReportPointsDrawn();
+  histogram_tester.ExpectTotalCount(kHistogramName, 2);
 }
 
 enum class DelegatedInkType { kPlatformInk, kSkiaInk };

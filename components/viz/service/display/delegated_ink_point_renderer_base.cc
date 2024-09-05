@@ -10,7 +10,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/service/display/delegated_ink_trail_data.h"
-#include "ui/gfx/delegated_ink_metadata.h"
 
 namespace viz {
 
@@ -36,8 +35,10 @@ void DelegatedInkPointRendererBase::SetDelegatedInkMetadata(
     std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {
   // Frame time is set later than everything else due to what is available
   // at time of creation, so confirm that it was actually set.
-  DCHECK_NE(metadata->frame_time(), base::TimeTicks());
+  CHECK_NE(metadata->frame_time(), base::TimeTicks());
   metadata_ = std::move(metadata);
+  const bool metadata_is_new = previous_metadata_ != *metadata_;
+  previous_metadata_ = *metadata_;
 
   TRACE_EVENT_WITH_FLOW1(
       "delegated_ink_trails",
@@ -50,6 +51,11 @@ void DelegatedInkPointRendererBase::SetDelegatedInkMetadata(
   if (pointer_id_.has_value() &&
       pointer_ids_[pointer_id_.value()].ContainsMatchingPoint(
           metadata_.get())) {
+    if (metadata_is_new) {
+      metadata_paint_time_ = pointer_ids_[pointer_id_.value()]
+                                 .GetMatchingPoint(metadata_.get())
+                                 .paint_timestamp();
+    }
     return;
   }
 
@@ -57,6 +63,8 @@ void DelegatedInkPointRendererBase::SetDelegatedInkMetadata(
   for (auto& it : pointer_ids_) {
     if (it.second.ContainsMatchingPoint(metadata_.get())) {
       pointer_id_ = it.first;
+      metadata_paint_time_ =
+          it.second.GetMatchingPoint(metadata_.get()).paint_timestamp();
       return;
     }
   }
@@ -120,8 +128,7 @@ DelegatedInkPointRendererBase::FilterPoints() {
   // Any remaining points must be the points that should be part of the
   // delegated ink trail
   std::vector<gfx::DelegatedInkPoint> points_to_draw;
-  for (auto it : trail_data.GetPoints()) {
-    gfx::DelegatedInkPoint point{it.second, it.first, pointer_id_.value()};
+  for (const auto& [_, point] : trail_data.GetPoints()) {
     points_to_draw.emplace_back(point);
     TRACE_EVENT_WITH_FLOW1("delegated_ink_trails", "Filtering to draw point",
                            TRACE_ID_GLOBAL(point.trace_id()),
@@ -153,21 +160,35 @@ void DelegatedInkPointRendererBase::ResetPrediction() {
                        TRACE_EVENT_SCOPE_THREAD);
 }
 
-void DelegatedInkPointRendererBase::ReportPointsDrawn() const {
+void DelegatedInkPointRendererBase::ReportPointsDrawn() {
+  const base::TimeTicks now = base::TimeTicks::Now();
+  // If there is a point that matches the metadata and the histogram has not yet
+  // been fired, then this is the first frame that the metadata point will be
+  // recorded by `updateInkTrailStartPoint`.
+  if (metadata_paint_time_.has_value()) {
+    base::UmaHistogramCustomTimes(
+        "Renderer.DelegatedInkTrail.Skia.TimeFromDelegatedInkToApiPaint",
+        now - metadata_paint_time_.value(), base::Milliseconds(1),
+        base::Seconds(1), 50);
+    metadata_paint_time_ = std::nullopt;
+  }
+
   if (!pointer_id_.has_value()) {
     return;
   }
   CHECK(pointer_ids_.contains(pointer_id_.value()));
-  const auto& points_trail = pointer_ids_.at(pointer_id_.value()).GetPoints();
+  auto& points_trail = pointer_ids_.at(pointer_id_.value()).GetPoints();
   base::UmaHistogramCounts100(
       "Renderer.DelegatedInkTrail.Skia.OutstandingPointsToDraw",
       points_trail.size());
 
-  const base::TimeTicks now = base::TimeTicks::Now();
-  for (auto point_kv : points_trail) {
+  for (auto& [_, point] : points_trail) {
     UMA_HISTOGRAM_TIMES(
         "Renderer.DelegatedInkTrail.Skia.TimeToDrawPointsMillis",
-        now - point_kv.first);
+        now - point.timestamp());
+    if (!point.paint_timestamp().has_value()) {
+      point.set_paint_timestamp(now);
+    }
   }
 }
 
