@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_url_loader.h"
@@ -44,6 +45,13 @@ SearchPrefetchService* GetSearchPrefetchService(
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   if (!profile) {
     return nullptr;
+  }
+  // If the feature is enabled, ensure SearchPrefetchService so that the
+  // navigation can consult the search prefetch cache regardless of if
+  // SearchPrefetchService has been accessed before this line, for example,
+  // during browser startup.
+  if (base::FeatureList::IsEnabled(kEnsureSearchPrefetchServiceOnInterceptor)) {
+    return SearchPrefetchServiceFactory::GetForProfile(profile);
   }
   return SearchPrefetchServiceFactory::GetForProfileIfExists(profile);
 }
