@@ -154,7 +154,7 @@ class AuctionUrlLoaderFactoryProxyTest : public testing::TestWithParam<bool> {
         /*renderer_process_id=*/kRenderProcessId, is_for_seller_,
         client_security_state_.Clone(), GURL(kScriptUrl), wasm_url_,
         trusted_signals_base_url_, needs_cors_for_additional_bid_,
-        /*frame_tree_node_id=*/RenderFrameHost::kNoFrameTreeNodeId);
+        /*frame_tree_node_id=*/FrameTreeNodeId());
 
     EXPECT_EQ(preconnect_url_, trusted_signals_base_url_);
     if (trusted_signals_base_url_) {

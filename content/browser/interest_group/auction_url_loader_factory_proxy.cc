@@ -74,7 +74,7 @@ AuctionURLLoaderFactoryProxy::AuctionURLLoaderFactoryProxy(
     const std::optional<GURL>& wasm_url,
     const std::optional<GURL>& trusted_signals_base_url,
     bool needs_cors_for_additional_bid,
-    int frame_tree_node_id)
+    FrameTreeNodeId frame_tree_node_id)
     : receiver_(this, std::move(pending_receiver)),
       get_frame_url_loader_factory_(std::move(get_frame_url_loader_factory)),
       get_trusted_url_loader_factory_(
@@ -322,7 +322,7 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
   }
 
   bool network_instrumentation_enabled = false;
-  if (owner_frame_tree_node_id_ != FrameTreeNode::kFrameTreeNodeInvalidId) {
+  if (owner_frame_tree_node_id_) {
     FrameTreeNode* owner_frame_tree_node =
         FrameTreeNode::GloballyFindByID(owner_frame_tree_node_id_);
     new_request.throttling_profile_id =
@@ -354,7 +354,7 @@ void AuctionURLLoaderFactoryProxy::Clone(
 }
 
 AuctionNetworkEventsProxy::AuctionNetworkEventsProxy(
-    int owner_frame_tree_node_id)
+    FrameTreeNodeId owner_frame_tree_node_id)
     : owner_frame_tree_node_id_(owner_frame_tree_node_id) {}
 
 AuctionNetworkEventsProxy::~AuctionNetworkEventsProxy() = default;
@@ -433,7 +433,7 @@ bool AuctionURLLoaderFactoryProxy::CouldBeTrustedSignalsUrl(
 
 mojo::PendingRemote<network::mojom::DevToolsObserver>
 AuctionURLLoaderFactoryProxy::CreateDevtoolsObserver() {
-  if (owner_frame_tree_node_id_ != FrameTreeNode::kFrameTreeNodeInvalidId) {
+  if (owner_frame_tree_node_id_) {
     FrameTreeNode* initiator_frame_tree_node =
         FrameTreeNode::GloballyFindByID(owner_frame_tree_node_id_);
 

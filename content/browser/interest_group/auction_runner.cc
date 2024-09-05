@@ -490,14 +490,13 @@ void AuctionRunner::FailAuction(
         auction_.GetKAnonKeysToJoin());
     interest_group_manager_->EnqueueReports(
         InterestGroupManagerImpl::ReportType::kDebugLoss,
-        std::move(debug_loss_report_urls),
-        FrameTreeNode::kFrameTreeNodeInvalidId, frame_origin_,
+        std::move(debug_loss_report_urls), FrameTreeNodeId(), frame_origin_,
         *client_security_state_, url_loader_factory_);
 
     interest_group_manager_->EnqueueRealTimeReports(
         auction_.TakeRealTimeReportingContributions(),
-        ad_auction_page_data_callback_, FrameTreeNode::kFrameTreeNodeInvalidId,
-        frame_origin_, *client_security_state_, url_loader_factory_);
+        ad_auction_page_data_callback_, FrameTreeNodeId(), frame_origin_,
+        *client_security_state_, url_loader_factory_);
 
     InterestGroupAuctionReporter::OnFledgePrivateAggregationRequests(
         private_aggregation_manager_, main_frame_origin_,

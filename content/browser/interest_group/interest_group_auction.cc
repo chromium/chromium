@@ -2551,7 +2551,8 @@ InterestGroupAuction::InterestGroupAuction(
   // Warm up decoder.
   get_data_decoder_callback_.Run(config->seller);
 
-  int frame_tree_node_id = auction_worklet_manager_->GetFrameTreeNodeID();
+  FrameTreeNodeId frame_tree_node_id =
+      auction_worklet_manager_->GetFrameTreeNodeID();
   if (devtools_instrumentation::NeedInterestGroupAuctionEvents(
           frame_tree_node_id)) {
     devtools_instrumentation::OnInterestGroupAuctionEventOccurred(
@@ -3199,7 +3200,8 @@ void InterestGroupAuction::NotifyConfigPromisesResolved() {
 
   auction_metrics_recorder_->OnConfigPromisesResolved();
 
-  int frame_tree_node_id = auction_worklet_manager_->GetFrameTreeNodeID();
+  FrameTreeNodeId frame_tree_node_id =
+      auction_worklet_manager_->GetFrameTreeNodeID();
   if (devtools_instrumentation::NeedInterestGroupAuctionEvents(
           frame_tree_node_id)) {
     devtools_instrumentation::OnInterestGroupAuctionEventOccurred(

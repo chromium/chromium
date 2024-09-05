@@ -90,8 +90,8 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         })");
 
 mojo::PendingRemote<network::mojom::DevToolsObserver> CreateDevtoolsObserver(
-    int frame_tree_node_id) {
-  if (frame_tree_node_id != FrameTreeNode::kFrameTreeNodeInvalidId) {
+    FrameTreeNodeId frame_tree_node_id) {
+  if (frame_tree_node_id) {
     FrameTreeNode* initiator_frame_tree_node =
         FrameTreeNode::GloballyFindByID(frame_tree_node_id);
 
@@ -108,7 +108,7 @@ mojo::PendingRemote<network::mojom::DevToolsObserver> CreateDevtoolsObserver(
 std::unique_ptr<network::ResourceRequest> BuildUncredentialedRequest(
     GURL url,
     const url::Origin& frame_origin,
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     const network::mojom::ClientSecurityState& client_security_state,
     bool is_post_method) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
@@ -128,7 +128,7 @@ std::unique_ptr<network::ResourceRequest> BuildUncredentialedRequest(
       client_security_state.Clone();
 
   bool network_instrumentation_enabled = false;
-  if (frame_tree_node_id != FrameTreeNode::kFrameTreeNodeInvalidId) {
+  if (frame_tree_node_id) {
     FrameTreeNode* frame_tree_node =
         FrameTreeNode::GloballyFindByID(frame_tree_node_id);
 
@@ -523,7 +523,7 @@ void InterestGroupManagerImpl::GetLastMaintenanceTimeForTesting(
 void InterestGroupManagerImpl::EnqueueReports(
     ReportType report_type,
     std::vector<GURL> report_urls,
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     const url::Origin& frame_origin,
     const network::mojom::ClientSecurityState& client_security_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
@@ -574,7 +574,7 @@ void InterestGroupManagerImpl::EnqueueReports(
 void InterestGroupManagerImpl::EnqueueRealTimeReports(
     std::map<url::Origin, RealTimeReportingContributions> contributions,
     AdAuctionPageDataCallback ad_auction_page_data_callback,
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     const url::Origin& frame_origin,
     const network::mojom::ClientSecurityState& client_security_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
@@ -997,7 +997,7 @@ void InterestGroupManagerImpl::TrySendingOneReport() {
       std::move(report_requests_.front());
   report_requests_.pop_front();
 
-  int frame_tree_node_id = report_request->frame_tree_node_id;
+  FrameTreeNodeId frame_tree_node_id = report_request->frame_tree_node_id;
 
   base::UmaHistogramCounts100000(
       base::StrCat(
@@ -1040,7 +1040,7 @@ void InterestGroupManagerImpl::TrySendingOneReport() {
 
 void InterestGroupManagerImpl::OnOneReportSent(
     std::unique_ptr<network::SimpleURLLoader> simple_url_loader,
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     const std::string& devtools_request_id,
     scoped_refptr<net::HttpResponseHeaders> response_headers) {
   DCHECK_GT(num_active_, 0);

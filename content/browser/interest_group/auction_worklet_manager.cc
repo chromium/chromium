@@ -84,7 +84,7 @@ GetAuctionWorkletPermissionsPolicyState(RenderFrameHostImpl* auction_runner_rfh,
 
 const size_t AuctionWorkletManager::kBatchSize;
 
-int AuctionWorkletManager::GetFrameTreeNodeID() {
+FrameTreeNodeId AuctionWorkletManager::GetFrameTreeNodeID() {
   return delegate_->GetFrame()->frame_tree_node()->frame_tree_node_id();
 }
 

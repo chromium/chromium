@@ -376,7 +376,7 @@ void InterestGroupAuctionReporter::InitializeFromServerResponse(
 
 base::RepeatingClosure
 InterestGroupAuctionReporter::OnNavigateToWinningAdCallback(
-    int frame_tree_node_id) {
+    FrameTreeNodeId frame_tree_node_id) {
   return base::BindRepeating(
       &InterestGroupAuctionReporter::OnNavigateToWinningAd,
       weak_ptr_factory_.GetWeakPtr(), frame_tree_node_id);
@@ -1073,7 +1073,7 @@ void InterestGroupAuctionReporter::OnReportingComplete(
 }
 
 void InterestGroupAuctionReporter::OnNavigateToWinningAd(
-    int frame_tree_node_id) {
+    FrameTreeNodeId frame_tree_node_id) {
   if (navigated_to_winning_ad_) {
     return;
   }
@@ -1171,7 +1171,8 @@ void InterestGroupAuctionReporter::SendPendingReportsIfNavigated() {
   if (!navigated_to_winning_ad_) {
     return;
   }
-  int frame_tree_node_id = auction_worklet_manager_->GetFrameTreeNodeID();
+  FrameTreeNodeId frame_tree_node_id =
+      auction_worklet_manager_->GetFrameTreeNodeID();
   interest_group_manager_->EnqueueReports(
       InterestGroupManagerImpl::ReportType::kSendReportTo,
       std::move(pending_report_urls_), frame_tree_node_id, frame_origin_,

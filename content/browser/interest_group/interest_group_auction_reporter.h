@@ -290,7 +290,8 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // navigated to the winning ad. May be invoked multiple times, safe to invoke
   // after destruction. `this` will not invoke the callback passed to Start()
   // until the callback this method returns has been invoked at least once.
-  base::RepeatingClosure OnNavigateToWinningAdCallback(int frame_tree_node_id);
+  base::RepeatingClosure OnNavigateToWinningAdCallback(
+      FrameTreeNodeId frame_tree_node_id);
 
   const std::vector<std::string>& errors() const { return errors_; }
 
@@ -434,7 +435,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // Invoked when the winning ad has been navigated to. If
   // `navigated_to_winning_ad_` is false, sets it to true and invokes
   // MaybeInvokeCallback(). Otherwise, does nothing.
-  void OnNavigateToWinningAd(int frame_tree_node_id);
+  void OnNavigateToWinningAd(FrameTreeNodeId frame_tree_node_id);
 
   // Invokes callback passed in to Start() if both OnReportingComplete() and
   // OnNavigateToWinningAd() have been invoked.
