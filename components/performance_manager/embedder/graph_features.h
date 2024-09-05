@@ -47,6 +47,7 @@ class GraphFeatures {
       bool priority_tracking : 1;
       bool process_hosted_content_types_aggregator : 1;
       bool page_aggregator : 1;
+      bool frozen_frame_aggregator : 1;
       bool resource_attribution_scheduler : 1;
       bool site_data_recorder : 1;
       bool tab_page_decorator : 1;
@@ -94,6 +95,11 @@ class GraphFeatures {
     return *this;
   }
 
+  constexpr GraphFeatures& EnableFrozenFrameAggregator() {
+    flags_.frozen_frame_aggregator = true;
+    return *this;
+  }
+
   constexpr GraphFeatures& EnableResourceAttributionScheduler() {
     flags_.resource_attribution_scheduler = true;
     return *this;
@@ -133,6 +139,7 @@ class GraphFeatures {
     EnablePriorityTracking();
     EnableProcessHostedContentTypesAggregator();
     EnablePageAggregator();
+    EnableFrozenFrameAggregator();
     EnableResourceAttributionScheduler();
     EnableSiteDataRecorder();
     EnableTabPageDecorator();
