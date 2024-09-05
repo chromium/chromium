@@ -4,9 +4,12 @@
 
 #include "base/win/elevation_util.h"
 
+#include <objbase.h>
+
 #include <windows.h>
 
 #include <shlobj.h>
+#include <wrl/client.h>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -16,7 +19,9 @@
 #include "base/process/process_handle.h"
 #include "base/process/process_info.h"
 #include "base/win/access_token.h"
+#include "base/win/scoped_bstr.h"
 #include "base/win/scoped_process_information.h"
+#include "base/win/scoped_variant.h"
 #include "base/win/startup_information.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
@@ -97,6 +102,71 @@ Process RunDeElevated(const CommandLine& command_line) {
   }
 
   return process;
+}
+
+HRESULT RunDeElevatedNoWait(const CommandLine& command_line) {
+  Microsoft::WRL::ComPtr<IShellWindows> shell;
+  HRESULT hr = ::CoCreateInstance(CLSID_ShellWindows, nullptr,
+                                  CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&shell));
+  if (FAILED(hr)) {
+    return hr;
+  }
+
+  LONG hwnd = 0;
+  Microsoft::WRL::ComPtr<IDispatch> dispatch;
+  hr = shell->FindWindowSW(base::win::ScopedVariant(CSIDL_DESKTOP).AsInput(),
+                           base::win::ScopedVariant().AsInput(), SWC_DESKTOP,
+                           &hwnd, SWFO_NEEDDISPATCH, &dispatch);
+  if (hr == S_FALSE || FAILED(hr)) {
+    return hr == S_FALSE ? E_FAIL : hr;
+  }
+
+  Microsoft::WRL::ComPtr<IServiceProvider> service;
+  hr = dispatch.As(&service);
+  if (FAILED(hr)) {
+    return hr;
+  }
+
+  Microsoft::WRL::ComPtr<IShellBrowser> browser;
+  hr = service->QueryService(SID_STopLevelBrowser, IID_PPV_ARGS(&browser));
+  if (FAILED(hr)) {
+    return hr;
+  }
+
+  Microsoft::WRL::ComPtr<IShellView> view;
+  hr = browser->QueryActiveShellView(&view);
+  if (FAILED(hr)) {
+    return hr;
+  }
+
+  hr = view->GetItemObject(SVGIO_BACKGROUND, IID_PPV_ARGS(&dispatch));
+  if (FAILED(hr)) {
+    return hr;
+  }
+
+  Microsoft::WRL::ComPtr<IShellFolderViewDual> folder;
+  hr = dispatch.As(&folder);
+  if (FAILED(hr)) {
+    return hr;
+  }
+
+  hr = folder->get_Application(&dispatch);
+  if (FAILED(hr)) {
+    return hr;
+  }
+
+  Microsoft::WRL::ComPtr<IShellDispatch2> shell_dispatch;
+  hr = dispatch.As(&shell_dispatch);
+  if (FAILED(hr)) {
+    return hr;
+  }
+
+  return shell_dispatch->ShellExecute(
+      base::win::ScopedBstr(command_line.GetProgram().value().c_str()).Get(),
+      base::win::ScopedVariant(command_line.GetArgumentsString().c_str()),
+      base::win::ScopedVariant::kEmptyVariant,
+      base::win::ScopedVariant::kEmptyVariant,
+      base::win::ScopedVariant::kEmptyVariant);
 }
 
 }  // namespace base::win

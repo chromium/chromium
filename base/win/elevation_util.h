@@ -27,6 +27,10 @@ BASE_EXPORT bool IsProcessRunningAtMediumOrLower(ProcessId process_id);
 // error in the failure case.
 BASE_EXPORT Process RunDeElevated(const CommandLine& command_line);
 
+// Runs `command_line` de-elevated. The function does not wait for the spawned
+// process.
+BASE_EXPORT HRESULT RunDeElevatedNoWait(const CommandLine& command_line);
+
 }  // namespace base::win
 
 #endif  // BASE_WIN_ELEVATION_UTIL_H_

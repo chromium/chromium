@@ -9,12 +9,19 @@
 #include "base/command_line.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
+#include "base/process/process_iterator.h"
+#include "base/test/test_timeouts.h"
+#include "base/threading/platform_thread.h"
+#include "base/time/time.h"
+#include "base/win/scoped_com_initializer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace base::win {
 
 namespace {
+
+constexpr wchar_t kMoreExecutable[] = L"more.com";
 
 bool IsExplorerRunningAtMediumOrLower() {
   ProcessId explorer_pid = GetExplorerPid();
@@ -36,6 +43,41 @@ TEST(ElevationUtil, RunDeElevated) {
   };
 
   ASSERT_TRUE(IsProcessRunningAtMediumOrLower(process.Pid()));
+}
+
+TEST(ElevationUtil, RunDeElevatedNoWait) {
+  if (!::IsUserAnAdmin() || !IsExplorerRunningAtMediumOrLower()) {
+    GTEST_SKIP();
+  }
+
+  ASSERT_EQ(base::GetProcessCount(kMoreExecutable, /*filter=*/nullptr), 0)
+      << "This test requires that no instances of the `more` command are "
+         "running.";
+
+  base::win::ScopedCOMInitializer com_initializer(
+      base::win::ScopedCOMInitializer::kMTA);
+  ASSERT_TRUE(com_initializer.Succeeded());
+
+  ASSERT_HRESULT_SUCCEEDED(
+      RunDeElevatedNoWait(CommandLine::FromString(kMoreExecutable)));
+
+  // Wait for the process to start running.
+  int i = 0;
+  for (; i < 5; ++i) {
+    base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
+    if (base::GetProcessCount(kMoreExecutable, /*filter=*/nullptr) == 1) {
+      break;
+    }
+  }
+  ASSERT_LT(i, 5);
+
+  NamedProcessIterator iter(kMoreExecutable, /*filter=*/nullptr);
+  const ProcessEntry* process_entry = iter.NextProcessEntry();
+  ASSERT_TRUE(process_entry);
+  ASSERT_TRUE(IsProcessRunningAtMediumOrLower(process_entry->pid()));
+
+  EXPECT_TRUE(Process::Open(process_entry->pid()).Terminate(0, false));
+  ASSERT_FALSE(iter.NextProcessEntry());
 }
 
 }  // namespace base::win
