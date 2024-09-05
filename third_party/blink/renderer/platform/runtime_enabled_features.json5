@@ -2488,7 +2488,7 @@
     },
     {
       name: "LayoutJustifySelfForBlocks",
-      status: "test",
+      status: "stable",
     },
     {
       name: "LayoutNGShapeCache",
