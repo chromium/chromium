@@ -438,7 +438,8 @@ BASE_FEATURE(kTabGroupIndicator,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsTabGroupIndicatorEnabled() {
-  return base::FeatureList::IsEnabled(kTabGroupIndicator);
+  return IsTabGroupInGridEnabled() &&
+         base::FeatureList::IsEnabled(kTabGroupIndicator);
 }
 
 BASE_FEATURE(kDisableLensCamera,
