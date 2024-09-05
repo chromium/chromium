@@ -114,6 +114,7 @@
 //  }
 
 #include <iomanip>
+#include <ranges>
 #include <sstream>
 #include <string_view>
 
@@ -622,26 +623,36 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
   // Replace \r\n on windows with \n to get a canonical representation.
   base::RemoveChars(*output_json_text, "\r", &(*output_json_text));
 
-    base::FilePath output_file =
-        GetParam().AddExtension(FILE_PATH_LITERAL(".new"));
-    if (input_json_text != output_json_text) {
-      // Write output if and only if it is different.
-      LOG(ERROR) << "Classifications changed. Writing new file " << output_file;
-      EXPECT_TRUE(base::WriteFile(output_file, *output_json_text));
-    } else {
-      // If output is as expected, delete stale .new files.
-      if (base::PathExists(output_file)) {
-        base::DeleteFile(output_file);
-      }
+  base::FilePath output_file =
+      GetParam().AddExtension(FILE_PATH_LITERAL(".new"));
+  if (input_json_text != output_json_text) {
+    // Write output if and only if it is different.
+    LOG(ERROR) << "Classifications changed. Writing new file " << output_file;
+    EXPECT_TRUE(base::WriteFile(output_file, *output_json_text));
+  } else {
+    // If output is as expected, delete stale .new files.
+    if (base::PathExists(output_file)) {
+      base::DeleteFile(output_file);
     }
+  }
 
   EXPECT_EQ(old_stats, new_stats);
 
   // Too large inputs crash the test.
   if (input_json_text.size() < 20000) {
-    EXPECT_EQ(input_json_text, output_json_text);
+    EXPECT_EQ(input_json_text, *output_json_text);
   } else {
-    EXPECT_TRUE(input_json_text == output_json_text);
+    EXPECT_EQ(input_json_text.length(), output_json_text->length());
+    auto mismatch = std::ranges::mismatch(input_json_text, *output_json_text);
+    if (mismatch.in1 != input_json_text.end()) {
+      int offset = mismatch.in1 - input_json_text.begin();
+      offset = std::max(offset - 128, 0);
+      EXPECT_TRUE(input_json_text == *output_json_text)
+          << "input_json_text, output_json_text differ but are too large to be "
+             "printed\ninput_json_text and output_json_text are:\n"
+          << "..." << input_json_text.substr(offset, 256) << "...\n"
+          << "..." << output_json_text->substr(offset, 256) << "...";
+    }
   }
 }
 
