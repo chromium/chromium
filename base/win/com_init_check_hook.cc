@@ -298,7 +298,7 @@ class HookManager {
 
   // Indirect call to original_co_create_instance_body_function_ triggers CFI
   // so this function must have CFI disabled.
-  static DISABLE_CFI_ICALL HRESULT __stdcall DCheckedCoCreateInstance(
+  DISABLE_CFI_ICALL static HRESULT __stdcall DCheckedCoCreateInstance(
       const CLSID& rclsid,
       IUnknown* pUnkOuter,
       DWORD dwClsContext,

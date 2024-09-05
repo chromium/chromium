@@ -83,7 +83,7 @@ class InputStream final : public media::mojom::AudioInputStream,
           reason_to_report);
   void OnStreamPlatformError();
   void CallDeleter();
-  void SendLogMessage(const char* format, ...) PRINTF_FORMAT(2, 3);
+  PRINTF_FORMAT(2, 3) void SendLogMessage(const char* format, ...);
 
   SEQUENCE_CHECKER(owning_sequence_);
 

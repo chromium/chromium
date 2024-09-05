@@ -100,8 +100,9 @@ DLLEXPORT int __cdecl ChromeMain(HINSTANCE instance,
 extern "C" {
 // This function must be marked with NO_STACK_PROTECTOR or it may crash on
 // return, see the --change-stack-guard-on-fork command line flag.
-__attribute__((visibility("default"))) int NO_STACK_PROTECTOR
-ChromeMain(int argc, const char** argv);
+NO_STACK_PROTECTOR __attribute__((visibility("default"))) int ChromeMain(
+    int argc,
+    const char** argv);
 }
 #else
 #error Unknown platform.

@@ -16,7 +16,7 @@
 # with guards against non-Clang compilers; see the definition of NO_SANITIZE in
 # Chromium), e.g.
 #
-# __attribute__((no_sanitize("cfi-unrelated-cast")))
+# [[clang::no_sanitize("cfi-unrelated-cast")]]
 
 [cfi-unrelated-cast|cfi-derived-cast]
 
