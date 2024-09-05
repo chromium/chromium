@@ -337,7 +337,7 @@ class TabListMediator implements TabListNotificationHandler {
     private final GridCardOnClickListenerProvider mGridCardOnClickListenerProvider;
     private final TabGridDialogHandler mTabGridDialogHandler;
     private final Supplier<PriceWelcomeMessageController> mPriceWelcomeMessageControllerSupplier;
-    private @NonNull final ActionConfirmationManager mActionConfirmationManager;
+    private final @Nullable ActionConfirmationManager mActionConfirmationManager;
     private final Runnable mOnTabGroupCreation;
     private final TabModelObserver mTabModelObserver;
     private final TabActionListener mTabClosedListener;
@@ -900,7 +900,7 @@ class TabListMediator implements TabListNotificationHandler {
             @NonNull Supplier<PriceWelcomeMessageController> priceWelcomeMessageControllerSupplier,
             String componentName,
             @TabActionState int initialTabActionState,
-            @NonNull ActionConfirmationManager actionConfirmationManager,
+            @Nullable ActionConfirmationManager actionConfirmationManager,
             @Nullable Runnable onTabGroupCreation) {
         mContext = context;
         mModel = model;
@@ -1104,7 +1104,9 @@ class TabListMediator implements TabListNotificationHandler {
                         Tab closingTab = tabModel.getTabById(tabId);
                         if (closingTab == null) return;
 
-                        if (mActionsOnAllRelatedTabs || filter.isIncognito()) {
+                        if (mActionsOnAllRelatedTabs
+                                || filter.isIncognito()
+                                || mActionConfirmationManager == null) {
                             doCloseTab(tabId, closingTab, filter, /* allowUndo= */ true);
                             return;
                         }

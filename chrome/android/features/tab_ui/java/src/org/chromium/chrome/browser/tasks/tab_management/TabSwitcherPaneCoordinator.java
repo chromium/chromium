@@ -208,10 +208,14 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             .build();
 
             mContainerViewModel = containerViewModel;
-            Profile profile = mProfileProviderSupplier.get().getOriginalProfile();
+
             TabGroupModelFilter filter = (TabGroupModelFilter) tabModelFilterSupplier.get();
+            Profile profile = mProfileProviderSupplier.get().getOriginalProfile();
             ActionConfirmationManager actionConfirmationManager =
-                    new ActionConfirmationManager(profile, mActivity, filter, mModalDialogManager);
+                    filter.isIncognitoBranded()
+                            ? null
+                            : new ActionConfirmationManager(
+                                    profile, mActivity, filter, mModalDialogManager);
 
             mDialogControllerSupplier =
                     LazyOneshotSupplier.fromSupplier(
@@ -273,6 +277,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             tabModelFilterSupplier,
                             mMultiThumbnailCardProvider,
                             /* actionOnRelatedTabs= */ true,
+                            actionConfirmationManager,
                             getGridCardOnClickListenerProvider(),
                             /* dialogHandler= */ null,
                             TabProperties.TabActionState.CLOSABLE,

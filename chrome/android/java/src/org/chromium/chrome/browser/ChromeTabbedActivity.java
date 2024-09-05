@@ -809,7 +809,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     new ActionConfirmationManager(
                             mTabModelProfileSupplier.get(),
                             this,
-                            null,
+                            /* regularTabGroupModelFilter= */ null,
                             getModalDialogManagerSupplier().get());
 
             mLayoutManager =
