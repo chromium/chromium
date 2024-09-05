@@ -553,8 +553,9 @@ void OmniboxViewIOS::OnCopy() {
   [item setObject:base::SysUTF16ToNSString(text)
            forKey:UTTypePlainText.identifier];
 
-  if (write_url)
+  if (write_url && url.is_valid()) {
     [item setObject:net::NSURLWithGURL(url) forKey:UTTypeURL.identifier];
+  }
 
   StoreItemInPasteboard(item);
 
