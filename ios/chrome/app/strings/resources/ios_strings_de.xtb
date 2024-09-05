@@ -473,6 +473,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4169535189173047238">Nicht zulassen</translation>
 <translation id="4172051516777682613">Immer anzeigen</translation>
 <translation id="4181841719683918333">Sprachen</translation>
+<translation id="4184063163998877398">{count,plural, =1{{count} schwaches Passwort}other{{count} schwache Passwörter}}</translation>
 <translation id="4195643157523330669">In neuem Tab öffnen</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} Element ist nur auf diesem Gerät gespeichert. Wenn du es auf deinen anderen Geräten verwenden möchtest, speichere es in deinem Google-Konto {email}.}other{{count} Elemente sind nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto {email}.}}</translation>
 <translation id="421070604241073551">Wenn diese Option aktiviert ist, werden Daten in deinem Google-Konto gespeichert. Ist sie deaktiviert, werden die Daten nur auf diesem Gerät gespeichert.</translation>
@@ -664,6 +665,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="5439618055789623719">Angemeldet als <ph name="USER_EMAIL" /></translation>
 <translation id="5444892875087332195">Lesezeichen</translation>
 <translation id="5454211924362324495">Wenn du verhindern möchtest, dass andere dein Passwort verwenden, <ph name="BEGIN_LINK" />ändere es auf <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
+<translation id="5457082343331641453">Deiner Suche hinzufügen</translation>
 <translation id="5478327362747197944">Du kannst Kalendertermine durch Klicken auf ein Datum auf einer Webseite direkt erstellen.</translation>
 <translation id="5482922178977937393">Möchtest du auf deine Interessen abgestimmte Benachrichtigungen zu aktuellen Nachrichten, Sport und mehr erhalten?</translation>
 <translation id="5483838506518938965">Fertig!</translation>
@@ -905,6 +907,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="6732087373923685049">Kamera</translation>
 <translation id="6746338529702829275">Kontodaten prüfen</translation>
 <translation id="6748108480210050150">Von</translation>
+<translation id="6755200887046212842">Konten verwalten</translation>
 <translation id="6779455296366983087">Deine Browserdaten werden gelöscht</translation>
 <translation id="6790502149545262384">Bald wirst du beim Öffnen eines neuen Tabs „<ph name="CHANNEL_NAME" />“-Artikel sehen.</translation>
 <translation id="6800349425672670802">Über den Tab-Wechsler kannst du auf alle geöffneten Tabs zugreifen.</translation>

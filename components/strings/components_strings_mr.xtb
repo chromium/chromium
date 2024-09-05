@@ -293,6 +293,7 @@
 <translation id="1507202001669085618">&lt;p&gt;ऑनलाइन येण्यापूर्वी तुम्हाला साइन इन करावे लागेल अशी व्यवस्था असलेले वाय-फाय पोर्टल वापरत असल्यास तुम्हाला ही एरर दिसून येईल.&lt;/p&gt;
     &lt;p&gt;एरर निघून जाण्यासाठी, तुम्ही उघडण्याचा प्रयत्न करत असलेल्या पेजवर &lt;strong&gt;कनेक्ट&lt;/strong&gt; वर क्लिक करा.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">इतिहास नोंदींची सूची</translation>
+<translation id="1515436033764190215">तासांपूर्वी</translation>
 <translation id="151720253492607760">अनुमती नाकारणे सुरू ठेवा</translation>
 <translation id="1517433312004943670">फोन नंबर आवश्यक आहे</translation>
 <translation id="1519264250979466059">बिल्ड तारीख</translation>
@@ -386,7 +387,6 @@
 <translation id="1668071460721346172">ईमेल मिळवा</translation>
 <translation id="1671391448414634642">आतापासून <ph name="SOURCE_LANGUAGE" />मधील पेज <ph name="TARGET_LANGUAGE" />मध्ये भाषांतरित केली जातील.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ते <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1674542638006317838"><ph name="BEGIN_LINK" />लेगसी तंत्रज्ञानासंबंधित इव्‍हेंट<ph name="END_LINK" /> होत आहेत अशा तुम्ही भेट देता त्या पेजच्या URLs ची मर्यादित सूची.</translation>
 <translation id="1682696192498422849">शॉर्ट एज प्रथम</translation>
 <translation id="168693727862418163">हे धोरण मूल्य त्याच्या स्कीमासोबत प्रमाणित करता आले नाही आणि त्याच्याकडे दुर्लक्ष केले जाईल.</translation>
 <translation id="168841957122794586">सर्व्हर सर्टिफिकेटमध्ये एक कमकुवत क्रिप्टोग्राफिक की आहे.</translation>
@@ -749,6 +749,7 @@
 <translation id="2337852623177822836">सेटिंग तुमच्या ॲडमिनिस्ट्रेटरने नियंत्रित केलेले आहे</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> जोडू इच्छिते</translation>
 <translation id="2346319942568447007">तुम्ही कॉपी केलेली इमेज</translation>
+<translation id="2348509731468399833">किमतीचा माग ठेवणे थांबवले आहे.</translation>
 <translation id="2349957959687031096">गुप्त टॅब उघडा बटण, खाजगीरीत्या ब्राउझ करण्यासाठी नवीन गुप्त टॅब उघडण्याकरिता ॲक्टिव्हेट करा</translation>
 <translation id="2350796302381711542"><ph name="HANDLER_HOSTNAME" /> ला <ph name="REPLACED_HANDLER_TITLE" /> ऐवजी सर्व <ph name="PROTOCOL" /> लिंक उघडण्यासाठी अनुमती द्यायची?</translation>
 <translation id="2353297238722298836">कॅमेरा आणि मायक्रोफोनला अनुमती आहे</translation>
@@ -912,6 +913,7 @@
 <translation id="2651465929321991146">इतिहास आणि टॅब</translation>
 <translation id="2653659639078652383">सबमिट करा</translation>
 <translation id="2655752832536625875">बाथरूम</translation>
+<translation id="2656194288057285221">Chrome संबंधित टीप डिसमिस करण्यासाठीचे बटण, डिसमिस करण्यासाठी एंटर प्रेस करा</translation>
 <translation id="2657637947725373811">{0,plural, =1{गोपनीय फाइल ट्रान्सफर करायची आहे का?}other{गोपनीय फाइल ट्रान्सफर करायच्या आहेत का?}}</translation>
 <translation id="2658843814961855121">कामगार आणि रोजगार कायदा</translation>
 <translation id="2660779039299703961">इव्‍हेंट</translation>
@@ -1251,6 +1253,7 @@
 <translation id="3324983252691184275">किरमिजी</translation>
 <translation id="3325027355611702542">कँपर आणि RVs</translation>
 <translation id="3325568918769906282">उतरत्या क्रमाने</translation>
+<translation id="3325662270238538525">फाइलचे नाव, फाइलमधील आशयाची डिजिटल फिंगरप्रिंट, डाउनलोड स्रोत आणि मेटाडेटा यांसह फाइलचा अलीकडील अ‍ॅक्सेस व त्यामधील फेरबदल</translation>
 <translation id="3329013043687509092">संपृक्तता</translation>
 <translation id="3333762389743153920">व्हर्च्युअल कार्डसाठी पात्र नाही</translation>
 <translation id="3336044043987989409">तुमच्या खाजगी नेटवर्कवरील डिव्हाइस किंवा सर्व्हरशी कनेक्ट करण्याची अनुमती देण्यासाठी रीलोड करा बटण प्रेस करा.</translation>
@@ -1528,7 +1531,6 @@
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />" यासाठी सर्वोत्तम जुळण्या</translation>
 <translation id="3789155188480882154">आकार १६</translation>
 <translation id="3789841737615482174">स्थापना करा</translation>
-<translation id="3790417903123637354">काहीतरी चूक झाली. नंतर पुन्हा प्रयत्न करा</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> इं)</translation>
 <translation id="3792826587784915501">कल्ट आणि इंडी चित्रपट</translation>
 <translation id="3793574014653384240">अलीकडे झालेल्या क्रॅशची संख्या आणि कारणे</translation>
@@ -2349,8 +2351,10 @@
 <translation id="5331585574693522196">डीफॉल्ट म्हणून सेट करा</translation>
 <translation id="5332219387342487447">पाठविण्‍याची पद्धत</translation>
 <translation id="5332769172018416402">मेसेज पाठवून विचारा</translation>
+<translation id="5334013548165032829">तपशीलवार सिस्टम लॉग</translation>
 <translation id="5334145288572353250">पत्ता सेव्ह करायचा आहे का?</translation>
 <translation id="5340250774223869109">अ‍ॅप्लिकेशन ब्लॉक केले आहे</translation>
+<translation id="5342693890921195472">मिनिटांपूर्वी</translation>
 <translation id="534295439873310000">NFC डिव्हाइस</translation>
 <translation id="5344522958567249764">जाहिरातींशी संबंधित गोपनीयता व्यवस्थापित करा</translation>
 <translation id="5344579389779391559">या पेजवर कदाचित तुमच्याकडून शुल्क आकारले जाऊ शकते</translation>
@@ -2822,6 +2826,7 @@
 <translation id="6228346913624365233">लक्झरी वाहने</translation>
 <translation id="6229196330202833460">चित्रपट आणि टीव्ही स्ट्रीम करणे</translation>
 <translation id="6234122620015464377">प्रत्येक दस्तऐवजानंतर ट्रिम करा</translation>
+<translation id="6234310016144827337">तुमचे कनेक्शन तपासा आणि पुन्हा प्रयत्न करा</translation>
 <translation id="6236290670123303279">सेटिंग्ज व्यवस्थापित करा</translation>
 <translation id="623825323736974198">अशा साइट व्यवस्थापित करा, ज्या नेहमी अ‍ॅक्टिव्ह राहतील आणि त्यांची मेमरी मोकळी केली जाणार नाही</translation>
 <translation id="6240447795304464094">Google Pay लोगो</translation>
@@ -3639,6 +3644,7 @@
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, एक्स्पायर होईल <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">शिपिंग</translation>
 <translation id="7682451652090915298">रग्बी</translation>
+<translation id="768344142657640519">तुम्ही नुकतीच भेट दिली आहे</translation>
 <translation id="7684683146428206649">मेटल</translation>
 <translation id="7684817988830401358">ब्राउझिंग डेटा बटण हटवा, Chrome सेटिंग्जमध्ये तुमचा ब्राउझिंग इतिहास, कुकी, कॅशे आणि बरेच काही हटवण्यासाठी ॲक्टिव्हेट करा</translation>
 <translation id="7684928361160505327">{0,plural, =1{धोरणामुळे <ph name="FILE_NAME" /> ब्लॉक केली गेली}other{धोरणामुळे <ph name="FILE_COUNT" /> ब्लॉक केल्या गेल्या}}</translation>
@@ -3658,6 +3664,7 @@
 <translation id="7705992072972338699">ऑप्टिकल डिस्क (हाय-ग्लॉस)</translation>
 <translation id="7706689436519265630">तुम्ही कॉपी केलेल्या किंवा हलवलेल्या फाइल विश्लेषणासाठी Google Cloud किंवा तृतीय पक्षांकडे पाठवल्या जातात. उदाहरणार्थ, त्या संवेदनशील डेटा किंवा मालवेअरसाठी स्कॅन केल्या जाऊ शकतात आणि कंपनीच्या धोरणांनुसार स्टोअर केल्या जाऊ शकतात.</translation>
 <translation id="7709911732293795808">विमा</translation>
+<translation id="7714351089363296478">तुम्ही नुकतीच भेट दिली आहे</translation>
 <translation id="7714404809393719981">फोटो (सेमी-ग्लॉस)</translation>
 <translation id="7714424966701020172">संपूर्ण नाव भरा हा पर्याय निवडला होता</translation>
 <translation id="7714464543167945231">सर्टिफिकेट</translation>

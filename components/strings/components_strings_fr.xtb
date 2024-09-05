@@ -293,6 +293,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1507202001669085618">&lt;p&gt;Ce message s'affiche si vous utilisez un portail Wi-Fi auquel vous devez vous connecter pour accéder à Internet.&lt;/p&gt;
     &lt;p&gt;Pour corriger cette erreur, cliquez sur &lt;strong&gt;Se connecter&lt;/strong&gt; sur la page que vous essayez d'ouvrir.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Liste des entrées de l'historique</translation>
+<translation id="1515436033764190215">h plus tôt</translation>
 <translation id="151720253492607760">Continuer à ne pas autoriser</translation>
 <translation id="1517433312004943670">Veuillez saisir le numéro de téléphone.</translation>
 <translation id="1519264250979466059">Date de création</translation>
@@ -386,7 +387,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1668071460721346172">Recevoir un e-mail</translation>
 <translation id="1671391448414634642">Les pages en <ph name="SOURCE_LANGUAGE" /> seront désormais traduites en <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> vers <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1674542638006317838">Liste limitée des URL des pages que vous consultez sur lesquelles ont lieu des <ph name="BEGIN_LINK" />événements technologiques anciens<ph name="END_LINK" />.</translation>
 <translation id="1682696192498422849">Bord court en premier</translation>
 <translation id="168693727862418163">La valeur de la règle n'a pas été validée par rapport à son schéma et sera ignorée.</translation>
 <translation id="168841957122794586">Le certificat du serveur contient une clé de chiffrement faible.</translation>
@@ -749,6 +749,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2337852623177822836">Paramètre contrôlé par votre administrateur</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> tente de s'associer</translation>
 <translation id="2346319942568447007">Image copiée</translation>
+<translation id="2348509731468399833">Suivi des prix interrompu.</translation>
 <translation id="2349957959687031096">Bouton "Ouvrir un onglet de navigation privée" à activer pour ouvrir un nouvel onglet de navigation privée</translation>
 <translation id="2350796302381711542">Autoriser <ph name="HANDLER_HOSTNAME" /> à ouvrir tous les liens <ph name="PROTOCOL" /> à la place de <ph name="REPLACED_HANDLER_TITLE" /> ?</translation>
 <translation id="2353297238722298836">Caméra et micro autorisés</translation>
@@ -912,6 +913,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2651465929321991146">Historique et onglets</translation>
 <translation id="2653659639078652383">Envoyer</translation>
 <translation id="2655752832536625875">Salle de bains</translation>
+<translation id="2656194288057285221">Bouton "Fermer l'astuce Chrome", appuyer sur Entrée pour fermer</translation>
 <translation id="2657637947725373811">{0,plural, =1{Transférer le fichier confidentiel ?}one{Transférer le fichier confidentiel ?}other{Transférer les fichiers confidentiels ?}}</translation>
 <translation id="2658843814961855121">Droit du travail</translation>
 <translation id="2660779039299703961">Événement</translation>
@@ -1251,6 +1253,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3324983252691184275">Pourpre</translation>
 <translation id="3325027355611702542">Camping-cars et véhicules aménagés</translation>
 <translation id="3325568918769906282">dans l'ordre décroissant</translation>
+<translation id="3325662270238538525">Accès récents à des fichiers et modifications apportées, y compris les noms de fichiers, les empreintes numériques du contenu des fichiers, la source des téléchargements et les métadonnées</translation>
 <translation id="3329013043687509092">Saturation</translation>
 <translation id="3333762389743153920">Non éligible pour la carte virtuelle</translation>
 <translation id="3336044043987989409">Appuyez sur le bouton d'actualisation pour autoriser la connexion aux appareils ou aux serveurs de votre réseau privé.</translation>
@@ -1529,7 +1532,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="378611282717571199">Meilleurs résultats pour "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="3789155188480882154">Taille 16</translation>
 <translation id="3789841737615482174">Installer</translation>
-<translation id="3790417903123637354">Un problème est survenu. Réessayez plus tard</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> pouces)</translation>
 <translation id="3792826587784915501">Films cultes et indépendants</translation>
 <translation id="3793574014653384240">Nombre et causes des plantages survenus récemment</translation>
@@ -2350,8 +2352,10 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5331585574693522196">Définir par défaut</translation>
 <translation id="5332219387342487447">Mode de livraison</translation>
 <translation id="5332769172018416402">Demander dans un message</translation>
+<translation id="5334013548165032829">Journaux système détaillés</translation>
 <translation id="5334145288572353250">Enregistrer l'adresse ?</translation>
 <translation id="5340250774223869109">Application bloquée</translation>
+<translation id="5342693890921195472">min plus tôt</translation>
 <translation id="534295439873310000">Appareils NFC</translation>
 <translation id="5344522958567249764">Gérer la confidentialité des annonces</translation>
 <translation id="5344579389779391559">L'accès à la page suivante peut engendrer des frais</translation>
@@ -2822,6 +2826,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6228346913624365233">Véhicules de luxe</translation>
 <translation id="6229196330202833460">Diffusion de films et d'émissions TV en streaming</translation>
 <translation id="6234122620015464377">Couper après chaque document</translation>
+<translation id="6234310016144827337">Vérifiez la connexion, puis réessayez</translation>
 <translation id="6236290670123303279">Gérer les paramètres</translation>
 <translation id="623825323736974198">Gérez les sites qui resteront toujours actifs et pour lesquels la mémoire ne sera pas libérée</translation>
 <translation id="6240447795304464094">Logo Google Pay</translation>
@@ -3640,6 +3645,7 @@ Informations supplémentaires :
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, date d'expiration : <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">Adresse de livraison</translation>
 <translation id="7682451652090915298">Rugby</translation>
+<translation id="768344142657640519">Vous venez de le consulter</translation>
 <translation id="7684683146428206649">Métal</translation>
 <translation id="7684817988830401358">Bouton "Supprimer les données de navigation" à activer pour supprimer votre historique de navigation et les cookies, vider le cache et plus dans les paramètres Chrome</translation>
 <translation id="7684928361160505327">{0,plural, =1{<ph name="FILE_NAME" /> a été bloqué en raison des règles}one{<ph name="FILE_COUNT" /> fichier a été bloqué en raison des règles}other{<ph name="FILE_COUNT" /> fichiers ont été bloqués en raison des règles}}</translation>
@@ -3659,6 +3665,7 @@ Informations supplémentaires :
 <translation id="7705992072972338699">Disque optique (haute brillance)</translation>
 <translation id="7706689436519265630">Les fichiers que vous copiez ou déplacez sont envoyés dans Google Cloud ou à des tiers pour analyse (par exemple, pour vérifier qu'ils ne contiennent pas de données sensibles ni de logiciels malveillants et pour être stockés conformément aux règles de l'entreprise).</translation>
 <translation id="7709911732293795808">Assurances</translation>
+<translation id="7714351089363296478">Vous venez de le consulter</translation>
 <translation id="7714404809393719981">Photo (semi-brillance)</translation>
 <translation id="7714424966701020172">L'option "Indiquer le nom complet" a été sélectionnée</translation>
 <translation id="7714464543167945231">Certificat</translation>

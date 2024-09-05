@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr-CA">
 <translation id="1001033507375626788">Ce réseau est partagé avec vous</translation>
+<translation id="1001360573085135660">Cliquez sur le bouton pour activer ou désactiver l'autorisation.</translation>
 <translation id="1002085272681738789">Onglet à nouveau actif</translation>
 <translation id="1003088604756913841">Ouvrir le lien dans une nouvelle fenêtre <ph name="APP" /></translation>
 <translation id="100323615638474026">Appareil USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -3289,6 +3290,7 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3333190335304955291">Vous pouvez désactiver ce service dans le menu Paramètres.</translation>
 <translation id="3333961966071413176">Tous les contacts</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – Lecture de la vidéo en mode d'incrustation d'image en cours…</translation>
+<translation id="3335380372402547327">Aperçu des Notifications lumineuses</translation>
 <translation id="3335947283844343239">Rouvrir l'onglet fermé</translation>
 <translation id="3336855445806447827">Incertain</translation>
 <translation id="3337568642696914359">Ne pas autoriser les sites à gérer des protocoles</translation>

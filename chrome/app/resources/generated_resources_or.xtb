@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="or">
 <translation id="1001033507375626788">ଏହି ନେଟୱାର୍କକୁ ଆପଣଙ୍କ ସହ ସେୟାର୍ କରାଯାଇଛି</translation>
+<translation id="1001360573085135660">ଅନୁମତି ଟୋଗଲ କରିବାକୁ କ୍ଲିକ କରନ୍ତୁ।</translation>
 <translation id="1002085272681738789">ଟାବ ପୁଣି ସକ୍ରିୟ ହୋଇଛି</translation>
 <translation id="1003088604756913841">ନୂତନ <ph name="APP" /> ୱିଣ୍ଡୋରେ ଲିଙ୍କ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="100323615638474026">USB ଡିଭାଇସ୍ (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -3282,6 +3283,7 @@
 <translation id="3333190335304955291">ସେଟିଂସରେ ଆପଣ ଏହି ସେବାକୁ ବନ୍ଦ କରିପାରିବେ।</translation>
 <translation id="3333961966071413176">ସମସ୍ତ ଯୋଗାଯୋଗଗୁଡ଼ିକ</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - ଛବି-ଭିତରେ-ଛବି ମୋଡ୍‌ରେ ଭିଡିଓ ଚାଲୁଛି</translation>
+<translation id="3335380372402547327">ଫ୍ଲାସ ବିଜ୍ଞପ୍ତିର ପ୍ରିଭ୍ୟୁ କରନ୍ତୁ</translation>
 <translation id="3335947283844343239">ବନ୍ଦ ଥିବା ଟାବ୍ ପୁଣି ଖୋଲନ୍ତୁ</translation>
 <translation id="3336855445806447827">ନିଶ୍ଚିତ ନୁହେଁ</translation>
 <translation id="3337568642696914359">ପ୍ରୋଟୋକଲ୍ ହ୍ୟାଣ୍ଡେଲ୍ କରିବାକୁ ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ</translation>

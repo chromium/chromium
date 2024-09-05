@@ -1251,6 +1251,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6869056123412990582">datorā</translation>
 <translation id="6880903702195291049">Nav jāveic nekādas darbības ar atļaujām</translation>
 <translation id="6883204995689174413">Kopīgot</translation>
+<translation id="6883606786470492001">Pārvaldot reklāmu tēmas un citus iestatījumus, varat ierobežot to, ko vietnes var uzzināt par jums, lai rādītu personalizētas reklāmas.</translation>
 <translation id="6883906387682976294">Anulēt abonementu paziņojumiem no šīs vietnes</translation>
 <translation id="688398477366397178">Norādiet tīmekļa vietnēm, kurās valodās runājat. Kad vien iespējams, saturs tiks rādīts šajās valodās.</translation>
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{1 vietnes abonements ir anulēts.}zero{# vietņu abonementi ir anulēti.}one{# vietnes abonements ir anulēts.}other{# vietņu abonementi ir anulēti.}}</translation>

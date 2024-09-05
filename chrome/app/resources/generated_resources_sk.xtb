@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
 <translation id="1001033507375626788">Táto sieť je s vami zdieľaná</translation>
+<translation id="1001360573085135660">Kliknutím prepnite povolenie.</translation>
 <translation id="1002085272681738789">Karta je znova aktívna</translation>
 <translation id="1003088604756913841">Otvoriť odkaz v novom okne aplikácie <ph name="APP" /></translation>
 <translation id="100323615638474026">Zariadenie USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -3288,6 +3289,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3333190335304955291">Túto službu môžete vypnúť v Nastaveniach.</translation>
 <translation id="3333961966071413176">Všetky kontakty</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – video sa prehráva v režime obraz v obraze</translation>
+<translation id="3335380372402547327">Zobraziť ukážku svetelných upozornení</translation>
 <translation id="3335947283844343239">Znova otvoriť zavretú kartu</translation>
 <translation id="3336855445806447827">Neviem</translation>
 <translation id="3337568642696914359">Nepovoliť webom obsluhovať protokoly</translation>

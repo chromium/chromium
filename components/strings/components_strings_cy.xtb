@@ -387,7 +387,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1668071460721346172">Cael e-bost</translation>
 <translation id="1671391448414634642">Bydd tudalennau yn <ph name="SOURCE_LANGUAGE" /> yn cael eu cyfieithu i <ph name="TARGET_LANGUAGE" /> o hyn ymlaen.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> i <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1674542638006317838">Rhestr gyfyngedig o gyfeiriadau URL tudalennau rydych yn ymweld â nhw lle mae <ph name="BEGIN_LINK" />digwyddiadau technoleg etifeddol<ph name="END_LINK" /> yn digwydd.</translation>
 <translation id="1682696192498422849">Ymyl fer yn gyntaf</translation>
 <translation id="168693727862418163">Gwnaeth y gwerth polisi hwn fethu â dilysu yn erbyn ei sgema a bydd yn cael ei anwybyddu.</translation>
 <translation id="168841957122794586">Mae'r dystysgrif gweinydd yn cynnwys allwedd gryptograffig wan.</translation>
@@ -1533,7 +1532,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="378611282717571199">Cyfatebiadau gorau ar gyfer "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="3789155188480882154">Maint 16</translation>
 <translation id="3789841737615482174">Gosod</translation>
-<translation id="3790417903123637354">Aeth rhywbeth o'i le. Rhowch gynnig arall arni'n nes ymlaen</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> modfedd)</translation>
 <translation id="3792826587784915501">Ffilmiau Cwlt ac Indie</translation>
 <translation id="3793574014653384240">Niferoedd ac achosion y toriadau sydd wedi digwydd yn ddiweddar</translation>
@@ -2354,6 +2352,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5331585574693522196">Gosod fel Diofyn</translation>
 <translation id="5332219387342487447">Dull Anfon</translation>
 <translation id="5332769172018416402">Gofyn mewn neges</translation>
+<translation id="5334013548165032829">Cofnodion system manwl</translation>
 <translation id="5334145288572353250">Cadw'r Cyfeiriad?</translation>
 <translation id="5340250774223869109">Mae'r rhaglen wedi'i rhwystro</translation>
 <translation id="5342693890921195472">mun yn ôl</translation>

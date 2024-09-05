@@ -89,6 +89,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="2384373936468275798">ChromiumOS nemůže synchronizovat data, protože vaše přihlašovací údaje k účtu jsou zastaralé.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 zařízení HID bylo používáno jedním nebo více rozšířeními prohlížeče Chromium}=1{1 zařízení HID je používáno jedním nebo více rozšířeními prohlížeče Chromium}few{# zařízení HID jsou používána jedním nebo více rozšířeními prohlížeče Chromium}many{# zařízení HID je používáno jedním nebo více rozšířeními prohlížeče Chromium}other{# zařízení HID je používáno jedním nebo více rozšířeními prohlížeče Chromium}}</translation>
 <translation id="2401032172288869980">Chromium pro tento web potřebuje přístup k fotoaparátu a mikrofonu</translation>
+<translation id="2403703063067034158">Chyba při spuštění: právě běží jiná instance instalace, zkuste to znovu později.</translation>
 <translation id="2440750600860946460">S <ph name="BEGIN_LINK" />nástroji v prohlížeči Chromium<ph name="END_LINK" /> budete při procházení v bezpečí a budete mít vše pod kontrolou</translation>
 <translation id="2451727308784734061">Pomocí zástupce se rychle dostanete do Správce hesel. Zástupce můžete přesunout na plochu počítače nebo do spouštěče aplikací.</translation>
 <translation id="2478295928299953161">Chromium se brzy zavře</translation>
@@ -173,6 +174,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="3669334504579945026">Pokud chcete sdílet obrazovku, v Předvolbách systému povolte pro Chromium nahrávání obrazovky.</translation>
 <translation id="3685209450716071127">Chromium nemůže zkontrolovat hesla. Zkuste zkontrolovat připojení k internetu.</translation>
 <translation id="3702352323269013324">Další informace o personalizaci reklam v prohlížeči Chromium</translation>
+<translation id="3702620714724788961">Chromium načítá stránky předběžně, což zrychluje procházení a vyhledávání.</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chromium restartovali}=1{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chromium restartovali. Anonymní okno se neotevře znovu.}few{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chromium restartovali. # anonymní okna se neotevřou znovu.}many{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chromium restartovali. # anonymního okna se neotevře znovu.}other{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chromium restartovali. # anonymních oken se neotevře znovu.}}</translation>
 <translation id="3713809861844741608">Otevřít odkaz na nové kar&amp;tě prohlížeče Chromium</translation>
 <translation id="3728124580182886854">Propojte Chromium a další služby Google pro personalizaci a další účely</translation>
@@ -306,6 +308,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5889361821821684993">Chromium pravidelně kontroluje, zda je v prohlížeči vybráno nejbezpečnější nastavení. Pokud bude něco vyžadovat vaši kontrolu, dáme vám vědět.</translation>
 <translation id="5895138241574237353">Restartovat</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – přihlášení k síti</translation>
+<translation id="5921937202395756260">Chromium šetří baterii tím, že omezuje aktivitu na pozadí a vizuální efekty, jako jsou plynulé posouvání a snímková frekvence videí.</translation>
 <translation id="5924017743176219022">Připojování k internetu…</translation>
 <translation id="5929318705173562984">Chromium může tuto kartu deaktivovat, aby při procházení vše lépe fungovalo a uvolnily se zdroje.</translation>
 <translation id="5941711191222866238">Minimalizovat</translation>
@@ -369,6 +372,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6524389414524528185">Když jste přihlášeni, můžete v prohlížeči Chromium používat hesla a další položky ze svého účtu Google. V nastavení to můžete kdykoli změnit.</translation>
 <translation id="6539122709674868420">Když prohlížeč Chromium <ph name="TIMEOUT_DURATION" /> není používán, vaše organizace ho zavře. Údaje o prohlížení byly smazány. To může zahrnovat historii, automatické vyplňování a stažené soubory.</translation>
 <translation id="6542839706527980775">V každém profilu jsou uloženy soukromé údaje z Chromia, například záložky, historie, hesla a další</translation>
+<translation id="6550837808040845057">Chromium uvolňuje paměť obsazenou neaktivními kartami. Aktivní karty a jiné aplikace tak mají k dispozici více výpočetních zdrojů a prohlížeč Chromium zůstává rychlý. Když se k neaktivním kartám vrátíte, automaticky se aktivují.</translation>
 <translation id="6563921047760808519"><ph name="BEGIN_LINK" />Další informace o tom, jak prohlížeč Chromium uchovává vaše data v soukromí<ph name="END_LINK" /></translation>
 <translation id="656935081669708576">Přepnutím můžete zobrazit hesla z jiného profilu Chromium</translation>
 <translation id="6570579332384693436">Text zadaný do textových polí odesílá Chromium kvůli opravě pravopisných chyb do Googlu</translation>

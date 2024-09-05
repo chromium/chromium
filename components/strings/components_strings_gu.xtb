@@ -387,7 +387,6 @@
 <translation id="1668071460721346172">ઇમેઇલ મેળવો</translation>
 <translation id="1671391448414634642">હવેથી <ph name="SOURCE_LANGUAGE" />માં છે તે પેજનો અનુવાદ <ph name="TARGET_LANGUAGE" />માં થશે.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" />થી<ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1674542638006317838">જ્યાં <ph name="BEGIN_LINK" />જૂની ટેક્નોલોજીની ઇવેન્ટ<ph name="END_LINK" /> જોવા મળી રહી છે, તેવા તમે મુલાકાત લો છો તે પેજના URLsની મર્યાદિત સૂચિ.</translation>
 <translation id="1682696192498422849">પહેલાં ટૂંકી કિનારી</translation>
 <translation id="168693727862418163">આ પૉલિસીનું મૂલ્ય તેના સ્કીમા સામે માન્ય કરવામાં નિષ્ફળ ગયું છે અને તેને અવગણવામાં આવશે.</translation>
 <translation id="168841957122794586">સર્વર પ્રમાણપત્ર એક નબળી ક્રિપ્ટોગ્રાફિક કી ધરાવે છે.</translation>
@@ -1533,7 +1532,6 @@
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />" માટે શ્રેષ્ઠ મેળ ખાતા પરિણામો</translation>
 <translation id="3789155188480882154">કદ 16</translation>
 <translation id="3789841737615482174">ઇન્સ્ટોલ કરો</translation>
-<translation id="3790417903123637354">કંઈક ખોટું થયું હતું. થોડા સમય પછી ફરી પ્રયાસ કરો</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> ઇંચ)</translation>
 <translation id="3792826587784915501">કલ્ટ અને ઇન્ડી મૂવી</translation>
 <translation id="3793574014653384240">તાજેતરના અકસ્માતોની સંખ્યા અને કારણો</translation>
@@ -2354,6 +2352,7 @@
 <translation id="5331585574693522196">ડિફૉલ્ટ તરીકે સેટ કરો</translation>
 <translation id="5332219387342487447">શિપિંગ પદ્ધતિ</translation>
 <translation id="5332769172018416402">મેસેજમાં પૂછો</translation>
+<translation id="5334013548165032829">વિગતવાર સિસ્ટમ લૉગ</translation>
 <translation id="5334145288572353250">સરનામું સાચવીએ?</translation>
 <translation id="5340250774223869109">ઍપ્લિકેશન બ્લૉક કરેલી છે</translation>
 <translation id="5342693890921195472">મિનિટ પહેલાં</translation>

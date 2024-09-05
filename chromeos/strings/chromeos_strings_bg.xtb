@@ -76,6 +76,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Уеднаквяване с областта за сканиране</translation>
 <translation id="1343442362630695901">солено езеро</translation>
+<translation id="1348657754632799065">Лента за запис</translation>
 <translation id="1367951781824006909">Избор на файл</translation>
 <translation id="1371650399987522809">Отзиви за тапет, базиран на AI на Google</translation>
 <translation id="1374385338586507108">Дефиниране</translation>
@@ -99,6 +100,7 @@
 <translation id="1449035143498573192">Отваряне в Google Търсене</translation>
 <translation id="1451536289672181509">Устройството е клавиатура.</translation>
 <translation id="1452939186874918380">чадъри</translation>
+<translation id="145402479967797468">Контроли за възпроизвеждане</translation>
 <translation id="1459693405370120464">Времето</translation>
 <translation id="1463084054301832672">извънградска къща</translation>
 <translation id="1468664791493211953">Оферти</translation>
@@ -327,6 +329,7 @@
 <translation id="2533048460510040082">Предложено помощно съдържание</translation>
 <translation id="2536159006530886390">Няма връзка с интернет.</translation>
 <translation id="2538719227433767804">+ още <ph name="NUM_HIDDEN_OPTIONS" /></translation>
+<translation id="2560876255701405320">Списък с аудиозаписи</translation>
 <translation id="2561093647892030937">лимони</translation>
 <translation id="2570743873672969996">Изпълняван тест: <ph name="TEST_NAME" /></translation>
 <translation id="2575552334616524665">Можете да включите това от настройките или от менюто <ph name="THREE_DOTS_MENU_ICON" /></translation>
@@ -519,6 +522,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> отзива)</translation>
 <translation id="3748026146096797577">Няма връзка</translation>
 <translation id="3749289110408117711">Име на файла</translation>
+<translation id="3767737419527918477">Търсене на файлове със записи</translation>
 <translation id="3771294271822695279">Видеофайлове</translation>
 <translation id="3780740315729837296">Задаване на клавиш на клавиатурата</translation>
 <translation id="3784455785234192852">Заключване</translation>

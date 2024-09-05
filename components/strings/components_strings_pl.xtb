@@ -387,7 +387,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1668071460721346172">Odbierz e-maila</translation>
 <translation id="1671391448414634642">Od teraz strony, których językiem jest <ph name="SOURCE_LANGUAGE" />, będą tłumaczone na <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478">Z: <ph name="SOURCE_LANGUAGE" /> na: <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1674542638006317838">Ograniczona lista adresów URL odwiedzanych przez Ciebie stron, na których występują <ph name="BEGIN_LINK" />zdarzenia oparte na starszej technologii<ph name="END_LINK" />.</translation>
 <translation id="1682696192498422849">Najpierw krótsza krawędź</translation>
 <translation id="168693727862418163">Nie udało się zweryfikować tej wartości zasady względem jej schematu. Będzie ona ignorowana.</translation>
 <translation id="168841957122794586">Certyfikat serwera ma słaby klucz kryptograficzny.</translation>
@@ -1533,7 +1532,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="378611282717571199">Najlepsze wyniki dla hasła „<ph name="SEARCH_QUERY" />”</translation>
 <translation id="3789155188480882154">Rozmiar 16</translation>
 <translation id="3789841737615482174">Zainstaluj</translation>
-<translation id="3790417903123637354">Coś poszło nie tak. Spróbuj ponownie później</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> – <ph name="WIDTH" /> x <ph name="HEIGHT" /> (cale)</translation>
 <translation id="3792826587784915501">Kultowe filmy i kino niezależne</translation>
 <translation id="3793574014653384240">Liczba i przyczyny niedawnych awarii</translation>
@@ -2354,6 +2352,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5331585574693522196">Ustaw jako opcję domyślną</translation>
 <translation id="5332219387342487447">Metoda wysyłki</translation>
 <translation id="5332769172018416402">Poproś w wiadomości</translation>
+<translation id="5334013548165032829">Szczegółowe dzienniki systemowe</translation>
 <translation id="5334145288572353250">Zapisać adres?</translation>
 <translation id="5340250774223869109">Aplikacja jest zablokowana</translation>
 <translation id="5342693890921195472">min temu</translation>
@@ -4427,7 +4426,7 @@ Dodatkowe informacje:
 <translation id="9166851138617700776">Więcej informacji o reklamach sugerowanych przez witryny i pomiarze skuteczności reklam</translation>
 <translation id="9167054383925257837">informacje o przeglądarce i systemie operacyjnym urządzenia (np. nazwa przeglądarki i wersja systemu operacyjnego),</translation>
 <translation id="9167594211215946097">Mieć bezpośredni dostęp do drukarek</translation>
-<translation id="9168814207360376865">Zezwalaj stronom na sprawdzanie, czy masz zapisane formy płatności</translation>
+<translation id="9168814207360376865">Zezwalaj stronom internetowym na sprawdzanie, czy masz zapisane formy płatności</translation>
 <translation id="9169664750068251925">Zawsze blokuj w tej witrynie</translation>
 <translation id="9169931577761441333">Dodaj aplikację <ph name="APP_NAME" /> do ekranu głównego</translation>
 <translation id="9170848237812810038">&amp;Cofnij</translation>

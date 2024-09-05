@@ -1313,6 +1313,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="7111394291981742152">Chrome geeft je meer controle over de advertenties die je te zien krijgt en beperkt wat sites over jou te weten kunnen komen als ze je gepersonaliseerde advertenties tonen.</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Rechten beoordeeld voor 1 site}other{Rechten beoordeeld voor # sites}}</translation>
 <translation id="7138678301420049075">Overige</translation>
+<translation id="7139479418357139965">Je kunt contact opnemen met de afzender om een nieuwe link te vragen.</translation>
 <translation id="7140829094791862589">Sorteren op handmatige volgorde</translation>
 <translation id="7146622961999026732">Zo te zien zijn deze sites en apps belangrijk voor jou:</translation>
 <translation id="7148400116894863598"><ph name="BEGIN_LINK" />Krijg meer informatie<ph name="END_LINK" /> van <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
@@ -1475,6 +1476,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="7824665136384946951">Je organisatie heeft Safe Browsing uitgezet</translation>
 <translation id="78270725016672455">Je computer wil dit apparaat registreren om in te loggen op een site</translation>
 <translation id="7844171778363018843">Geen gegevens geselecteerd om te synchroniseren</translation>
+<translation id="7846161022626028328">Er is iets fout gegaan. Probeer het opnieuw.</translation>
 <translation id="7846296061357476882">Google-services</translation>
 <translation id="784934925303690534">Periode</translation>
 <translation id="7851858861565204677">Andere apparaten</translation>
@@ -1515,6 +1517,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8014210850410408071">Importeer daarna de wachtwoorden</translation>
 <translation id="8015452622527143194">Standaardgrootte van alles op de pagina herstellen</translation>
+<translation id="8017431260099661477">De uitnodigingslink kan niet worden geopend</translation>
 <translation id="8026238112629815203">We hebben de manier gewijzigd waarop wachtwoorden worden opgeslagen op dit apparaat</translation>
 <translation id="8027863900915310177">Kies waar je wilt downloaden</translation>
 <translation id="8030852056903932865">Goedkeuren</translation>

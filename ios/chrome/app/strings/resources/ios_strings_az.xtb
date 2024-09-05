@@ -356,6 +356,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3311748811247479259">Deaktiv</translation>
 <translation id="3324193307694657476">Ünvan 2</translation>
 <translation id="3328801116991980348">Sayt haqqında</translation>
+<translation id="333229797575847124">Bu funksiyanı aktivləşdirmə qaydası</translation>
 <translation id="3344485292736684439">{count,plural, =1{Əlfəcin hesabda ({email}) "{title}" bölməsində saxlandı}other{Əlfəcinlər hesabda ({email}) "{title}" bölməsində saxlandı}}</translation>
 <translation id="3348387552617855658">Bu kart bağlamaları izləmək imkanı və vacib çatdırılma məlumatları təmin edir.</translation>
 <translation id="3349676726073650389">İzlədiyiniz sayt və axtarışlar Google Hesabında yadda saxlanır. Ayarlarda izlədiklərinizi idarə edə bilərsiniz.</translation>
@@ -472,6 +473,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4169535189173047238">İcazə verməyin</translation>
 <translation id="4172051516777682613">Həmişə göstərin</translation>
 <translation id="4181841719683918333">Dillər</translation>
+<translation id="4184063163998877398">{count,plural, =1{{count} zəif parol}other{{count} zəif parol}}</translation>
 <translation id="4195643157523330669">Yeni tabda açın</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} element yalnız bu cihazda yadda saxlanır. Onu digər cihazlarda istifadə etmək üçün Google Hesabında ({email}) yadda saxlayın.}other{{count} element yalnız bu cihazda yadda saxlanır. Onları digər cihazlarda istifadə etmək üçün Google Hesabında ({email}) yadda saxlayın.}}</translation>
 <translation id="421070604241073551">Yanılı olduqda data Google Hesabında yadda saxlanılır. Sönülü olduqda data yalnız bu cihazda yadda saxlanılır.</translation>
@@ -600,6 +602,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="5005498671520578047">Parolu kopyalayın</translation>
 <translation id="5016420433031926653"><ph name="USER_EMAIL" /> ünvanına göndərin</translation>
 <translation id="5017529052065664584">Son 15 dəqiqə</translation>
+<translation id="5020732097997376541">"Linza ikonasına" toxunun</translation>
 <translation id="5024511550058813796">Bütün sinxronlaşdırılmış cihazlarınızda tarixçəniz olacaq, beləliklə, gördüyünüz işə davam edə bilərsiniz</translation>
 <translation id="5038113048373546701">Maraqlarınıza əsasən xəbərlər, idman və s. barədə bildiriş alın</translation>
 <translation id="5039804452771397117">İcazə verin</translation>
@@ -661,6 +664,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="5439618055789623719"><ph name="USER_EMAIL" /> kimi giriş edilib</translation>
 <translation id="5444892875087332195">Əlfəcinlər</translation>
 <translation id="5454211924362324495">Digərlərinin paroldan istifadə etməməsi üçün <ph name="BEGIN_LINK" /><ph name="WEBSITE" /> veb-saytında onu dəyişin<ph name="END_LINK" /></translation>
+<translation id="5457082343331641453">Axtarışa əlavə edin</translation>
 <translation id="5478327362747197944">Veb-səhifədə tarixə klikləməklə Təqvim tədbiri yaradın.</translation>
 <translation id="5482922178977937393">Maraqlarınıza əsasən xəbərlər, idman və s. haqqında bildiriş almaq istərdiniz?</translation>
 <translation id="5483838506518938965">Hər şey hazırdır</translation>
@@ -902,6 +906,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6746338529702829275">Hesab datasını nəzərdən keçirin</translation>
 <translation id="6748108480210050150">Kimdən</translation>
+<translation id="6755200887046212842">Hesabları İdarə edin</translation>
 <translation id="6779455296366983087">Baxış datası silinəcək</translation>
 <translation id="6790502149545262384">Tezliklə yeni tab açdığınız zaman <ph name="CHANNEL_NAME" /> saytından hekayələri görəcəksiniz.</translation>
 <translation id="6800349425672670802">Tab Keçiricisində bütün açıq tablara daxil ola bilərsiniz.</translation>
@@ -1254,6 +1259,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="9003677638446136377">Yenidən yoxlayın</translation>
 <translation id="9008201768610948239">İqnor</translation>
 <translation id="9012585441087414258">Təhlükəli sayt, endirmə və artırmalardan qoruyur. Səhifədə şübhəli fəaliyyət olarsa, URL və səhifə kontentinin bir hissəsi Google Güvənli Axtarışa göndərilir.</translation>
+<translation id="9013605037177245304">Bildirişləri aktiv edin</translation>
 <translation id="9029650858822697271">Çıxış edildi</translation>
 <translation id="9034759925968272072">Google Hesabından çıxmayacaqsınız. Google Hesabınızın <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> linkində başqa formada axtarış tarixçəsi ola bilər.</translation>
 <translation id="9039373489628511875">Ötürmə qabiliyyəti</translation>

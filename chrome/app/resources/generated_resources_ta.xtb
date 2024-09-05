@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ta">
 <translation id="1001033507375626788">இந்த நெட்வொர்க் உங்களுடன் பகிரப்பட்டுள்ளது</translation>
+<translation id="1001360573085135660">அனுமதியின் நிலையை மாற்ற கிளிக் செய்யவும்.</translation>
 <translation id="1002085272681738789">பக்கம் மீண்டும் இயக்கப்பட்டது</translation>
 <translation id="1003088604756913841">புதிய <ph name="APP" /> சாளரத்தில் இணைப்பைத் திற</translation>
 <translation id="100323615638474026">USB சாதனம் (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -3299,6 +3300,7 @@
 <translation id="3333190335304955291">இந்தச் சேவையை அமைப்புகளில் முடக்கலாம்.</translation>
 <translation id="3333961966071413176">எல்லாத் தொடர்புகளும்</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - பிக்ச்சர்-இன்-பிக்ச்சர் பயன்முறையில் வீடியோவை இயக்குகிறது</translation>
+<translation id="3335380372402547327">ஃபிளாஷ் அறிவிப்புகளின் மாதிரிக்காட்சி</translation>
 <translation id="3335947283844343239">மூடப்பட்ட தாவலை மீண்டும் திற</translation>
 <translation id="3336855445806447827">தெரியவில்லை</translation>
 <translation id="3337568642696914359">நெறிமுறைகளைக் கையாள தளங்களை அனுமதிக்காதே</translation>

@@ -383,6 +383,13 @@ Cette règle remplace la règle <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLIC
 <translation id="1295737447968372331">Activer la dictée sur l'écran de connexion</translation>
 <translation id="1297182715641689552">Utiliser un script de proxy .pac</translation>
 <translation id="1297961932043741908">Définir la quantité maximale (en mégaoctets) de mémoire qu'une instance de Chrome peut utiliser.</translation>
+<translation id="1300201563402640906">Le comparateur d'onglets est un outil optimisé par l'IA qui compare les informations entre les onglets d'un utilisateur. Par exemple, cette fonctionnalité peut être proposée à l'utilisateur lorsque plusieurs onglets contenant des produits d'une catégorie similaire sont ouverts.
+
+0 = Activer la fonctionnalité pour les utilisateurs et envoyer des données pertinentes à Google afin d'entraîner ou d'améliorer les modèles d'IA. Selon la fonctionnalité, les données pertinentes peuvent inclure des requêtes, des entrées, des sorties et des documents source. Elles pourront être examinées par des réviseurs dans le seul but d'améliorer les modèles d'IA. 0 est la valeur par défaut, sauf pour les exceptions ci-dessous.
+
+1 = Activer la fonctionnalité pour les utilisateurs, mais ne pas envoyer de données à Google afin d'entraîner ou d'améliorer les modèles d'IA. 1 est la valeur par défaut pour les utilisateurs de la version Enterprise gérés par <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> et pour les comptes Education gérés par <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Désactiver la fonctionnalité.</translation>
 <translation id="1304973015437969093">Identifiants d'extension ou d'application et URL de mise à jour à installer en arrière-plan</translation>
 <translation id="1305400589435476516">Si cette règle est activée, l'itinérance des données est autorisée sur l'appareil.
 
@@ -5646,6 +5653,7 @@ Les comptes gérés ne peuvent pas rejoindre ni créer de groupe familial, et ne
 <translation id="5330684698007383292">Autoriser <ph name="PRODUCT_FRAME_NAME" /> à gérer les types de contenu suivants</translation>
 <translation id="5331342092479819688">Autoriser les hachages non sécurisés lors de handshakes TLS</translation>
 <translation id="5331746669335642668">Les règles relatives au cloud de <ph name="PRODUCT_NAME" /> sont prioritaires sur les règles relatives à la plate-forme.</translation>
+<translation id="533287753294126753">Autoriser le comparateur d'onglets et améliorer les modèles d'IA.</translation>
 <translation id="5334404204520035180">Contrôler l'utilisation de l'API WebPrinting</translation>
 <translation id="5334501839642146593">Ne pas envoyer de statistiques à Google</translation>
 <translation id="5335910979215357815">Activer l'API Save and Share pour le contrôle <ph name="PRODUCT_OS_NAME" /> tiers.</translation>
@@ -8251,6 +8259,7 @@ L'hôte Bureau à distance Chrome est un service natif exécuté sur la machine 
 
 Ces règles sont ignorées, sauf si l'hôte Bureau à distance Chrome est installé.</translation>
 <translation id="7202925763179776247">Autoriser les restrictions de téléchargement</translation>
+<translation id="7203243973351251622">Enregistreur (pris en charge depuis la version 130)</translation>
 <translation id="7207095846245296855">Forcer Google SafeSearch</translation>
 <translation id="7211368186050418507">Ne jamais détecter automatiquement le fuseau horaire</translation>
 <translation id="721617466745658461">Autoriser les utilisateurs à sélectionner le binaire du navigateur <ph name="LACROS_NAME" /></translation>
@@ -8521,6 +8530,7 @@ Si cette règle n'est pas configurée, cela revient à la définir sur "<ph name
 
       Si cette règle n'est pas configurée, la valeur par défaut (trois minutes) est appliquée.</translation>
 <translation id="7469554574977894907">Activer les suggestions de recherche</translation>
+<translation id="7471938371309017725">Configurer l'appareil photo, les paramètres du navigateur et de l'OS, la fonction de scanner, ainsi que les fonctionnalités Web Store, Canevas, Explorer, Crosh, Galerie, Terminal et Enregistreur à désactiver</translation>
 <translation id="7472547030234093862">Définir les domaines pour lesquels utiliser DNS-over-HTTPS</translation>
 <translation id="747275827471712187">Rétablir l'ancien comportement <ph name="ATTRIBUTE_SAMESITE_NAME" /> pour les cookies sur ces sites</translation>
 <translation id="7476030153540156377">Choisir si la fonctionnalité IP Protection de <ph name="PRIVACY_SANDBOX_NAME" /> devrait être activée.</translation>
@@ -9728,6 +9738,7 @@ Si cette règle n'est pas configurée ou qu'elle est définie sur 0, l'URL sél
 <translation id="8455529558077979314">Paramètres de l'écran de confidentialité</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8465065632133292531">Paramètres pour l'URL instantanée utilisant POST</translation>
+<translation id="8466326735698755782">Autoriser le comparateur d'onglets sans améliorer les modèles d'IA.</translation>
 <translation id="8467267413626499807">Activer le service SSO flottant</translation>
 <translation id="8467463980805035993">Autoriser M'aider à lire sans améliorer les modèles d'IA.</translation>
 <translation id="846994437739309080">Si cette règle est activée (ou n'est pas configurée), les certificats TLS ajoutés par l'utilisateur depuis les magasins de confiance de la plate-forme seront utilisés pour la création de chemins pour l'authentification du serveur TLS.
@@ -10585,6 +10596,7 @@ Remarque : Le cache est vidé en cas de redémarrage de l'appareil. Les donnée
 <translation id="9088191250434406767">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs peuvent rechercher avec leur appareil photo à l'aide de <ph name="GOOGLE_LENS_PRODUCT_NAME" />. Si cette règle est désactivée, les utilisateurs ne peuvent pas voir le bouton <ph name="GOOGLE_LENS_PRODUCT_NAME" /> dans le champ de recherche lorsque la recherche <ph name="GOOGLE_LENS_PRODUCT_NAME" /> assistée par appareil photo est compatible.</translation>
 <translation id="9088433379343318874">Activer le fournisseur de contenu de l'utilisateur supervisé</translation>
 <translation id="9088444059179765143">Configurer la méthode de détection automatique du fuseau horaire</translation>
+<translation id="9095599826504830315">Ne pas autoriser le comparateur d'onglets.</translation>
 <translation id="9096772739225230999">Ne pas signaler la configuration du réseau</translation>
 <translation id="9098409326885953506">Détecter une fenêtre recouverte et interrompre le processus de rendu</translation>
 <translation id="9105265795073104888">Les applications Android n'ont accès qu'à un sous-ensemble d'options de configuration du proxy. Elles peuvent avoir été volontairement conçues pour utiliser le proxy, mais vous ne pouvez pas les forcer à effectuer cette opération.</translation>

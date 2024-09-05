@@ -76,6 +76,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">ස්කෑන් කළ හැකි ප්‍රදේශයට ගළපන්න</translation>
 <translation id="1343442362630695901">ලුණු විල</translation>
+<translation id="1348657754632799065">පටිගත කිරීමේ තීරුව</translation>
 <translation id="1367951781824006909">ගොනුවක් තෝරන්න</translation>
 <translation id="1371650399987522809">Google AI මගින් බල ගැන්වෙන වෝල්පේපරය සඳහා ප්‍රතිපෝෂණය</translation>
 <translation id="1374385338586507108">නිර්වචනය කරන්න</translation>
@@ -99,6 +100,7 @@
 <translation id="1449035143498573192">Google සෙවීම තුළ විවෘත කරන්න</translation>
 <translation id="1451536289672181509">උපාංගය යතුරු පුවරුවකි.</translation>
 <translation id="1452939186874918380">කුඩ</translation>
+<translation id="145402479967797468">පසුධාවන පාලන</translation>
 <translation id="1459693405370120464">කාලගුණය</translation>
 <translation id="1463084054301832672">කුඩාගෙය</translation>
 <translation id="1468664791493211953">දීමනා</translation>
@@ -264,6 +266,7 @@
 <translation id="2212733584906323460">විභේදනය නම් කරන්න</translation>
 <translation id="2215920961700443347">අන්තර්ජාලය නැත. අන්තර්ජාලයට සම්බන්ධ කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="2217935453350629363">වත්මන් වේගය</translation>
+<translation id="221994303562837085">පටිගත කිරීම නවත්වන්න</translation>
 <translation id="2224337661447660594">අන්තර්ජාලය නැත</translation>
 <translation id="222447520299472966">අවම වශයෙන් එක් කලා ගැලරි ඇල්බමයක් තේරිය යුතුය</translation>
 <translation id="2230005943220647148">සෙල්සියස්</translation>
@@ -326,6 +329,7 @@
 <translation id="2533048460510040082">යෝජිත උදවු අන්තර්ගතය</translation>
 <translation id="2536159006530886390">අන්තර්ජාලයට සම්බන්ධ විය නොහැකිය.</translation>
 <translation id="2538719227433767804">තව +<ph name="NUM_HIDDEN_OPTIONS" /></translation>
+<translation id="2560876255701405320">ශ්‍රව්‍ය පටිගත කිරීම් ලැයිස්තුව</translation>
 <translation id="2561093647892030937">ලෙමන්</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> පරීක්ෂාව ධාවනය කරමින්...</translation>
 <translation id="2575552334616524665">ඔබට මෙය සැකසීම් හෝ <ph name="THREE_DOTS_MENU_ICON" /> මෙනුව තුළ ක්‍රියාත්මක කළ හැක</translation>
@@ -518,6 +522,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (සමාලෝචන <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">සබැඳී නැත</translation>
 <translation id="3749289110408117711">ගොනුවේ නම</translation>
+<translation id="3767737419527918477">පටිගත කිරීමේ ගොනු සොයන්න</translation>
 <translation id="3771294271822695279">වීඩියෝ ගොනු</translation>
 <translation id="3780740315729837296">යතුරුපුවරු යතුරක් පවරන්න</translation>
 <translation id="3784455785234192852">අගුලු ලන්න</translation>

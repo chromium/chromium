@@ -88,6 +88,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="2384373936468275798">Chromium OS ei saanud andmeid sünkroonida, sest teie konto sisselogimisandmed on aegunud.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Üks või mitu Chromiumi laiendust kasutasid juurdepääsu ühele HID-seadmele}=1{Üks või mitu Chromiumi laiendust pääsevad juurde ühele HID-seadmele}other{Üks või mitu Chromiumi laiendust pääsevad juurde # HID-seadmele}}</translation>
 <translation id="2401032172288869980">Chromium vajab selle saidi puhul kaamera ja mikrofoni kasutamise luba</translation>
+<translation id="2403703063067034158">Käivitamisviga: praegu käitatakse seadistuse teist eksemplari, proovige hiljem uuesti.</translation>
 <translation id="2440750600860946460"><ph name="BEGIN_LINK" />Chromiumi tööriistadega<ph name="END_LINK" /> saate ohutult sirvida ja kõik kontrolli all hoida</translation>
 <translation id="2451727308784734061">Kasutage oma otseteed, et kiiresti Paroolihalduri juurde pääseda. Saate teisaldada otsetee arvuti avakuvale või rakenduste käivitajale.</translation>
 <translation id="2478295928299953161">Chromium sulgub peagi</translation>
@@ -172,6 +173,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="3669334504579945026">Oma ekraani jagamiseks lubage süsteemieelistustes Chromiumi ekraanisalvesti.</translation>
 <translation id="3685209450716071127">Chromium ei saa teie paroole kontrollida. Kontrollige internetiühendust.</translation>
 <translation id="3702352323269013324">Lisateave Chromiumis reklaamide isikupärastamise kohta</translation>
+<translation id="3702620714724788961">Chromium eellaadib lehed, mis muudab sirvimise ja otsimise kiiremaks.</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Administraator palub teil Chromiumi selle värskenduse rakendamiseks uuesti käivitada}=1{Administraator palub teil Chromiumi selle värskenduse rakendamiseks uuesti käivitada. Teie inkognito akent ei avata uuesti.}other{Administraator palub teil Chromiumi selle värskenduse rakendamiseks uuesti käivitada. Teie # inkognito akent ei avata uuesti.}}</translation>
 <translation id="3713809861844741608">Ava link Chromiumi uuel &amp;vahekaardil</translation>
 <translation id="3728124580182886854">Linkige Chromium ja teised Google’i teenused isikupärastamiseks ja muudel eesmärkidel</translation>
@@ -305,6 +307,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="5889361821821684993">Chromium kontrollib regulaarselt, kas teie brauseril on kõige turvalisemad seaded. Anname teile teada, kui midagi tuleb üle vaadata.</translation>
 <translation id="5895138241574237353">Taaskäivitamine</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – võrku sisselogimine</translation>
+<translation id="5921937202395756260">Chromium säästab akutoidet, piirates taustal toimuvaid tegevusi ja visuaalseid efekte, nagu sujuv kerimine ja video kaadrisagedus.</translation>
 <translation id="5924017743176219022">Internetiga ühenduse loomine …</translation>
 <translation id="5929318705173562984">Chromium võib selle vahelehe interaktiivseks teha, et täiustada teie sirvimiskogemust ja vabastada ressursse.</translation>
 <translation id="5941711191222866238">Minimeeri</translation>
@@ -368,6 +371,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="6524389414524528185">Kui olete sisse logitud, siis saate Chromiumis kasutada oma paroole ja oma Google'i konto teisi võimalusi. Saate seda seadetes alati muuta.</translation>
 <translation id="6539122709674868420">Teie organisatsioon suleb Chromiumi, kui seda ei kasutata <ph name="TIMEOUT_DURATION" /> jooksul. Sirvimisandmed kustutati. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi.</translation>
 <translation id="6542839706527980775">Igal profiilil on oma Chromiumi teave, nagu järjehoidjad, ajalugu, paroolid ja muu</translation>
+<translation id="6550837808040845057">Chromium vabastab inaktiivsete vahelehtede mälu. See annab aktiivsetele vahelehtedele ja muudele rakendustele rohkem arvutiressursse ja tagab Chromiumi kiiruse. Teie inaktiivsed vahelehed muutuvad automaatselt aktiivseks niipea, kui nendele naasete.</translation>
 <translation id="6563921047760808519">Vaadake lisateavet, <ph name="BEGIN_LINK" />kuidas Chromium teie andmeid privaatsena hoiab<ph name="END_LINK" /></translation>
 <translation id="656935081669708576">Saate lülituda, et näha paroole teiselt Chromiumi profiililt</translation>
 <translation id="6570579332384693436">Õigekirjavigade parandamiseks saadab Chromium teie tekstiväljadel sisestatud teksti Google'ile</translation>

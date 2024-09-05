@@ -76,6 +76,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ietilpināt skenēšanas apgabalā</translation>
 <translation id="1343442362630695901">sālsezers</translation>
+<translation id="1348657754632799065">Ierakstīšanas josla</translation>
 <translation id="1367951781824006909">Izvēlēties failu</translation>
 <translation id="1371650399987522809">Atsauksmes par Google MI nodrošinātām fona tapetēm</translation>
 <translation id="1374385338586507108">Definīcija</translation>
@@ -99,6 +100,7 @@
 <translation id="1449035143498573192">Atvērt Google meklēšanā</translation>
 <translation id="1451536289672181509">Ierīce ir tastatūra.</translation>
 <translation id="1452939186874918380">lietussargi</translation>
+<translation id="145402479967797468">Atskaņošanas vadīklas</translation>
 <translation id="1459693405370120464">Laikapstākļi</translation>
 <translation id="1463084054301832672">kotedža</translation>
 <translation id="1468664791493211953">Piedāvājumi</translation>
@@ -264,6 +266,7 @@
 <translation id="2212733584906323460">Nosaukumu atrisināšana</translation>
 <translation id="2215920961700443347">Nav piekļuves internetam. Izveidojiet savienojumu ar internetu un mēģiniet vēlreiz.</translation>
 <translation id="2217935453350629363">Pašreizējais ātrums</translation>
+<translation id="221994303562837085">Apturēt ierakstīšanu</translation>
 <translation id="2224337661447660594">Nav interneta savienojuma</translation>
 <translation id="222447520299472966">Jāatlasa vismaz viens mākslas galerijas albums</translation>
 <translation id="2230005943220647148">Celsija skala</translation>
@@ -326,6 +329,7 @@
 <translation id="2533048460510040082">Ieteiktais palīdzības saturs</translation>
 <translation id="2536159006530886390">Nevar izveidot savienojumu ar internetu.</translation>
 <translation id="2538719227433767804">un vēl <ph name="NUM_HIDDEN_OPTIONS" /></translation>
+<translation id="2560876255701405320">Audio ierakstu saraksts</translation>
 <translation id="2561093647892030937">citroni</translation>
 <translation id="2570743873672969996">Notiek testa “<ph name="TEST_NAME" />” izpilde...</translation>
 <translation id="2575552334616524665">Varat ieslēgt šo funkciju sadaļā Iestatījumi vai izvēlnē <ph name="THREE_DOTS_MENU_ICON" />.</translation>
@@ -518,6 +522,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (atsauksmju skaits: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Nav izveidots savienojums</translation>
 <translation id="3749289110408117711">Faila nosaukums</translation>
+<translation id="3767737419527918477">Meklēt ierakstu failus</translation>
 <translation id="3771294271822695279">Video faili</translation>
 <translation id="3780740315729837296">Piešķiriet tastatūras taustiņu.</translation>
 <translation id="3784455785234192852">Bloķēt</translation>

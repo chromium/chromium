@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
 <translation id="1001033507375626788">Ez a hálózat meg van osztva Önnel</translation>
+<translation id="1001360573085135660">Kattintson az engedély be- vagy kikapcsolásához.</translation>
 <translation id="1002085272681738789">A lap újra aktív</translation>
 <translation id="1003088604756913841">Link megnyitása új <ph name="APP" />-ablakban</translation>
 <translation id="100323615638474026">USB-eszköz (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -3298,6 +3299,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3333190335304955291">Ezt a szolgáltatást bármikor kikapcsolhatja a Beállításokban.</translation>
 <translation id="3333961966071413176">Összes névjegy</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – A videó lejátszása kép a képben módban történik</translation>
+<translation id="3335380372402547327">Villogó értesítések előnézete</translation>
 <translation id="3335947283844343239">Bezárt lap megnyitása</translation>
 <translation id="3336855445806447827">Nem tudom</translation>
 <translation id="3337568642696914359">A webhelyek nem kezelhetnek protokollokat</translation>

@@ -90,6 +90,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="2384373936468275798">ChromiumOS no ha podido sincronizar tus datos porque la información de inicio de sesión de tu cuenta está obsoleta.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Una o varias extensiones de Chromium estaban accediendo a 1 dispositivo HID}=1{Una o varias extensiones de Chromium están accediendo a 1 dispositivo HID}other{Una o varias extensiones de Chromium están accediendo a # dispositivos HID}}</translation>
 <translation id="2401032172288869980">Chromium necesita los permisos del micrófono y de la cámara para este sitio</translation>
+<translation id="2403703063067034158">Error de arranque: se está ejecutando otra instancia de la configuración. Inténtalo de nuevo más tarde.</translation>
 <translation id="2440750600860946460">Las <ph name="BEGIN_LINK" />herramientas de Chromium<ph name="END_LINK" /> te permiten navegar de forma segura y mantener el control</translation>
 <translation id="2451727308784734061">Usa el acceso directo para acceder rápidamente al Gestor de contraseñas. Puedes mover el acceso directo a la pantalla de inicio o al menú de aplicaciones de tu ordenador.</translation>
 <translation id="2478295928299953161">Chromium se cerrará dentro de poco</translation>

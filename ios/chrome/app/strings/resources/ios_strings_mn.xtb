@@ -473,6 +473,7 @@
 <translation id="4169535189173047238">Зөвшөөрөхгүй</translation>
 <translation id="4172051516777682613">Байнга харуулж байна уу</translation>
 <translation id="4181841719683918333">Хэл</translation>
+<translation id="4184063163998877398">{count,plural, =1{Сул {count} нууц үг}other{Сул {count} нууц үг}}</translation>
 <translation id="4195643157523330669">Шинэ таб дээр нээх</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} зүйлийг зөвхөн энэ төхөөрөмжид хадгалдаг. Үүнийг бусад төхөөрөмждөө ашиглахын тулд {email} Google Бүртгэлдээ хадгална уу.}other{{count} зүйлийг зөвхөн энэ төхөөрөмжид хадгалсан. Эдгээрийг бусад төхөөрөмждөө ашиглахын тулд {email} Google Бүртгэлдээ хадгална уу.}}</translation>
 <translation id="421070604241073551">Асаалттай байхад өгөгдлийг таны Google Бүртгэлд хадгалдаг. Унтраалттай байхад өгөгдлийг зөвхөн энэ төхөөрөмжид хадгалдаг.</translation>
@@ -663,6 +664,7 @@
 <translation id="5439618055789623719"><ph name="USER_EMAIL" />-р нэвтэрсэн</translation>
 <translation id="5444892875087332195">Хавчуурга</translation>
 <translation id="5454211924362324495">Бусад хүнийг таны нууц үгийг ашиглахыг зогсоохын тулд <ph name="BEGIN_LINK" />үүнийг <ph name="WEBSITE" />-д өөрчилнө үү<ph name="END_LINK" /></translation>
+<translation id="5457082343331641453">Хайлтдаа нэмэх</translation>
 <translation id="5478327362747197944">Веб хуудасны огноог товшсоноор Календарийн үйл явдлууд шууд үүсгээрэй.</translation>
 <translation id="5482922178977937393">Та сонирхолдоо тулгуурласан мэдээ, спорт болон бусад зүйлийн мэдэгдлийг хүсэж байна уу?</translation>
 <translation id="5483838506518938965">Тохируулга дууссан</translation>
@@ -904,6 +906,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6732087373923685049">камер</translation>
 <translation id="6746338529702829275">Бүртгэлийн өгөгдлөө шалгах</translation>
 <translation id="6748108480210050150">Хэнээс</translation>
+<translation id="6755200887046212842">Акаунтуудыг удирдах</translation>
 <translation id="6779455296366983087">Таны интернэтээр үзсэн өгөгдлийг устгана</translation>
 <translation id="6790502149545262384">Удахгүй та шинэ таб нээх үедээ <ph name="CHANNEL_NAME" />-с мэдээ, нийтлэл харна.</translation>
 <translation id="6800349425672670802">Та бүх нээлттэй табдаа Таб хооронд шилжүүлэгчээс хандах боломжтой.</translation>

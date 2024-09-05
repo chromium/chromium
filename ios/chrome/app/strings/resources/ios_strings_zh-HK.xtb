@@ -473,6 +473,7 @@
 <translation id="4169535189173047238">不允許</translation>
 <translation id="4172051516777682613">永遠顯示</translation>
 <translation id="4181841719683918333">語言</translation>
+<translation id="4184063163998877398">{count,plural, =1{{count} 個安全度低的密碼}other{{count} 個安全度低的密碼}}</translation>
 <translation id="4195643157523330669">在新分頁中開啟</translation>
 <translation id="4197456013861852807">{count,plural, =1{這 {count} 個項目只會儲存至此裝置。如要在其他裝置上使用，請儲存至 Google 帳戶 ({email})。}other{這 {count} 個項目只會儲存至此裝置。如要在其他裝置上使用，請儲存至 Google 帳戶 ({email})。}}</translation>
 <translation id="421070604241073551">如果開啟，資料就會儲存至你的 Google 帳戶。關閉後，資料只會儲存至此裝置。</translation>
@@ -664,6 +665,7 @@
 <translation id="5439618055789623719">已使用 <ph name="USER_EMAIL" /> 的身分登入</translation>
 <translation id="5444892875087332195">書籤</translation>
 <translation id="5454211924362324495">如要防止其他人使用你的密碼，請<ph name="BEGIN_LINK" />前往 <ph name="WEBSITE" /> 變更密碼<ph name="END_LINK" /></translation>
+<translation id="5457082343331641453">加入更多搜尋字詞</translation>
 <translation id="5478327362747197944">按一下網頁上的日期，即可直接建立日曆活動。</translation>
 <translation id="5482922178977937393">想收到與你個人興趣有關的新聞、體育賽事等通知嗎？</translation>
 <translation id="5483838506518938965">您已完成全部設定！</translation>
@@ -905,6 +907,7 @@
 <translation id="6732087373923685049">攝錄機</translation>
 <translation id="6746338529702829275">查看帳戶資料</translation>
 <translation id="6748108480210050150">來源</translation>
+<translation id="6755200887046212842">管理帳戶</translation>
 <translation id="6779455296366983087">系統將刪除瀏覽資料</translation>
 <translation id="6790502149545262384">不久後，您將會在開啟新分頁時看到 <ph name="CHANNEL_NAME" /> 的內容。</translation>
 <translation id="6800349425672670802">你可以用分頁切換工具存取所有開咗嘅分頁。</translation>

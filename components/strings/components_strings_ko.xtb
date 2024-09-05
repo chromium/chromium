@@ -387,7 +387,6 @@
 <translation id="1668071460721346172">이메일 받기</translation>
 <translation id="1671391448414634642">지금부터 <ph name="SOURCE_LANGUAGE" />로 된 페이지가 <ph name="TARGET_LANGUAGE" />로 번역됩니다.</translation>
 <translation id="1674504678466460478">출발어: <ph name="SOURCE_LANGUAGE" />, 도착어: <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1674542638006317838"><ph name="BEGIN_LINK" />기존 기술 이벤트<ph name="END_LINK" />가 발생하는 페이지의 제한된 URL 목록</translation>
 <translation id="1682696192498422849">짧은 쪽 먼저</translation>
 <translation id="168693727862418163">이 정책 값은 스키마에 대해 유효성이 확인되지 않았으므로 무시됩니다.</translation>
 <translation id="168841957122794586">서버 인증서에 안전성이 낮은 암호화 키가 포함되어 있습니다.</translation>
@@ -1533,7 +1532,6 @@
 <translation id="378611282717571199">‘<ph name="SEARCH_QUERY" />’의 최적 일치 항목</translation>
 <translation id="3789155188480882154">크기 16</translation>
 <translation id="3789841737615482174">설치</translation>
-<translation id="3790417903123637354">문제가 발생했습니다. 나중에 다시 시도해 보세요.</translation>
 <translation id="3792100426446126328"><ph name="NAME" />(<ph name="WIDTH" />x<ph name="HEIGHT" />인치)</translation>
 <translation id="3792826587784915501">컬트 및 독립 영화</translation>
 <translation id="3793574014653384240">최근 발생한 비정상 종료의 횟수 및 원인</translation>
@@ -2354,6 +2352,7 @@
 <translation id="5331585574693522196">기본값으로 설정</translation>
 <translation id="5332219387342487447">배송 방법</translation>
 <translation id="5332769172018416402">메시지로 요청하기</translation>
+<translation id="5334013548165032829">세부 시스템 로그</translation>
 <translation id="5334145288572353250">주소를 저장하시겠습니까?</translation>
 <translation id="5340250774223869109">애플리케이션이 차단됨</translation>
 <translation id="5342693890921195472">분 전</translation>

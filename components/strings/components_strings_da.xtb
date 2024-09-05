@@ -387,7 +387,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1668071460721346172">Få en mail</translation>
 <translation id="1671391448414634642">Sider på <ph name="SOURCE_LANGUAGE" /> oversættes fremover til <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> til <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1674542638006317838">En begrænset liste over webadresser for sider, du besøger, hvor der forekommer <ph name="BEGIN_LINK" />hændelser relateret til forældet teknologi<ph name="END_LINK" />.</translation>
 <translation id="1682696192498422849">Kort kant først</translation>
 <translation id="168693727862418163">Politikkens værdi blev ikke bekræftet i forhold til dens skema, og den ignoreres derfor.</translation>
 <translation id="168841957122794586">Servercertifikatet indeholder en svag kryptografisk nøgle.</translation>
@@ -1533,7 +1532,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="378611282717571199">Bedste match for "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="3789155188480882154">Størrelse 16</translation>
 <translation id="3789841737615482174">Installer</translation>
-<translation id="3790417903123637354">Noget gik galt. Prøv igen</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> tommer)</translation>
 <translation id="3792826587784915501">Kult- og indiefilm</translation>
 <translation id="3793574014653384240">Antallene af og årsagerne til de nedbrud, der opstod for nylig</translation>
@@ -2354,6 +2352,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5331585574693522196">Angiv som standard</translation>
 <translation id="5332219387342487447">Leveringsmetode</translation>
 <translation id="5332769172018416402">Spørg i en meddelelse</translation>
+<translation id="5334013548165032829">Detaljerede systemlogs</translation>
 <translation id="5334145288572353250">Vil du gemme adressen?</translation>
 <translation id="5340250774223869109">Appen er blokeret</translation>
 <translation id="5342693890921195472">min. siden</translation>

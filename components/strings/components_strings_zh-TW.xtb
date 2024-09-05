@@ -386,7 +386,6 @@
 <translation id="1668071460721346172">接收驗證電子郵件</translation>
 <translation id="1671391448414634642">從現在起，系統會將<ph name="SOURCE_LANGUAGE" />網頁翻譯成<ph name="TARGET_LANGUAGE" />。</translation>
 <translation id="1674504678466460478">從<ph name="SOURCE_LANGUAGE" />翻譯為<ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1674542638006317838">你造訪的網頁網址清單 (僅列出發生<ph name="BEGIN_LINK" />舊版技術事件<ph name="END_LINK" />的網址)。</translation>
 <translation id="1682696192498422849">先從短邊開始</translation>
 <translation id="168693727862418163">這項政策的值未通過其結構定義的驗證，因此會遭到忽略。</translation>
 <translation id="168841957122794586">伺服器憑證含有防護力薄弱的加密編譯金鑰。</translation>
@@ -1531,7 +1530,6 @@
 <translation id="378611282717571199">與「<ph name="SEARCH_QUERY" />」最相符的結果</translation>
 <translation id="3789155188480882154">粗細：16</translation>
 <translation id="3789841737615482174">安裝</translation>
-<translation id="3790417903123637354">發生錯誤，請稍後再試</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> 吋)</translation>
 <translation id="3792826587784915501">另類與獨立電影</translation>
 <translation id="3793574014653384240">最近發生當機情形的次數和原因</translation>
@@ -2352,6 +2350,7 @@
 <translation id="5331585574693522196">設為預設</translation>
 <translation id="5332219387342487447">運送方式</translation>
 <translation id="5332769172018416402">透過訊息詢問</translation>
+<translation id="5334013548165032829">詳細系統記錄</translation>
 <translation id="5334145288572353250">要儲存地址嗎？</translation>
 <translation id="5340250774223869109">應用程式已遭封鎖</translation>
 <translation id="5342693890921195472">分鐘前</translation>

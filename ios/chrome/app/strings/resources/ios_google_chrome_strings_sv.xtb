@@ -139,6 +139,8 @@ Testa att vänta några minuter innan du loggar ut. Om du loggar ut nu raderas d
 <translation id="571296537125272375">Chrome kan inte söka efter uppdateringar offline</translation>
 <translation id="5716154293141027663">Öppna Chrome varje gång du trycker på länkar i andra appar</translation>
 <translation id="5808435672482059465">Visa Chrome-historiken</translation>
+<translation id="5833027901704861726">Viss Chrome-data har inte sparats i <ph name="EMAIL" /> ännu.
+Testa att vänta några minuter innan du byter konto. Om du byter konto nu raderas denna data.</translation>
 <translation id="5998675059699164418">Organisationen kräver att du loggar in för att använda Chrome.</translation>
 <translation id="6022659036123304283">Anpassa Chrome</translation>
 <translation id="6110625574506755980">Vissa funktioner i Chrome kommer inte längre att vara tillgängliga.</translation>
@@ -194,6 +196,7 @@ Du hittar fler inställningar som använder data för att förbättra Chrome-upp
 <translation id="7394108421562933108">Maps i Chrome</translation>
 <translation id="7400722733683201933">Om Google Chrome</translation>
 <translation id="7466693328838535498">Skriv ”Chrome” i rutan Sökwidgetar</translation>
+<translation id="7477056987201678345">Raderar Chrome-data …</translation>
 <translation id="7492574581995589075">Din organisation har inaktiverat möjligheten att använda och spara Chrome-data i ditt Google-konto. Nya bokmärken, lösenord med mera sparas endast på den här enheten.</translation>
 <translation id="7581063337314642333">Öppna rutnätet med flikar i Chrome</translation>
 <translation id="7642373780953416937">Få varningar om integritets- eller säkerhetsproblem som identifieras automatiskt av Chrome.</translation>

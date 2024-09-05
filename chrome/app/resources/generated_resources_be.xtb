@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
 <translation id="1001033507375626788">Гэта сетка абагульваецца з вамі.</translation>
+<translation id="1001360573085135660">Націсніце, каб уключыць або выключыць дазвол.</translation>
 <translation id="1002085272681738789">Укладка зноў актыўная</translation>
 <translation id="1003088604756913841">Адкрыць спасылку ў новым акне <ph name="APP" /></translation>
 <translation id="100323615638474026">Прылада USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -3287,6 +3288,7 @@
 <translation id="3333190335304955291">Гэты сэрвіс можна выключыць у Наладах.</translation>
 <translation id="3333961966071413176">Усе кантакты</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – відэа прайграецца ў рэжыме "відарыс у відарысе"</translation>
+<translation id="3335380372402547327">Прагледзець флэш-апавяшчэнні</translation>
 <translation id="3335947283844343239">Паўторна адкрыць закрытыя ўкладкі</translation>
 <translation id="3336855445806447827">Не ведаю</translation>
 <translation id="3337568642696914359">Не дазваляць сайтам кіраваць пратаколамі</translation>

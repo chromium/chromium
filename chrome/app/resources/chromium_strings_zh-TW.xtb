@@ -87,6 +87,7 @@
 <translation id="2384373936468275798">你的帳戶登入詳細資料尚未更新，因此 Chromium OS 無法同步處理你的資料。</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{至少有 1 個 Chromium 擴充功能當時正在存取 1 部 HID 裝置}=1{至少有 1 個 Chromium 擴充功能正在存取 1 部 HID 裝置}other{至少有 1 個 Chromium 擴充功能正在存取 # 部 HID 裝置}}</translation>
 <translation id="2401032172288869980">Chromium 需要相機權限和麥克風權限，才能執行這個網站要求的功能</translation>
+<translation id="2403703063067034158">啟動時發生錯誤：目前正在執行其他設定作業，請稍後再試。</translation>
 <translation id="2440750600860946460">有了 <ph name="BEGIN_LINK" />Chromium 的工具<ph name="END_LINK" />，你可以放心瀏覽網路、掌控全局</translation>
 <translation id="2451727308784734061">使用捷徑快速前往密碼管理工具。你可以將捷徑移至電腦的主畫面或應用程式啟動器。</translation>
 <translation id="2478295928299953161">Chromium 即將關閉</translation>

@@ -1252,6 +1252,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6869056123412990582">computador</translation>
 <translation id="6880903702195291049">Tudo certo com as permissões</translation>
 <translation id="6883204995689174413">Compartilhar</translation>
+<translation id="6883606786470492001">Gerencie seus temas de anúncios e outras configurações para limitar o que os sites podem saber sobre você e mostrar anúncios personalizados</translation>
 <translation id="6883906387682976294">Cancelar inscrição nas notificações deste site</translation>
 <translation id="688398477366397178">Informe aos sites os idiomas que você fala. Eles vão mostrar conteúdo nesses idiomas sempre que possível.</translation>
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{A inscrição de 1 site foi cancelada}one{A inscrição de # site foi cancelada}other{A inscrição de # sites foi cancelada}}</translation>

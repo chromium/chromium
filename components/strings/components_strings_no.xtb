@@ -293,6 +293,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1507202001669085618">&lt;p&gt;Du ser denne feilmeldingen hvis du bruker en Wifi-portal hvor du må logge på før du kommer deg på nettet.&lt;/p&gt;
     &lt;p&gt;For å fikse feilen, klikk på &lt;strong&gt;Koble til&lt;/strong&gt; på siden du prøver å åpne.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Liste over loggoppføringer</translation>
+<translation id="1515436033764190215">t siden</translation>
 <translation id="151720253492607760">Fortsett å ikke tillate</translation>
 <translation id="1517433312004943670">Det kreves et telefonnummer</translation>
 <translation id="1519264250979466059">Versjonsdato</translation>
@@ -386,7 +387,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1668071460721346172">Få en e-post</translation>
 <translation id="1671391448414634642">Fra nå av oversettes sider på <ph name="SOURCE_LANGUAGE" /> til <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> til <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1674542638006317838">En begrenset liste over nettadressene til sider du besøker som bruker <ph name="BEGIN_LINK" />hendelser fra eldre teknologi<ph name="END_LINK" />.</translation>
 <translation id="1682696192498422849">Kortsiden først</translation>
 <translation id="168693727862418163">Denne regelverdien kunne ikke valideres mot oppsettet og blir derfor ignorert.</translation>
 <translation id="168841957122794586">Tjenersertifikatet inneholder en svak kryptografisk nøkkel.</translation>
@@ -749,6 +749,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2337852623177822836">Innstillingen kontrolleres av administratoren din</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> vil koble til</translation>
 <translation id="2346319942568447007">Bildet du kopierte</translation>
+<translation id="2348509731468399833">Prissporingen er stoppet.</translation>
 <translation id="2349957959687031096">Knappen «Åpne en inkognitofane» – aktiver for å åpne en ny inkognitofane for privat surfing</translation>
 <translation id="2350796302381711542">Vil du la <ph name="HANDLER_HOSTNAME" /> åpne alle <ph name="PROTOCOL" />-linker i stedet for <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2353297238722298836">Kameraet og mikrofonen er tillatt</translation>
@@ -912,6 +913,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2651465929321991146">Logg og faner</translation>
 <translation id="2653659639078652383">Send inn</translation>
 <translation id="2655752832536625875">Bad</translation>
+<translation id="2656194288057285221">Knappen «Lukk Chrome-tipset» – trykk på Enter for å lukke</translation>
 <translation id="2657637947725373811">{0,plural, =1{Vil du overføre denne konfidensielle filen?}other{Vil du overføre disse konfidensielle filene?}}</translation>
 <translation id="2658843814961855121">Arbeidsrett</translation>
 <translation id="2660779039299703961">Aktivitet</translation>
@@ -1251,6 +1253,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3324983252691184275">Karmosinrød</translation>
 <translation id="3325027355611702542">Campingbiler og -vogner</translation>
 <translation id="3325568918769906282">i synkende rekkefølge</translation>
+<translation id="3325662270238538525">nylige filtilganger og -endringer, inkludert filnavn, digitale fingeravtrykk av filinnholdet, nedlastingskilder og metadata</translation>
 <translation id="3329013043687509092">Metning</translation>
 <translation id="3333762389743153920">Ikke kvalifisert for virtuelt kort</translation>
 <translation id="3336044043987989409">Trykk på last inn på nytt-knappen for å tillate tilkobling til enheter eller tjenere på det private nettverket ditt.</translation>
@@ -1529,7 +1532,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="378611282717571199">Beste treff for «<ph name="SEARCH_QUERY" />»</translation>
 <translation id="3789155188480882154">Størrelse 16</translation>
 <translation id="3789841737615482174">Installer</translation>
-<translation id="3790417903123637354">Noe gikk galt. Prøv på nytt senere</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> tommer)</translation>
 <translation id="3792826587784915501">Kult- og indiefilmer</translation>
 <translation id="3793574014653384240">Tall for og årsaker til krasjene som har forekommet nylig</translation>
@@ -2350,8 +2352,10 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5331585574693522196">Angi som standard</translation>
 <translation id="5332219387342487447">Leveringsmetode</translation>
 <translation id="5332769172018416402">Spør i en melding</translation>
+<translation id="5334013548165032829">Detaljerte systemlogger</translation>
 <translation id="5334145288572353250">Lagre adresse?</translation>
 <translation id="5340250774223869109">Programmet er blokkert</translation>
+<translation id="5342693890921195472">minutt siden</translation>
 <translation id="534295439873310000">NFC-enheter</translation>
 <translation id="5344522958567249764">Administrer annonsepersonvern</translation>
 <translation id="5344579389779391559">Denne siden kan prøve å belaste deg for penger</translation>
@@ -2822,6 +2826,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6228346913624365233">Luksuskjøretøy</translation>
 <translation id="6229196330202833460">Film- og TV-strømming</translation>
 <translation id="6234122620015464377">Beskjær etter hvert dokument</translation>
+<translation id="6234310016144827337">Sjekk tilkoblingen og prøv igjen</translation>
 <translation id="6236290670123303279">Administrer innstillinger</translation>
 <translation id="623825323736974198">Administrer nettsteder som alltid skal holdes aktive og ikke frigjøres minne fra</translation>
 <translation id="6240447795304464094">Google Pay-logo</translation>
@@ -3638,6 +3643,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, utløper <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">Forsendelse</translation>
 <translation id="7682451652090915298">Rugby</translation>
+<translation id="768344142657640519">Du besøkte nettopp dette nettstedet</translation>
 <translation id="7684683146428206649">Metall</translation>
 <translation id="7684817988830401358">Knappen «Slett nettlesingsdata» – aktiver for å slette nettleserloggen, informasjonskapsler, bufferen med mer i Chrome-innstillingene</translation>
 <translation id="7684928361160505327">{0,plural, =1{<ph name="FILE_NAME" /> er blokkert på grunn av regler}other{<ph name="FILE_COUNT" /> filer er blokkert på grunn av regler}}</translation>
@@ -3657,6 +3663,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7705992072972338699">Optisk disk (høyglans)</translation>
 <translation id="7706689436519265630">Filer du kopierer eller flytter, blir sendt til Google Cloud eller tredjeparter for analyse. De kan for eksempel bli skannet for sensitive data eller skadelig programvare, og de kan bli lagret i henhold til bedriftens regler.</translation>
 <translation id="7709911732293795808">Forsikring</translation>
+<translation id="7714351089363296478">Du besøkte nettopp dette nettstedet</translation>
 <translation id="7714404809393719981">Foto (halvglans)</translation>
 <translation id="7714424966701020172">Alternativet for å fylle ut fullt navn er valgt</translation>
 <translation id="7714464543167945231">Sertifikat</translation>

@@ -473,6 +473,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4169535189173047238">Usiruhusu</translation>
 <translation id="4172051516777682613">Onyesha kila mara</translation>
 <translation id="4181841719683918333">Lugha</translation>
+<translation id="4184063163998877398">{count,plural, =1{Nenosiri {count} dhaifu}other{Manenosiri {count} dhaifu}}</translation>
 <translation id="4195643157523330669">Fungua katika kichupo kipya</translation>
 <translation id="4197456013861852807">{count,plural, =1{Kipengee {count} kimehifadhiwa kwenye kifaa hiki pekee. Ili ukitumie kwenye vifaa vingine, kihifadhi kwenye Akaunti yako ya Google, {email}.}other{Vipengee {count} vimehifadhiwa kwenye kifaa hiki pekee. Ili uvitumie kwenye vifaa vyako vingine, vihifadhi kwenye Akaunti yako ya Google, {email}.}}</translation>
 <translation id="421070604241073551">Ukiwasha, data inahifadhiwa kwenye Akaunti yako ya Google. Ukizima, data inahifadhiwa kwenye kifaa hiki pekee.</translation>
@@ -664,6 +665,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="5439618055789623719">Umeingia katika akaunti ukitumia <ph name="USER_EMAIL" /></translation>
 <translation id="5444892875087332195">Alamisho</translation>
 <translation id="5454211924362324495">Ili uwazuie wengine wasitumie nenosiri lako, <ph name="BEGIN_LINK" />libadilishe kwenye <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
+<translation id="5457082343331641453">Weka kwenye utafutaji wako</translation>
 <translation id="5478327362747197944">Unda matukio ya Kalenda moja kwa moja kwa kubofya kwenye tarehe katika ukurasa wa wavuti.</translation>
 <translation id="5482922178977937393">Ungependa kupokea arifa za habari, spoti na zaidi kulingana na mambo yanayokuvutia?</translation>
 <translation id="5483838506518938965">Uko tayari sasa</translation>
@@ -905,6 +907,7 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6746338529702829275">Kagua data ya akaunti yako</translation>
 <translation id="6748108480210050150">Kutoka</translation>
+<translation id="6755200887046212842">Dhibiti Akaunti</translation>
 <translation id="6779455296366983087">Data yako ya kuvinjari itafutwa</translation>
 <translation id="6790502149545262384">Hivi karibuni, utaona hadithi kutoka <ph name="CHANNEL_NAME" /> unapofungua kichupo kipya.</translation>
 <translation id="6800349425672670802">Unaweza kufikia vichupo vyote ulivyofungua kwenye Kibadilishaji cha Vichupo.</translation>

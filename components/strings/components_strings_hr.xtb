@@ -387,7 +387,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1668071460721346172">Primanje e-poruke</translation>
 <translation id="1671391448414634642">Odsad će se <ph name="SOURCE_LANGUAGE" /> prevoditi na <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1674542638006317838">Ograničeni popis URL-ova stranica koje posjećujete na kojima se odvijaju <ph name="BEGIN_LINK" />događaji naslijeđene tehnologije<ph name="END_LINK" />.</translation>
 <translation id="1682696192498422849">Najprije kratki rub</translation>
 <translation id="168693727862418163">Ova vrijednost pravila nije uspjela potvrditi valjanost sheme i zanemarit će se.</translation>
 <translation id="168841957122794586">Certifikat poslužitelja sadrži slab kriptografski ključ!</translation>
@@ -1532,7 +1531,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="378611282717571199">Najbolja podudaranja za upit "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="3789155188480882154">Veličina 16</translation>
 <translation id="3789841737615482174">Instaliraj</translation>
-<translation id="3790417903123637354">Nešto nije u redu. Pokušajte ponovo kasnije</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
 <translation id="3792826587784915501">Kultni i nezavisni filmovi</translation>
 <translation id="3793574014653384240">Broj nedavnih rušenja i njihovi razlozi</translation>
@@ -2353,6 +2351,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5331585574693522196">Postavi kao zadano</translation>
 <translation id="5332219387342487447">Način otpreme</translation>
 <translation id="5332769172018416402">Pitaj porukom</translation>
+<translation id="5334013548165032829">Detaljni zapisnici sustava</translation>
 <translation id="5334145288572353250">Želite li spremiti adresu?</translation>
 <translation id="5340250774223869109">Aplikacija je blokirana</translation>
 <translation id="5342693890921195472">prije # min</translation>

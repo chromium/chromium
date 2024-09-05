@@ -356,6 +356,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3311748811247479259">Desativada</translation>
 <translation id="3324193307694657476">Endereço 2</translation>
 <translation id="3328801116991980348">Informações do site</translation>
+<translation id="333229797575847124">Como ativar esse recurso</translation>
 <translation id="3344485292736684439">{count,plural, =1{Favorito salvo em "{title}" na conta {email}}one{Favorito salvo em "{title}" na conta {email}}other{Favoritos salvos em "{title}" na conta {email}}}</translation>
 <translation id="3348387552617855658">Este card ajuda você a monitorar seus pacotes e fornece atualizações importantes sobre a entrega.</translation>
 <translation id="3349676726073650389">Os sites e as pesquisas que você segue são armazenados na sua Conta do Google. Você pode gerenciar esse conteúdo nas configurações a qualquer momento.</translation>
@@ -472,6 +473,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4169535189173047238">Não permitir</translation>
 <translation id="4172051516777682613">Sempre mostrar</translation>
 <translation id="4181841719683918333">Idiomas</translation>
+<translation id="4184063163998877398">{count,plural, =1{{count} senha fraca}one{{count} senha fraca}other{{count} senhas fracas}}</translation>
 <translation id="4195643157523330669">Abrir em uma nova guia</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} item foi salvo apenas neste dispositivo. Para usá-lo em outros dispositivos, salve na sua Conta do Google, {email}.}one{{count} item foi salvo apenas neste dispositivo. Para usá-lo em outros dispositivos, salve na sua Conta do Google, {email}.}other{{count} itens foram salvos apenas neste dispositivo. Para usá-los em outros dispositivos, salve na sua Conta do Google, {email}.}}</translation>
 <translation id="421070604241073551">Quando essa opção está ativada, os dados são salvos na sua Conta do Google. Quando desativada, os dados são salvos apenas neste dispositivo.</translation>
@@ -601,6 +603,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5005498671520578047">Copiar senha</translation>
 <translation id="5016420433031926653">Enviar para <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">Últimos 15 minutos</translation>
+<translation id="5020732097997376541">Toque no ícone do Lens</translation>
 <translation id="5024511550058813796">Seu histórico será mostrado em todos os dispositivos sincronizados para que você possa continuar o que estava fazendo</translation>
 <translation id="5038113048373546701">Receba notificações de notícias, esportes e muito mais com base nos seus interesses</translation>
 <translation id="5039804452771397117">Permitir</translation>
@@ -662,6 +665,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5439618055789623719">Conta conectada: <ph name="USER_EMAIL" /></translation>
 <translation id="5444892875087332195">Favoritos</translation>
 <translation id="5454211924362324495"><ph name="BEGIN_LINK" />Mude sua senha em <ph name="WEBSITE" /><ph name="END_LINK" /> para impedir que ela seja usada por outras pessoas</translation>
+<translation id="5457082343331641453">Adicionar à pesquisa</translation>
 <translation id="5478327362747197944">Crie eventos do Google Agenda clicando em uma data em uma página da Web.</translation>
 <translation id="5482922178977937393">Quer receber notificações de notícias, esportes e muito mais com base nos seus interesses?</translation>
 <translation id="5483838506518938965">Está tudo pronto</translation>
@@ -903,6 +907,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="6732087373923685049">câmera</translation>
 <translation id="6746338529702829275">Analisar os dados da sua conta</translation>
 <translation id="6748108480210050150">De</translation>
+<translation id="6755200887046212842">Gerenciar contas</translation>
 <translation id="6779455296366983087">Os dados de navegação serão excluídos</translation>
 <translation id="6790502149545262384">Em breve, stories de <ph name="CHANNEL_NAME" /> vão ser mostrados quando você abrir uma nova guia.</translation>
 <translation id="6800349425672670802">É possível acessar todas as guias abertas no Seletor de guias.</translation>
@@ -1257,6 +1262,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="9003677638446136377">Verificar novamente</translation>
 <translation id="9008201768610948239">Ignorar</translation>
 <translation id="9012585441087414258">Protege contra extensões, sites e downloads perigosos. Se uma página fizer algo suspeito, os URLs e partes do conteúdo da página serão enviados ao recurso Navegação segura do Google.</translation>
+<translation id="9013605037177245304">Ativar notificações</translation>
 <translation id="9029650858822697271">Sua conta foi desconectada</translation>
 <translation id="9034759925968272072">Você não será desconectado da sua Conta do Google. É possível que sua Conta do Google tenha outras formas de histórico de navegação em <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9039373489628511875">Largura de banda</translation>

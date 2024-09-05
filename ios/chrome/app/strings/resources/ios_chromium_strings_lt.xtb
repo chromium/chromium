@@ -71,6 +71,8 @@ Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chromium“ f
 <translation id="3344973607274501920">„Chromium“ nepavyko patikrinti jūsų slaptažodžių. Pabandykite patikrinti interneto ryšį.</translation>
 <translation id="3366305173356742781">„Chromium“ duomenys jūsų paskyroje</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Taip nutinka, kai „Chromium“ nenaudojama {THRESHOLD} minutę. Tai gali būti istorija ir automatinis pildymas.}one{Taip nutinka, kai „Chromium“ nenaudojama {THRESHOLD} minutę. Tai gali būti istorija ir automatinis pildymas.}few{Taip nutinka, kai „Chromium“ nenaudojama {THRESHOLD} minutes. Tai gali būti istorija ir automatinis pildymas.}many{Taip nutinka, kai „Chromium“ nenaudojama {THRESHOLD} minutės. Tai gali būti istorija ir automatinis pildymas.}other{Taip nutinka, kai „Chromium“ nenaudojama {THRESHOLD} minučių. Tai gali būti istorija ir automatinis pildymas.}}</translation>
+<translation id="3410395242749598859">Kai kurie „Chromium“ duomenys dar neišsaugoti paskyroje <ph name="EMAIL" />.
+Pabandykite palaukti kelias minutes prieš perjungdami paskyras. Jei dabar perjungsite paskyras, šie duomenys bus ištrinti.</translation>
 <translation id="3472200483164753384">Nepalaikoma versijoje „Chromium Canary“</translation>
 <translation id="347967311580159871">Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chromium“ funkcijoms tobulinti, eikite į <ph name="BEGIN_LINK" />„Google“ paslaugas<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Slaptažodis nebuvo bendrintas. Patikrinkite interneto ryšį ir įsitikinkite, kad esate prisijungę prie „Chromium“. Tada bandykite dar kartą.</translation>

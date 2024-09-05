@@ -71,6 +71,8 @@ Til að skoða fleiri stillingar sem nota gögn til að bæta Chromium-upplifuni
 <translation id="3344973607274501920">Chromium gat ekki athugað aðgangsorðin þín. Athugaðu nettenginguna þína.</translation>
 <translation id="3366305173356742781">Chromium-gögn á reikningnum þínum</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Þetta gerist þegar Chromium er ekki í notkun í {THRESHOLD} mín. Þetta getur falið í sér feril og sjálfvirka útfyllingu.}one{Þetta gerist þegar Chromium er ekki í notkun í {THRESHOLD} mín. Þetta getur falið í sér feril og sjálfvirka útfyllingu.}other{Þetta gerist þegar Chromium er ekki í notkun í {THRESHOLD} mín. Þetta getur falið í sér feril og sjálfvirka útfyllingu.}}</translation>
+<translation id="3410395242749598859">Einhver Chromium-gögn hafa ekki enn verið vistuð á <ph name="EMAIL" /> þínum.
+Prófaðu að bíða í nokkrar mínútur áður en þú skiptir um reikning. Ef þú skiptir um reikning núna verður þessum gögnum eytt.</translation>
 <translation id="3472200483164753384">Ekki stutt í Chromium Canary</translation>
 <translation id="347967311580159871">Til að skoða fleiri stillingar sem nota gögn til að bæta Chromium-upplifunina þína skaltu fara í <ph name="BEGIN_LINK" />Google-þjónustur<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Aðgangsorðinu var ekki deilt. Athugaðu nettenginguna og gakktu úr skugga um að þú sért skráð(ur) inn á Chromium. Reyndu svo aftur.</translation>
@@ -119,6 +121,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chromium-
 <translation id="5042011327527167688">Ýttu á „Skoða með Google-kortum í Chromium“.</translation>
 <translation id="5044871537677053278">Chromium greinir heimilisföng og notar Google-kort til að sýna þér leiðarlýsingu og staðbundnar upplýsingar.</translation>
 <translation id="5048795749726991615">Notaðu Chromium fyrir sjálfvirka útfyllingu til að fá aðgang að vistuðum aðgangsorðum í öðrum forritum á einfaldan hátt</translation>
+<translation id="5053429694249468757">Eyðir Chromium-gögnum …</translation>
 <translation id="5124429847818367226">Núna geturðu notað Chromium þegar þú skoðar eða ýtir á tengla í skilaboðum, skjölum og öðrum forritum.</translation>
 <translation id="5131565040785979529">Fyrirtækið þitt, <ph name="DOMAIN" />, stjórnar reikningnum sem þú ert innskráð(ur) á og hvernig Chromium er notað.</translation>
 <translation id="5224391634244552924">Engin vistuð aðgangsorð. Chromium getur athugað aðgangsorðin þín þegar þú vistar þau.</translation>

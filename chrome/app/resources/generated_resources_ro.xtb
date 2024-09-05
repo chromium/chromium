@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
 <translation id="1001033507375626788">Ai acces la această rețea</translation>
+<translation id="1001360573085135660">Dă clic pentru a schimba permisiunea.</translation>
 <translation id="1002085272681738789">Fila este din nou activă</translation>
 <translation id="1003088604756913841">Deschide linkul într-o fereastră nouă în <ph name="APP" /></translation>
 <translation id="100323615638474026">Dispozitiv USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -3286,6 +3287,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3333190335304955291">Poți dezactiva acest serviciu din Setări.</translation>
 <translation id="3333961966071413176">Toată agenda</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – Videoclipul se redă în modul picture-in-picture</translation>
+<translation id="3335380372402547327">Previzualizează notificările flash</translation>
 <translation id="3335947283844343239">Redeschide fila închisă</translation>
 <translation id="3336855445806447827">Nu știu sigur</translation>
 <translation id="3337568642696914359">Nu permite site-urilor să gestioneze protocoale</translation>

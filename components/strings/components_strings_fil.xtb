@@ -387,7 +387,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1668071460721346172">Tumanggap ng email</translation>
 <translation id="1671391448414634642">Simula ngayon ay ita-translate na sa <ph name="TARGET_LANGUAGE" /> ang mga page na nasa <ph name="SOURCE_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> na isasalin sa <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1674542638006317838">Isang limitadong listahan ng mga URL ng mga page na binisita mo kung saan may <ph name="BEGIN_LINK" />mga event ng legacy na teknolohiya<ph name="END_LINK" />.</translation>
 <translation id="1682696192498422849">Short edge muna</translation>
 <translation id="168693727862418163">Hindi na-validate ang value ng patakarang ito sa schema nito at babalewalain ito.</translation>
 <translation id="168841957122794586">Naglalaman ang server certificate ng isang mahinang cryptographic key.</translation>
@@ -1533,7 +1532,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="378611282717571199">Pinakamahuhusay na tugma para sa "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="3789155188480882154">Laki 16</translation>
 <translation id="3789841737615482174">Mag-install</translation>
-<translation id="3790417903123637354">Nagkaproblema. Subukan ulit sa ibang pagkakataon</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
 <translation id="3792826587784915501">Mga Pelikulang Cult at Indie</translation>
 <translation id="3793574014653384240">Mga bilang at sanhi ng mga pag-crash na naganap kamakailan</translation>
@@ -2354,6 +2352,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5331585574693522196">Itakda bilang Default</translation>
 <translation id="5332219387342487447">Paraan ng Pagpapadala</translation>
 <translation id="5332769172018416402">Magtanong sa pamamagitan ng mensahe</translation>
+<translation id="5334013548165032829">Mga detalyadong log ng system</translation>
 <translation id="5334145288572353250">I-save ang Address?</translation>
 <translation id="5340250774223869109">Naka-block ang application</translation>
 <translation id="5342693890921195472">(na) minuto ang nakalipas</translation>

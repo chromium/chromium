@@ -473,6 +473,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4169535189173047238">Ikke tillat</translation>
 <translation id="4172051516777682613">Vis alltid</translation>
 <translation id="4181841719683918333">Språk</translation>
+<translation id="4184063163998877398">{count,plural, =1{{count} svakt passord}other{{count} svake passord}}</translation>
 <translation id="4195643157523330669">Åpne i ny fane</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} passord er bare lagret på denne enheten. For å bruke det på andre enheter, lagre det i Google-kontoen din ({email}).}other{{count} passord er bare lagret på denne enheten. For å bruke dem på andre enheter, lagre dem i Google-kontoen din ({email}).}}</translation>
 <translation id="421070604241073551">Når dette er på, lagres data i Google-kontoen din. Når dette er av, lagres data bare på denne enheten.</translation>
@@ -664,6 +665,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5439618055789623719">Logget på som <ph name="USER_EMAIL" /></translation>
 <translation id="5444892875087332195">Bokmerker</translation>
 <translation id="5454211924362324495">For å forhindre andre fra å bruke passordet ditt, <ph name="BEGIN_LINK" />endre det på <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
+<translation id="5457082343331641453">Legg til i søket</translation>
 <translation id="5478327362747197944">Opprett kalenderaktiviteter direkte ved å klikke på datoer på nettsider.</translation>
 <translation id="5482922178977937393">Vil du ha varsler om nyheter, sport med mer basert på interessene dine?</translation>
 <translation id="5483838506518938965">Du er klar</translation>
@@ -905,6 +907,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6746338529702829275">Gjennomgå kontodataene dine</translation>
 <translation id="6748108480210050150">Fra</translation>
+<translation id="6755200887046212842">Administrer kontoer</translation>
 <translation id="6779455296366983087">Nettlesingsdataene dine blir slettet</translation>
 <translation id="6790502149545262384">Snart ser du artikler fra <ph name="CHANNEL_NAME" /> når du åpner nye faner.</translation>
 <translation id="6800349425672670802">Du får tilgang til alle de åpne fanene dine med fanevelgeren.</translation>

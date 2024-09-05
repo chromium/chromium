@@ -468,6 +468,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="4169535189173047238">Peidio â chaniatáu</translation>
 <translation id="4172051516777682613">Dangos bob tro</translation>
 <translation id="4181841719683918333">Ieithoedd</translation>
+<translation id="4184063163998877398">{count,plural, =1{{count} cyfrinair gwan}zero{{count} cyfrinair gwan}two{{count} gyfrinair gwan}few{{count} cyfrinair gwan}many{{count} cyfrinair gwan}other{{count} cyfrinair gwan}}</translation>
 <translation id="4195643157523330669">Agor mewn tab newydd</translation>
 <translation id="4197456013861852807">{count,plural, =1{Mae {count} eitem wedi'i chadw i'r ddyfais hon yn unig. Er mwyn ei defnyddio ar eich dyfeisiau eraill, cadwch hi yn eich Cyfrif Google, {email}.}zero{Mae {count} eitem yn cael eu cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google, {email}.}two{Mae {count} eitem yn cael eu cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google, {email}.}few{Mae {count} eitem yn cael eu cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google, {email}.}many{Mae {count} eitem yn cael eu cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google, {email}.}other{Mae {count} eitem yn cael eu cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google, {email}.}}</translation>
 <translation id="421070604241073551">Pan fydd ymlaen, mae data'n cael eu cadw yn eich Cyfrif Google. Pan fydd wedi'i ddiffodd, dim ond i'r ddyfais hon y caiff data eu cadw.</translation>
@@ -658,6 +659,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="5439618055789623719">Wedi mewngofnodi fel <ph name="USER_EMAIL" /></translation>
 <translation id="5444892875087332195">Nodau tudalen</translation>
 <translation id="5454211924362324495">I atal eraill rhag defnyddio'ch cyfrinair, <ph name="BEGIN_LINK" />newidiwch ef ar <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
+<translation id="5457082343331641453">Ychwanegu at eich chwiliad</translation>
 <translation id="5478327362747197944">Creu digwyddiadau Calendar yn uniongyrchol trwy glicio ar ddyddiad mewn tudalen we.</translation>
 <translation id="5482922178977937393">Hoffech chi gael hysbysiadau ar gyfer newyddion, chwaraeon a rhagor yn seiliedig ar eich diddordebau?</translation>
 <translation id="5483838506518938965">Rydych yn barod i fynd</translation>

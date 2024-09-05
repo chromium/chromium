@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="cy">
 <translation id="1001033507375626788">Rhennir y rhwydwaith hwn â chi</translation>
+<translation id="1001360573085135660">Cliciwch i doglo caniatâd.</translation>
 <translation id="1002085272681738789">Tab yn weithredol eto</translation>
 <translation id="1003088604756913841">Agor dolen mewn ffenestr <ph name="APP" /> newydd</translation>
 <translation id="100323615638474026">Dyfais USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -3302,6 +3303,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3333190335304955291">Gallwch ddiffodd y gwasanaeth hwn yn y Gosodiadau.</translation>
 <translation id="3333961966071413176">Pob cyswllt</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Fideo yn chwarae yn y modd llun mewn llun</translation>
+<translation id="3335380372402547327">Rhagolwg o hysbysiadau fflach</translation>
 <translation id="3335947283844343239">Ailagor Tab sydd wedi'i Gau</translation>
 <translation id="3336855445806447827">Ddim yn siŵr</translation>
 <translation id="3337568642696914359">Peidio â chaniatáu i wefannau drin protocolau</translation>

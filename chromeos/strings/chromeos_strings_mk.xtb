@@ -76,6 +76,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Приспособи на скенираната област</translation>
 <translation id="1343442362630695901">солено езеро</translation>
+<translation id="1348657754632799065">Лента за снимање</translation>
 <translation id="1367951781824006909">Избери датотека</translation>
 <translation id="1371650399987522809">Повратни информации за тапет овозможен од Google AI</translation>
 <translation id="1374385338586507108">Дефинирајте</translation>
@@ -99,6 +100,7 @@
 <translation id="1449035143498573192">Отворете во „Пребарување на Google“</translation>
 <translation id="1451536289672181509">Уредот е тастатура.</translation>
 <translation id="1452939186874918380">чадори</translation>
+<translation id="145402479967797468">Контроли за репродукција</translation>
 <translation id="1459693405370120464">Време</translation>
 <translation id="1463084054301832672">колиба</translation>
 <translation id="1468664791493211953">Понуди</translation>
@@ -327,6 +329,7 @@
 <translation id="2533048460510040082">Предложени содржини за помош</translation>
 <translation id="2536159006530886390">Не може да се поврзе на интернет.</translation>
 <translation id="2538719227433767804">и уште <ph name="NUM_HIDDEN_OPTIONS" /></translation>
+<translation id="2560876255701405320">Список со аудиоснимки</translation>
 <translation id="2561093647892030937">лимони</translation>
 <translation id="2570743873672969996">Се извршува тест за <ph name="TEST_NAME" />…</translation>
 <translation id="2575552334616524665">Ова може да го вклучите во „Поставки“ или менито <ph name="THREE_DOTS_MENU_ICON" /></translation>
@@ -519,6 +522,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> рецензии)</translation>
 <translation id="3748026146096797577">Не е поврзана</translation>
 <translation id="3749289110408117711">Име на датотека</translation>
+<translation id="3767737419527918477">Пребарајте снимки</translation>
 <translation id="3771294271822695279">Видеодатотеки</translation>
 <translation id="3780740315729837296">Назначете копче од тастатурата</translation>
 <translation id="3784455785234192852">Катанец</translation>
@@ -619,7 +623,7 @@
 <translation id="4271957103967917607">Приказ на цел екран</translation>
 <translation id="4275663329226226506">Аудиовизуелни содржини</translation>
 <translation id="4278766082079064416">Кратенката се користи за „<ph name="CONFLICT_ACCEL_NAME" />“. Изменете ја или отстранете ја за да се разреши конфликтот.</translation>
-<translation id="4285999655021474887">виолетова</translation>
+<translation id="4285999655021474887">пурпурна</translation>
 <translation id="4289540628985791613">Преглед</translation>
 <translation id="4289849978083912975">Приказ на слајдови</translation>
 <translation id="4297501883039923494">Запрено - непозната грешка</translation>
@@ -956,7 +960,7 @@
 <translation id="6042308850641462728">Повеќе</translation>
 <translation id="6048107060512778456">Неуспешно - заглавена хартија</translation>
 <translation id="6050189528197190982">Скала на сиви тонови</translation>
-<translation id="6054711098834486579">експресионист</translation>
+<translation id="6054711098834486579">експресионизам</translation>
 <translation id="6058625436358447366">За да завршите, внесете ги старата и новата лозинка</translation>
 <translation id="6061772781719867950">Неуспешни HTTP-барања</translation>
 <translation id="6073292342939316679">намалување на осветленоста на тастатурата</translation>
@@ -1122,7 +1126,7 @@
 <translation id="6853312040151791195">Брзина на празнење</translation>
 <translation id="6862416241246624313">Повратните информации се испратени</translation>
 <translation id="6866732840889595464">маргаритка</translation>
-<translation id="6871256179359663621">светловиолетова</translation>
+<translation id="6871256179359663621">светлопурпурна</translation>
 <translation id="6889786074662672253">Додека се рестартира, не исклучувајте го надворешниов уред од струја или не исклучувајте го компјутерот. Може да го минимизирате прозорецов. Ова може да потрае неколку минути и надворешниот уред можеби нема да работи во ова време.</translation>
 <translation id="6900701049656042631">Нема фотографии во албумов. За да додадете фотографии, одете на <ph name="LINK" /></translation>
 <translation id="6902359863093437070">Создајте заднина со AI</translation>

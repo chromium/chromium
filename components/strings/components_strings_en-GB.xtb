@@ -387,7 +387,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1668071460721346172">Get an email</translation>
 <translation id="1671391448414634642">Pages in <ph name="SOURCE_LANGUAGE" /> will be translated to <ph name="TARGET_LANGUAGE" /> from now on.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> to <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1674542638006317838">A limited list of URLs of pages you visit where <ph name="BEGIN_LINK" />legacy technology events<ph name="END_LINK" /> are occuring.</translation>
 <translation id="1682696192498422849">Short edge first</translation>
 <translation id="168693727862418163">This policy value failed to validate against its schema and will be ignored.</translation>
 <translation id="168841957122794586">The server certificate contains a weak cryptographic key.</translation>
@@ -1533,7 +1532,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="378611282717571199">Best matches for '<ph name="SEARCH_QUERY" />'</translation>
 <translation id="3789155188480882154">Size 16</translation>
 <translation id="3789841737615482174">Install</translation>
-<translation id="3790417903123637354">Something went wrong. Try again later</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
 <translation id="3792826587784915501">Cult and indie films</translation>
 <translation id="3793574014653384240">Numbers and causes of the crashes that occurred recently</translation>
@@ -2354,6 +2352,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5331585574693522196">Set as default</translation>
 <translation id="5332219387342487447">Delivery method</translation>
 <translation id="5332769172018416402">Ask in a message</translation>
+<translation id="5334013548165032829">Detailed system logs</translation>
 <translation id="5334145288572353250">Save Address?</translation>
 <translation id="5340250774223869109">Application is blocked</translation>
 <translation id="5342693890921195472">min ago</translation>

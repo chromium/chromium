@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ky">
 <translation id="1001033507375626788">Бул тармак сиз менен бөлүшүлгөн</translation>
+<translation id="1001360573085135660">Уруксатты өчүрүү/күйгүзүү үчүн чыкылдатыңыз.</translation>
 <translation id="1002085272681738789">Өтмөк кайрадан жигердүү</translation>
 <translation id="1003088604756913841">Шилтемени жаңы <ph name="APP" /> терезесинде ачуу</translation>
 <translation id="100323615638474026">USB түзмөгү (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -3299,6 +3300,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3333190335304955291">Бул кызматты жөндөөлөрдөн өчүрсөңүз болот.</translation>
 <translation id="3333961966071413176">Бардык байланыштар</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – Видео сүрөт ичиндеги сүрөт режиминде ойнотулуп жатат</translation>
+<translation id="3335380372402547327">Жарык менен коштолгон билдирмелерди алдын ала көрүү</translation>
 <translation id="3335947283844343239">Жабылган терезени кайра ачуу</translation>
 <translation id="3336855445806447827">Так айта албайм</translation>
 <translation id="3337568642696914359">Сайттар протоколдорду иштете албасын</translation>

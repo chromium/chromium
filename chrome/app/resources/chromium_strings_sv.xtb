@@ -90,6 +90,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="2384373936468275798">Det gick inte att synkronisera data med Chromium OS eftersom inloggningsuppgifterna för kontot är inaktuella.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Minst ett Chromium-tillägg har fått åtkomst till 1 styrdon}=1{Minst ett Chromium-tillägg har åtkomst till 1 styrdon}other{Minst ett Chromium-tillägg har åtkomst till # styrdon}}</translation>
 <translation id="2401032172288869980">Du behöver ge Chromium kamera- och mikrofonbehörighet för den här webbplatsen</translation>
+<translation id="2403703063067034158">Startfel: En annan instans av konfigurationen körs för närvarande. Försök igen senare.</translation>
 <translation id="2440750600860946460">Med <ph name="BEGIN_LINK" />verktyg från Chromium<ph name="END_LINK" /> kan du surfa säkert och behålla kontrollen</translation>
 <translation id="2451727308784734061">Använd genvägen för att snabbt öppna Lösenordshantering. Du kan flytta genvägen till startskärmen eller startprogrammet för appar på datorn.</translation>
 <translation id="2478295928299953161">Chromium avslutas snart</translation>

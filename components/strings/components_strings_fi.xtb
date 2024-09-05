@@ -387,7 +387,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1668071460721346172">Lähetä sähköpostia</translation>
 <translation id="1671391448414634642">Kielellä <ph name="SOURCE_LANGUAGE" /> kirjoitetut sivut käännetään tästä lähtien kielelle <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1674542638006317838">Rajallinen lista sellaisten avaamiesi sivujen URL-osoitteista, joilla esiintyy <ph name="BEGIN_LINK" />vanhoja teknologiatapahtumia<ph name="END_LINK" />.</translation>
 <translation id="1682696192498422849">Lyhyt reuna ensin</translation>
 <translation id="168693727862418163">Tämän käytännön arvon ei onnistunut vahvistamaan kaavaa ja se ohitetaan.</translation>
 <translation id="168841957122794586">Palvelinvarmenne sisältää heikon salausavaimen.</translation>
@@ -1534,7 +1533,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="378611282717571199">Parhaat osumat haulla "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="3789155188480882154">Koko 16</translation>
 <translation id="3789841737615482174">Asenna</translation>
-<translation id="3790417903123637354">Jotain meni pieleen. Yritä myöhemmin uudelleen.</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> tuumaa)</translation>
 <translation id="3792826587784915501">Kultti‑ ja indie-elokuvat</translation>
 <translation id="3793574014653384240">Viime aikoina tapahtuneiden kaatumisten määrät ja syyt</translation>
@@ -2355,6 +2353,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5331585574693522196">Aseta oletukseksi</translation>
 <translation id="5332219387342487447">Toimitustapa</translation>
 <translation id="5332769172018416402">Kysy viestillä</translation>
+<translation id="5334013548165032829">Yksityiskohtaiset järjestelmälokit</translation>
 <translation id="5334145288572353250">Tallennetaanko osoite?</translation>
 <translation id="5340250774223869109">Sovellus on estetty</translation>
 <translation id="5342693890921195472">min sitten</translation>

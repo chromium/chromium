@@ -387,7 +387,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1668071460721346172">Rep un correu electrònic</translation>
 <translation id="1671391448414634642">A partir d'ara, les pàgines en <ph name="SOURCE_LANGUAGE" /> es traduiran a <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> a <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1674542638006317838">Una llista limitada d'URL de les pàgines que visites en què es produeixen <ph name="BEGIN_LINK" />esdeveniments tecnològics heretats<ph name="END_LINK" />.</translation>
 <translation id="1682696192498422849">La vora curta primer</translation>
 <translation id="168693727862418163">No s'ha pogut validar el valor d'aquesta política comparant-lo amb l'esquema i, per tant, s'ignorarà.</translation>
 <translation id="168841957122794586">El certificat de servidor conté una clau criptogràfica dèbil.</translation>
@@ -1533,7 +1532,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="378611282717571199">Millors coincidències per a "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="3789155188480882154">Mida 16</translation>
 <translation id="3789841737615482174">Instal·la</translation>
-<translation id="3790417903123637354">S'ha produït un error. Torna-ho a provar més tard.</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> polzades)</translation>
 <translation id="3792826587784915501">Pel·lícules de culte i independents</translation>
 <translation id="3793574014653384240">Nombre i motius dels errors que s'han produït recentment</translation>
@@ -2354,6 +2352,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5331585574693522196">Defineix com a predeterminat</translation>
 <translation id="5332219387342487447">Mètode d'enviament</translation>
 <translation id="5332769172018416402">Demana-ho en un missatge</translation>
+<translation id="5334013548165032829">Registres detallats del sistema</translation>
 <translation id="5334145288572353250">Vols desar l'adreça?</translation>
 <translation id="5340250774223869109">L'aplicació està bloquejada</translation>
 <translation id="5342693890921195472">min abans</translation>

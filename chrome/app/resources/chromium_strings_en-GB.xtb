@@ -90,6 +90,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="2384373936468275798">Chromium OS could not sync your data because your account sign-in details are out of date.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 HID device was being accessed by one or more Chromium extensions}=1{1 HID device is being accessed by one or more Chromium extensions}other{# HID devices are being accessed by one or more Chromium extensions}}</translation>
 <translation id="2401032172288869980">Chromium needs camera and microphone permissions for this site</translation>
+<translation id="2403703063067034158">Startup error: Another instance of setup is currently running, please try again later.</translation>
 <translation id="2440750600860946460">With <ph name="BEGIN_LINK" />tools from Chromium<ph name="END_LINK" />, you can browse safely and stay in control</translation>
 <translation id="2451727308784734061">Use your shortcut to quickly get to the Password Manager. You can move your shortcut to your computer's home screen or app launcher.</translation>
 <translation id="2478295928299953161">Chromium will soon close</translation>

@@ -8635,6 +8635,7 @@ Catatan Penting: Jadwal yang disetel oleh kebijakan ini mungkin tidak berjalan s
 
       Kebijakan ini diabaikan kecuali jika host Chrome Desktop Jarak Jauh diinstal.</translation>
 <translation id="7202925763179776247">Izinkan batasan download</translation>
+<translation id="7203243973351251622">Perekam suara (didukung sejak versi 130)</translation>
 <translation id="7207095846245296855">Paksa Google SafeSearch</translation>
 <translation id="7211368186050418507">Jangan pernah deteksi otomatis zona waktu</translation>
 <translation id="721617466745658461">Izinkan pengguna memilih biner browser <ph name="LACROS_NAME" /></translation>
@@ -8906,6 +8907,7 @@ baca lisan akan diaktifkan.</translation>
 
       Jika tidak disetel, interval default 3 menit akan berlaku.</translation>
 <translation id="7469554574977894907">Aktifkan saran penelusuran</translation>
+<translation id="7471938371309017725">Mengonfigurasi kamera, setelan browser, setelan OS, pemindaian, web store, canvas, jelajahi, crosh, galeri, terminal, dan fitur perekam suara untuk dinonaktifkan</translation>
 <translation id="7472547030234093862">Menentukan domain yang akan di-resolve menggunakan DNS-over-HTTPS</translation>
 <translation id="747275827471712187">Mengembalikan cookie di situs ini ke perilaku <ph name="ATTRIBUTE_SAMESITE_NAME" /> lama</translation>
 <translation id="7476030153540156377">Memilih apakah fitur Perlindungan IP <ph name="PRIVACY_SANDBOX_NAME" /> harus diaktifkan.</translation>

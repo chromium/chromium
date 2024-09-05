@@ -388,7 +388,6 @@
 <translation id="1668071460721346172">ទទួល​អ៊ីមែល</translation>
 <translation id="1671391448414634642">ទំព័រជា <ph name="SOURCE_LANGUAGE" /> នឹងត្រូវបាន​បកប្រែទៅជា <ph name="TARGET_LANGUAGE" /> ចាប់ពី​ពេលនេះតទៅ។</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ទៅ <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1674542638006317838">បញ្ជី URL ទំព័រមួយចំនួនតូច​ដែលអ្នក​ចូលទៅកាន់ដែល<ph name="BEGIN_LINK" />ព្រឹត្តិការណ៍​បច្ចេកវិទ្យាចាស់<ph name="END_LINK" />កំពុង​កើតឡើង។</translation>
 <translation id="1682696192498422849">គែមខ្លី​មុនគេ</translation>
 <translation id="168693727862418163">តម្លៃគោលការណ៍នេះមិនត្រូវនឹងគំនូស​តាងរបស់វាទេ ហើយនឹងមិនត្រូវបានអើពើទេ។</translation>
 <translation id="168841957122794586">វិញ្ញាបនប័ត្រម៉ាស៊ីនមេផ្ទុកសោគ្រីបខ្សោយ។</translation>
@@ -1536,7 +1535,6 @@
 <translation id="378611282717571199">លទ្ធផលត្រូវគ្នាបំផុតសម្រាប់ "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="3789155188480882154">ទំហំ 16</translation>
 <translation id="3789841737615482174">តំឡើង</translation>
-<translation id="3790417903123637354">មានអ្វីមួយខុសប្រក្រតី។ ព្យាយាមម្តង​ទៀតនៅពេល​ក្រោយ</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
 <translation id="3792826587784915501">ភាពយន្ត​វប្បធម៌ និងអ៊ីនឌី</translation>
 <translation id="3793574014653384240">មូលហេតុ និងចំនួននៃការគាំង ដែលបានកើតឡើងកាលពីពេលថ្មីៗនេះ</translation>
@@ -2358,6 +2356,7 @@
 <translation id="5331585574693522196">កំណត់ជាលំនាំដើម</translation>
 <translation id="5332219387342487447">វិធីសាស្រ្ត​នៃការ​ដឹកជញ្ជូន</translation>
 <translation id="5332769172018416402">ស្នើសុំតាម​សារ</translation>
+<translation id="5334013548165032829">កំណត់ហេតុ​ប្រព័ន្ធលម្អិត</translation>
 <translation id="5334145288572353250">រក្សាទុក​អាសយដ្ឋាន​ឬ?</translation>
 <translation id="5340250774223869109">កម្មវិធី​ត្រូវបាន​ទប់ស្កាត់</translation>
 <translation id="5342693890921195472">នាទីមុន</translation>

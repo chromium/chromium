@@ -391,6 +391,13 @@ Isso substitui a política <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAM
 <translation id="1295737447968372331">Ativa o ditado na tela de login</translation>
 <translation id="1297182715641689552">Usar um script de proxy .pac</translation>
 <translation id="1297961932043741908">Define um limite, em megabytes, para a memória que uma única instância do Chrome pode usar.</translation>
+<translation id="1300201563402640906">A Tabela de comparação é uma ferramenta com tecnologia de IA criada para comparar informações entre as guias de um usuário. Por exemplo, o usuário poderá usar o recurso quando várias guias com produtos de uma categoria semelhante estiverem abertas.
+
+0 = ativa o recurso para usuários e envia dados relevantes ao Google para treinar ou melhorar os modelos de IA. Os dados relevantes podem incluir comandos, entradas, saídas e materiais de origem, dependendo do recurso. Eles podem ser analisados por humanos com o único propósito de melhorar os modelos de IA. O valor padrão é 0, exceto quando indicado de outra forma abaixo.
+
+1 = ativa o recurso para os usuários, mas não envia dados ao Google para treinar ou melhorar os modelos de IA. 1 é o valor padrão para usuários corporativos gerenciados pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e contas de ensino gerenciadas pelo <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = desativa o recurso.</translation>
 <translation id="1304973015437969093">IDs de extensões//aplicativos e URLs de atualização deverão ser instalados silenciosamente</translation>
 <translation id="1305400589435476516">Se a política for definida como "Ativada", o roaming de dados será permitido no dispositivo.
 
@@ -5882,6 +5889,7 @@ As contas gerenciadas não podem participar nem criar um grupo familiar. Por iss
 <translation id="5330684698007383292">Permitir que o <ph name="PRODUCT_FRAME_NAME" /> trabalhe com os tipos de conteúdo a seguir</translation>
 <translation id="5331342092479819688">Permitir hashes não seguros em handshakes do TLS</translation>
 <translation id="5331746669335642668">A política de nuvem do <ph name="PRODUCT_NAME" /> substitui a política da plataforma.</translation>
+<translation id="533287753294126753">Permitir o uso da Tabela de comparação e melhorar os modelos de IA.</translation>
 <translation id="5334404204520035180">Controlar o uso da API WebPrinting</translation>
 <translation id="5334501839642146593">Nunca enviar métricas ao Google</translation>
 <translation id="5335910979215357815">Ativar a API Save and Share para o controle do <ph name="PRODUCT_OS_NAME" /> de terceiros.</translation>
@@ -8602,6 +8610,7 @@ O host da Área de trabalho remota do Google Chrome é um serviço nativo execut
 
 Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome não está instalada.</translation>
 <translation id="7202925763179776247">Permitir restrições de downloads</translation>
+<translation id="7203243973351251622">Gravador (compatível desde a versão 130)</translation>
 <translation id="7207095846245296855">Forçar o Google SafeSearch</translation>
 <translation id="7211368186050418507">Nunca detectar o fuso horário automaticamente</translation>
 <translation id="721617466745658461">Permitir que os usuários selecionem o binário <ph name="LACROS_NAME" /> do navegador</translation>
@@ -8873,6 +8882,7 @@ a leitura em voz alta será ativada.</translation>
 
       Se a política não for definida, o intervalo padrão será de 3 minutos.</translation>
 <translation id="7469554574977894907">Ativar sugestões de pesquisa</translation>
+<translation id="7471938371309017725">Definir a câmera, configurações do navegador, configurações do SO, digitalização, loja on-line, tela, análise, Crosh, galeria, terminal e recursos do Gravador a serem desativados</translation>
 <translation id="7472547030234093862">Especificar domínios a serem resolvidos usando DNS sobre HTTPS</translation>
 <translation id="747275827471712187">Reverter para comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> legado para os cookies nesses sites</translation>
 <translation id="7476030153540156377">Escolher se o recurso de proteção de IP do <ph name="PRIVACY_SANDBOX_NAME" /> deve ser ativado.</translation>
@@ -10111,6 +10121,7 @@ configurados.</translation>
 <translation id="8455529558077979314">Configurações da tela de privacidade</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8465065632133292531">Parâmetros para URL de instantâneos que usa POST</translation>
+<translation id="8466326735698755782">Permitir o uso da Tabela de comparação sem melhorar os modelos de IA.</translation>
 <translation id="8467267413626499807">Ativar serviço de SSO flutuante</translation>
 <translation id="8467463980805035993">Permitir o recurso Quero ajuda para ler sem melhorar os modelos de IA.</translation>
 <translation id="846994437739309080">Se ativado (ou não definido), os certificados TLS adicionados pelo usuário de repositórios de confiança da plataforma serão usados na criação de caminhos para a autenticação do servidor TLS.
@@ -10999,6 +11010,7 @@ Observação: a reinicialização do dispositivo limpa o cache. Até os dados te
 <translation id="9088191250434406767">Se a política for ativada ou deixada sem definição, os usuários poderão pesquisar com a câmera usando o <ph name="GOOGLE_LENS_PRODUCT_NAME" />. Se a política for desativada, o botão do <ph name="GOOGLE_LENS_PRODUCT_NAME" /> não estará disponível na caixa de pesquisa quando houver compatibilidade com a pesquisa assistida pela câmera do <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="9088433379343318874">Ativar o provedor de conteúdo de usuário supervisionado</translation>
 <translation id="9088444059179765143">Configurar o método de detecção automática de fuso horário</translation>
+<translation id="9095599826504830315">Não permitir o uso da Tabela de comparação.</translation>
 <translation id="9096772739225230999">Não informar configuração da rede</translation>
 <translation id="9098409326885953506">Detectar janela coberta e suspender a pintura</translation>
 <translation id="9105265795073104888">Somente um subconjunto de opções de configuração de proxy é disponibilizado para apps Android. Esses apps podem optar voluntariamente por usar o proxy. Não é possível forçá-los a usar um proxy.</translation>

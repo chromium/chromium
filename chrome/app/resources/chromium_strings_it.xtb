@@ -87,6 +87,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="2384373936468275798">Impossibile sincronizzare i dati in Chromium OS perché i dati di accesso dell'account sono obsoleti.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Una o più estensioni di Chromium stavano accedendo a 1 dispositivo HID}=1{Una o più estensioni di Chromium stanno accedendo a 1 dispositivo HID}other{Una o più estensioni di Chromium stanno accedendo a # dispositivi HID}}</translation>
 <translation id="2401032172288869980">Chromium deve avere le autorizzazioni di accesso al microfono e alla fotocamera per questo sito</translation>
+<translation id="2403703063067034158">Errore di avvio: è in esecuzione un'altra istanza di configurazione. Riprova più tardi.</translation>
 <translation id="2440750600860946460">Con gli <ph name="BEGIN_LINK" />strumenti di Chromium<ph name="END_LINK" />, puoi navigare in sicurezza e mantenere il controllo</translation>
 <translation id="2451727308784734061">Usa la scorciatoia per accedere rapidamente a Gestore delle password. Puoi spostare la scorciatoia nella schermata Home del computer o in Avvio applicazioni.</translation>
 <translation id="2478295928299953161">Chromium verrà chiuso a breve</translation>
@@ -171,6 +172,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="3669334504579945026">Per condividere lo schermo, consenti la Registrazione dello schermo per Chromium nelle Preferenze di sistema.</translation>
 <translation id="3685209450716071127">Chromium non può controllare le tue password. Prova a controllare la connessione a Internet.</translation>
 <translation id="3702352323269013324">Scopri di più sulla personalizzazione degli annunci in Chromium</translation>
+<translation id="3702620714724788961">Chromium precarica le pagine per velocizzare la navigazione e la ricerca.</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{L'amministratore richiede il riavvio di Chromium per installare questo aggiornamento}=1{L'amministratore richiede il riavvio di Chromium per installare questo aggiornamento. La finestra di navigazione in incognito non verrà riaperta.}other{L'amministratore richiede il riavvio di Chromium per installare questo aggiornamento. Le # finestre di navigazione in incognito non verranno riaperte.}}</translation>
 <translation id="3713809861844741608">Apri link in una nuova &amp;scheda di Chromium</translation>
 <translation id="3728124580182886854">Collega Chromium e altri servizi Google per la personalizzazione e altri scopi</translation>
@@ -304,6 +306,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5889361821821684993">Chromium esegue controlli regolari per verificare che il browser disponga delle impostazioni più sicure. Ti informeremo qualora fosse necessario un controllo da parte tua.</translation>
 <translation id="5895138241574237353">Riavvia</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Accesso rete</translation>
+<translation id="5921937202395756260">Chromium risparmia carica della batteria limitando l'attività in background e gli effetti visivi, ad esempio lo scorrimento fluido e le frequenze fotogrammi dei video.</translation>
 <translation id="5924017743176219022">Connessione a Internet in corso…</translation>
 <translation id="5929318705173562984">Chromium può rendere inattiva questa scheda per migliorare la tua esperienza di navigazione e liberare risorse.</translation>
 <translation id="5941711191222866238">Riduci a icona</translation>
@@ -367,6 +370,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6524389414524528185">Se hai eseguito l'accesso, puoi usare le password e altri dati del tuo Account Google in Chromium. Puoi modificare questa opzione in qualsiasi momento nelle Impostazioni.</translation>
 <translation id="6539122709674868420">La tua organizzazione chiude Chromium quando non viene utilizzato per <ph name="TIMEOUT_DURATION" />. I dati di navigazione sono stati eliminati. Potrebbero essere inclusi cronologia, compilazione automatica e download.</translation>
 <translation id="6542839706527980775">Ogni profilo dispone delle proprie informazioni di Chromium, come preferiti, cronologia, password e altro</translation>
+<translation id="6550837808040845057">Chromium libera la memoria dalle schede non attive. In questo modo le schede attive e altre app hanno più risorse per il computer e mantengono Chromium veloce. Le schede inattive si riattivano automaticamente quando ci torni.</translation>
 <translation id="6563921047760808519">Scopri di più su <ph name="BEGIN_LINK" />come Chromium mantiene privati i tuoi dati<ph name="END_LINK" /></translation>
 <translation id="656935081669708576">Puoi cambiare per vedere le password di un altro profilo Chromium</translation>
 <translation id="6570579332384693436">Per correggere gli errori ortografici, Chromium invia a Google il testo digitato nei campi di testo</translation>

@@ -297,6 +297,7 @@
 <translation id="1507202001669085618">&lt;p&gt;Այս սխալը կցուցադրվի, եթե դուք օգտագործում եք Wi-Fi պորտալ, որտեղ ցանցին միանալու համար անհրաժեշտ է մտնել հաշիվ։&lt;/p&gt;
     &lt;p&gt;Սխալը շտկելու համար սեղմեք &lt;strong&gt;Միանալ&lt;/strong&gt; այն էջում, որը փորձում եք բացել։&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Պատմության գրառումների ցանկ</translation>
+<translation id="1515436033764190215">ժամ առաջ</translation>
 <translation id="151720253492607760">Նախկինի պես չթույլատրել</translation>
 <translation id="1517433312004943670">Անհրաժեշտ է մուտքագրել հեռախոսահամար</translation>
 <translation id="1519264250979466059">Կառույցի ամսաթիվ</translation>
@@ -390,7 +391,6 @@
 <translation id="1668071460721346172">Ստանալ էլփոստով</translation>
 <translation id="1671391448414634642">Այսուհետ <ph name="SOURCE_LANGUAGE" /> լեզվով էջերը կթարգմանվեն <ph name="TARGET_LANGUAGE" />:</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" />ից <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1674542638006317838">Ձեր այցելած այն էջերի URL-ների սահմանափակ ցանկը, որտեղ տեղի են ունենում <ph name="BEGIN_LINK" />հնացած տեխնոլոգիաների հետ կապված իրադարձություններ<ph name="END_LINK" /></translation>
 <translation id="1682696192498422849">Կարճ եզրից սկսած</translation>
 <translation id="168693727862418163">Կանոնը կանտեսվի, քանի որ դրա արժեքը չի համապատասխանում սխեմային։</translation>
 <translation id="168841957122794586">Սերվերի վկայագիրը թույլ գաղտնագրման բանալի ունի:</translation>
@@ -753,6 +753,7 @@
 <translation id="2337852623177822836">Կարգավորումը վերահսկվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> կայքն ուզում է զուգակցվել</translation>
 <translation id="2346319942568447007">Ձեր պատճենած պատկերը</translation>
+<translation id="2348509731468399833">Գների հետագծումը կանգնեցված է։</translation>
 <translation id="2349957959687031096">«Բացել ինկոգնիտո ներդիր» կոճակ․ ակտիվացրեք՝ նոր ինկոգնիտո ներդիր բացելու համար</translation>
 <translation id="2350796302381711542">Թույլատրե՞լ <ph name="HANDLER_HOSTNAME" />-ին բացել <ph name="PROTOCOL" /> հաղորդակարգի բոլոր հղումները <ph name="REPLACED_HANDLER_TITLE" />-ի փոխարեն:</translation>
 <translation id="2353297238722298836">Տեսախցիկի ու խոսափողի օգտագործումը թույլատրված է</translation>
@@ -916,6 +917,7 @@
 <translation id="2651465929321991146">Պատմություն և ներդիրներ</translation>
 <translation id="2653659639078652383">Ուղարկել</translation>
 <translation id="2655752832536625875">Լոգասենյակ</translation>
+<translation id="2656194288057285221">«Փակել Chrome-ի խորհուրդը» կոճակ, սեղմեք Enter՝ փակելու համար</translation>
 <translation id="2657637947725373811">{0,plural, =1{Տեղափոխե՞լ կոնֆիդենցիալ ֆայլը}one{Տեղափոխե՞լ կոնֆիդենցիալ ֆայլը}other{Տեղափոխե՞լ կոնֆիդենցիալ ֆայլերը}}</translation>
 <translation id="2658843814961855121">Աշխատանքի և զբաղվածության օրենք</translation>
 <translation id="2660779039299703961">Իրադարձություն</translation>
@@ -1257,6 +1259,7 @@
 <translation id="3324983252691184275">Բոսորագույն</translation>
 <translation id="3325027355611702542">Բնակելի ավտոկցորդներ և տներ անիվների վրա</translation>
 <translation id="3325568918769906282">նվազման կարգով</translation>
+<translation id="3325662270238538525">Ֆայլերի վերջին օգտագործումն ու փոփոխությունները, այդ թվում՝ դրանց անվանումները, ֆայլերի բովանդակության թվային մատնահետքերը, ներբեռնման աղբյուրը և մետատվյալները</translation>
 <translation id="3329013043687509092">Հագեցում</translation>
 <translation id="3333762389743153920">Չի համապատասխանում վիրտուալ քարտի համար</translation>
 <translation id="3336044043987989409">Սեղմեք վերաբեռնման կոճակը, որպեսզի թույլատրեք միացումը ձեր մասնավոր ցանցի սարքերին կամ սերվերներին։</translation>
@@ -1535,7 +1538,6 @@
 <translation id="378611282717571199">Լավագույն համընկնումները «<ph name="SEARCH_QUERY" />» հարցման համար</translation>
 <translation id="3789155188480882154">Չափ 16</translation>
 <translation id="3789841737615482174">Տեղադրել</translation>
-<translation id="3790417903123637354">Սխալ առաջացավ: Փորձեք ավելի ուշ։</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> դյույմ)</translation>
 <translation id="3792826587784915501">Կուլտային և հեղինակային ֆիլմեր</translation>
 <translation id="3793574014653384240">Վերջերս գրանցված խափանումների թիվն ու պատճառները</translation>
@@ -2359,8 +2361,10 @@
 <translation id="5331585574693522196">Սահմանել որպես կանխադրված</translation>
 <translation id="5332219387342487447">Առաքման եղանակը</translation>
 <translation id="5332769172018416402">Խնդրել հաղորդագրության միջոցով</translation>
+<translation id="5334013548165032829">Համակարգի մանրամասն մատյաններ</translation>
 <translation id="5334145288572353250">Պահե՞լ հասցեն</translation>
 <translation id="5340250774223869109">Հավելվածն արգելափակված է</translation>
+<translation id="5342693890921195472">րոպե առաջ</translation>
 <translation id="534295439873310000">NFC սարքեր</translation>
 <translation id="5344522958567249764">Գովազդի գաղտնիության կառավարում</translation>
 <translation id="5344579389779391559">Այս էջում հնարավոր է ձեզնից գումար գանձելու փորձ արվի</translation>
@@ -2831,6 +2835,7 @@
 <translation id="6228346913624365233">Լյուքս դասի ավտոմեքենաներ</translation>
 <translation id="6229196330202833460">Ֆիլմերի և հեռուստահաղորդումների հեռարձակում</translation>
 <translation id="6234122620015464377">Կտրել յուրաքանչյուր փաստաթղթից հետո</translation>
+<translation id="6234310016144827337">Ստուգեք կապը և նորից փորձեք</translation>
 <translation id="6236290670123303279">Կառավարել կարգավորումները</translation>
 <translation id="623825323736974198">Կառավարեք կայքերը, որոնք միշտ ակտիվ կմնան, և դրանց հիշողությունը չի մաքրվի</translation>
 <translation id="6240447795304464094">Google Pay-ի լոգո</translation>
@@ -3647,6 +3652,7 @@
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, վավերականության ժամկետը՝ <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">Առաքում</translation>
 <translation id="7682451652090915298">Ռեգբի</translation>
+<translation id="768344142657640519">Դուք հենց նոր այցելել եք այս կայք</translation>
 <translation id="7684683146428206649">Մետաղ</translation>
 <translation id="7684817988830401358">«Ջնջել այցելությունների պատմությունը» կոճակ․ սեղմեք այն՝ Chrome-ի կարգավորումներում այցելությունների պատմությունը, քուքիները, քեշը և այլ տվյալներ ջնջելու համար</translation>
 <translation id="7684928361160505327">{0,plural, =1{<ph name="FILE_NAME" /> ֆայլն արգելափակվել է կանոնների համաձայն}one{<ph name="FILE_COUNT" /> ֆայլ արգելափակվել է կանոնների համաձայն}other{<ph name="FILE_COUNT" /> ֆայլ արգելափակվել է կանոնների համաձայն}}</translation>
@@ -3666,6 +3672,7 @@
 <translation id="7705992072972338699">Օպտիկական սկավառակ (գերփայլուն)</translation>
 <translation id="7706689436519265630">Ֆայլերը, որոնք պատճենում կամ տեղափոխում եք, ուղարկվում են Google Cloud կամ գործընկեր կազմակերպություններին՝ վերլուծության նպատակով։ Օրինակ՝ դրանցում կարող է ստուգվել խիստ անձնական տվյալների կամ վնասագրերի առկայությունը, և դրանք կարող են պահվել կազմակերպության կանոններին համաձայն։</translation>
 <translation id="7709911732293795808">Ապահովագրություն</translation>
+<translation id="7714351089363296478">Դուք հենց նոր այցելել եք այս կայք</translation>
 <translation id="7714404809393719981">Ֆոտոթուղթ (կիսափայլուն)</translation>
 <translation id="7714424966701020172">Ընտրվել է լրիվ անվան լրացման տարբերակը</translation>
 <translation id="7714464543167945231">Վկայագիր</translation>

@@ -43,6 +43,7 @@
 <translation id="1150989369772528668">पात्रो</translation>
 <translation id="1153356358378277386">कनेक्ट गरिएका डिभाइस</translation>
 <translation id="1155734730463845512">अहिलेको ब्याट्रीको स्तर <ph name="BATTERY_PERCENTAGE" />% छ</translation>
+<translation id="1157514002898505378">जेनेरेटिभ AI परीक्षणका क्रममा भएकाले सामग्री गलत, भ्रामक वा आपत्तिजनक हुन सक्छ। कुनै समस्याका बारेमा रिपोर्ट गर्न आफ्ना एड्मिनलाई सम्पर्क गर्नुहोस्। <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">अन छ र प्रयोग भइरहेको छ</translation>
 <translation id="1163437384438183174">सेल्फबाट फोन हब हटाउनुहोस्</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1665,7 +1666,6 @@
 <translation id="6665545700722362599">वेबसाइट, एप र विस्तारहरूलाई लोकेसन सर्भिस, यन्त्रको माइक्रोफोन, क्यामेरा वा अन्य सुविधाहरूको प्रयोग गर्ने अनुमति दिनुहोस्</translation>
 <translation id="6667908387435388584">फोनको हटस्पटमा कनेक्ट गर्नुहोस्, यन्त्रलाई साइलेन्ट मोडमा राख्नुहोस् र यन्त्र रहेको स्थान पत्ता लगाउनुका साथै आफ्नो फोनको Chrome मा हालसालै खोलिएका ट्याबहरू हेर्नुहोस्</translation>
 <translation id="6670153871843998651">डेस्क ३</translation>
-<translation id="6670904050959156521"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, <ph name="STATE" /></translation>
 <translation id="6671495933530132209">छविको कपी गर्नुहोस्</translation>
 <translation id="6671661918848783005">तपाईंको Chromebook अनलक गर्न सकिएन</translation>
 <translation id="6676552993057022464">स्प्लिट स्क्रिनको आकार बदल्न अप तथा डाउन एरो प्रयोग गर्नुहोस्</translation>
@@ -1924,6 +1924,7 @@
 <translation id="7613620083300976559">गेम कन्ट्रोलहरू अन गर्नुहोस्</translation>
 <translation id="761736749114493194">क्यामेरा फ्रेमिङ टगल गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7627303771480696593">प्रश्न सोध्नुहोस्</translation>
 <translation id="7634648064048557203">क्यामेरा पुछारको दायाँ कुनामा स्न्याप गरियो</translation>
 <translation id="7638572816805275740">विन्डोको स्क्रिनसट खिच्नुहोस् वा स्क्रिन रेकर्डिङ गर्नुहोस्</translation>
 <translation id="7642106959537987271">कलर इन्भर्सन मोड</translation>

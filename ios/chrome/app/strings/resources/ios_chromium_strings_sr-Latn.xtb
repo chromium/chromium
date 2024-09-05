@@ -71,6 +71,8 @@ Još podešavanja koja koriste podatke za poboljšanje doživljaja Chromium-a po
 <translation id="3344973607274501920">Chromium nije uspeo da vam proveri lozinke. Proverite internet vezu.</translation>
 <translation id="3366305173356742781">Chromium podaci na nalogu</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{To se dešava kada se Chromium ne koristi {THRESHOLD} minut. To može da obuhvata istoriju i automatsko popunjavanje.}one{To se dešava kada se Chromium ne koristi {THRESHOLD} minut. To može da obuhvata istoriju i automatsko popunjavanje.}few{To se dešava kada se Chromium ne koristi {THRESHOLD} minuta. To može da obuhvata istoriju i automatsko popunjavanje.}other{To se dešava kada se Chromium ne koristi {THRESHOLD} minuta. To može da obuhvata istoriju i automatsko popunjavanje.}}</translation>
+<translation id="3410395242749598859">Neki Chromium podaci još nisu sačuvani na nalogu <ph name="EMAIL" />.
+Sačekajte nekoliko minuta pre nego što promenite nalog. Ako sada promenite nalog, ovi podaci će se izbrisati.</translation>
 <translation id="3472200483164753384">Nije podržano u verziji Chromium Canary</translation>
 <translation id="347967311580159871">Više podešavanja koja koriste podatke za poboljšanje doživljaja Chromium-a potražite u <ph name="BEGIN_LINK" />Google uslugama<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Lozinka se ne deli. Proverite internet vezu i uverite se da ste prijavljeni u Chromium. Onda probajte ponovo.</translation>

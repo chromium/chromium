@@ -43,6 +43,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1150989369772528668">Lịch</translation>
 <translation id="1153356358378277386">Thiết bị đã ghép nối</translation>
 <translation id="1155734730463845512">Mức pin hiện tại: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">AI tạo sinh đang ở giai đoạn thử nghiệm nên nội dung có thể không chính xác, gây hiểu lầm hoặc phản cảm. Hãy liên hệ với quản trị viên nếu bạn muốn báo cáo một vấn đề. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">đang bật và đang hoạt động</translation>
 <translation id="1163437384438183174">Loại bỏ Trung tâm điều khiển điện thoại khỏi kệ</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1923,6 +1924,7 @@ Mới cài đặt</translation>
 <translation id="7613620083300976559">Bật các nút điều khiển trò chơi</translation>
 <translation id="761736749114493194">Bật/tắt tính năng lấy khung hình của máy ảnh. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />°F</translation>
+<translation id="7627303771480696593">Đặt câu hỏi</translation>
 <translation id="7634648064048557203">Máy ảnh đang bám theo góc dưới bên phải</translation>
 <translation id="7638572816805275740">Chụp hoặc ghi màn hình cửa sổ</translation>
 <translation id="7642106959537987271">chế độ đảo màu</translation>

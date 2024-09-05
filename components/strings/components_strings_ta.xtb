@@ -293,6 +293,7 @@
 <translation id="1507202001669085618">&lt;p&gt;சில வைஃபை போர்ட்டல்களில், இணையத்தைப் பயன்படுத்தும் முன்பு நீங்கள் உள்நுழைய வேண்டியிருக்கும். அதுபோன்ற போர்ட்டல்களைப் பயன்படுத்தினால், இந்தப் பிழையைப் பார்ப்பீர்கள்.&lt;/p&gt;
     &lt;p&gt;பிழையைச் சரிசெய்ய, நீங்கள் திறக்க முயலும் பக்கத்தில் உள்ள &lt;strong&gt;இணை&lt;/strong&gt; என்பதைக் கிளிக் செய்யவும்.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">வரலாற்று உள்ளீடுகளின் பட்டியல்</translation>
+<translation id="1515436033764190215">ம.நே முன்பு</translation>
 <translation id="151720253492607760">இப்போதும் அனுமதிக்காதே</translation>
 <translation id="1517433312004943670">ஃபோன் எண் தேவை</translation>
 <translation id="1519264250979466059">உருவாக்கிய தேதி</translation>
@@ -386,7 +387,6 @@
 <translation id="1668071460721346172">மின்னஞ்சல் மூலம் பெறுக</translation>
 <translation id="1671391448414634642"><ph name="SOURCE_LANGUAGE" /> மொழியிலுள்ள பக்கங்கள் இப்போது முதல் <ph name="TARGET_LANGUAGE" /> மொழியில் மொழிபெயர்க்கப்படும்.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> இலிருந்து <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1674542638006317838"><ph name="BEGIN_LINK" />பழைய தொழில்நுட்ப நிகழ்வுகள்<ph name="END_LINK" /> நடைபெறக்கூடிய, நீங்கள் பார்வையிடும் பக்கங்களின் வரம்பிடப்பட்ட URLகளின் பட்டியல்.</translation>
 <translation id="1682696192498422849">குறுகிய ஓரம் முதலில்</translation>
 <translation id="168693727862418163">இந்தக் கொள்கை அதன் திட்டப்பணித் தரவுக்கு எதிராக மதிப்பீடு செய்யப்படாததால் புறக்கணிக்கப்படும்.</translation>
 <translation id="168841957122794586">சேவையக சான்றிதழில் வலுவற்ற குறியீட்டாக்க விசை இருக்கிறது.</translation>
@@ -749,6 +749,7 @@
 <translation id="2337852623177822836">அமைப்பை உங்கள் நிர்வாகி கட்டுப்படுத்துகிறார்</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> இணைய விரும்புகிறது</translation>
 <translation id="2346319942568447007">நீங்கள் நகலெடுத்தப் படம்</translation>
+<translation id="2348509731468399833">விலைக் கண்காணிப்பு நிறுத்தப்பட்டது.</translation>
 <translation id="2349957959687031096">மறைநிலைப் பக்கத்தைத் திறப்பதற்கான பட்டன். தனிப்பட்ட முறையில் உலாவுவதற்குப் புதிய மறைநிலைப் பக்கத்தைத் திறக்க இதை இயக்குங்கள்</translation>
 <translation id="2350796302381711542">எல்லா <ph name="PROTOCOL" /> இணைப்புகளையும் திறக்க, <ph name="REPLACED_HANDLER_TITLE" /> க்குப் பதிலாக <ph name="HANDLER_HOSTNAME" /> ஐ அனுமதிக்கவா?</translation>
 <translation id="2353297238722298836">கேமராவும் மைக்ரோஃபோனும் அனுமதிக்கப்பட்டன</translation>
@@ -912,6 +913,7 @@
 <translation id="2651465929321991146">இதுவரை பார்த்தவை மற்றும் பக்கங்கள்</translation>
 <translation id="2653659639078652383">சமர்ப்பி</translation>
 <translation id="2655752832536625875">குளியலறை</translation>
+<translation id="2656194288057285221">Chrome உதவிக்குறிப்பை மூடும் பட்டன், மூட Enter அழுத்தவும்.</translation>
 <translation id="2657637947725373811">{0,plural, =1{ரகசியமான ஃபைலை நிச்சயம் மாற்ற வேண்டுமா?}other{ரகசியமான ஃபைல்களை நிச்சயம் மாற்ற வேண்டுமா?}}</translation>
 <translation id="2658843814961855121">தொழிலாளர் &amp; பணியாளர் சட்டம்</translation>
 <translation id="2660779039299703961">நிகழ்வு</translation>
@@ -1248,6 +1250,7 @@
 <translation id="3324983252691184275">அடர்சிவப்பு</translation>
 <translation id="3325027355611702542">கேம்பர்கள் &amp; RVகள்</translation>
 <translation id="3325568918769906282">இறங்குவரிசையில்</translation>
+<translation id="3325662270238538525">ஃபைல் பெயர்கள், ஃபைல் உள்ளடக்கத்தின் டிஜிட்டல் கைரேகைகள், பதிவிறக்க மூலங்கள், தரவுத்தகவல் உள்ளிட்ட சமீபத்திய ஃபைல் அணுகல்கள் மற்றும் மாற்றங்கள்.</translation>
 <translation id="3329013043687509092">நிறை செறிவு நிலை</translation>
 <translation id="3333762389743153920">விர்ச்சுவல் கார்டாகப் பயன்படுத்தத் தகுதிபெறவில்லை</translation>
 <translation id="3336044043987989409">உங்களின் தனிப்பட்ட நெட்வொர்க்கில் உள்ள சாதனங்கள் அல்லது சேவையகங்களுக்கான இணைப்பை அனுமதிக்க, ரெஃப்ரெஷ் செய் பட்டனை அழுத்தவும்.</translation>
@@ -1525,7 +1528,6 @@
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />" என்பதற்கான சிறந்த பொருத்தங்கள்</translation>
 <translation id="3789155188480882154">அளவு: 16</translation>
 <translation id="3789841737615482174">நிறுவுக</translation>
-<translation id="3790417903123637354">ஏதோ தவறாகிவிட்டது. பிறகு முயலவும்</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> இன்ச்)</translation>
 <translation id="3792826587784915501">கல்ட் மற்றும் இண்டீ திரைப்படங்கள்</translation>
 <translation id="3793574014653384240">சமீபத்தில் நிகழ்ந்த சிதைவுகளின் எண்ணிக்கைகளும் காரணங்களும்</translation>
@@ -2346,8 +2348,10 @@
 <translation id="5331585574693522196">இயல்பானதாக அமை</translation>
 <translation id="5332219387342487447">ஷிப்பிங் முறை</translation>
 <translation id="5332769172018416402">மெசேஜ் மூலம் கேள்</translation>
+<translation id="5334013548165032829">விரிவான சிஸ்டம் பதிவுகள்</translation>
 <translation id="5334145288572353250">முகவரியைச் சேமிக்கவா?</translation>
 <translation id="5340250774223869109">ஆப்ஸ் தடுக்கப்பட்டுள்ளது</translation>
+<translation id="5342693890921195472">நிமி முன்பு</translation>
 <translation id="534295439873310000">NFC சாதனங்கள்</translation>
 <translation id="5344522958567249764">விளம்பரத் தனியுரிமையை நிர்வகியுங்கள்</translation>
 <translation id="5344579389779391559">இந்தப் பக்கம் உங்களிடமிருந்து கட்டணம் வசூலிக்கலாம்</translation>
@@ -2817,6 +2821,7 @@
 <translation id="6228346913624365233">சொகுசு வாகனங்கள்</translation>
 <translation id="6229196330202833460">திரைப்படம் &amp; டிவி ஸ்ட்ரீமிங்</translation>
 <translation id="6234122620015464377">டிரிம் ஆஃப்டர் ஈச் டாக்குமெண்ட்</translation>
+<translation id="6234310016144827337">இணைப்பைச் சரிபார்த்து மீண்டும் முயலவும்</translation>
 <translation id="6236290670123303279">அமைப்புகளை நிர்வகி</translation>
 <translation id="623825323736974198">எப்போதும் செயலில் இருப்பதுடன் நினைவகம் காலியாக்கப்படாத தளங்களை நிர்வகிக்கலாம்</translation>
 <translation id="6240447795304464094">Google Pay லோகோ</translation>
@@ -3634,6 +3639,7 @@
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, காலாவதித் தேதி: <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">ஷிப்பிங்</translation>
 <translation id="7682451652090915298">ரக்பி</translation>
+<translation id="768344142657640519">சமீபத்தில் பார்த்தது</translation>
 <translation id="7684683146428206649">மெட்டல்</translation>
 <translation id="7684817988830401358">உலாவிய தரவை நீக்குவதற்கான பட்டன், இதுவரை இணையத்தில் பார்த்தவை, குக்கீகள், தற்காலிகச் சேமிப்பு மற்றும் பலவற்றை Chrome அமைப்புகளில் நீக்க செயல்படுத்துங்கள்</translation>
 <translation id="7684928361160505327">{0,plural, =1{கொள்கை காரணமாக <ph name="FILE_NAME" /> ஃபைல் தடுக்கப்பட்டது}other{கொள்கை காரணமாக <ph name="FILE_COUNT" /> ஃபைல்கள் தடுக்கப்பட்டன}}</translation>
@@ -3653,6 +3659,7 @@
 <translation id="7705992072972338699">ஹை க்ளாஸ்ஸி ஆப்டிகல் டிஸ்க்</translation>
 <translation id="7706689436519265630">நீங்கள் நகலெடுக்கும் அல்லது நகர்த்தும் ஃபைல்கள் Google Cloud அல்லது மூன்றாம் தரப்பினருக்குப் பகுப்பாய்விற்காக அனுப்பப்படும். எடுத்துக்காட்டாக, பாதுகாக்கப்பட வேண்டிய தனிப்பட்ட தரவோ மால்வேரோ உள்ளதா என்று கண்டறிவதற்காக அவை ஸ்கேன் செய்யப்படலாம். அத்துடன் நிறுவனக் கொள்கைகளின் அடிப்படையில் அவை சேமிக்கப்படலாம்.</translation>
 <translation id="7709911732293795808">காப்பீடு</translation>
+<translation id="7714351089363296478">சமீபத்தில் பார்த்தது</translation>
 <translation id="7714404809393719981">செமி க்ளாஸ்ஸி ஃபோட்டோ</translation>
 <translation id="7714424966701020172">முழுப் பெயரை நிரப்பும் விருப்பம் தேர்ந்தெடுக்கப்பட்டது</translation>
 <translation id="7714464543167945231">சான்றிதழ்</translation>

@@ -21,6 +21,7 @@
 <translation id="1108938384783527433">履歴の同期</translation>
 <translation id="1112015203684611006">印刷できませんでした。</translation>
 <translation id="1118569444314402022">ようこそ、<ph name="USER_NAME" /> さん</translation>
+<translation id="1121850836842642159">写真と画像</translation>
 <translation id="1125564390852150847">新しいタブを作成。</translation>
 <translation id="1126809382673880764">危険なウェブサイト、ダウンロード、拡張機能から保護されていません。セーフ ブラウジングによる保護は、Gmail や Google 検索など他の Google サービスで利用可能な場合は、引き続き有効です。</translation>
 <translation id="1147031633655575115"><ph name="USER" /> としてログイン</translation>
@@ -148,6 +149,7 @@
 <translation id="1967461193809857427">{count,plural, =1{Android で開いたタブを表示しますか？}other{Android で開いたタブを表示しますか？}}</translation>
 <translation id="1972325230031091483">表示中のウェブページに基づいてコンテンツが事前に読み込まれるので、すばやくブラウジングできます</translation>
 <translation id="1974060860693918893">詳細設定</translation>
+<translation id="1979188886349613713">ウェブサイトで指定されていないファイル拡張子を含める</translation>
 <translation id="1980417445547898121">{count,plural, =1{他のデバイスで最近開いた {count} 個のタブをこの iPhone で表示します}other{他のデバイスで最近開いた {count} 個のタブをこの iPhone で表示します}}</translation>
 <translation id="1981118202195772574">モバイル</translation>
 <translation id="1984417487208496350">保護なし（推奨されません）</translation>
@@ -473,6 +475,7 @@
 <translation id="4169535189173047238">許可しない</translation>
 <translation id="4172051516777682613">常に表示</translation>
 <translation id="4181841719683918333">言語</translation>
+<translation id="4184063163998877398">{count,plural, =1{脆弱なパスワード: {count} 件}other{脆弱なパスワード: {count} 件}}</translation>
 <translation id="4195643157523330669">新しいタブで開く</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} 件のアイテムがこのデバイスのみに保存されます。他のデバイスで使用するには、Google アカウント（{email}）に保存してください。}other{{count} 件のアイテムがこのデバイスのみに保存されます。他のデバイスで使用するには、Google アカウント（{email}）に保存してください。}}</translation>
 <translation id="421070604241073551">オンにすると、データが Google アカウントに保存されます。オフにすると、データはこのデバイスのみに保存されます。</translation>
@@ -621,6 +624,7 @@
 <translation id="5132942445612118989">すべてのデバイスでパスワード、履歴、その他の設定を同期する</translation>
 <translation id="5137526732000415202">すべてのデバイスで最後に開いたタブ。</translation>
 <translation id="5157638238828697074">エラーが発生しました。アプリケーションを開けませんでした。</translation>
+<translation id="5163417375525818870">PDF</translation>
 <translation id="5168414296986405587">iPadOS 向けの設計</translation>
 <translation id="5169725654005786900">操作を実行しています…</translation>
 <translation id="5176312250994681348">最新のパスワードを保持する</translation>
@@ -654,6 +658,7 @@
 <translation id="5343472494710226394">興味や関心に基づくニュース、スポーツ、コンテンツ。</translation>
 <translation id="5348775987281903912">このページは共有ボタンから共有できます。</translation>
 <translation id="5355191726083956201">保護強化機能がオンになっています</translation>
+<translation id="5356332698539508708">削除して切り替え</translation>
 <translation id="537853552771686272">関心のあるトピックとサイトを管理する</translation>
 <translation id="5395707839134961196">検索エンジンの詳細を非表示</translation>
 <translation id="5414763847370083940">値下げしたサイトがある場合は、アラートが表示されます。</translation>
@@ -664,6 +669,7 @@
 <translation id="5439618055789623719"><ph name="USER_EMAIL" /> としてログインしています</translation>
 <translation id="5444892875087332195">ブックマーク</translation>
 <translation id="5454211924362324495">他のユーザーがパスワードを使用できないようにするには、<ph name="BEGIN_LINK" /><ph name="WEBSITE" /> でパスワードを変更<ph name="END_LINK" />します</translation>
+<translation id="5457082343331641453">検索に追加</translation>
 <translation id="5478327362747197944">ウェブページ上の日付をクリックして、カレンダーの予定を直接作成できます。</translation>
 <translation id="5482922178977937393">興味や関心に基づいてニュースやスポーツなどに関する通知を受け取りますか？</translation>
 <translation id="5483838506518938965">以上で完了です</translation>
@@ -740,6 +746,7 @@
 <translation id="5860033963881614850">OFF</translation>
 <translation id="5860491529813859533">オンにする</translation>
 <translation id="5869522115854928033">保存したパスワード</translation>
+<translation id="5878899964490256268"><ph name="EMAIL" />、組織によって管理されています。</translation>
 <translation id="5888889603768021126">ログインに使用した ID プロバイダ</translation>
 <translation id="5896576662943111387">iOS にぴったり</translation>
 <translation id="5897749768294722429">過去にアクセスしたサイトにすばやく戻るには、タブと履歴を同期します。</translation>
@@ -841,6 +848,7 @@
 <translation id="6429213933892582367">[パスワードのオプション] を開きます</translation>
 <translation id="6434591244308415567">エラーが発生しました。しばらくしてからもう一度お試しください。</translation>
 <translation id="6443118737398455446">有効期限が無効です</translation>
+<translation id="6444435711855078002">その他のオプション</translation>
 <translation id="6445051938772793705">国</translation>
 <translation id="6445981559479772097">メッセージ送信完了。</translation>
 <translation id="6447842834002726250">Cookie</translation>
@@ -905,6 +913,8 @@
 <translation id="6732087373923685049">カメラ</translation>
 <translation id="6746338529702829275">アカウントのデータを確認する</translation>
 <translation id="6748108480210050150">From</translation>
+<translation id="6755200887046212842">アカウントを管理</translation>
+<translation id="6761393919622941301">音声</translation>
 <translation id="6779455296366983087">閲覧データを削除します</translation>
 <translation id="6790502149545262384">まもなく、新しいタブを開くと、<ph name="CHANNEL_NAME" /> のストーリーが表示されるようになります。</translation>
 <translation id="6800349425672670802">開いているすべてのタブにタブ切り替え機能からアクセスできます。</translation>
@@ -946,6 +956,7 @@
 <translation id="7063811929043357292">ご利用のアカウントは保護者によって管理されています。
 <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="7067610207756299941">組織のセキュリティを確保するため、保存されていないデータはこのデバイスから削除されます。これにはパスワード、履歴などが含まれます。</translation>
+<translation id="7067780033517902110">すべてのファイル</translation>
 <translation id="7080806333218412752">セーフ ブラウジングに URL を送信して安全性を確認します。また、新たな脅威を発見するため、ページ、ダウンロード、拡張機能のアクティビティ、システム情報の一部のサンプルも送信します。ログイン時には、このデータを一時的に Google アカウントにリンクして、すべての Google アプリを安全に利用できるように保護します。</translation>
 <translation id="7082853213442715471">オンにすると、一部のウェブ テクノロジーがブロックされ、ウェブサイトの読み込みが遅くなったり、正しく動作しなくなったりすることがあります。</translation>
 <translation id="7095110968493193530"><ph name="EMAIL" /> の Google パスワード マネージャーに移動</translation>
@@ -1081,6 +1092,7 @@
 <translation id="7926975587469166629">カードのニックネーム</translation>
 <translation id="7927711904086083099">選択されていません</translation>
 <translation id="7930998711684428189">データ侵害によりパスワードが漏洩した場合に警告します。</translation>
+<translation id="7933880123415105005"><ph name="SEARCH_PROVIDER" /> を検索</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7944772052836377867">同期するには本人確認が必要です</translation>
 <translation id="7947953824732555851">同意してログイン</translation>
@@ -1207,6 +1219,7 @@
 <translation id="8654802032646794042">キャンセル</translation>
 <translation id="8663764600409216912">推測しにくいパスワードが使用されています</translation>
 <translation id="8668210798914567634">このページはリーディング リストに保存されています。</translation>
+<translation id="8672733398999596205">すべて有効にする</translation>
 <translation id="8674716540979958118">不正使用されたパスワードがあります。</translation>
 <translation id="8680787084697685621">アカウントのログイン情報が古くなっています。</translation>
 <translation id="8692689525339542358">危険性のあるサイト、ダウンロード、拡張機能から保護してください。</translation>
@@ -1235,9 +1248,11 @@
 <translation id="8843129975935593190">同期できるアイテムは組織によって制限されています。</translation>
 <translation id="8849001918648564819">非表示</translation>
 <translation id="8855242995793521265">ブラウザやデバイスの動作が大幅に遅くなることはありません。</translation>
+<translation id="8856643812068084733">アーカイブ</translation>
 <translation id="8863431381414769983">Google マップから経路とローカル情報を取得します</translation>
 <translation id="8871974300055371298">コンテンツの設定</translation>
 <translation id="8879604564928138696">試すにはダブルタップします</translation>
+<translation id="8893208530912252670">動画</translation>
 <translation id="8898822736010347272">新たな脅威の発見と、すべてのウェブユーザーの保護に役立てるため、アクセスした一部のページの URL、限定的なシステム情報、一部のページ コンテンツを Google に送信します。</translation>
 <translation id="890565330728586731">戻る</translation>
 <translation id="8909135823018751308">共有...</translation>

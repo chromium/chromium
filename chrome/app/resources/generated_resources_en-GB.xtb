@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
 <translation id="1001033507375626788">This network is shared with you</translation>
+<translation id="1001360573085135660">Click to toggle permission.</translation>
 <translation id="1002085272681738789">Tab active again</translation>
 <translation id="1003088604756913841">Open Link in New <ph name="APP" /> Window</translation>
 <translation id="100323615638474026">USB device (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -3299,6 +3300,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3333190335304955291">You can turn this service off in settings.</translation>
 <translation id="3333961966071413176">All contacts</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – Video playing in picture-in-picture mode</translation>
+<translation id="3335380372402547327">Preview flash notifications</translation>
 <translation id="3335947283844343239">Re-open Closed Tab</translation>
 <translation id="3336855445806447827">Not sure</translation>
 <translation id="3337568642696914359">Don't allow sites to handle protocols</translation>

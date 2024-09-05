@@ -71,6 +71,8 @@ Afin d'accéder à plus de paramètres utilisant des données pour améliorer vo
 <translation id="3344973607274501920">Chromium n'a pas pu vérifier vos mots de passe. Essayez de vérifier votre connexion Internet.</translation>
 <translation id="3366305173356742781">Données Chromium dans votre compte</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Cela se produit lorsque Chromium n'est pas utilisé pendant {THRESHOLD} minute. Les données pourraient inclure celles de l'historique et du Remplissage automatique.}one{Cela se produit lorsque Chromium n'est pas utilisé pendant {THRESHOLD} minute. Les données pourraient inclure celles de l'historique et du Remplissage automatique.}other{Cela se produit lorsque Chromium n'est pas utilisé pendant {THRESHOLD} minutes. Les données pourraient inclure celles de l'historique et du Remplissage automatique.}}</translation>
+<translation id="3410395242749598859">Certaines de vos données Chromium n'ont pas encore été enregistrées dans votre compte <ph name="EMAIL" />.
+Essayez d'attendre quelques minutes avant de changer de compte. Si vous changez de compte maintenant, ces données seront supprimées.</translation>
 <translation id="3472200483164753384">Fonctionnalité non prise en charge par Chromium Canary</translation>
 <translation id="347967311580159871">Afin d'accéder à plus de paramètres utilisant des données pour améliorer votre expérience Chromium, accédez aux <ph name="BEGIN_LINK" />services Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Votre mot de passe n'a pas été partagé. Vérifiez votre connexion Internet et assurez-vous que vous êtes connecté à Chromium. Ensuite, réessayez.</translation>
@@ -119,6 +121,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="5042011327527167688">Touchez « Afficher avec Google Maps dans Chromium ».</translation>
 <translation id="5044871537677053278">Chromium détecte les adresses et utilise Google Maps pour vous fournir des itinéraires et des informations locales.</translation>
 <translation id="5048795749726991615">Pour récupérer facilement vos mots de passe enregistrés dans vos autres applications, utilisez Chromium pour le remplissage automatique</translation>
+<translation id="5053429694249468757">Suppression des données Chromium en cours…</translation>
 <translation id="5124429847818367226">Vous pouvez désormais utiliser Chromium chaque fois que vous naviguez ou que vous touchez des liens dans des messages, des documents et d'autres applications.</translation>
 <translation id="5131565040785979529">Votre organisation, <ph name="DOMAIN" />, gère le compte auquel vous êtes connecté et la façon dont Chromium est utilisé.</translation>
 <translation id="5224391634244552924">Aucun mot de passe enregistré. Chromium ne peut vérifier vos mots de passe que si vous les enregistrez.</translation>

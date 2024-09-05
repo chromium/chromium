@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sw">
 <translation id="1001033507375626788">Mtandao huu umeshirikiwa nawe</translation>
+<translation id="1001360573085135660">Bofya ili kuzima au kuwasha ruhusa.</translation>
 <translation id="1002085272681738789">Kichupo kinatumika tena</translation>
 <translation id="1003088604756913841">Fungua Kiungo katika Dirisha jipya la <ph name="APP" /></translation>
 <translation id="100323615638474026">Kifaa cha USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -3296,6 +3297,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3333190335304955291">Unaweza kuzima huduma hii kwenye Mipangilio.</translation>
 <translation id="3333961966071413176">Anwani zote</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Video inacheza katika hali ya picha ndani ya picha</translation>
+<translation id="3335380372402547327">Kagua arifa zenye mweko</translation>
 <translation id="3335947283844343239">Fungua Tena Kichupo Kilichofugwa</translation>
 <translation id="3336855445806447827">Sina uhakika</translation>
 <translation id="3337568642696914359">Usiruhusu tovuti zishughulikie itifaki</translation>
@@ -11266,7 +11268,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="9108294543511800041">Sasa unaweza kuangalia picha, maudhui na arifa za hivi karibuni za simu yako</translation>
 <translation id="9108674852930645435">Gundua mambo mapya kwenye <ph name="DEVICE_TYPE" /> yako</translation>
 <translation id="9109122242323516435">Ili kupata nafasi, futa faili kutoka kwenye hifadhi ya kifaa.</translation>
-<translation id="9109283579179481106">Unganisha kwenye mtandao wa simu</translation>
+<translation id="9109283579179481106">Unganisha mtandao wa simu</translation>
 <translation id="9110739391922513676">Weka mipangilio ya Microsoft 365 ili ufungue faili</translation>
 <translation id="9111102763498581341">Fungua</translation>
 <translation id="9111305600911828693">Mipangilio ya leseni haijawekwa</translation>

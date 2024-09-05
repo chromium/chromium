@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
 <translation id="1001033507375626788">Ky rrjet është ndarë me ty</translation>
+<translation id="1001360573085135660">Kliko për të aktivizuar/çaktivizuar lejen.</translation>
 <translation id="1002085272681738789">Skeda është përsëri aktive</translation>
 <translation id="1003088604756913841">Hape lidhjen në një dritare të re të <ph name="APP" /></translation>
 <translation id="100323615638474026">Pajisja USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -3282,6 +3283,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3333190335304955291">Këtë shërbim mund ta çaktivizosh te "Cilësimet".</translation>
 <translation id="3333961966071413176">Të gjitha kontaktet</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Videoja po luhet në modalitetin "figurë brenda figurës"</translation>
+<translation id="3335380372402547327">Shiko paraprakisht njoftimet me blic</translation>
 <translation id="3335947283844343239">Rihap skedën e mbyllur</translation>
 <translation id="3336855445806447827">Nuk jam i sigurt</translation>
 <translation id="3337568642696914359">Mos lejo që sajtet të menaxhojnë protokollet</translation>

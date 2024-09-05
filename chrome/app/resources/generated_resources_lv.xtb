@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
 <translation id="1001033507375626788">Šis tīkls tiek koplietots ar jums</translation>
+<translation id="1001360573085135660">Noklikšķiniet, lai pārslēgtu atļauju.</translation>
 <translation id="1002085272681738789">Cilne atkal ir aktīva</translation>
 <translation id="1003088604756913841">Atvērt saiti jaunā <ph name="APP" /> logā</translation>
 <translation id="100323615638474026">USB ierīce (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -3286,6 +3287,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3333190335304955291">Šo pakalpojumu varat izslēgt sadaļā Iestatījumi.</translation>
 <translation id="3333961966071413176">Visas kontaktpersonas</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> — videoklips tiek atskaņots režīmā “Attēls attēlā”</translation>
+<translation id="3335380372402547327">Priekšskatīt zibpaziņojumus</translation>
 <translation id="3335947283844343239">Vēlreiz atvērt aizvērto cilni</translation>
 <translation id="3336855445806447827">Neesmu pārliecināts</translation>
 <translation id="3337568642696914359">Neļaut vietnēm apstrādāt protokolus</translation>

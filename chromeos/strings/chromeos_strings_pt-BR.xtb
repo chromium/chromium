@@ -76,6 +76,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ajustar à área de digitalização</translation>
 <translation id="1343442362630695901">lago salino</translation>
+<translation id="1348657754632799065">Barra de gravação</translation>
 <translation id="1367951781824006909">Escolher um arquivo</translation>
 <translation id="1371650399987522809">Feedback sobre o plano de fundo com a tecnologia de IA do Google</translation>
 <translation id="1374385338586507108">Definição</translation>
@@ -99,6 +100,7 @@
 <translation id="1449035143498573192">Abrir na Pesquisa Google</translation>
 <translation id="1451536289672181509">Este dispositivo é um teclado.</translation>
 <translation id="1452939186874918380">guarda-chuvas</translation>
+<translation id="145402479967797468">Controles de mídia</translation>
 <translation id="1459693405370120464">Clima</translation>
 <translation id="1463084054301832672">casa de campo</translation>
 <translation id="1468664791493211953">Ofertas</translation>
@@ -264,6 +266,7 @@
 <translation id="2212733584906323460">Resolução de nome</translation>
 <translation id="2215920961700443347">Sem Internet. Conecte-se à Internet e tente de novo.</translation>
 <translation id="2217935453350629363">Velocidade atual</translation>
+<translation id="221994303562837085">Parar gravação</translation>
 <translation id="2224337661447660594">Sem Internet</translation>
 <translation id="222447520299472966">Você precisa selecionar pelo menos um álbum da galeria de arte</translation>
 <translation id="2230005943220647148">Celsius</translation>
@@ -326,6 +329,7 @@
 <translation id="2533048460510040082">Conteúdo de ajuda sugerido</translation>
 <translation id="2536159006530886390">Não é possível se conectar à Internet.</translation>
 <translation id="2538719227433767804">Mais <ph name="NUM_HIDDEN_OPTIONS" /></translation>
+<translation id="2560876255701405320">Lista de gravações de áudio</translation>
 <translation id="2561093647892030937">limões-sicilianos</translation>
 <translation id="2570743873672969996">Executando o teste <ph name="TEST_NAME" />…</translation>
 <translation id="2575552334616524665">Você pode ativar essa opção nas Configurações ou no menu <ph name="THREE_DOTS_MENU_ICON" /></translation>
@@ -518,6 +522,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> avaliações)</translation>
 <translation id="3748026146096797577">Não conectado</translation>
 <translation id="3749289110408117711">Nome do arquivo</translation>
+<translation id="3767737419527918477">Pesquisar arquivos de gravação</translation>
 <translation id="3771294271822695279">Arquivos de vídeo</translation>
 <translation id="3780740315729837296">Atribuir uma tecla do teclado</translation>
 <translation id="3784455785234192852">Bloqueio</translation>

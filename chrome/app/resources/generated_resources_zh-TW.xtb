@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-TW">
 <translation id="1001033507375626788">已與你共用這個網路</translation>
+<translation id="1001360573085135660">按一下即可開啟或關閉權限。</translation>
 <translation id="1002085272681738789">讓分頁恢復「使用中」狀態</translation>
 <translation id="1003088604756913841">在新的「<ph name="APP" />」視窗中開啟連結</translation>
 <translation id="100323615638474026">USB 裝置 (<ph name="VENDOR_ID" />：<ph name="PRODUCT_ID" />)</translation>
@@ -3283,6 +3284,7 @@
 <translation id="3333190335304955291">你可以前往「設定」關閉這項服務。</translation>
 <translation id="3333961966071413176">所有聯絡人</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - 正在使用子母畫面模式播放影片</translation>
+<translation id="3335380372402547327">預覽閃光燈通知</translation>
 <translation id="3335947283844343239">重新開啟先前關閉的分頁</translation>
 <translation id="3336855445806447827">不確定</translation>
 <translation id="3337568642696914359">禁止網站處理通訊協定</translation>
@@ -3733,7 +3735,7 @@
 <translation id="3665301845536101715">在側邊面板中開啟</translation>
 <translation id="3665589677786828986">Chrome 偵測到另一個程式竄改了部分瀏覽器設定，現已將這些設定重設為原始預設值。</translation>
 <translation id="3665919494326051362">目前的版本是 <ph name="CURRENT_VERSION" /></translation>
-<translation id="3666196264870170605">Intel Wi-Fi NIC 偵錯轉儲</translation>
+<translation id="3666196264870170605">Intel Wi-Fi NIC 偵錯 dump</translation>
 <translation id="3666971425390608309">已暫停下載「<ph name="FILE_NAME" />」。</translation>
 <translation id="3670113805793654926">來自任何供應商的裝置</translation>
 <translation id="3670229581627177274">開啟藍牙功能</translation>

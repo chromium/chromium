@@ -387,7 +387,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1668071460721346172">E-Mail erhalten</translation>
 <translation id="1671391448414634642">Seiten auf <ph name="SOURCE_LANGUAGE" /> werden ab jetzt auf <ph name="TARGET_LANGUAGE" /> übersetzt.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1674542638006317838">Eine begrenzte Liste mit URLs der von dir besuchten Seiten, auf denen <ph name="BEGIN_LINK" />Probleme aufgrund von veralteter Technologie<ph name="END_LINK" /> auftreten.</translation>
 <translation id="1682696192498422849">Kurze Seite zuerst</translation>
 <translation id="168693727862418163">Die Richtlinienwertprüfung des Schemas ist fehlgeschlagen. Der Richtlinienwert wird ignoriert.</translation>
 <translation id="168841957122794586">Das Serverzertifikat weist einen schwachen kryptografischen Schlüssel auf.</translation>
@@ -1531,7 +1530,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="378611282717571199">Beste Ergebnisse für „<ph name="SEARCH_QUERY" />“</translation>
 <translation id="3789155188480882154">Größe 16</translation>
 <translation id="3789841737615482174">Installieren</translation>
-<translation id="3790417903123637354">Ein Fehler ist aufgetreten. Versuche es später noch einmal.</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" />" × <ph name="HEIGHT" />")</translation>
 <translation id="3792826587784915501">Kultklassiker und Indie-Filme</translation>
 <translation id="3793574014653384240">Anzahl und Ursachen der kürzlich aufgetretenen Abstürze</translation>
@@ -2352,6 +2350,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5331585574693522196">Als Standard festlegen</translation>
 <translation id="5332219387342487447">Versandart</translation>
 <translation id="5332769172018416402">Per Nachricht anfragen</translation>
+<translation id="5334013548165032829">Detaillierte Systemprotokolle</translation>
 <translation id="5334145288572353250">Adresse speichern?</translation>
 <translation id="5340250774223869109">Die App ist blockiert</translation>
 <translation id="5342693890921195472">Vor # Min.</translation>

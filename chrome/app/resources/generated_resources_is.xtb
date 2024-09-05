@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
 <translation id="1001033507375626788">Þessu neti er deilt með þér</translation>
+<translation id="1001360573085135660">Smella til að velja/afvelja heimild.</translation>
 <translation id="1002085272681738789">Flipi virkur á ný</translation>
 <translation id="1003088604756913841">Opna tengil í <ph name="APP" /> í nýjum glugga</translation>
 <translation id="100323615638474026">USB-tæki (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -3300,6 +3301,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3333190335304955291">Þú getur slökkt á þessari þjónustu í stillingunum.</translation>
 <translation id="3333961966071413176">Allir tengiliðir</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – myndskeið spilast með stillingunni „mynd í mynd“</translation>
+<translation id="3335380372402547327">Forskoða flass-tilkynningar</translation>
 <translation id="3335947283844343239">Enduropna lokaðan flipa</translation>
 <translation id="3336855445806447827">Ekki viss</translation>
 <translation id="3337568642696914359">Ekki leyfa vefsvæðum að sjá um samskiptareglur</translation>

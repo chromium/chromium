@@ -43,6 +43,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1150989369772528668">Agenda</translation>
 <translation id="1153356358378277386">Dispositivos pareados</translation>
 <translation id="1155734730463845512">Nível atual de bateria: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">A IA generativa é uma tecnologia experimental, e o conteúdo pode ser impreciso, enganoso ou ofensivo. Entre em contato com o administrador para informar um problema. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">ativado e em uso</translation>
 <translation id="1163437384438183174">Remover o recurso "Seu smartphone" da estante</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1923,6 +1924,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="7613620083300976559">Ativar controles de jogo</translation>
 <translation id="761736749114493194">Alterne o enquadramento da câmera. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
+<translation id="7627303771480696593">Fazer uma pergunta</translation>
 <translation id="7634648064048557203">Câmera alinhada ao canto direito de baixo</translation>
 <translation id="7638572816805275740">Fazer uma captura ou gravação de tela</translation>
 <translation id="7642106959537987271">modo de inversão de cores</translation>

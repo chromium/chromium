@@ -2257,7 +2257,7 @@ Het systeem vraagt AAAA-records alleen op indien bereikbaar voor een algemene IP
 <translation id="2673968385134502798">Games</translation>
 <translation id="2675787568059234526">Met VC-achtergrond met generatieve AI kunnen gebruikers zichzelf uiten met generatieve AI-functies om gepersonaliseerde achtergronden voor videovergaderingen te maken in <ph name="PRODUCT_OS_NAME" />.
 
-0 = Zet de functie aan voor gebruikers en stuur relevante gegevens naar Google om AI-modellen te trainen of te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer en bronmateriaal zijn, afhankelijk van de functie. De gegevens mogen alleen door mensen worden beoordeeld met als doel AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
+0 = De functie aanzetten voor gebruikers en relevante gegevens naar Google sturen om AI-modellen te trainen of te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer en bronmateriaal zijn, afhankelijk van de functie. De gegevens mogen alleen door mensen worden beoordeeld met als doel AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
 
 1 = De functie aanzetten voor gebruikers, maar geen gegevens naar Google sturen om AI-modellen te trainen of te verbeteren. 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd door <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd door <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
 
@@ -9594,7 +9594,7 @@ Opmerking: Dit beleid is een tijdelijke oplossing om de overstap te maken van AP
 <translation id="8359734107661430198">API voor ExampleDeprecatedFeature tot en met 02-09-2008 aanzetten</translation>
 <translation id="836477228517805144">Met Generatieve AI-achtergrond kunnen gebruikers zichzelf uiten met generatieve AI-functies om gepersonaliseerde achtergronden te maken in <ph name="PRODUCT_OS_NAME" />.
 
-0 = Zet de functie aan voor gebruikers en stuur relevante gegevens naar Google om AI-modellen te trainen of te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer en bronmateriaal zijn, afhankelijk van de functie. De gegevens mogen alleen door mensen worden beoordeeld met als doel AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
+0 = De functie aanzetten voor gebruikers en relevante gegevens naar Google sturen om AI-modellen te trainen of te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer en bronmateriaal zijn, afhankelijk van de functie. De gegevens mogen alleen door mensen worden beoordeeld met als doel AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
 
 1 = De functie aanzetten voor gebruikers, maar geen gegevens naar Google sturen om AI-modellen te trainen of te verbeteren. 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd door <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd door <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
 

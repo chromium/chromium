@@ -387,7 +387,6 @@
 <translation id="1668071460721346172">ელფოსტის მიღება</translation>
 <translation id="1671391448414634642"><ph name="SOURCE_LANGUAGE" /> გვერდები ამიერიდან ითარგმნება შემდეგ ენაზე: <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> — <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1674542638006317838">თქვენ მიერ მონახული იმ გვერდების URL-ების შეზღუდული სია, რომლებზეც ხორციელდება <ph name="BEGIN_LINK" />მოვლენები მოძველებული ტექნოლოგიით<ph name="END_LINK" />.</translation>
 <translation id="1682696192498422849">ჯერ მოკლე კიდე</translation>
 <translation id="168693727862418163">წესების ამ მნიშვნელობის სქემის დადასტურება ვერ მოხერხდა, ამიტომ ის უგულებელყოფილი იქნება.</translation>
 <translation id="168841957122794586">სერვერის სერთიფიკატი შეიცავს სუსტ კრიპტოგრაფიულ გასაღებს.</translation>
@@ -1533,7 +1532,6 @@
 <translation id="378611282717571199">საუკეთესო შესატყვისები მოთხოვნისთვის „<ph name="SEARCH_QUERY" />“</translation>
 <translation id="3789155188480882154">ზომა 16</translation>
 <translation id="3789841737615482174">ინსტალაცია</translation>
-<translation id="3790417903123637354">წარმოიქმნა შეფერხება. ცადეთ მოგვიანებით</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> დუიმი)</translation>
 <translation id="3792826587784915501">საკულტო და ინდი ფილმები</translation>
 <translation id="3793574014653384240">ახლახან დაფიქსირებული ავარიული გათიშვების ნომრები და გამომწვევი მიზეზები</translation>
@@ -2354,6 +2352,7 @@
 <translation id="5331585574693522196">ნაგულისხმევად დაყენება</translation>
 <translation id="5332219387342487447">მიწოდების მეთოდი</translation>
 <translation id="5332769172018416402">შეტყობინების მეშვეობით თხოვნა</translation>
+<translation id="5334013548165032829">სისტემის დეტალური ჟურნალები</translation>
 <translation id="5334145288572353250">გსურთ, შეინახოთ მისამართი?</translation>
 <translation id="5340250774223869109">აპლიკაცია დაბლოკილია</translation>
 <translation id="5342693890921195472">წუთის წინ</translation>

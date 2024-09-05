@@ -71,6 +71,8 @@ Pred odhlásením skúste počkať niekoľko minút. Ak sa odhlásite teraz, tie
 <translation id="3344973607274501920">Prehliadaču Chromium sa nepodarilo skontrolovať heslá. Skontrolujte internetové pripojenie.</translation>
 <translation id="3366305173356742781">Údaje prehliadača Chromium vo vašom účte</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Dochádza k tomu, keď Chromium nepoužívate {THRESHOLD} minútu. Môže to zahŕňať históriu a automatické dopĺňanie.}few{Dochádza k tomu, keď Chromium nepoužívate {THRESHOLD} minúty. Môže to zahŕňať históriu a automatické dopĺňanie.}many{Dochádza k tomu, keď Chromium nepoužívate {THRESHOLD} minúty. Môže to zahŕňať históriu a automatické dopĺňanie.}other{Dochádza k tomu, keď Chromium nepoužívate {THRESHOLD} minút. Môže to zahŕňať históriu a automatické dopĺňanie.}}</translation>
+<translation id="3410395242749598859">Niektoré údaje prehliadača Chromium ešte neboli v účte <ph name="EMAIL" /> uložené.
+Pred prepnutím účtov skúste počkať niekoľko minút. Ak ich prepnete teraz, tieto údaje budú odstránené.</translation>
 <translation id="3472200483164753384">Nepodporované vo verzii Chromium Canary</translation>
 <translation id="347967311580159871">Ďalšie nastavenia, ktoré zlepšujú prostredie prehliadača Chromium pomocou údajov, nájdete v <ph name="BEGIN_LINK" />službách Googlu<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Vaše heslo nebolo zdieľané. Skontrolujte internetové pripojenie a uistite sa, že ste sa prihlásili do prehliadača Chromium. Potom to skúste znova.</translation>
@@ -119,6 +121,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje pr
 <translation id="5042011327527167688">Klepnite na Zobraziť v Mapách Google v prehliadači Chromium.</translation>
 <translation id="5044871537677053278">Chromium rozpoznáva adresy a pomocou Máp Google vám poskytuje trasy aj miestne informácie.</translation>
 <translation id="5048795749726991615">Ak chcete ľahko získať svoje uložené heslá v iných aplikáciách, použite automatické dopĺňanie v prehliadači Chromium</translation>
+<translation id="5053429694249468757">Odstraňujú sa údaje prehliadača Chromium…</translation>
 <translation id="5124429847818367226">Chromium môžete teraz kedykoľvek použiť pri prehliadaní alebo klepnutí na odkazy v správach, dokumentoch a ďalších aplikáciách.</translation>
 <translation id="5131565040785979529">Vaša organizácia <ph name="DOMAIN" /> spravuje účet, v ktorom máte aktívne prihlásenie, a spôsob používania prehliadača Chromium.</translation>
 <translation id="5224391634244552924">Žiadne uložené heslá. Chromium môže skontrolovať heslá, keď ich uložíte.</translation>

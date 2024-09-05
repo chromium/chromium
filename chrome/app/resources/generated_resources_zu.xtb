@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zu">
 <translation id="1001033507375626788">Le nethiwekhi yabelenwe nawe</translation>
+<translation id="1001360573085135660">Chofoza ukuze uguqule imvume.</translation>
 <translation id="1002085272681738789">Ithebhu iyasebenza futhi</translation>
 <translation id="1003088604756913841">Vula isixhumanisi esisha kuwindi elisha le-<ph name="APP" /></translation>
 <translation id="100323615638474026">Idivayisi ye-USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -3300,6 +3301,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3333190335304955291">Ungavala le sevisi kuzilungiselelo.</translation>
 <translation id="3333961966071413176">Bonke oxhumana nabo</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Ividiyo idlala kumodi yesithombe-esithombeni</translation>
+<translation id="3335380372402547327">Buka kuqala izaziso ezisheshayo</translation>
 <translation id="3335947283844343239">Phinda uvule ithebhu evaliwe</translation>
 <translation id="3336855445806447827">Awuqinisekile</translation>
 <translation id="3337568642696914359">Ungavumeli amasayithi abambe amaphrothokholi</translation>

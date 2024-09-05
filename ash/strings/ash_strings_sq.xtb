@@ -43,6 +43,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1150989369772528668">Kalendari</translation>
 <translation id="1153356358378277386">Pajisjet e çiftuara</translation>
 <translation id="1155734730463845512">Niveli aktual i baterisë <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">IA-ja gjeneruese është eksperimentale dhe përmbajtjet mund të jenë të pasakta, çorientuese ose fyese. Kontakto me administratorin tënd për të raportuar një problem. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">aktiv dhe në përdorim</translation>
 <translation id="1163437384438183174">Hiq Phone Hub nga rafti</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1923,6 +1924,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="7613620083300976559">Aktivizo kontrollet e lojës</translation>
 <translation id="761736749114493194">Aktivizo/çaktivizo inkuadrimin e kamerës. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7627303771480696593">Bëj një pyetje</translation>
 <translation id="7634648064048557203">Pamja paraprake e kamerës ka kaluar në këndin e poshtëm djathtas</translation>
 <translation id="7638572816805275740">Nxirr regjistrimin e ekranit ose pamjen e ekranit për dritaren</translation>
 <translation id="7642106959537987271">modaliteti i anasjelljes së ngjyrës</translation>

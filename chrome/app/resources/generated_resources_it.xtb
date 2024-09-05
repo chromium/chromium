@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
 <translation id="1001033507375626788">Questa rete è condivisa con te</translation>
+<translation id="1001360573085135660">Fai clic per attivare/disattivare l'autorizzazione.</translation>
 <translation id="1002085272681738789">Scheda di nuovo attiva</translation>
 <translation id="1003088604756913841">Apri link in nuova finestra di <ph name="APP" /></translation>
 <translation id="100323615638474026">Dispositivo USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -3285,6 +3286,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3333190335304955291">Puoi disattivare questo servizio nelle Impostazioni.</translation>
 <translation id="3333961966071413176">Tutti i contatti</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Video riprodotto in modalità Picture in picture</translation>
+<translation id="3335380372402547327">Visualizza l'anteprima dei flash di notifica</translation>
 <translation id="3335947283844343239">Riapri scheda chiusa</translation>
 <translation id="3336855445806447827">Non so</translation>
 <translation id="3337568642696914359">Non consentire ai siti di gestire protocolli</translation>

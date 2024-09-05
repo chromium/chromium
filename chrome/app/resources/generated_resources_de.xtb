@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
 <translation id="1001033507375626788">Dieses Netzwerk ist für dich freigegeben</translation>
+<translation id="1001360573085135660">Klicke, um die Berechtigung zu aktivieren oder zu deaktivieren.</translation>
 <translation id="1002085272681738789">Tab wieder aktiv</translation>
 <translation id="1003088604756913841">Link in neuem <ph name="APP" />-Fenster öffnen</translation>
 <translation id="100323615638474026">USB-Gerät (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -3281,6 +3282,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3333190335304955291">Du kannst diesen Dienst in den Einstellungen deaktivieren.</translation>
 <translation id="3333961966071413176">Alle Kontakte</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – Video wird im Bild-im-Bild-Modus abgespielt</translation>
+<translation id="3335380372402547327">Vorschau des Aufleuchtens bei Benachrichtigungen</translation>
 <translation id="3335947283844343239">Geschlossenen Tab wieder öffnen</translation>
 <translation id="3336855445806447827">Weiß nicht</translation>
 <translation id="3337568642696914359">Websites dürfen keine Protokolle verarbeiten</translation>
@@ -4780,7 +4782,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4411344321892622527">Scrollen und Zoomen auf geteilten Tabs nicht zulässig</translation>
 <translation id="4411578466613447185">Code-Signaturgeber</translation>
 <translation id="4411719918614785832">Diese Passkeys sind in Windows Hello auf diesem Computer gespeichert. Sie sind nicht in deinem Google-Konto gespeichert.</translation>
-<translation id="4412544493002546580">Versuch es noch einmal oder wähle unten einen der Vorschläge aus.</translation>
+<translation id="4412544493002546580">Versuche es noch einmal oder wähle unten einen der Vorschläge aus.</translation>
 <translation id="4412547955014928315">Websitedaten und Berechtigungen für <ph name="SITE_NAME" /> und alle ihr untergeordneten Websites löschen?</translation>
 <translation id="4412632005703201014">Chrome-Apps werden zu progressiven Web-Apps migriert. Diese Chrome-App wurde von deiner Organisation in deinem Browser installiert. Wenn du die progressive Web-App über die App-Liste öffnen möchtest, wende dich zuerst an deinen Administrator und bitte ihn, die Chrome-App zu deinstallieren. In der Zwischenzeit kannst du <ph name="EXTENSION_LAUNCH_URL" /> aufrufen, um <ph name="EXTENSION_NAME" /> im Web zu öffnen.</translation>
 <translation id="4412698727486357573">Hilfe</translation>

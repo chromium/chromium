@@ -387,7 +387,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1668071460721346172">Recibir un correo electrónico</translation>
 <translation id="1671391448414634642">De ahora en más, las páginas en <ph name="SOURCE_LANGUAGE" /> se traducirán al <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> a <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1674542638006317838">Una lista limitada de las URLs de las páginas que visitas, en las que se producen <ph name="BEGIN_LINK" />eventos tecnológicos heredados<ph name="END_LINK" />.</translation>
 <translation id="1682696192498422849">Borde corto primero</translation>
 <translation id="168693727862418163">No se pudo validar el valor de esta política con su esquema y, por lo tanto, se ignorará.</translation>
 <translation id="168841957122794586">El certificado del servidor contiene una clave criptográfica no segura.</translation>
@@ -1534,7 +1533,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="378611282717571199">Las mejores coincidencias para "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="3789155188480882154">Tamaño 16</translation>
 <translation id="3789841737615482174">Instalar</translation>
-<translation id="3790417903123637354">Se produjo un error; vuelve a intentarlo más tarde</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> × <ph name="HEIGHT" /> in)</translation>
 <translation id="3792826587784915501">Películas independientes y de culto</translation>
 <translation id="3793574014653384240">Cantidad de errores que se produjeron recientemente y sus causas</translation>
@@ -2355,6 +2353,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5331585574693522196">Establecer como predeterminado</translation>
 <translation id="5332219387342487447">Método de envío</translation>
 <translation id="5332769172018416402">Preguntar por mensaje</translation>
+<translation id="5334013548165032829">Registros detallados del sistema</translation>
 <translation id="5334145288572353250">¿Deseas guardar la dirección?</translation>
 <translation id="5340250774223869109">Se bloqueó la app</translation>
 <translation id="5342693890921195472">min atrás</translation>

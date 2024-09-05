@@ -8621,6 +8621,7 @@ Nota importante: Es posible que los programas establecidos por esta política no
 
       Estas políticas se ignoran, a menos que el host del Escritorio remoto de Chrome esté instalado.</translation>
 <translation id="7202925763179776247">Permitir las restricciones de descarga</translation>
+<translation id="7203243973351251622">Grabadora (compatible a partir de la versión 130)</translation>
 <translation id="7207095846245296855">Forzar Google SafeSearch</translation>
 <translation id="7211368186050418507">Nunca detectar de forma automática la zona horaria</translation>
 <translation id="721617466745658461">Permitir que los usuarios seleccionen el objeto binario del navegador <ph name="LACROS_NAME" /></translation>
@@ -8893,6 +8894,7 @@ la lectura en voz alta estará habilitada.</translation>
 
       Si no estableces la política, se aplicará el intervalo predeterminado de 3 minutos.</translation>
 <translation id="7469554574977894907">Habilitar sugerencias de búsqueda</translation>
+<translation id="7471938371309017725">Inhabilitar las funciones de cámara, configuración del navegador, configuración del SO, escaneo, Web Store, Canvas, Explorar, Crosh, Galería, Terminal y Grabadora</translation>
 <translation id="7472547030234093862">Especificar los dominios que se resolverán con DNS-over-HTTPS</translation>
 <translation id="747275827471712187">Revierte el comportamiento de las cookies en estos sitios conforme al atributo heredado <ph name="ATTRIBUTE_SAMESITE_NAME" /></translation>
 <translation id="7476030153540156377">Elegir si se debe activar la función IP Protection de <ph name="PRIVACY_SANDBOX_NAME" />.</translation>

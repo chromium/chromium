@@ -220,7 +220,7 @@
 <translation id="2038563949887743358">開啟「切換為電腦版網站」</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> 在 Chrome 中也有資料</translation>
 <translation id="2046634576464120978">註冊失敗</translation>
-<translation id="2047378580182589770">按住即可離開無痕模式</translation>
+<translation id="2047378580182589770">按住以離開無痕模式</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2051669996101374349">盡量使用 HTTPS，並在系統載入不支援 HTTPS 的網站前先接收提醒。由於已啟用「進階保護」功能，因此你無法變更此設定。</translation>
 <translation id="2056878612599315956">網站已暫停</translation>
@@ -383,7 +383,7 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{曾在 1 天前檢查}other{曾在 # 天前檢查}}</translation>
 <translation id="2842985007712546952">上層資料夾</translation>
 <translation id="2853415089995957805">Chrome 會預先載入你可能瀏覽的頁面，以便在你瀏覽時更快載入</translation>
-<translation id="2854916915045135148">按住即可進入無痕模式</translation>
+<translation id="2854916915045135148">按住以進入無痕模式</translation>
 <translation id="2855243985454069333">從所有已同步的裝置刪除記錄</translation>
 <translation id="2856503607207334158">登入失敗</translation>
 <translation id="2860954141821109167">請確認此裝置已啟用手機應用程式</translation>
@@ -874,7 +874,7 @@
 <translation id="5161254044473106830">必須提供標題</translation>
 <translation id="5161262286013276579">密鑰確認工作表打開咗</translation>
 <translation id="5163361352003913350">目前已選取<ph name="NAME" />。請選擇帳戶。</translation>
-<translation id="5167637873777016814">㩒兩下再㩒住就可以離開無痕模式</translation>
+<translation id="5167637873777016814">輕按兩下以離開無痕模式</translation>
 <translation id="5170568018924773124">在資料夾中顯示</translation>
 <translation id="5171045022955879922">搜尋或輸入網址</translation>
 <translation id="5174700554036517242">分頁已經還原到初始高度</translation>
@@ -1597,7 +1597,7 @@
 <translation id="8378850197701296741">你在 <ph name="FROM_ACCOUNT" /> 中有書籤、記錄和其他設定。</translation>
 <translation id="8387617938027387193">驗證您的身分</translation>
 <translation id="8393700583063109961">傳送訊息</translation>
-<translation id="8398389123831319859">㩒兩下再㩒住就可以進入無痕模式</translation>
+<translation id="8398389123831319859">輕按兩下以進入無痕模式</translation>
 <translation id="8402673309244746971">前往「追蹤中」</translation>
 <translation id="8413126021676339697">顯示完整記錄</translation>
 <translation id="8413795581997394485">對已知的危險網站、下載檔案及擴充程式提供保護功能。瀏覽網站時，Chrome 會透過私隱伺服器隱藏你的 IP 位址，再傳送經編碼隱匿的部分網址傳送給 Google。如果網站有可疑行為，系統亦會傳送整個網址和部分網頁內容。</translation>

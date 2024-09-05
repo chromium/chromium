@@ -76,6 +76,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ajuster à la zone de numérisation</translation>
 <translation id="1343442362630695901">lac salé</translation>
+<translation id="1348657754632799065">Barre d'enregistrement</translation>
 <translation id="1367951781824006909">Choisir un fichier</translation>
 <translation id="1371650399987522809">Commentaires sur les fonds d'écran optimisés par l'IA de Google</translation>
 <translation id="1374385338586507108">Définir</translation>
@@ -99,6 +100,7 @@
 <translation id="1449035143498573192">Ouvrir dans la recherche Google</translation>
 <translation id="1451536289672181509">L'appareil est un clavier.</translation>
 <translation id="1452939186874918380">parapluies</translation>
+<translation id="145402479967797468">Commandes de lecture</translation>
 <translation id="1459693405370120464">Météo</translation>
 <translation id="1463084054301832672">cottage</translation>
 <translation id="1468664791493211953">Offres</translation>
@@ -264,6 +266,7 @@
 <translation id="2212733584906323460">Résolution des noms</translation>
 <translation id="2215920961700443347">Aucun accès à Internet. Connectez-vous à Internet, puis réessayez.</translation>
 <translation id="2217935453350629363">Vitesse actuelle</translation>
+<translation id="221994303562837085">Arrêter l'enregistrement</translation>
 <translation id="2224337661447660594">Aucun accès à Internet</translation>
 <translation id="222447520299472966">Vous devez sélectionner au moins un album de la galerie d'art</translation>
 <translation id="2230005943220647148">Celsius</translation>
@@ -326,6 +329,7 @@
 <translation id="2533048460510040082">Contenu d'aide suggéré</translation>
 <translation id="2536159006530886390">Impossible de se connecter à Internet.</translation>
 <translation id="2538719227433767804">+ <ph name="NUM_HIDDEN_OPTIONS" /> autres</translation>
+<translation id="2560876255701405320">Liste des enregistrements audio</translation>
 <translation id="2561093647892030937">citrons</translation>
 <translation id="2570743873672969996">Exécution du test <ph name="TEST_NAME" />…</translation>
 <translation id="2575552334616524665">Vous pouvez activer cette option dans les paramètres ou dans le menu <ph name="THREE_DOTS_MENU_ICON" /></translation>
@@ -518,6 +522,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> avis)</translation>
 <translation id="3748026146096797577">Non connecté</translation>
 <translation id="3749289110408117711">Nom du fichier</translation>
+<translation id="3767737419527918477">Rechercher des fichiers d'enregistrement</translation>
 <translation id="3771294271822695279">Fichiers vidéo</translation>
 <translation id="3780740315729837296">Attribuer une touche du clavier</translation>
 <translation id="3784455785234192852">Verrouiller</translation>

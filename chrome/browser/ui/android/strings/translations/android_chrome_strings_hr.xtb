@@ -1313,6 +1313,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="7111394291981742152">Chrome vam pruža veću kontrolu nad oglasima koji vam se prikazuju i ograničava ono što web-lokacije mogu saznati o vama kad vam prikazuju personalizirane oglase.</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Pregledana su dopuštenja za jednu web-lokaciju}one{Pregledana su dopuštenja za # web-lokaciju}few{Pregledana su dopuštenja za # web-lokacije}other{Pregledana su dopuštenja za # web-lokacija}}</translation>
 <translation id="7138678301420049075">Ostalo</translation>
+<translation id="7139479418357139965">Možete se obratiti pošiljatelju i zatražiti novu vezu.</translation>
 <translation id="7140829094791862589">Ručno sortiranje</translation>
 <translation id="7146622961999026732">Čini se da su vam ove web-lokacije i aplikacije važne:</translation>
 <translation id="7148400116894863598"><ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /> od <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
@@ -1475,6 +1476,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="7824665136384946951">Vaša organizacija isključila je sigurno pregledavanje</translation>
 <translation id="78270725016672455">Vaše računalo želi registrirati ovaj uređaj za prijavu na web-lokaciju</translation>
 <translation id="7844171778363018843">Za sinkronizaciju nije odabrana nijedna vrsta podataka</translation>
+<translation id="7846161022626028328">Došlo je do pogreške. Pokušajte ponovo.</translation>
 <translation id="7846296061357476882">Googleove usluge</translation>
 <translation id="784934925303690534">Vremenski raspon</translation>
 <translation id="7851858861565204677">Ostali uređaji</translation>
@@ -1515,6 +1517,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="8004582292198964060">Preglednik</translation>
 <translation id="8014210850410408071">Zatim uvezite zaporke</translation>
 <translation id="8015452622527143194">Vraćanje svega na stranici na zadanu veličinu</translation>
+<translation id="8017431260099661477">Veza pozivnice nije se mogla otvoriti</translation>
 <translation id="8026238112629815203">Promijenili smo način spremanja zaporki na ovom uređaju</translation>
 <translation id="8027863900915310177">Odaberite mjesto preuzimanja</translation>
 <translation id="8030852056903932865">Odobri</translation>

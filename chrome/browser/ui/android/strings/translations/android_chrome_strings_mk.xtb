@@ -1313,6 +1313,7 @@
 <translation id="7111394291981742152">Chrome ви дава поголема контрола над рекламите што ги гледате и ограничува што може да учат сајтовите за вас кога ви прикажуваат персонализирани реклами.</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Прегледани се дозволите за 1 сајт}one{Прегледани се дозволите за # сајт}other{Прегледани се дозволите за # сајта}}</translation>
 <translation id="7138678301420049075">Друго</translation>
+<translation id="7139479418357139965">Може да контактирате со испраќачот за да побарате нов линк.</translation>
 <translation id="7140829094791862589">Подреди рачно</translation>
 <translation id="7146622961999026732">Изгледа дека сајтовиве и апликацииве ви се важни:</translation>
 <translation id="7148400116894863598"><ph name="BEGIN_LINK" />Добијте повеќе информации<ph name="END_LINK" /> од <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
@@ -1475,6 +1476,7 @@
 <translation id="7824665136384946951">Вашата организација го исклучи „Безбедното прелистување“</translation>
 <translation id="78270725016672455">Компјутерот сака да го регистрира уредов за најавување на сајт</translation>
 <translation id="7844171778363018843">Не се избрани податоци за синхронизација</translation>
+<translation id="7846161022626028328">Се јави грешка. Обидете се повторно.</translation>
 <translation id="7846296061357476882">Услуги на Google</translation>
 <translation id="784934925303690534">Временски период</translation>
 <translation id="7851858861565204677">Други уреди</translation>
@@ -1515,6 +1517,7 @@
 <translation id="8004582292198964060">Прелистувач</translation>
 <translation id="8014210850410408071">Следно, увезете ги лозинките</translation>
 <translation id="8015452622527143194">Врати сѐ што се наоѓа на страницата на стандардна големина</translation>
+<translation id="8017431260099661477">Линкот за покана не можеше да се отвори</translation>
 <translation id="8026238112629815203">Променивме како се зачувуваат лозинките на уредов</translation>
 <translation id="8027863900915310177">Изберете каде да се преземе</translation>
 <translation id="8030852056903932865">Одобри</translation>

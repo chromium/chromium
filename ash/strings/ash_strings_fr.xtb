@@ -43,6 +43,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1150989369772528668">Agenda</translation>
 <translation id="1153356358378277386">Appareils associés</translation>
 <translation id="1155734730463845512">Niveau de batterie actuel : <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="1157514002898505378">L'IA générative est expérimentale. Les contenus peuvent être inexacts, trompeurs ou choquants. Pour signaler un problème, contactez votre administrateur. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">activée et en cours d'utilisation</translation>
 <translation id="1163437384438183174">Supprimer Phone Hub de l'étagère</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1924,6 +1925,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7613620083300976559">Activer les commandes de jeu</translation>
 <translation id="761736749114493194">Activer/Désactiver le cadrage de la caméra. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
+<translation id="7627303771480696593">Poser une question</translation>
 <translation id="7634648064048557203">Appareil photo aligné sur l'angle inférieur droit</translation>
 <translation id="7638572816805275740">Faire une capture d'écran de la fenêtre ou enregistrer l'écran</translation>
 <translation id="7642106959537987271">mode d'inversion des couleurs</translation>

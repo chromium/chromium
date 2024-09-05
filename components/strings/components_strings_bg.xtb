@@ -387,7 +387,6 @@
 <translation id="1668071460721346172">Получаване на имейл</translation>
 <translation id="1671391448414634642">От сега нататък страниците на <ph name="SOURCE_LANGUAGE" /> ще се превеждат на <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> на <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1674542638006317838">Ограничен списък с URL адреси на посещаваните от вас страници, където има <ph name="BEGIN_LINK" />предишни технологични събития<ph name="END_LINK" />.</translation>
 <translation id="1682696192498422849">Късата страна напред</translation>
 <translation id="168693727862418163">Стойността на това правило не бе потвърдена спрямо съответната схема и ще бъде пренебрегната.</translation>
 <translation id="168841957122794586">Сертификатът на сървъра съдържа слаб криптографски ключ.</translation>
@@ -1533,7 +1532,6 @@
 <translation id="378611282717571199">Най-добрите съответствия за „<ph name="SEARCH_QUERY" />“</translation>
 <translation id="3789155188480882154">Размер 16</translation>
 <translation id="3789841737615482174">Инсталиране</translation>
-<translation id="3790417903123637354">Нещо се обърка. Опитайте отново по-късно</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> инча)</translation>
 <translation id="3792826587784915501">Култови и независими филми</translation>
 <translation id="3793574014653384240">Брой и причини за наскоро възникналите сривове</translation>
@@ -2354,6 +2352,7 @@
 <translation id="5331585574693522196">Задаване като основен избор</translation>
 <translation id="5332219387342487447">Начин за доставка</translation>
 <translation id="5332769172018416402">Запитване в съобщение</translation>
+<translation id="5334013548165032829">Подробните системни регистрационни файлове</translation>
 <translation id="5334145288572353250">Да се запази ли адресът?</translation>
 <translation id="5340250774223869109">Приложението е блокирано</translation>
 <translation id="5342693890921195472">мин по-рано</translation>

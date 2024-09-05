@@ -71,6 +71,8 @@ Para ver mais definições que usam dados para melhorar a sua experiência do Ch
 <translation id="3344973607274501920">O Chromium não conseguiu verificar as suas palavras-passe. Experimente verificar a sua ligação à Internet.</translation>
 <translation id="3366305173356742781">Dados do Chromium na sua conta</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Isto acontece quando o Chromium não é usado durante {THRESHOLD} minuto. Estas informações podem incluir o histórico e o preenchimento automático.}other{Isto acontece quando o Chromium não é usado durante {THRESHOLD} minutos. Estas informações podem incluir o histórico e o preenchimento automático.}}</translation>
+<translation id="3410395242749598859">Alguns dos seus dados do Chromium ainda não foram guardados na conta <ph name="EMAIL" />.
+Experimente aguardar alguns minutos antes de mudar de conta. Se mudar de conta agora, estes dados vão ser eliminados.</translation>
 <translation id="3472200483164753384">Opção não suportada no Chromium Canary.</translation>
 <translation id="347967311580159871">Para ver mais definições que usam dados para melhorar a sua experiência do Chromium, aceda aos <ph name="BEGIN_LINK" />serviços Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">A sua palavra-passe não foi partilhada. Verifique a ligação à Internet e certifique-se de que tem sessão iniciada no Chromium. Em seguida, tente novamente.</translation>

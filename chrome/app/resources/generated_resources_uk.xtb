@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
 <translation id="1001033507375626788">Ви маєте доступ до цієї мережі</translation>
+<translation id="1001360573085135660">Натисніть, щоб надати або скасувати дозвіл.</translation>
 <translation id="1002085272681738789">Вкладка знову активна</translation>
 <translation id="1003088604756913841">Відкрити посилання в новому вікні додатка <ph name="APP" /></translation>
 <translation id="100323615638474026">Пристрій USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -3302,6 +3303,7 @@
 <translation id="3333190335304955291">Цей сервіс можна вимкнути в налаштуваннях.</translation>
 <translation id="3333961966071413176">Усі контакти</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" />: відео відтворюється в режимі "картинка в картинці"</translation>
+<translation id="3335380372402547327">Спробувати сповіщення зі спалахом</translation>
 <translation id="3335947283844343239">Знову відкрити закриту вкладку</translation>
 <translation id="3336855445806447827">Не знаю</translation>
 <translation id="3337568642696914359">Заборонити сайтам обробляти протоколи</translation>
@@ -9165,7 +9167,7 @@
 <translation id="7634566076839829401">Сталася помилка. Повторіть спробу.</translation>
 <translation id="7635048370253485243">Закріплено адміністратором</translation>
 <translation id="7635711411613274199">Персоналізація реклами залежить від цього параметра, <ph name="BEGIN_LINK1" />тем оголошень<ph name="LINK_END1" /> і <ph name="BEGIN_LINK2" />налаштувань файлів cookie<ph name="LINK_END2" />, а також від налаштувань персоналізації, визначених сайтом, який ви переглядаєте</translation>
-<translation id="7636346903338549690">Сайти можуть використовувати сторонні файли cookie</translation>
+<translation id="7636346903338549690">Сайти, яким можна використовувати сторонні файли cookie</translation>
 <translation id="7636919061354591437">Установити на цьому пристрої</translation>
 <translation id="7637253234491814483">Торкніться сканера відбитків пальців у верхньому правому куті клавіатури біля кнопки живлення. Після цього <ph name="DEVICE_TYPE" /> надійно зберігатиме дані про відбиток і нікуди не надсилатиме їх.</translation>
 <translation id="7637593984496473097">Недостатньо місця на диску</translation>

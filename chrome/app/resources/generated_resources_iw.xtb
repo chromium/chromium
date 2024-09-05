@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
 <translation id="1001033507375626788">הרשת הזו משותפת איתך</translation>
+<translation id="1001360573085135660">צריך ללחוץ כדי להפעיל או להשבית את ההרשאה.</translation>
 <translation id="1002085272681738789">הכרטיסייה חזרה לפעול</translation>
 <translation id="1003088604756913841">פתיחת הקישור בחלון חדש של <ph name="APP" /></translation>
 <translation id="100323615638474026">‏התקן USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -3298,6 +3299,7 @@
 <translation id="3333190335304955291">אפשר להשבית את השירות הזה דרך ההגדרות.</translation>
 <translation id="3333961966071413176">כל אנשי הקשר</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - הסרטון פועל במצב תמונה בתוך תמונה</translation>
+<translation id="3335380372402547327">תצוגה מקדימה של ההבהוב על התראות</translation>
 <translation id="3335947283844343239">פתיחה מחדש כרטיסייה שנסגרה</translation>
 <translation id="3336855445806447827">לא בטוח</translation>
 <translation id="3337568642696914359">לא לאפשר לאתרים לטפל בפרוטוקולים</translation>

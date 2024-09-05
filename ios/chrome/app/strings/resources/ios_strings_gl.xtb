@@ -356,6 +356,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3311748811247479259">Non</translation>
 <translation id="3324193307694657476">Enderezo 2</translation>
 <translation id="3328801116991980348">Información do sitio</translation>
+<translation id="333229797575847124">Como activar esta función</translation>
 <translation id="3344485292736684439">{count,plural, =1{O marcador gardouse no cartafol "{title}" da túa conta ({email})}other{Os marcadores gardáronse no cartafol "{title}" da túa conta ({email})}}</translation>
 <translation id="3348387552617855658">Nesta tarxeta podes facer un seguimento dos paquetes e consultar as actualizacións de entrega importantes.</translation>
 <translation id="3349676726073650389">Os sitios e as buscas que segues gárdanse na túa Conta de Google. Para xestionar o que segues, accede cando queiras á configuración.</translation>
@@ -472,6 +473,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4169535189173047238">Non permitir</translation>
 <translation id="4172051516777682613">Mostrar sempre</translation>
 <translation id="4181841719683918333">Idiomas</translation>
+<translation id="4184063163998877398">{count,plural, =1{{count} contrasinal pouco seguro}other{{count} contrasinais pouco seguros}}</translation>
 <translation id="4195643157523330669">Abrir en pestana nova</translation>
 <translation id="4197456013861852807">{count,plural, =1{Hai {count} elemento gardado só neste dispositivo. Para usalo noutros aparellos, gárdao na túa Conta de Google ({email}).}other{Hai {count} elementos gardados só neste dispositivo. Para usalos noutros aparellos, gárdaos na túa Conta de Google ({email}).}}</translation>
 <translation id="421070604241073551">Cando a opción está activada, os datos gárdanse na túa Conta de Google. Cando está desactivada, os datos gárdanse só no dispositivo.</translation>
@@ -600,6 +602,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5005498671520578047">Copiar contrasinal</translation>
 <translation id="5016420433031926653">Enviaranse a <ph name="USER_EMAIL" /></translation>
 <translation id="5017529052065664584">Últimos 15 minutos</translation>
+<translation id="5020732097997376541">Toca a icona de Lens</translation>
 <translation id="5024511550058813796">Terás o teu historial en todos os dispositivos sincronizados, de tal xeito que poidas continuar co que estabas facendo</translation>
 <translation id="5038113048373546701">Recibe notificacións de noticias, deportes e moito máis en función dos teus intereses</translation>
 <translation id="5039804452771397117">Permitir</translation>
@@ -661,6 +664,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5439618055789623719">Tes a sesión iniciada como <ph name="USER_EMAIL" /></translation>
 <translation id="5444892875087332195">Marcadores</translation>
 <translation id="5454211924362324495">Para evitar que outras persoas usen o teu contrasinal, <ph name="BEGIN_LINK" />cámbiao en <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
+<translation id="5457082343331641453">Engade unha consulta á busca</translation>
 <translation id="5478327362747197944">Fai clic nunha data dunha páxina web para crear directamente eventos no calendario.</translation>
 <translation id="5482922178977937393">Queres recibir notificacións de noticias, deportes e máis temas en función dos teus intereses?</translation>
 <translation id="5483838506518938965">Xa terminaches</translation>
@@ -902,6 +906,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="6732087373923685049">cámara</translation>
 <translation id="6746338529702829275">Revisa os datos da túa conta</translation>
 <translation id="6748108480210050150">De</translation>
+<translation id="6755200887046212842">Xestionar contas</translation>
 <translation id="6779455296366983087">Eliminaranse os teus datos de navegación</translation>
 <translation id="6790502149545262384">Dentro de pouco verás as historias de <ph name="CHANNEL_NAME" /> cando abras unha pestana nova.</translation>
 <translation id="6800349425672670802">Podes acceder todas as pestanas abertas desde o selector de pestanas.</translation>
@@ -1254,6 +1259,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="9003677638446136377">Comprobar de novo</translation>
 <translation id="9008201768610948239">Ignorar</translation>
 <translation id="9012585441087414258">Protéxete contra os sitios, as descargas e as extensións que se consideren perigosos. Se algunha páxina leva a cabo unha acción sospeitosa, os URL e algúns fragmentos do contido da páxina enviaranse a Navegación segura de Google.</translation>
+<translation id="9013605037177245304">Activar notificacións</translation>
 <translation id="9029650858822697271">Pechouse a túa sesión</translation>
 <translation id="9034759925968272072">Non se pechará sesión na túa conta de Google. É posible que a túa conta de Google teña outras formas do historial de navegación en <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9039373489628511875">Largura de banda</translation>

@@ -473,6 +473,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4169535189173047238">Nie zezwalaj</translation>
 <translation id="4172051516777682613">Zawsze pokazuj</translation>
 <translation id="4181841719683918333">Języki</translation>
+<translation id="4184063163998877398">{count,plural, =1{{count} słabe hasło}few{{count} słabe hasła}many{{count} słabych haseł}other{{count} słabego hasła}}</translation>
 <translation id="4195643157523330669">Otwórz w nowej karcie</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} element został zapisany tylko na tym urządzeniu. Aby używać go na innych urządzeniach, zapisz go na swoim koncie Google {email}.}few{{count} elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google {email}.}many{{count} elementów zostało zapisanych tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google {email}.}other{{count} elementu zostało zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google {email}.}}</translation>
 <translation id="421070604241073551">Gdy ta opcja jest włączona, dane są zapisywane na Twoim koncie Google. Gdy jest wyłączona, dane są zapisywane tylko na tym urządzeniu.</translation>
@@ -664,6 +665,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="5439618055789623719">Używasz konta <ph name="USER_EMAIL" /></translation>
 <translation id="5444892875087332195">Zakładki</translation>
 <translation id="5454211924362324495">Aby uniemożliwić innym korzystanie z Twojego hasła, <ph name="BEGIN_LINK" />zmień je na stronie <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
+<translation id="5457082343331641453">Dodaj do wyszukiwania</translation>
 <translation id="5478327362747197944">Wydarzenia w Kalendarzu możesz tworzyć bezpośrednio, klikając datę na stronie internetowej.</translation>
 <translation id="5482922178977937393">Czy chcesz otrzymywać powiadomienia o wiadomościach, wydarzeniach sportowych i inne na podstawie Twoich zainteresowań?</translation>
 <translation id="5483838506518938965">Wszystko gotowe</translation>
@@ -905,6 +907,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6746338529702829275">Sprawdź dane konta</translation>
 <translation id="6748108480210050150">Od</translation>
+<translation id="6755200887046212842">Zarządzaj kontami</translation>
 <translation id="6779455296366983087">Dane przeglądania zostaną usunięte</translation>
 <translation id="6790502149545262384">Już niedługo po otwarciu nowej karty będziesz widzieć relacje ze strony <ph name="CHANNEL_NAME" />.</translation>
 <translation id="6800349425672670802">Wszystkie otwarte karty możesz wyświetlić za pomocą przełącznika kart.</translation>

@@ -473,6 +473,7 @@
 <translation id="4169535189173047238">不允许</translation>
 <translation id="4172051516777682613">一律显示</translation>
 <translation id="4181841719683918333">语言</translation>
+<translation id="4184063163998877398">{count,plural, =1{有 {count} 个安全系数低的密码}other{有 {count} 个安全系数低的密码}}</translation>
 <translation id="4195643157523330669">在新标签页中打开</translation>
 <translation id="4197456013861852807">{count,plural, =1{有 {count} 项内容会仅保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号 {email}。}other{有 {count} 项内容会仅保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 {email}。}}</translation>
 <translation id="421070604241073551">当此设置处于开启状态时，数据会保存在您的 Google 账号中。当此设置处于关闭状态时，数据只会保存到此设备上。</translation>
@@ -664,6 +665,7 @@
 <translation id="5439618055789623719">目前登录的账号是 <ph name="USER_EMAIL" /></translation>
 <translation id="5444892875087332195">书签</translation>
 <translation id="5454211924362324495">为防止他人使用您的密码，请<ph name="BEGIN_LINK" />前往 <ph name="WEBSITE" /> 更改密码<ph name="END_LINK" /></translation>
+<translation id="5457082343331641453">添加到您的搜索内容中</translation>
 <translation id="5478327362747197944">点击网页上的日期即可直接创建日历活动。</translation>
 <translation id="5482922178977937393">是否愿意接收系统根据您的兴趣推送的新闻、体育等方面的通知？</translation>
 <translation id="5483838506518938965">一切都已就绪</translation>
@@ -905,6 +907,7 @@
 <translation id="6732087373923685049">摄像头</translation>
 <translation id="6746338529702829275">检查您的账号数据</translation>
 <translation id="6748108480210050150">发件人</translation>
+<translation id="6755200887046212842">管理账号</translation>
 <translation id="6779455296366983087">您的浏览数据将被删除</translation>
 <translation id="6790502149545262384">不久之后，当打开新标签页时，您会看到来自<ph name="CHANNEL_NAME" />的故事。</translation>
 <translation id="6800349425672670802">您可在标签页切换器中访问您所有已打开的标签页。</translation>

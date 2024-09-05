@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
 <translation id="1001033507375626788">Esta rede compártese contigo</translation>
+<translation id="1001360573085135660">Fai clic para activar ou desactivar o permiso.</translation>
 <translation id="1002085272681738789">Pestana activa de novo</translation>
 <translation id="1003088604756913841">Abrir ligazón nunha nova ventá da aplicación <ph name="APP" /></translation>
 <translation id="100323615638474026">Dispositivo USB (<ph name="VENDOR_ID" />: <ph name="PRODUCT_ID" />)</translation>
@@ -3285,6 +3286,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3333190335304955291">Podes desactivar este servizo en Configuración.</translation>
 <translation id="3333961966071413176">Todos os contactos</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" />: reproducindo vídeo no modo de pantalla superposta</translation>
+<translation id="3335380372402547327">Previsualizar as notificacións con luz</translation>
 <translation id="3335947283844343239">Abrir de novo a pestana pechada</translation>
 <translation id="3336855445806447827">Non estou seguro</translation>
 <translation id="3337568642696914359">Non permitir que os sitios xestionen protocolos</translation>

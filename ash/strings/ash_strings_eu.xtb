@@ -43,6 +43,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1150989369772528668">Egutegia</translation>
 <translation id="1153356358378277386">Parekatutako gailuak</translation>
 <translation id="1155734730463845512">Oraingo bateria-maila: % <ph name="BATTERY_PERCENTAGE" /></translation>
+<translation id="1157514002898505378">AA generatiboa esperimentala da, eta baliteke haren edukia okerra, engainagarria edo iraingarria izatea. Arazo bat salatzeko, jarri administratzailearekin harremanetan. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">aktibatuta dago eta erabiltzen ari da</translation>
 <translation id="1163437384438183174">Kendu Phone Hub apaletik</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1924,6 +1925,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="7613620083300976559">Aktibatu jokoak kontrolatzeko aukerak</translation>
 <translation id="761736749114493194">Aktibatu/Desaktibatu kamerako markoa. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
+<translation id="7627303771480696593">Galdetu zerbait</translation>
 <translation id="7634648064048557203">Atxiki egin da kamera beheko eskuinaldeko izkinan</translation>
 <translation id="7638572816805275740">Egin leihoaren pantaila-argazki edo -grabaketa bat</translation>
 <translation id="7642106959537987271">koloreak alderantzikatzeko modua</translation>

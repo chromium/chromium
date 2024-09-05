@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
 <translation id="1001033507375626788">Dette netværk deles med dig</translation>
+<translation id="1001360573085135660">Klik for at slå tilladelsen til/fra.</translation>
 <translation id="1002085272681738789">Fanen er aktiv igen</translation>
 <translation id="1003088604756913841">Åbn linket i et nyt <ph name="APP" />-vindue</translation>
 <translation id="100323615638474026">USB-enhed (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -3300,6 +3301,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3333190335304955291">Du kan deaktivere denne tjeneste i Indstillinger.</translation>
 <translation id="3333961966071413176">Alle kontakter</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – afspiller video i tilstanden med integreret billede</translation>
+<translation id="3335380372402547327">Se en forhåndsvisning af lysnotifikationer</translation>
 <translation id="3335947283844343239">Åbn lukket fane igen</translation>
 <translation id="3336855445806447827">Ved ikke</translation>
 <translation id="3337568642696914359">Tillad ikke, at websites håndterer protokoller</translation>

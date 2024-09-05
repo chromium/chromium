@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
 <translation id="1001033507375626788">Nätverket delas med dig</translation>
+<translation id="1001360573085135660">Klicka för att aktivera eller inaktivera behörighet.</translation>
 <translation id="1002085272681738789">Fliken är aktiv igen</translation>
 <translation id="1003088604756913841">Öppna länken i ett nytt fönster i <ph name="APP" /></translation>
 <translation id="100323615638474026">USB-enhet (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -3299,6 +3300,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3333190335304955291">Du kan inaktivera den här tjänsten i Inställningar.</translation>
 <translation id="3333961966071413176">Alla kontakter</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – video spelas upp bild-i-bild-läge</translation>
+<translation id="3335380372402547327">Förhandsgranska blinkande aviseringar</translation>
 <translation id="3335947283844343239">Öppna stängd flik igen</translation>
 <translation id="3336855445806447827">Vet ej</translation>
 <translation id="3337568642696914359">Tillåt inte att webbplatser hanterar protokoll</translation>

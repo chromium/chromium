@@ -473,6 +473,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4169535189173047238">Tillad ikke</translation>
 <translation id="4172051516777682613">Vis altid</translation>
 <translation id="4181841719683918333">Sprog</translation>
+<translation id="4184063163998877398">{count,plural, =1{{count} svag adgangskode}one{{count} svag adgangskode}other{{count} svage adgangskoder}}</translation>
 <translation id="4195643157523330669">Åbn på ny fane</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} element gemmes kun på denne enhed. Hvis du vil bruge den på dine andre enheder, skal du gemme den på din Google-konto, {email}.}one{{count} element gemmes kun på denne enhed. Hvis du vil bruge den på dine andre enheder, skal du gemme den på din Google-konto, {email}.}other{{count} elementer gemmes kun på denne enhed. Hvis du vil bruge dem på dine andre enheder, skal du gemme dem på din Google-konto, {email}.}}</translation>
 <translation id="421070604241073551">Når denne indstilling er aktiveret, gemmes data på din Google-konto. Når indstillingen er deaktiveret, gemmes data kun på denne enhed.</translation>
@@ -664,6 +665,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="5439618055789623719">Logget ind som <ph name="USER_EMAIL" /></translation>
 <translation id="5444892875087332195">Bogmærker</translation>
 <translation id="5454211924362324495">Du kan forhindre andre i at bruge din adgangskode ved at <ph name="BEGIN_LINK" />ændre den på <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
+<translation id="5457082343331641453">Føj mere til din søgning</translation>
 <translation id="5478327362747197944">Opret kalenderbegivenheder direkte ved at klikke på en dato på en webside.</translation>
 <translation id="5482922178977937393">Vil du have notifikationer om nyheder, sport m.m. baseret på dine interesser?</translation>
 <translation id="5483838506518938965">Så er du klar</translation>
@@ -905,6 +907,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6746338529702829275">Gennemgå dine kontodata</translation>
 <translation id="6748108480210050150">Fra</translation>
+<translation id="6755200887046212842">Administrer konti</translation>
 <translation id="6779455296366983087">Dine browserdata slettes</translation>
 <translation id="6790502149545262384">Du får snart vist historier fra <ph name="CHANNEL_NAME" />, når du åbner en ny fane.</translation>
 <translation id="6800349425672670802">Du kan få adgang til alle dine åbne faner via Faneskift.</translation>

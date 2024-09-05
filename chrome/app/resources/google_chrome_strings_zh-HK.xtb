@@ -105,6 +105,7 @@
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2390624519615263404">查看安全功能</translation>
 <translation id="2401189691232800402">Chrome OS 系統</translation>
+<translation id="2403703063067034158">啟動錯誤：目前正在執行其他設定操作，請稍後再試。</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{當時至少有一個 Chrome 擴充功能正在存取 1 部 HID 裝置}=1{至少有一個 Chrome 擴充功能正在存取 1 部 HID 裝置}other{至少有一個 Chrome 擴充功能正在存取 # 部 HID 裝置}}</translation>
 <translation id="2424440923901031101">此擴充程式違反了 Chrome 網上應用程式商店政策，且可能不安全。請從 Chrome 中移除此擴充程式，令其無法再查看及變更您瀏覽的網站相關資料，包括您的個人資料。</translation>
 <translation id="2467438592969358367">Google Chrome 想匯出您的密碼。請輸入 Windows 密碼以允許此操作。</translation>

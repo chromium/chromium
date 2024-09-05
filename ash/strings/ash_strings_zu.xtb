@@ -43,6 +43,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="1150989369772528668">Ikhalenda</translation>
 <translation id="1153356358378277386">Amadivaysi abhanqene</translation>
 <translation id="1155734730463845512">Ileveli yamanje yebhethri <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">I-AI ekhiqizayo ingeyokulinga futhi okuqukethwe kungase kunganembi, kudukise, noma kube okuhlaselayo. Xhumana nomlawuli wakho ukuze ubike inkinga. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">ivuliwe futhi iyasetshenziswa</translation>
 <translation id="1163437384438183174">Khipha i-Phone Hub eshalofini</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1665,7 +1666,6 @@ Ukufaka okusha</translation>
 <translation id="6665545700722362599">Nikeza amawebhusayithi, izinhlelo zokusebenza nezandiso imvume yokusebenzisa amasevisi endawo, imakrofoni yedivayisi, ikhamera, noma ezinye izici</translation>
 <translation id="6667908387435388584">Xhuma ku-hotspot yefoni yakho, thulisa futhi thola idivayisi yakho, bese ubuka amathebhu we-Chrome wamanje avuliwe efonini yakho</translation>
 <translation id="6670153871843998651">Itafula 3</translation>
-<translation id="6670904050959156521"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, <ph name="STATE" /></translation>
 <translation id="6671495933530132209">Kopisha isithombe</translation>
 <translation id="6671661918848783005">Ayikwazi ukuvula i-Chromebook yakho</translation>
 <translation id="6676552993057022464">Sebenzisa umcibisholo waphezulu nowaphansi ukuze ushintshe usayizi wesikrini esihlukanisiwe</translation>
@@ -1924,6 +1924,7 @@ Ukuze uvale idivayisi, cindezela futhi ubambe inkinobho yamandla kudivayisi futh
 <translation id="7613620083300976559">Vula izilawuli zegeyimu</translation>
 <translation id="761736749114493194">Guqula ukwenza izimele ikhamera. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7627303771480696593">Buza umbuzo</translation>
 <translation id="7634648064048557203">Ikhamera iqondaniswe ekhoneni elingezansi ngakwesokudla</translation>
 <translation id="7638572816805275740">Thatha isithombe-skrini sewindi noma ukurekhoda kwesikrini</translation>
 <translation id="7642106959537987271">imodi yokuguqulwa kombala</translation>

@@ -387,7 +387,6 @@
 <translation id="1668071460721346172">इमेल प्राप्त गर्नुहोस्</translation>
 <translation id="1671391448414634642">अब उप्रान्त <ph name="SOURCE_LANGUAGE" /> भाषाका पृष्ठहरूलाई <ph name="TARGET_LANGUAGE" /> भाषामा अनुवाद गरिने छ।</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> बाट <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1674542638006317838">तपाईंले खोलेका <ph name="BEGIN_LINK" />लिगेसी प्रविधिसम्बन्धी कार्यक्रमहरू<ph name="END_LINK" /> देखाइएका पेजका URL हरूको सीमित सूची।</translation>
 <translation id="1682696192498422849">पहिले छोटो किनारा</translation>
 <translation id="168693727862418163">यो नीतिको मान यसको स्किमासँग मिलेन। त्यसकारण यसलाई बेवास्ता गरिने छ।</translation>
 <translation id="168841957122794586">सर्भर प्रमाणपत्रले कमजोर क्रिप्टोग्राफिक कुञ्जी समावेश गर्छ।</translation>
@@ -1530,7 +1529,6 @@
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />" सँग सबैभन्दा बढी मिल्दाजुल्दा परिणाम</translation>
 <translation id="3789155188480882154">आकार १६</translation>
 <translation id="3789841737615482174">स्थापना गर्नुहोस्</translation>
-<translation id="3790417903123637354">कुनै समस्या आयो। पछि फेरि प्रयास गर्नुहोस्</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> इन्च)</translation>
 <translation id="3792826587784915501">प्रशंसकको जमात भएका तथा इन्डी चलचित्रहरू</translation>
 <translation id="3793574014653384240">हालसालै भएका क्र्यासहरूको सङ्ख्या र तिनको कारण</translation>
@@ -2352,6 +2350,7 @@
 <translation id="5331585574693522196">डिफल्टका रूपमा सेट गर्नुहोस्</translation>
 <translation id="5332219387342487447">ढुवानीको विधि</translation>
 <translation id="5332769172018416402">म्यासेज पठाएर आग्रह गर्नुहोस्</translation>
+<translation id="5334013548165032829">प्रणालीका विस्तृत लगहरू</translation>
 <translation id="5334145288572353250">ठेगाना सेभ गर्ने हो?</translation>
 <translation id="5340250774223869109">एपमाथि रोक लगाइएको छ</translation>
 <translation id="5342693890921195472">मिनेटअघि</translation>

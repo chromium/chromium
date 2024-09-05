@@ -387,7 +387,6 @@
 <translation id="1668071460721346172">ईमेल पाएं</translation>
 <translation id="1671391448414634642">अब से <ph name="SOURCE_LANGUAGE" /> भाषा के पेज का अनुवाद <ph name="TARGET_LANGUAGE" /> भाषा में किया जाएगा.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> से <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1674542638006317838"><ph name="BEGIN_LINK" />लेगसी टेक्नोलॉजी इवेंट<ph name="END_LINK" /> वाले जिन पेजों पर आपने विज़िट किया है उनके यूआरएल की सीमित सूची.</translation>
 <translation id="1682696192498422849">शॉर्ट एज फ़र्स्ट</translation>
 <translation id="168693727862418163">इस नीति का मान अपनी स्कीमा के हिसाब से काम नहीं कर सका और इसे अनदेखा किया जाएगा.</translation>
 <translation id="168841957122794586">सर्वर प्रमाणपत्र में कमज़ोर क्रिप्टोग्राफ़िक कुंजी है.</translation>
@@ -1533,7 +1532,6 @@
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />" के हिसाब से सबसे सही नतीजे</translation>
 <translation id="3789155188480882154">आकार 16</translation>
 <translation id="3789841737615482174">इंस्‍टॉल करें</translation>
-<translation id="3790417903123637354">कोई गड़बड़ी हुई. बाद में कोशिश करें</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> इंच)</translation>
 <translation id="3792826587784915501">कल्ट और इंडी (आम फ़िल्मों से हटकर) फ़िल्में</translation>
 <translation id="3793574014653384240">हाल ही में बंद होने की संख्या और वजहें</translation>
@@ -2001,7 +1999,7 @@
 <translation id="4687718960473379118">साइट की ओर से सुझाए गए विज्ञापन</translation>
 <translation id="469028408546145398">'गुप्त विंडो बंद करें' बटन, खुली हुई सभी गुप्त विंडो को बंद करने के लिए इसे चालू करें</translation>
 <translation id="4691093235373904540">छत ठीक करना</translation>
-<translation id="4692623383562244444">खोज इंजन</translation>
+<translation id="4692623383562244444">सर्च इंजन</translation>
 <translation id="4698692901173737941">कॉम्बैट स्पोर्ट्स</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">साइड</translation>
@@ -2354,6 +2352,7 @@
 <translation id="5331585574693522196">डिफ़ॉल्ट के तौर पर सेट करें</translation>
 <translation id="5332219387342487447">शिपिंग का तरीका</translation>
 <translation id="5332769172018416402">मैसेज में पूछें</translation>
+<translation id="5334013548165032829">सिस्टम लॉग की ज़्यादा जानकारी</translation>
 <translation id="5334145288572353250">क्या आप पता सेव करना चाहते हैं?</translation>
 <translation id="5340250774223869109">ऐप्लिकेशन को ब्लॉक किया गया है</translation>
 <translation id="5342693890921195472">मिनट पहले</translation>
@@ -4495,7 +4494,7 @@
 <translation id="979503328401807348">ज़्यादा काम के विज्ञापन</translation>
 <translation id="981121421437150478">ऑफ़लाइन</translation>
 <translation id="984101218975906499">फ़ार्मास्यूटिकल और बायोटेक</translation>
-<translation id="984275831282074731">पैसे चुकाने के तरीके</translation>
+<translation id="984275831282074731">पेमेंट के तरीके</translation>
 <translation id="985199708454569384">&lt;p&gt;अगर आपके कंप्यूटर या मोबाइल डिवाइस की तारीख और समय गलत है, तो आपको यह गड़बड़ी दिखाई देगी.&lt;/p&gt;
     &lt;p&gt;इस गड़बड़ी को ठीक करने के लिए, अपने डिवाइस की घड़ी खोलें. पक्का करें कि समय और तारीख सही हों.&lt;/p&gt;</translation>
 <translation id="986257639512122511">आपने <ph name="ORIGIN" /> पर <ph name="PERMISSION" /> ऐक्सेस करने की अनुमति दी है</translation>

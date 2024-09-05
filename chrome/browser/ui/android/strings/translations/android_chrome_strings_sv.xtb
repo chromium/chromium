@@ -1314,6 +1314,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7111394291981742152">Chrome ger dig större kontroll över annonserna du ser och begränsar vilken information webbplatser kan få om dig när de visar anpassade annonser.</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Behörigheter har granskats för 1 webbplats}other{Behörigheter har granskats för # webbplatser}}</translation>
 <translation id="7138678301420049075">Övrigt</translation>
+<translation id="7139479418357139965">Du kan kontakta avsändaren och be om en ny länk.</translation>
 <translation id="7140829094791862589">Sortera manuellt</translation>
 <translation id="7146622961999026732">De här webbplatserna och apparna verkar vara viktiga för dig:</translation>
 <translation id="7148400116894863598"><ph name="BEGIN_LINK" />Mer information<ph name="END_LINK" /> från <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
@@ -1476,6 +1477,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7824665136384946951">Organisationen har inaktiverat Säker webbsökning</translation>
 <translation id="78270725016672455">Datorn vill registrera den här enheten för att logga in på en webbplats</translation>
 <translation id="7844171778363018843">Du har inte valt någon data att synkronisera</translation>
+<translation id="7846161022626028328">Något gick fel. Försök igen.</translation>
 <translation id="7846296061357476882">Googles tjänster</translation>
 <translation id="784934925303690534">Tidsintervall</translation>
 <translation id="7851858861565204677">Andra enheter</translation>
@@ -1516,6 +1518,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8004582292198964060">Webbläsare</translation>
 <translation id="8014210850410408071">Dags att importera lösenorden</translation>
 <translation id="8015452622527143194">Återställ allt på sidan till standardstorlek</translation>
+<translation id="8017431260099661477">Det gick inte att öppna inbjudningslänken</translation>
 <translation id="8026238112629815203">Vi har ändrat hur lösenord sparas på den här enheten</translation>
 <translation id="8027863900915310177">Välj plats för nedladdningen</translation>
 <translation id="8030852056903932865">Godkänn</translation>

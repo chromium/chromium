@@ -473,6 +473,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4169535189173047238">Moenie toelaat nie</translation>
 <translation id="4172051516777682613">Wys altyd</translation>
 <translation id="4181841719683918333">Tale</translation>
+<translation id="4184063163998877398">{count,plural, =1{{count} swak wagwoord}other{{count} swak wagwoorde}}</translation>
 <translation id="4195643157523330669">Maak in nuwe oortjie oop</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} item word net op hierdie toestel gestoor. Stoor dit in jou Google-rekening, {email}, om dit op jou ander toestelle te gebruik.}other{{count} items word net op hierdie toestel gestoor. Stoor hulle in jou Google-rekening, {email}, om hulle op jou ander toestelle te gebruik.}}</translation>
 <translation id="421070604241073551">Wanneer dit aan is, word data in jou Google-rekening gestoor. Wanneer dit af is, word data net op hierdie toestel gestoor.</translation>
@@ -663,6 +664,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="5439618055789623719">Aangemeld as <ph name="USER_EMAIL" /></translation>
 <translation id="5444892875087332195">Boekmerke</translation>
 <translation id="5454211924362324495"><ph name="BEGIN_LINK" />Verander jou wagwoord op <ph name="WEBSITE" /><ph name="END_LINK" /> om te keer dat ander dit gebruik</translation>
+<translation id="5457082343331641453">Voeg by jou soektog</translation>
 <translation id="5478327362747197944">Skep kalendergeleenthede direk deur ’n datum op ’n webbladsy te klik.</translation>
 <translation id="5482922178977937393">Wil jy gegrond op jou belangstellings kennisgewings vir nuus, sport, en meer ontvang?</translation>
 <translation id="5483838506518938965">Jy's gereed!</translation>
@@ -904,6 +906,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6746338529702829275">Gaan jou rekeningdata na</translation>
 <translation id="6748108480210050150">Vanaf</translation>
+<translation id="6755200887046212842">Bestuur rekeninge</translation>
 <translation id="6779455296366983087">Jou blaaierdata sal uitgevee word</translation>
 <translation id="6790502149545262384">Jy sal binnekort stories van <ph name="CHANNEL_NAME" /> af sien wanneer jy ’n nuwe oortjie oopmaak.</translation>
 <translation id="6800349425672670802">Jy kan vanaf die Oortjiewisselaar toegang tot al jou oop oortjies kry.</translation>

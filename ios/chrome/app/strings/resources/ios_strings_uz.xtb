@@ -473,6 +473,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="4169535189173047238">Rad etish</translation>
 <translation id="4172051516777682613">Doim ko‘rsatilsin</translation>
 <translation id="4181841719683918333">Tillar</translation>
+<translation id="4184063163998877398">{count,plural, =1{{count} ta kuchsiz parol aniqlandi}other{{count} ta kuchsiz parol aniqlandi}}</translation>
 <translation id="4195643157523330669">Yangi varaqda ochish</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} ta element faqat mazkur qurilmada saqlangan. Boshqa qurilmalarda foydalanish uchun uni Google hisobingizda ({email}) saqlang.}other{{count} ta element faqat bu qurilmaga saqlanadi. Boshqa qurilmalarda foydalanish uchun ularni Google hisobingizda ({email}) saqlang.}}</translation>
 <translation id="421070604241073551">Yoqilganda maʼlumotlar Google hisobingizda saqlanadi. Oʻchiq boʻlsa, maʼlumotlar faqat shu qurilmada saqlanadi.</translation>
@@ -663,6 +664,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="5439618055789623719"><ph name="USER_EMAIL" /> sifatida kirgansiz</translation>
 <translation id="5444892875087332195">Bukmarklar</translation>
 <translation id="5454211924362324495">Boshqalar parolingizni ishlatmasligi uchun <ph name="BEGIN_LINK" /><ph name="WEBSITE" /> saytida parolni almashtiring<ph name="END_LINK" /></translation>
+<translation id="5457082343331641453">Qidiruvga kiritish</translation>
 <translation id="5478327362747197944">Taqvim tadbirlarini bevosita veb-sahifadagi sana ustiga bosish orqali yarating.</translation>
 <translation id="5482922178977937393">Qiziqishingizga asoslangan yangiliklar, sport va boshqalar haqida bildirishnoma olishni xohlaysizmi?</translation>
 <translation id="5483838506518938965">Hammasi tayyor</translation>
@@ -904,6 +906,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6746338529702829275">Hisobingiz maʼlumotlarini tekshiring</translation>
 <translation id="6748108480210050150">Kimdan:</translation>
+<translation id="6755200887046212842">Hisoblarni boshqarish</translation>
 <translation id="6779455296366983087">Brauzer tarixi tozalanadi</translation>
 <translation id="6790502149545262384">Tez orada yangi varaq ochilganda <ph name="CHANNEL_NAME" /> hikoyalari chiqadi.</translation>
 <translation id="6800349425672670802">Barcha ochiq varaqlarni Varaqlar orasida almashish funksiyasi orqali ochish mumkin</translation>

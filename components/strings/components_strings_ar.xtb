@@ -387,7 +387,6 @@
 <translation id="1668071460721346172">تلقّي رسالة إلكترونية</translation>
 <translation id="1671391448414634642">ستتم ترجمة الصفحات باللغة <ph name="SOURCE_LANGUAGE" /> إلى اللغة <ph name="TARGET_LANGUAGE" /> من الآن فصاعدًا.</translation>
 <translation id="1674504678466460478">من <ph name="SOURCE_LANGUAGE" /> إلى <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1674542638006317838">‏قائمة تضم فقط عناوين URL للصفحات التي <ph name="BEGIN_LINK" />استخدمت تكنولوجيا قديمة<ph name="END_LINK" /> عند زيارتك لها</translation>
 <translation id="1682696192498422849">حافة قصيرة أولًا</translation>
 <translation id="168693727862418163">تعذّر التحقُّق من قيمة السياسة هذه وفقًا لمخططها وسيتم تجاهلها.</translation>
 <translation id="168841957122794586">تحتوي شهادة الخادم على مفتاح ترميز ضعيف.</translation>
@@ -1534,7 +1533,6 @@
 <translation id="378611282717571199">أفضل نتيجة مطابِقة لعبارة البحث "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="3789155188480882154">الحجم 16</translation>
 <translation id="3789841737615482174">تثبيت</translation>
-<translation id="3790417903123637354">حدث خطأ. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="3792100426446126328">‏<ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> بوصة)</translation>
 <translation id="3792826587784915501">أفلام مستقلة وأفلام شعبية</translation>
 <translation id="3793574014653384240">أعداد الأعطال التي حدثت مؤخرًا على الجهاز وأسبابها</translation>
@@ -2357,6 +2355,7 @@
 <translation id="5331585574693522196">الضبط كخيار تلقائي</translation>
 <translation id="5332219387342487447">طريقة الشحن</translation>
 <translation id="5332769172018416402">الطلب عبر رسالة</translation>
+<translation id="5334013548165032829">سجلّات النظام التفصيلية</translation>
 <translation id="5334145288572353250">هل تريد حفظ العنوان؟</translation>
 <translation id="5340250774223869109">التطبيق محظور</translation>
 <translation id="5342693890921195472">قبل دقيقة</translation>

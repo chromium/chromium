@@ -21,6 +21,7 @@
 <translation id="1108938384783527433">Synkronisera historiken</translation>
 <translation id="1112015203684611006">Utskriftsfel.</translation>
 <translation id="1118569444314402022">Välkommen tillbaka, <ph name="USER_NAME" /></translation>
+<translation id="1121850836842642159">Foton och bilder</translation>
 <translation id="1125564390852150847">Skapa en ny flik.</translation>
 <translation id="1126809382673880764">Skyddar inte mot farliga webbplatser, nedladdningar och tillägg. Där funktionen är tillgänglig får du fortfarande skydd med Säker webbsökning i andra tjänster från Google, till exempel Gmail och Sök.</translation>
 <translation id="1147031633655575115">Inloggad som <ph name="USER" /></translation>
@@ -148,6 +149,7 @@
 <translation id="1967461193809857427">{count,plural, =1{Vill du fortsätta med fliken du använde på Android?}other{Vill du fortsätta med flikarna du använde på Android?}}</translation>
 <translation id="1972325230031091483">Du surfar snabbare eftersom innehåll läses in proaktivt baserat på den webbsida du besöker för tillfället</translation>
 <translation id="1974060860693918893">Avancerat</translation>
+<translation id="1979188886349613713">Inkludera filnamnstillägg som inte har angetts av webbplatsen</translation>
 <translation id="1980417445547898121">{count,plural, =1{Flytta {count} flik som du använde nyligen på din andra enhet till denna iPhone}other{Flytta {count} flikar som du använde nyligen på din andra enhet till denna iPhone}}</translation>
 <translation id="1981118202195772574">Mobil</translation>
 <translation id="1984417487208496350">Inget skydd (rekommenderas inte)</translation>
@@ -473,6 +475,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4169535189173047238">Tillåt inte</translation>
 <translation id="4172051516777682613">Visa alltid</translation>
 <translation id="4181841719683918333">Språk</translation>
+<translation id="4184063163998877398">{count,plural, =1{{count} svagt lösenord}other{{count} svaga lösenord}}</translation>
 <translation id="4195643157523330669">Öppna i ny flik</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} objekt sparas endast på den här enheten. Om du vill använda det på dina andra enheter sparar du det i Google-kontot {email}.}other{{count} objekt sparas endast på den här enheten. Om du vill använda dem på dina andra enheter kan du spara dem i Google-kontot {email}.}}</translation>
 <translation id="421070604241073551">När detta är aktiverat sparas data i Google-kontot. När inställningen är inaktiverad sparas data endast på den här enheten.</translation>
@@ -621,6 +624,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="5132942445612118989">Synkronisera lösenord, historik med mera på alla dina enheter</translation>
 <translation id="5137526732000415202">Din senast öppna flik på alla dina enheter.</translation>
 <translation id="5157638238828697074">Något gick fel. Det gick inte att öppna appen.</translation>
+<translation id="5163417375525818870">PDF-filer</translation>
 <translation id="5168414296986405587">Gjord för iPadOS</translation>
 <translation id="5169725654005786900">Åtgärden pågår …</translation>
 <translation id="5176312250994681348">Behåll det senaste lösenordet</translation>
@@ -654,6 +658,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="5343472494710226394">Nyheter, sport och innehåll utifrån dina intressen.</translation>
 <translation id="5348775987281903912">Du kan dela sidan här från knappen Dela.</translation>
 <translation id="5355191726083956201">Förbättrat skydd är aktiverat</translation>
+<translation id="5356332698539508708">Radera och byt</translation>
 <translation id="537853552771686272">Hantera ämnen och webbplatser som du är intresserad av</translation>
 <translation id="5395707839134961196">Dölj sökmotorinformation</translation>
 <translation id="5414763847370083940">Du får en avisering om priset sänks på en webbplats.</translation>
@@ -664,6 +669,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="5439618055789623719">Inloggad som <ph name="USER_EMAIL" /></translation>
 <translation id="5444892875087332195">Bokmärken</translation>
 <translation id="5454211924362324495">Hindra andra från att använda ditt lösenord genom att <ph name="BEGIN_LINK" />ändra det på <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
+<translation id="5457082343331641453">Lägg till i sökningen</translation>
 <translation id="5478327362747197944">Skapa kalenderhändelser direkt genom att klicka på ett datum på en webbsida.</translation>
 <translation id="5482922178977937393">Vill du få aviseringar om nyheter, sport och annat utifrån dina intressen?</translation>
 <translation id="5483838506518938965">Nu är det klart</translation>
@@ -740,6 +746,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5860033963881614850">Av</translation>
 <translation id="5860491529813859533">Aktivera</translation>
 <translation id="5869522115854928033">Sparade lösenord</translation>
+<translation id="5878899964490256268"><ph name="EMAIL" />. Hanteras av organisationen.</translation>
 <translation id="5888889603768021126">Inloggad med</translation>
 <translation id="5896576662943111387">Gjord för iOS</translation>
 <translation id="5897749768294722429">Synkronisera flikar och historik för att snabbt återgå till webbplatser du har besökt.</translation>
@@ -841,6 +848,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6429213933892582367">Öppna Lösenordsalternativ</translation>
 <translation id="6434591244308415567">Ett fel uppstod. Försök igen senare.</translation>
 <translation id="6443118737398455446">Ogiltigt förfallodatum</translation>
+<translation id="6444435711855078002">Fler alternativ</translation>
 <translation id="6445051938772793705">Land</translation>
 <translation id="6445981559479772097">SMS skickat.</translation>
 <translation id="6447842834002726250">Cookies</translation>
@@ -905,6 +913,8 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6746338529702829275">Granska din kontodata</translation>
 <translation id="6748108480210050150">Från</translation>
+<translation id="6755200887046212842">Hantera konton</translation>
+<translation id="6761393919622941301">Ljud</translation>
 <translation id="6779455296366983087">Din webbinformation rensas</translation>
 <translation id="6790502149545262384">Snart visas artiklar från <ph name="CHANNEL_NAME" /> när du öppnar en ny flik.</translation>
 <translation id="6800349425672670802">Du kommer åt alla dina öppna flikar med Flikbyte.</translation>
@@ -946,6 +956,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7063811929043357292">Ditt konto hanteras av din förälder.
 <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="7067610207756299941">Data som inte har sparats raderas från den här enheten för att skydda organisationen. Detta kan omfatta lösenord, historik med mera.</translation>
+<translation id="7067780033517902110">Alla filer</translation>
 <translation id="7080806333218412752">Webbadresser skickas till Säker webbsökning för kontroll. Ett litet urval av sidor, nedladdning, tilläggsaktivitet och systeminformation skickas även för att upptäcka nya hot. Denna data länkas tillfälligt till Google-kontot när du loggar in för att skydda dig i Googles appar.</translation>
 <translation id="7082853213442715471">När det här läget är aktiverat blockeras viss webbteknik, vilket kan få vissa webbplatser att läsas in långsammare eller inte fungera korrekt.</translation>
 <translation id="7095110968493193530">I Google Lösenordshantering för <ph name="EMAIL" /></translation>
@@ -1081,6 +1092,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7926975587469166629">Kortets namn</translation>
 <translation id="7927711904086083099">Inte markerat</translation>
 <translation id="7930998711684428189">En varning visas om lösenord har läckt ut vid ett dataintrång.</translation>
+<translation id="7933880123415105005">Sök i <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7944772052836377867">Verifiera din identitet för synkronisering</translation>
 <translation id="7947953824732555851">Godkänn och logga in</translation>
@@ -1207,6 +1219,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8654802032646794042">Avbryt</translation>
 <translation id="8663764600409216912">Du använder lösenord som verkar svåra att lista ut</translation>
 <translation id="8668210798914567634">Den här sidan har sparats i läslistan.</translation>
+<translation id="8672733398999596205">Aktivera alla</translation>
 <translation id="8674716540979958118">Du har utsatta lösenord.</translation>
 <translation id="8680787084697685621">Inloggningsuppgifterna för kontot är inte aktuella.</translation>
 <translation id="8692689525339542358">Få skydd mot farliga webbplatser, nedladdningar och tillägg.</translation>
@@ -1235,9 +1248,11 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8843129975935593190">Organisationen begränsar vad du kan synkronisera.</translation>
 <translation id="8849001918648564819">Dold</translation>
 <translation id="8855242995793521265">Gör inte webbläsaren eller enheten märkbart långsammare.</translation>
+<translation id="8856643812068084733">Arkiv</translation>
 <translation id="8863431381414769983">Få vägbeskrivningar och lokal information från Google Maps</translation>
 <translation id="8871974300055371298">Innehållsinställningar</translation>
 <translation id="8879604564928138696">Tryck snabbt två gånger för att testa</translation>
+<translation id="8893208530912252670">Videor</translation>
 <translation id="8898822736010347272">Skickar webbadresser till vissa sidor som du besöker, vissa systemuppgifter och visst sidinnehåll till Google för att upptäcka och blockera nya hot och skydda alla användare på internet.</translation>
 <translation id="890565330728586731">Tillbaka</translation>
 <translation id="8909135823018751308">Dela …</translation>

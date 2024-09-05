@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="km">
 <translation id="1001033507375626788">បណ្ដាញ​នេះ​ត្រូវបានចែករំលែក​ជាមួយ​អ្នក</translation>
+<translation id="1001360573085135660">ចុចដើម្បីបិទ/បើកការអនុញ្ញាត។</translation>
 <translation id="1002085272681738789">ផ្ទាំងសកម្មឡើងវិញ</translation>
 <translation id="1003088604756913841">បើក​តំណ​នៅក្នុងវិនដូ <ph name="APP" /> ថ្មី</translation>
 <translation id="100323615638474026">ឧបករណ៍ USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -3297,6 +3298,7 @@
 <translation id="3333190335304955291">អ្នកអាច​បិទសេវាកម្មនេះ​នៅក្នុងការកំណត់។</translation>
 <translation id="3333961966071413176">ទំនាក់​ទំនង​ទាំងអស់</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - វីដេអូ​កំពុងចាក់​ក្នុងមុខងារ​រូបក្នុងរូប</translation>
+<translation id="3335380372402547327">មើលការជូនដំណឹងបាញ់ពន្លឺសាកល្បង</translation>
 <translation id="3335947283844343239">បើកផ្ទាំងដែលបានបិទឡើងវិញ</translation>
 <translation id="3336855445806447827">មិនប្រាកដ</translation>
 <translation id="3337568642696914359">មិនអនុញ្ញាតឱ្យ​គេហទំព័រ​ចាត់ចែង​ប្រូតូកូលទេ</translation>
@@ -3901,7 +3903,7 @@
 <translation id="3760460896538743390">តាមដានទំព័រផ្ទៃខាងក្រោយ</translation>
 <translation id="37613671848467444">បើកនៅក្នុងផ្ទាំងអនាមិក</translation>
 <translation id="3761556954875533505">អនុញ្ញាតឱ្យ​គេហទំព័រ​កែឯកសារ​ឬ?</translation>
-<translation id="3761560059647741692">ផ្ដេក</translation>
+<translation id="3761560059647741692">ទេសភាព</translation>
 <translation id="3761733456040768239">សកម្មភាព​ច្រើនទៀត​សម្រាប់ <ph name="CARD_DESCRIPTION" />, បានរក្សាទុក CVC</translation>
 <translation id="3763433740586298940">អ្នក​អាច​ទប់ស្កាត់​គេហទំព័រ​ដែល​អ្នកមិន​ចង់​បាន។ Chrome ក៏លុប​គេហទំព័រ​ដែលចាស់ជាង 30 ថ្ងៃ​ចេញពីបញ្ជី​ដោយស្វ័យប្រវត្តិ​ផងដែរ។</translation>
 <translation id="3763549179847864476">ប៊ូតុងថយក្រោយរបស់ការណែនាំអំពី​ឯកជនភាព</translation>

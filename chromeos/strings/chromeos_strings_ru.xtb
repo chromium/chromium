@@ -76,6 +76,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">По области сканирования</translation>
 <translation id="1343442362630695901">соленое озеро</translation>
+<translation id="1348657754632799065">Панель записи</translation>
 <translation id="1367951781824006909">Выберите файл</translation>
 <translation id="1371650399987522809">Отзыв об обоях, созданных при помощи технологий ИИ от Google</translation>
 <translation id="1374385338586507108">Определение</translation>
@@ -99,6 +100,7 @@
 <translation id="1449035143498573192">Открыть в Google Поиске</translation>
 <translation id="1451536289672181509">Это клавиатура.</translation>
 <translation id="1452939186874918380">зонтики</translation>
+<translation id="145402479967797468">Элементы управления воспроизведением</translation>
 <translation id="1459693405370120464">Погода</translation>
 <translation id="1463084054301832672">коттедж</translation>
 <translation id="1468664791493211953">Предложения</translation>
@@ -327,6 +329,7 @@
 <translation id="2533048460510040082">Рекомендованный справочный контент</translation>
 <translation id="2536159006530886390">Ошибка подключения к Интернету.</translation>
 <translation id="2538719227433767804">и ещё <ph name="NUM_HIDDEN_OPTIONS" /></translation>
+<translation id="2560876255701405320">Список аудиозаписей</translation>
 <translation id="2561093647892030937">лимоны</translation>
 <translation id="2570743873672969996">Запуск теста "<ph name="TEST_NAME" />"…</translation>
 <translation id="2575552334616524665">Чтобы ее включить, перейдите в настройки или нажмите на значок меню <ph name="THREE_DOTS_MENU_ICON" />.</translation>
@@ -519,6 +522,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (отзывов: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Нет соединения</translation>
 <translation id="3749289110408117711">Название файла</translation>
+<translation id="3767737419527918477">Поиск файлов записей</translation>
 <translation id="3771294271822695279">Видеофайлы</translation>
 <translation id="3780740315729837296">Назначьте клавишу</translation>
 <translation id="3784455785234192852">Заблокировать</translation>

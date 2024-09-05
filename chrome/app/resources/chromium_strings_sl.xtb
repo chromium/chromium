@@ -90,6 +90,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="2384373936468275798">Chromium OS ni mogel sinhronizirati podatkov, ker so podatki za prijavo v račun zastareli.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Najmanj ena razširitev za Chromium je dostopala do 1 naprave HID}=1{Najmanj ena razširitev za Chromium dostopa do 1 naprave HID}one{Najmanj ena razširitev za Chromium dostopa do # naprave HID}two{Najmanj ena razširitev za Chromium dostopa do # naprav HID}few{Najmanj ena razširitev za Chromium dostopa do # naprav HID}other{Najmanj ena razširitev za Chromium dostopa do # naprav HID}}</translation>
 <translation id="2401032172288869980">Chromium potrebuje dovoljenje za fotoaparat in mikrofon za to spletno mesto.</translation>
+<translation id="2403703063067034158">Napaka pri zagonu: Trenutno se izvaja še en primer nastavitve. Poskusite znova pozneje.</translation>
 <translation id="2440750600860946460">Z <ph name="BEGIN_LINK" />orodji iz Chromiuma<ph name="END_LINK" /> lahko varno brskate in imate nadzor</translation>
 <translation id="2451727308784734061">Z bližnjico lahko hitro odprete Upravitelja gesel. Bližnjico lahko premaknete na začetni zaslon računalnika ali v zaganjalnik aplikacij.</translation>
 <translation id="2478295928299953161">Chromium se bo kmalu zaprl</translation>

@@ -387,7 +387,6 @@
 <translation id="1668071460721346172">Recevoir un courriel</translation>
 <translation id="1671391448414634642">Les pages en <ph name="SOURCE_LANGUAGE" /> seront désormais traduites en <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> en <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1674542638006317838">Une liste limitée d'URL de pages que vous visitez où se produisent des <ph name="BEGIN_LINK" />événements relatifs aux technologies patrimoniales<ph name="END_LINK" />.</translation>
 <translation id="1682696192498422849">Bord court en premier</translation>
 <translation id="168693727862418163">La validation de la valeur de cette politique par rapport à son schéma a échoué. La politique sera ignorée.</translation>
 <translation id="168841957122794586">Le certificat du serveur contient une clé de chiffrement faible.</translation>
@@ -1533,7 +1532,6 @@
 <translation id="378611282717571199">Meilleurs résultats pour « <ph name="SEARCH_QUERY" /> »</translation>
 <translation id="3789155188480882154">Taille 16</translation>
 <translation id="3789841737615482174">Installer</translation>
-<translation id="3790417903123637354">Une erreur s'est produite. Réessayez plus tard</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> po x <ph name="HEIGHT" /> po)</translation>
 <translation id="3792826587784915501">Films cultes et indépendants</translation>
 <translation id="3793574014653384240">Nombre et causes des plantages survenus récemment</translation>
@@ -2354,6 +2352,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5331585574693522196">Définir par défaut</translation>
 <translation id="5332219387342487447">Mode de livraison</translation>
 <translation id="5332769172018416402">Demander dans un message</translation>
+<translation id="5334013548165032829">Journaux détaillés du système</translation>
 <translation id="5334145288572353250">Enregistrer l'adresse?</translation>
 <translation id="5340250774223869109">L'application est bloquée</translation>
 <translation id="5342693890921195472">il y a # min</translation>

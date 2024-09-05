@@ -404,6 +404,7 @@ Questo sostituisce il criterio <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY
       I pattern URL non possono essere in conflitto con <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />. Nessun criterio ha la precedenza se un URL presenta corrispondenze con entrambi.
 
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
+<translation id="1309259005392595570">Disattiva l'accordo chiave post-quantistico per TLS</translation>
 <translation id="1309465583050255779">Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attivo, l'assegnazione di un valore al criterio <ph name="DEFAULT_SEARCH_PROVIDER_NAME_POLICY_NAME" /> consente di specificare il nome del provider di ricerca predefinito.
 
       Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_NAME_POLICY_NAME" /> non viene configurato, viene utilizzato il nome host specificato dall'URL di ricerca.</translation>
@@ -4938,6 +4939,7 @@ Questo criterio consente di mappare un ID estensione o un URL di aggiornamento s
 Sulle istanze di <ph name="MS_WIN_NAME" /> è possibile forzare l'installazione di app ed estensioni che non fanno parte del Chrome Web Store soltanto se l'istanza è aggiunta a un dominio <ph name="MS_AD_NAME" />, aggiunta a <ph name="MS_AAD_NAME" /> o registrata in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
 Sulle istanze di <ph name="MAC_OS_NAME" /> è possibile forzare l'installazione di app ed estensioni che non fanno parte del Chrome Web Store soltanto se l'istanza è gestita tramite MDM, aggiunta a un dominio tramite MCX o registrata in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="4737832614429402441">Utilizza il valore predefinito per l'accordo chiave post-quantistico per TLS</translation>
 <translation id="4739596156184678950">Consenti il salvataggio dei file direttamente su <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="4742973303930120836">Limita la modalità di stampa delle immagini di sfondo</translation>
 <translation id="4745232963710538589">Attiva l'estensione Insights per segnalare le metriche di utilizzo</translation>
@@ -6747,6 +6749,21 @@ Questo criterio non avrà alcun effetto se il criterio <ph name="SCREENSAVER_LOC
 Se questo criterio non viene configurato o se l'elenco non contiene riferimenti a immagini validi, il salvaschermo per la schermata di blocco non verrà visualizzato, a prescindere dal valore impostato nel criterio <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" />.</translation>
 <translation id="6135398260575578389">Navigazione sicura è attiva in modalità potenziata. Questa modalità fornisce maggior sicurezza, ma non richiede la condivisione di ulteriori dati di navigazione con Google.</translation>
 <translation id="6135552820180449830">Crosh (supporto dalla versione 99)</translation>
+<translation id="6136179371737299503">Questo criterio a livello di dispositivo consente di configurare se <ph name="PRODUCT_OS_NAME" /> offrirà un algoritmo di accordo chiave post-quantistico in TLS. Nelle versioni future, l'algoritmo sarà ML-KEM, uno standard post-quantistico del NIST. Inizialmente, l'algoritmo era Kyber, un'iterazione bozza precedente dello standard. In questo modo, i server di supporto possono proteggere il traffico degli utenti dalla decrittografia successiva dei computer quantistici.
+
+Se questo criterio viene attivato, <ph name="PRODUCT_OS_NAME" /> offrirà un accordo chiave post-quantistico nelle connessioni TLS. Il traffico degli utenti sarà poi protetto dai computer quantistici durante la comunicazione con i server compatibili.
+
+Se questo criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> non offrirà un accordo chiave post-quantistico nelle connessioni TLS. In questo modo, il traffico degli utenti non verrà protetto dai computer quantistici.
+
+Se questo criterio non viene configurato, <ph name="PRODUCT_OS_NAME" /> seguirà la procedura di implementazione predefinita per l'offerta di un accordo chiave post-quantistico.
+
+L'offerta di Kyber è compatibile con le versioni precedenti. I server TLS e il middleware di rete esistenti dovrebbero ignorare la nuova opzione e continuare a selezionare le opzioni precedenti.
+
+Tuttavia, i dispositivi che non implementano correttamente TLS potrebbero non funzionare correttamente se viene offerta la nuova opzione. Ad esempio, potrebbero disconnettersi in risposta a opzioni non riconosciute o ai messaggi di dimensioni maggiori che ne derivano. Questi dispositivi non sono adatti alla tecnologia post-quantistica e interferiranno con la relativa transizione di un'azienda. In questo caso, gli amministratori dovrebbero contattare il fornitore per risolvere il problema.
+
+Questo criterio è una misura temporanea e verrà rimosso in un momento successivo alla versione 141 di <ph name="PRODUCT_OS_NAME" />. Potrebbe essere attivato per consentirti di testare i problemi e potrebbe essere disattivato durante la risoluzione di questi ultimi.
+
+Se vengono impostati sia questo criterio sia il criterio PostQuantumKeyAgreementEnabled, questo criterio avrà la precedenza.</translation>
 <translation id="6138636318340561140">Controlla lo stato degli URL in tempo reale con Navigazione sicura</translation>
 <translation id="6141402445226505817">Utilizza sempre il rilevamento approssimativo del fuso orario</translation>
 <translation id="6141944295566709543">Consenti agli utenti di riprodurre contenuti multimediali quando il dispositivo è bloccato</translation>
@@ -8399,6 +8416,7 @@ Nota importante: le pianificazioni impostate da questo criterio potrebbero non e
       Queste norme vengono ignorate a meno che
       non sia installato l'host Chrome Remote Desktop.</translation>
 <translation id="7202925763179776247">Consenti limitazioni dei download</translation>
+<translation id="7203243973351251622">Registratore (supportata dalla versione 130)</translation>
 <translation id="7207095846245296855">Forza il filtro SafeSearch di Google</translation>
 <translation id="7211368186050418507">Non rilevare mai automaticamente il fuso orario</translation>
 <translation id="721617466745658461">Consenti agli utenti di selezionare il programma binario del browser <ph name="LACROS_NAME" /></translation>
@@ -8667,6 +8685,7 @@ Se il criterio non viene configurato, in pratica equivale a impostarlo su "<ph n
 
       Se il criterio non viene configurato, viene applicato l'intervallo predefinito di 3 minuti.</translation>
 <translation id="7469554574977894907">Attiva suggerimenti di ricerca</translation>
+<translation id="7471938371309017725">Configura la videocamera, le impostazioni del browser, le impostazioni del sistema operativo, nonché le funzionalità di scansione, Web Store, canvas, Esplora, Crosh, Galleria, Terminal e Registratore da disattivare</translation>
 <translation id="7472547030234093862">Specifica i domini da risolvere tramite DNS over HTTPS</translation>
 <translation id="747275827471712187">Ripristina il comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedente per i cookie su questi siti</translation>
 <translation id="7476030153540156377">Scegli se attivare o meno la funzionalità di protezione IP di <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
@@ -10178,6 +10197,19 @@ Se le ottimizzazioni di JavaScript vengono disattivate (impostando il valore di 
 È possibile eseguire l'override del criterio per pattern URL specifici utilizzando i criteri <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" /> e <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />.
 
 Se questo criterio non viene configurato, le ottimizzazioni di JavaScript vengono attivate.</translation>
+<translation id="8670585636650044874">Questo criterio consente di configurare se<ph name="PRODUCT_NAME" /> offrirà un algoritmo di accordo chiave post-quantistico in TLS. Nelle versioni future, l'algoritmo sarà ML-KEM, uno standard post-quantistico del NIST. Inizialmente, l'algoritmo era Kyber, un'iterazione bozza precedente dello standard. In questo modo, i server di supporto possono proteggere il traffico degli utenti dalla decrittografia successiva dei computer quantistici.
+
+Se questo criterio viene attivato, <ph name="PRODUCT_NAME" /> offrirà un accordo chiave post-quantistico nelle connessioni TLS. Il traffico degli utenti sarà poi protetto dai computer quantistici durante la comunicazione con i server compatibili.
+
+Se questo criterio viene disattivato, <ph name="PRODUCT_NAME" /> non offrirà un accordo chiave post-quantistico nelle connessioni TLS. In questo modo, il traffico degli utenti non verrà protetto dai computer quantistici.
+
+Se questo criterio non viene configurato, <ph name="PRODUCT_NAME" /> seguirà la procedura di implementazione predefinita per l'offerta di un accordo chiave post-quantistico.
+
+L'offerta di un accordo chiave post-quantistico è compatibile con le versioni precedenti. I server TLS e il middleware di rete esistenti dovrebbero ignorare la nuova opzione e continuare a selezionare le opzioni precedenti.
+
+Tuttavia, i dispositivi che non implementano correttamente TLS potrebbero non funzionare correttamente se viene offerta la nuova opzione. Ad esempio, potrebbero disconnettersi in risposta a opzioni non riconosciute o ai messaggi di dimensioni maggiori che ne derivano. Questi dispositivi non sono adatti alla tecnologia post-quantistica e interferiranno con la relativa transizione di un'azienda. In questo caso, gli amministratori dovrebbero contattare il fornitore per risolvere il problema.
+
+Questo criterio è una misura temporanea e verrà rimosso in un momento successivo alla versione 141 di <ph name="PRODUCT_NAME" />. Potrebbe essere attivato per consentirti di testare i problemi e potrebbe essere disattivato durante la risoluzione di questi ultimi.</translation>
 <translation id="8671119576957984818">Attiva hub di condivisione desktop</translation>
 <translation id="8671193325113134911">Attiva il controllo rigoroso del tipo MIME per gli script worker</translation>
 <translation id="8671303329680827168">Questo criterio è deprecato. Utilizza il criterio "<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />".</translation>

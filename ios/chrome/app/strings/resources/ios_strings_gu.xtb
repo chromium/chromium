@@ -473,6 +473,7 @@
 <translation id="4169535189173047238">મંજૂરી આપશો નહીં</translation>
 <translation id="4172051516777682613">હંમેશા બતાવો</translation>
 <translation id="4181841719683918333">ભાષાઓ</translation>
+<translation id="4184063163998877398">{count,plural, =1{{count} નબળો પાસવર્ડ}one{{count} નબળો પાસવર્ડ}other{{count} નબળા પાસવર્ડ}}</translation>
 <translation id="4195643157523330669">નવા ટૅબમાં ખોલો</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} આઇટમ ફક્ત આ ડિવાઇસ પર સાચવેલી છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તે તમારા Google એકાઉન્ટ, {email}માં છે.}one{{count} આઇટમ ફક્ત આ ડિવાઇસ પર સાચવેલી છે. તમારા અન્ય ડિવાઇસ પર તેનો ઉપયોગ કરવા માટે, તેમને તમારા Google એકાઉન્ટ, {email}માં સાચવો.}other{{count} આઇટમ ફક્ત આ ડિવાઇસ પર સાચવેલી છે. તમારા અન્ય ડિવાઇસ પર તેનો ઉપયોગ કરવા માટે, તેમને તમારા Google એકાઉન્ટ, {email}માં સાચવો.}}</translation>
 <translation id="421070604241073551">જ્યારે ચાલુ હોય, ત્યારે ડેટા તમારા Google એકાઉન્ટમાં સાચવવામાં આવે છે. જ્યારે બંધ હોય, ત્યારે ડેટા માત્ર આ ડિવાઇસમાં સાચવવામાં આવે છે.</translation>
@@ -664,6 +665,7 @@
 <translation id="5439618055789623719"><ph name="USER_EMAIL" /> તરીકે સાઇન ઇન થયા</translation>
 <translation id="5444892875087332195">બુકમાર્ક</translation>
 <translation id="5454211924362324495">અન્ય લોકોને તમારા પાસવર્ડનો ઉપયોગ કરતા રોકવા માટે, તેને <ph name="BEGIN_LINK" /><ph name="WEBSITE" />પર બદલો<ph name="END_LINK" /></translation>
+<translation id="5457082343331641453">તમારી શોધમાં ઉમેરો</translation>
 <translation id="5478327362747197944">કોઈ વેબપેજમાં કોઈ તારીખ પર ક્લિક કરીને સીધા Calendar ઇવેન્ટ બનાવો.</translation>
 <translation id="5482922178977937393">શું તમે તમારી રુચિઓના આધારે ન્યૂઝ, રમતગમત અને વધુ માટે નોટિફિકેશન મેળવવા માગો છો?</translation>
 <translation id="5483838506518938965">તમે બધું સેટ કરી લીધું</translation>
@@ -905,6 +907,7 @@
 <translation id="6732087373923685049">કૅમેરા</translation>
 <translation id="6746338529702829275">તમારો એકાઉન્ટ ડેટા રિવ્યૂ કરો</translation>
 <translation id="6748108480210050150">પ્રેષક:</translation>
+<translation id="6755200887046212842">એકાઉન્ટ્સનું સંચાલન કરો</translation>
 <translation id="6779455296366983087">તમારો બ્રાઉઝિંગ ડેટા ડિલીટ કરવામાં આવશે</translation>
 <translation id="6790502149545262384">ટૂંક સમયમાં, જ્યારે તમે નવું ટૅબ ખોલશો ત્યારે તમને <ph name="CHANNEL_NAME" /> પરથી સ્ટોરી દેખાશે.</translation>
 <translation id="6800349425672670802">તમે ટૅબ સ્વિચર મારફતે તમારા બધા ખુલ્લા ટૅબ ઍક્સેસ કરી શકો છો.</translation>

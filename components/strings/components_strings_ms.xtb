@@ -387,7 +387,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1668071460721346172">Dapatkan e-mel</translation>
 <translation id="1671391448414634642">Halaman dalam <ph name="SOURCE_LANGUAGE" /> akan diterjemah kepada <ph name="TARGET_LANGUAGE" /> bermula dari sekarang.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> kepada <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1674542638006317838">Senarai URL halaman terhad yang anda lawati yang mengandungi <ph name="BEGIN_LINK" />acara teknologi lama<ph name="END_LINK" />.</translation>
 <translation id="1682696192498422849">Sisi pendek dahulu</translation>
 <translation id="168693727862418163">Nilai dasar ini gagal disahkan dengan skemanya dan akan diabaikan.</translation>
 <translation id="168841957122794586">Sijil pelayan mengandungi kunci kriptografi yang lemah.</translation>
@@ -1534,7 +1533,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="378611282717571199">Padanan terbaik untuk "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="3789155188480882154">Saiz 16</translation>
 <translation id="3789841737615482174">Pasang</translation>
-<translation id="3790417903123637354">Kesilapan telah berlaku. Cuba lagi nanti</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
 <translation id="3792826587784915501">Filem Kultus &amp; Indie</translation>
 <translation id="3793574014653384240">Bilangan dan punca ranap sistem yang berlaku baru-baru ini</translation>
@@ -2355,6 +2353,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5331585574693522196">Tetapkan sebagai Lalai</translation>
 <translation id="5332219387342487447">Kaedah Penghantaran</translation>
 <translation id="5332769172018416402">Tanya dalam mesej</translation>
+<translation id="5334013548165032829">Log sistem terperinci</translation>
 <translation id="5334145288572353250">Simpan Alamat?</translation>
 <translation id="5340250774223869109">Aplikasi disekat</translation>
 <translation id="5342693890921195472">minit yang lalu</translation>

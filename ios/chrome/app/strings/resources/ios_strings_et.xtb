@@ -473,6 +473,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4169535189173047238">Ära luba</translation>
 <translation id="4172051516777682613">Kuva alati</translation>
 <translation id="4181841719683918333">Keeled</translation>
+<translation id="4184063163998877398">{count,plural, =1{{count} nõrk parool}other{{count} nõrka parooli}}</translation>
 <translation id="4195643157523330669">Ava uuel vahelehel</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} üksus on salvestatud ainult sellesse seadmesse. Selle kasutamiseks muudes seadmetes salvestage see oma Google’i kontole {email}.}other{{count} üksust on salvestatud ainult sellesse seadmesse. Nende kasutamiseks muudes seadmetes salvestage need oma Google'i kontole {email}.}}</translation>
 <translation id="421070604241073551">Kui see on sees, salvestatakse andmed teie Google'i kontole. Kui see on väljas, salvestatakse andmed ainult sellesse seadmesse.</translation>
@@ -664,6 +665,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="5439618055789623719">Sisse logitud kasutajana <ph name="USER_EMAIL" /></translation>
 <translation id="5444892875087332195">Järjehoidjad</translation>
 <translation id="5454211924362324495">Kui soovite, et teised ei saaks teie parooli kasutada, <ph name="BEGIN_LINK" />muutke seda saidil <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
+<translation id="5457082343331641453">Täiendage otsingut</translation>
 <translation id="5478327362747197944">Looge kalendrisündmusi otse veebilehelt, klõpsates selles sisalduval kuupäeval.</translation>
 <translation id="5482922178977937393">Kas soovite märguandeid uudiste, spordi ja muu kohta, mis põhinevad teie huvidel?</translation>
 <translation id="5483838506518938965">Olete valmis</translation>
@@ -905,6 +907,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="6732087373923685049">kaamera</translation>
 <translation id="6746338529702829275">Konto andmete ülevaatamine</translation>
 <translation id="6748108480210050150">Kellelt</translation>
+<translation id="6755200887046212842">Kontode haldamine</translation>
 <translation id="6779455296366983087">Teie sirvimisandmed kustutatakse</translation>
 <translation id="6790502149545262384">Varsti näete uue vahelehe avamisel lugusid saidilt <ph name="CHANNEL_NAME" />.</translation>
 <translation id="6800349425672670802">Kõikide avatud vahelehtede juurde pääsete funktsiooniga Vahelehtede vaheti.</translation>

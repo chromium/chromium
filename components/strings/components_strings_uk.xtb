@@ -387,7 +387,6 @@
 <translation id="1668071460721346172">Отримати електронний лист</translation>
 <translation id="1671391448414634642">Надалі сторінки цією мовою (<ph name="SOURCE_LANGUAGE" />) перекладатимуться такою мовою: <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1674542638006317838">Обмежений список URL-адрес відвіданих сторінок, на яких виявлено <ph name="BEGIN_LINK" />події застарілих технологій<ph name="END_LINK" />.</translation>
 <translation id="1682696192498422849">Спочатку по ширині</translation>
 <translation id="168693727862418163">Не вдалося перевірити значення цього правила в схемі, тому воно ігноруватиметься.</translation>
 <translation id="168841957122794586">Сертифікат сервера містить слабкий криптографічний ключ.</translation>
@@ -1533,7 +1532,6 @@
 <translation id="378611282717571199">Найкращі результати для запиту "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="3789155188480882154">Розмір 16</translation>
 <translation id="3789841737615482174">Установити</translation>
-<translation id="3790417903123637354">Сталася помилка. Спробуйте пізніше</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> дюйм.)</translation>
 <translation id="3792826587784915501">Культові й альтернативні фільми</translation>
 <translation id="3793574014653384240">Кількість і причини останніх аварійних завершень роботи</translation>
@@ -2354,6 +2352,7 @@
 <translation id="5331585574693522196">Використовувати за умовчанням</translation>
 <translation id="5332219387342487447">Спосіб доставки</translation>
 <translation id="5332769172018416402">Запитати в повідомленні</translation>
+<translation id="5334013548165032829">Докладні журнали системи</translation>
 <translation id="5334145288572353250">Зберегти адресу?</translation>
 <translation id="5340250774223869109">Додаток заблоковано</translation>
 <translation id="5342693890921195472">хв тому</translation>
@@ -3612,7 +3611,7 @@
 <translation id="7631072086707140121">У URL-адресі має використовуватися схема https.</translation>
 <translation id="7631527008834753063">Телевізійні ігрові шоу</translation>
 <translation id="7633909222644580952">Дані про ефективність і звіти про збої</translation>
-<translation id="7636346903338549690">Сайти можуть використовувати сторонні файли cookie</translation>
+<translation id="7636346903338549690">Сайти, яким можна використовувати сторонні файли cookie</translation>
 <translation id="7637571805876720304">Видалити дані кредитної картки з Chromium?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Немає}=1{У вашому обліковому записі збережено 1 пароль (для <ph name="DOMAIN_LIST" />)}one{У вашому обліковому записі збережено # пароль (для <ph name="DOMAIN_LIST" />)}few{У вашому обліковому записі збережено # паролі (для <ph name="DOMAIN_LIST" />)}many{У вашому обліковому записі збережено # паролів (для <ph name="DOMAIN_LIST" />)}other{У вашому обліковому записі збережено # пароля (для <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Послідовні порти</translation>

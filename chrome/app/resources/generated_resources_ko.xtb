@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
 <translation id="1001033507375626788">나와 공유된 네트워크입니다.</translation>
+<translation id="1001360573085135660">클릭하여 권한을 전환합니다.</translation>
 <translation id="1002085272681738789">탭이 다시 활성화됨</translation>
 <translation id="1003088604756913841">새 <ph name="APP" /> 창에서 링크 열기</translation>
 <translation id="100323615638474026">USB 기기(<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -3301,6 +3302,7 @@
 <translation id="3333190335304955291">이 서비스는 설정에서 사용 중지할 수 있습니다.</translation>
 <translation id="3333961966071413176">모든 연락처</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - PIP 모드로 동영상 재생 중</translation>
+<translation id="3335380372402547327">플래시 알림 미리보기</translation>
 <translation id="3335947283844343239">닫은 탭 다시 열기</translation>
 <translation id="3336855445806447827">잘 모르겠음</translation>
 <translation id="3337568642696914359">사이트에서 프로토콜을 처리하도록 허용하지 않음</translation>

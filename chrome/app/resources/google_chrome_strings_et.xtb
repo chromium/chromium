@@ -103,6 +103,7 @@
 <translation id="2359808026110333948">Jätka</translation>
 <translation id="2390624519615263404">Vaadake ohutusfunktsioone</translation>
 <translation id="2401189691232800402">ChromeOS-i süsteem</translation>
+<translation id="2403703063067034158">Käivitamisviga: praegu käitatakse seadistuse teist eksemplari, proovige hiljem uuesti.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Üks või mitu Chrome'i laiendust kasutasid juurdepääsu ühele HID-seadmele}=1{Üks või mitu Chrome'i laiendust kasutasid juurdepääsu ühele HID-seadmele}other{Üks või mitu Chrome'i laiendust kasutasid juurdepääsu # HID-seadmele}}</translation>
 <translation id="2424440923901031101">Laiendus rikub Chrome'i veebipoe eeskirju ja see võib olla ebaturvaline. Eemaldage see Chrome'ist, et see ei saaks enam näha ja muuta teie andmeid saitidel, mida külastate, sealhulgas teie isiklikku teavet.</translation>
 <translation id="2467438592969358367">Google Chrome soovib teie paroole eksportida. Selle lubamiseks sisestage oma Windowsi parool.</translation>
@@ -191,6 +192,7 @@
 <translation id="3503306920980160878">Chrome vajab juurdepääsu teie asukohale, et seda selle saidiga jagada</translation>
 <translation id="3533694711092285624">Salvestatud paroole ei ole. Chrome saab teie paroole kontrollida, kui olete need salvestanud.</translation>
 <translation id="3541482654983822893">Chrome ei saa teie paroole kontrollida. Proovige uuesti 24 tunni pärast.</translation>
+<translation id="3556766595644676153">Chrome eellaadib lehed mis muudab sirvimise ja otsimise kiiremaks.</translation>
 <translation id="3564543103555793392">Kui logite Chrome'i sisse, saate salvestada järjehoidjaid, paroole ja muud ning seejärel kasutada neid oma telefonis</translation>
 <translation id="3576528680708590453">Teie süsteemiadministraator on konfigureerinud Google Chrome'i avama alternatiivset brauserit, et saada juurdepääs lehele <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Sünkroonige ja isikupärastage Chrome kõigis oma seadmetes</translation>
@@ -446,6 +448,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="7099479769133613710">Taaskäivitage &amp;Chrome OS-i värskendamiseks</translation>
 <translation id="7100085796996987445">Oma ekraani jagamiseks lubage süsteemieelistustes Chrome'i ekraanisalvesti</translation>
 <translation id="7106741999175697885">Tegumihaldur - Google Chrome</translation>
+<translation id="7113423803153683764">Chrome vabastab inaktiivsete vahelehtede mälu. See annab aktiivsetele vahelehtedele ja muudele rakendustele rohkem arvutiressursse ja tagab Chrome'i kiiruse. Teie inaktiivsed vahelehed muutuvad automaatselt aktiivseks niipea, kui nendele naasete.</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Saadaval on uus Chrome'i värskendus, mis rakendatakse taaskäivitamisel.}=1{Saadaval on uus Chrome'i värskendus, mis rakendatakse taaskäivitamisel. Teie inkognito akent ei avata uuesti.}other{Saadaval on uus Chrome'i värskendus, mis rakendatakse taaskäivitamisel. Teie # inkognito akent ei avata uuesti.}}</translation>
 <translation id="7155997830309522122">Sellisel juhul muutke Chrome'is oma salvestatud parooli, et see ühtiks teie uue parooliga.</translation>
 <translation id="7161904924553537242">Tere tulemast Google Chrome'i</translation>
@@ -581,6 +584,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="8843389967774722327">Chrome lisab regulaarselt uusi funktsioone, mis aitavad teil asjad ära teha</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome soovitab selle eemaldada}other{Chrome soovitab need eemaldada}}</translation>
 <translation id="8862326446509486874">Teil ei ole süsteemi tasemel installimiseks sobivaid õigusi. Proovige installijat administraatorina uuesti käivitada.</translation>
+<translation id="8877608230252444082">Chrome säästab akutoidet, piirates taustal toimuvaid tegevusi ja visuaalseid efekte, nagu sujuv kerimine ja video kaadrisagedus.</translation>
 <translation id="8908277254462331033">Vaadake ohutusfunktsioone</translation>
 <translation id="8914504000324227558">Käivita Chrome uuesti</translation>
 <translation id="8922193594870374009">Numbri saatmiseks asukohast <ph name="ORIGIN" /> Android-telefoni logige mõlemas seadmes Chrome'i sisse.</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
 <translation id="1001033507375626788">Seda võrku jagatakse teiega</translation>
+<translation id="1001360573085135660">Klõpsake loa sisse- või väljalülitamiseks.</translation>
 <translation id="1002085272681738789">Vaheleht on jälle aktiivne</translation>
 <translation id="1003088604756913841">Lingi avamine rakenduse <ph name="APP" /> uues aknas</translation>
 <translation id="100323615638474026">USB-seade (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -3290,6 +3291,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3333190335304955291">Selle teenuse saab välja lülitada menüüs Seaded.</translation>
 <translation id="3333961966071413176">Kõik kontaktid</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – videot esitatakse režiimis Pilt pildis</translation>
+<translation id="3335380372402547327">Vilkuvate märguannete eelvaade</translation>
 <translation id="3335947283844343239">Ava uuesti suletud vaheleht</translation>
 <translation id="3336855445806447827">Pole kindel</translation>
 <translation id="3337568642696914359">Ära luba saitidel protokolle käsitleda</translation>

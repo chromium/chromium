@@ -473,6 +473,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="4169535189173047238">Nu permite</translation>
 <translation id="4172051516777682613">Afișați întotdeauna</translation>
 <translation id="4181841719683918333">Limbi</translation>
+<translation id="4184063163998877398">{count,plural, =1{{count} parolă slabă}few{{count} parole slabe}other{{count} de parole slabe}}</translation>
 <translation id="4195643157523330669">Deschide în filă nouă</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} element se salvează numai pe acest dispozitiv. Pentru a-l folosi pe celelalte dispozitive, salvează-l în Contul tău Google, {email}.}few{{count} elemente se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google {email}.}other{{count} de elemente se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google {email}.}}</translation>
 <translation id="421070604241073551">Când opțiunea este activată, datele se salvează în Contul Google. Când este dezactivată, datele se salvează numai pe acest dispozitiv.</translation>
@@ -664,6 +665,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="5439618055789623719">Te-ai conectat ca <ph name="USER_EMAIL" /></translation>
 <translation id="5444892875087332195">Marcaje</translation>
 <translation id="5454211924362324495">Pentru a împiedica alte persoane să-ți folosească parola, <ph name="BEGIN_LINK" />schimb-o pe <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
+<translation id="5457082343331641453">Adaugă la căutare</translation>
 <translation id="5478327362747197944">Creează evenimente în calendar direct dând clic pe o dată dintr-o pagină web.</translation>
 <translation id="5482922178977937393">Vrei să primești notificări pentru știri, sport și altele pe baza intereselor tale?</translation>
 <translation id="5483838506518938965">Ați terminat</translation>
@@ -905,6 +907,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="6732087373923685049">Cameră</translation>
 <translation id="6746338529702829275">Examinează datele din cont</translation>
 <translation id="6748108480210050150">De la</translation>
+<translation id="6755200887046212842">Gestionați conturile</translation>
 <translation id="6779455296366983087">Datele de navigare vor fi șterse</translation>
 <translation id="6790502149545262384">În curând, vei vedea articole de la <ph name="CHANNEL_NAME" /> când deschizi o filă nouă.</translation>
 <translation id="6800349425672670802">Poți accesa toate filele deschise din Comutatorul de file.</translation>

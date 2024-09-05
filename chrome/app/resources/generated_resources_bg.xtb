@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
 <translation id="1001033507375626788">Тази мрежа е споделена с вас</translation>
+<translation id="1001360573085135660">Кликнете, за да включите или изключите разрешението.</translation>
 <translation id="1002085272681738789">Разделът отново е активен</translation>
 <translation id="1003088604756913841">Отваряне на връзката в нов прозорец на <ph name="APP" /></translation>
 <translation id="100323615638474026">USB устройство (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -3295,6 +3296,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3333190335304955291">Можете да изключите тази услуга от настройките.</translation>
 <translation id="3333961966071413176">Всички контакти</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – видеоклипът се възпроизвежда в режим „Картина в картината“</translation>
+<translation id="3335380372402547327">Визуализация на известията с премигване</translation>
 <translation id="3335947283844343239">Повторно отваряне на затворения раздел</translation>
 <translation id="3336855445806447827">Не знам със сигурност</translation>
 <translation id="3337568642696914359">Да не се разрешава на сайтовете да обработват протоколи</translation>

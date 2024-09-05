@@ -71,6 +71,8 @@ Du hittar fler inställningar som använder data för att förbättra Chromium-u
 <translation id="3344973607274501920">Chromium kunde inte kontrollera dina lösenord. Testa att kontrollera internetanslutningen.</translation>
 <translation id="3366305173356742781">Chromium-data i ditt konto</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Detta händer när Chromium inte har använts på {THRESHOLD} minut. Detta kan innefatta historik och autofyll.}other{Detta händer när Chromium inte har använts på {THRESHOLD} minuter. Detta kan innefatta historik och autofyll.}}</translation>
+<translation id="3410395242749598859">Viss Chromium-data har inte sparats i <ph name="EMAIL" /> ännu.
+Testa att vänta några minuter innan du byter konto. Om du byter konto nu raderas denna data.</translation>
 <translation id="3472200483164753384">Stöds inte på Chromium Canary</translation>
 <translation id="347967311580159871">Du hittar fler inställningar som använder data för att förbättra Chromium-upplevelsen under <ph name="BEGIN_LINK" />Googles tjänster<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Ditt lösenord har inte delats. Kontrollera internetanslutningen och se till att du är inloggad i Chromium. Försök sedan igen.</translation>
@@ -119,6 +121,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="5042011327527167688">Tryck på Visa med Google Maps i Chromium.</translation>
 <translation id="5044871537677053278">Chromium identifierar adresser och använder Google Maps för att ge dig vägbeskrivningar och lokal information.</translation>
 <translation id="5048795749726991615">Använd Chromium för autofyll så att du enkelt får tillgång till dina sparade lösenord i andra appar</translation>
+<translation id="5053429694249468757">Raderar Chromium-data …</translation>
 <translation id="5124429847818367226">Nu kan du använda Chrome varje gång du surfar eller trycker på länkar i meddelanden, dokument och andra appar.</translation>
 <translation id="5131565040785979529">Din organisation, <ph name="DOMAIN" />, hanterar kontot du är inloggad på och hur Chromium används.</translation>
 <translation id="5224391634244552924">Inga sparade lösenord. Chromium kan bara kontrollera dina lösenord om du sparar dem.</translation>

@@ -387,7 +387,6 @@
 <translation id="1668071460721346172">Имэйл хүлээн авах</translation>
 <translation id="1671391448414634642">Одооноос <ph name="SOURCE_LANGUAGE" /> хэл дээрх хуудсыг <ph name="TARGET_LANGUAGE" /> хэл рүү орчуулна.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> -с <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1674542638006317838"><ph name="BEGIN_LINK" />Уламжлалт технологийн үйл явдлууд<ph name="END_LINK" /> тохиолдож буй таны зочилсон хуудаснуудын URL-н хязгаарлагдмал жагсаалт.</translation>
 <translation id="1682696192498422849">Эхлээд богино зах</translation>
 <translation id="168693727862418163">Энэ бодлогын утгыг схемтэй нь тулгаж баталж чадаагүй тул үүнийг үл хэрэгсэнэ.</translation>
 <translation id="168841957122794586">Серверийн гэрчилгээний криптограф түлхүүр нь аюулгүй байдлын хувьд сул байна.</translation>
@@ -1534,7 +1533,6 @@
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />"-н хамгийн сайн таарах илэрц</translation>
 <translation id="3789155188480882154">Хэмжээ 16</translation>
 <translation id="3789841737615482174">Суулгах</translation>
-<translation id="3790417903123637354">Алдаа гарлаа. Дараа дахин оролдоно уу</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> инч)</translation>
 <translation id="3792826587784915501">Шүтэгдсэн, инди кинонууд</translation>
 <translation id="3793574014653384240">Сүүлийн үед гарсан гэмтлийн тоо болон шалтгаан</translation>
@@ -2355,6 +2353,7 @@
 <translation id="5331585574693522196">Өгөгдмөлөөр тохируулах</translation>
 <translation id="5332219387342487447">Хүргэлтийн арга</translation>
 <translation id="5332769172018416402">Мессежээр асуух</translation>
+<translation id="5334013548165032829">Системийн дэлгэрэнгүй лог</translation>
 <translation id="5334145288572353250">Хаягийг хадгалах уу?</translation>
 <translation id="5340250774223869109">Аппликэйшнийг блоклосон</translation>
 <translation id="5342693890921195472">минутын өмнө</translation>

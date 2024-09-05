@@ -43,6 +43,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1150989369772528668">Takvim</translation>
 <translation id="1153356358378277386">Eşlenen cihazlar</translation>
 <translation id="1155734730463845512">Mevcut pil seviyesi %<ph name="BATTERY_PERCENTAGE" /></translation>
+<translation id="1157514002898505378">Üretken yapay zeka deneme aşamasında olduğundan içerikler hatalı, yanıltıcı veya rahatsız edici olabilir. Sorun bildirmek için yöneticinizle iletişime geçin. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">şu anda açık ve kullanımda</translation>
 <translation id="1163437384438183174">Telefon Merkezi'ni raftan kaldır</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1923,6 +1924,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="7613620083300976559">Oyun denetimlerini etkinleştirin</translation>
 <translation id="761736749114493194">Kamera çerçevelemesini açın/kapatın. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7627303771480696593">Soru sorun</translation>
 <translation id="7634648064048557203">Kamera sağ alt köşeye tutturuldu</translation>
 <translation id="7638572816805275740">Pencerenin ekran görüntüsünü veya ekran kaydını alın</translation>
 <translation id="7642106959537987271">rengi ters çevirme modu</translation>

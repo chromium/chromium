@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
 <translation id="1001033507375626788">Zurekin partekatuta dago sarea</translation>
+<translation id="1001360573085135660">Baimena aldatzeko, sakatu hau.</translation>
 <translation id="1002085272681738789">Fitxa aktibo dago berriro</translation>
 <translation id="1003088604756913841">Ireki esteka <ph name="APP" /> aplikazioaren beste leiho batean</translation>
 <translation id="100323615638474026">USB bidezko gailua (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -3284,6 +3285,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3333190335304955291">Ezarpenak atalean desaktiba dezakezu zerbitzu hori.</translation>
 <translation id="3333961966071413176">Kontaktu guztiak</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" />: bideoa pantaila txiki gainjarriko moduan erreproduzitzen ari da</translation>
+<translation id="3335380372402547327">Aurreikusi argi-jakinarazpenak</translation>
 <translation id="3335947283844343239">Ireki aurretik itxitako fitxa</translation>
 <translation id="3336855445806447827">Ez dakit ziur</translation>
 <translation id="3337568642696914359">Ez eman protokoloak kudeatzeko baimena webguneei</translation>

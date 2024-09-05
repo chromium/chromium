@@ -387,7 +387,6 @@
 <translation id="1668071460721346172">接收电子邮件</translation>
 <translation id="1671391448414634642">从现在开始，<ph name="SOURCE_LANGUAGE" />网页一律会被翻译成<ph name="TARGET_LANGUAGE" />。</translation>
 <translation id="1674504678466460478">从<ph name="SOURCE_LANGUAGE" />到<ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1674542638006317838">被您访问过且发生了<ph name="BEGIN_LINK" />旧版技术事件<ph name="END_LINK" />的部分网页网址的列表。</translation>
 <translation id="1682696192498422849">短边先入</translation>
 <translation id="168693727862418163">此政策值未能根据其架构进行验证，因此会被忽略。</translation>
 <translation id="168841957122794586">服务器证书包含弱加密密钥。</translation>
@@ -1529,7 +1528,6 @@
 <translation id="378611282717571199">与“<ph name="SEARCH_QUERY" />”最相符的搜索结果</translation>
 <translation id="3789155188480882154">大小：16</translation>
 <translation id="3789841737615482174">安装</translation>
-<translation id="3790417903123637354">出了点问题。请稍后重试</translation>
 <translation id="3792100426446126328"><ph name="NAME" />（<ph name="WIDTH" /> x <ph name="HEIGHT" /> 英寸）</translation>
 <translation id="3792826587784915501">邪典电影与独立电影</translation>
 <translation id="3793574014653384240">近期发生崩溃的次数和原因</translation>
@@ -2350,6 +2348,7 @@
 <translation id="5331585574693522196">设为默认</translation>
 <translation id="5332219387342487447">送货方式</translation>
 <translation id="5332769172018416402">发消息请求</translation>
+<translation id="5334013548165032829">详细的系统日志</translation>
 <translation id="5334145288572353250">保存地址？</translation>
 <translation id="5340250774223869109">此应用已被禁用</translation>
 <translation id="5342693890921195472">分钟前</translation>

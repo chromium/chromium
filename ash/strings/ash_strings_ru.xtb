@@ -43,6 +43,7 @@
 <translation id="1150989369772528668">Календарь</translation>
 <translation id="1153356358378277386">Сопряженные устройства</translation>
 <translation id="1155734730463845512">Текущий уровень заряда батареи: <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="1157514002898505378">Генеративный искусственный интеллект – экспериментальная функция. Созданный контент может быть неточным или неприемлемым. Чтобы сообщить о проблеме, обратитесь к администратору. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">включена и используется</translation>
 <translation id="1163437384438183174">Убрать функцию "Управление телефоном" с панели запуска</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1665,7 +1666,6 @@
 <translation id="6665545700722362599">Разрешать сайтам, приложениям и расширениям использовать геолокацию, микрофон, камеру и другие функции устройства.</translation>
 <translation id="6667908387435388584">Подключайте устройство к точке доступа на телефоне, отключайте звук телефона, определяйте его местоположение и просматривайте последние вкладки, открытые на нем.</translation>
 <translation id="6670153871843998651">Рабочий стол 3</translation>
-<translation id="6670904050959156521"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, <ph name="STATE" /></translation>
 <translation id="6671495933530132209">Копировать изображение</translation>
 <translation id="6671661918848783005">Не удалось разблокировать Chromebook.</translation>
 <translation id="6676552993057022464">Чтобы изменить размер разделенного экрана, используйте стрелки вверх и вниз</translation>
@@ -1924,6 +1924,7 @@
 <translation id="7613620083300976559">Включить элементы управления</translation>
 <translation id="761736749114493194">Включить или отключить автомасштабирование. <ph name="STATE_TEXT" />.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
+<translation id="7627303771480696593">Задать вопрос</translation>
 <translation id="7634648064048557203">Окно предварительного просмотра камеры привязано к правому нижнему углу</translation>
 <translation id="7638572816805275740">Сделать скриншот окна или запись видео с экрана</translation>
 <translation id="7642106959537987271">режим инверсии цветов</translation>

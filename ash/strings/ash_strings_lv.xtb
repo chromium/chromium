@@ -43,6 +43,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1150989369772528668">Kalendārs</translation>
 <translation id="1153356358378277386">Pārī savienotās ierīces</translation>
 <translation id="1155734730463845512">Pašreizējais akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">Ģeneratīvais MI ir eksperimentāls, un saturs var būt neprecīzs, maldinošs vai aizvainojošs. Sazinieties ar savu administratoru, lai ziņotu par problēmu. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">ieslēgta un tiek izmantota</translation>
 <translation id="1163437384438183174">Noņemt no plaukta funkciju Tālruņa centrmezgls</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" /> — <ph name="TIME_RANGE" /></translation>
@@ -1923,6 +1924,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="7613620083300976559">Ieslēgt spēļu vadīklas</translation>
 <translation id="761736749114493194">Pārslēgt kameras kadrēšanu. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7627303771480696593">Uzdodiet jautājumu</translation>
 <translation id="7634648064048557203">Kamera pārnesta uz labo apakšējo stūri</translation>
 <translation id="7638572816805275740">Izveidot loga ekrānuzņēmumu vai ekrāna ierakstu</translation>
 <translation id="7642106959537987271">krāsu inversijas režīms</translation>

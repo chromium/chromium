@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
 <translation id="1001033507375626788">已與您共用此網絡</translation>
+<translation id="1001360573085135660">㩒一下就可以開或者閂權限。</translation>
 <translation id="1002085272681738789">讓分頁恢復「使用中」狀態</translation>
 <translation id="1003088604756913841">在 <ph name="APP" />的新視窗中開啟連結</translation>
 <translation id="100323615638474026">USB 裝置 (<ph name="VENDOR_ID" />：<ph name="PRODUCT_ID" />)</translation>
@@ -3296,6 +3297,7 @@
 <translation id="3333190335304955291">您可以在「設定」中關閉此服務。</translation>
 <translation id="3333961966071413176">所有聯絡人</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - 影片以畫中畫模式播放</translation>
+<translation id="3335380372402547327">預覽閃光燈通知</translation>
 <translation id="3335947283844343239">重新開啟先前關閉的分頁</translation>
 <translation id="3336855445806447827">不確定</translation>
 <translation id="3337568642696914359">不允許網站處理通訊協定</translation>

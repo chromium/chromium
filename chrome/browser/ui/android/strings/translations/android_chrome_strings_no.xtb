@@ -1251,6 +1251,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6869056123412990582">datamaskin</translation>
 <translation id="6880903702195291049">Tillatelsene ser bra ut</translation>
 <translation id="6883204995689174413">Del</translation>
+<translation id="6883606786470492001">Administrer annonseemner og andre innstillinger for å begrense hva nettsteder kan finne ut om deg for å vise deg personlig tilpassede annonser</translation>
 <translation id="6883906387682976294">Meld deg av varsler fra dette nettstedet</translation>
 <translation id="688398477366397178">Gi nettsteder beskjed om hvilke språk du snakker. Nettsteder viser innhold på disse språkene når det er mulig.</translation>
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{Sluttet å abonnere på 1 nettsted}other{Sluttet å abonnere på # nettsteder}}</translation>

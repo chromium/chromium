@@ -473,6 +473,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4169535189173047238">Jangan izinkan</translation>
 <translation id="4172051516777682613">Selalu tampilkan</translation>
 <translation id="4181841719683918333">Bahasa</translation>
+<translation id="4184063163998877398">{count,plural, =1{{count} sandi lemah}other{{count} sandi lemah}}</translation>
 <translation id="4195643157523330669">Buka di tab baru</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} item hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan item di Akun Google Anda, {email}.}other{{count} item hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan item di Akun Google Anda, {email}.}}</translation>
 <translation id="421070604241073551">Jika diaktifkan, data akan disimpan di Akun Google Anda. Jika dinonaktifkan, data hanya disimpan di perangkat ini.</translation>
@@ -664,6 +665,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="5439618055789623719">Login sebagai <ph name="USER_EMAIL" /></translation>
 <translation id="5444892875087332195">Bookmark</translation>
 <translation id="5454211924362324495">Untuk mencegah orang lain menggunakan sandi Anda, <ph name="BEGIN_LINK" />ubah sandi di <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
+<translation id="5457082343331641453">Tambahkan ke penelusuran</translation>
 <translation id="5478327362747197944">Buat acara Kalender secara langsung dengan mengklik tanggal di halaman web.</translation>
 <translation id="5482922178977937393">Ingin mendapatkan notifikasi untuk berita, olahraga, dan lainnya berdasarkan minat Anda?</translation>
 <translation id="5483838506518938965">Anda sudah siap</translation>
@@ -905,6 +907,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6746338529702829275">Tinjau data akun Anda</translation>
 <translation id="6748108480210050150">Dari</translation>
+<translation id="6755200887046212842">Kelola Akun</translation>
 <translation id="6779455296366983087">Data penjelajahan Anda akan dihapus</translation>
 <translation id="6790502149545262384">Sebentar lagi, Anda akan melihat artikel dari <ph name="CHANNEL_NAME" /> saat membuka tab baru.</translation>
 <translation id="6800349425672670802">Anda dapat mengakses semua tab yang terbuka dari Pengalih Tab.</translation>

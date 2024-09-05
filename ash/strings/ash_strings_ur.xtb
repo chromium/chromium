@@ -43,6 +43,7 @@
 <translation id="1150989369772528668">کیلنڈر</translation>
 <translation id="1153356358378277386">جوڑا بنائے ہوئے آلات</translation>
 <translation id="1155734730463845512">موجودہ بیٹری لیول <ph name="BATTERY_PERCENTAGE" /> فیصد ہے</translation>
+<translation id="1157514002898505378">‏تخلیق کر سکنے والا AI تجرباتی ہے اور مواد غلط، گمراہ کن یا جارحانہ ہو سکتا ہے۔ کسی مسئلے کی اطلاع دینے کے لیے اپنے منتظم سے رابطہ کریں۔ <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">آن ہے اور استعمال میں ہے</translation>
 <translation id="1163437384438183174">فون ہب کو شیلف سے ہٹایں</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />، <ph name="TIME_RANGE" /></translation>
@@ -1664,7 +1665,6 @@
 <translation id="6665545700722362599">ویب سائٹس، ایپس اور ایکسٹینشنز کو مقام کی سروسز، آلہ کے مائیکروفون، کیمرا یا دیگر خصوصیات کے استعمال کی اجازت دیں</translation>
 <translation id="6667908387435388584">‏اپنے فون کے ہاٹ اسپاٹ سے منسلک ہوں، اپنے آلے کو خاموش کریں اور اس کا پتا لگائیں اور اپنے فون پر حال ہی میں کھولے گئے Chrome ٹیبز دیکھیں</translation>
 <translation id="6670153871843998651">ڈیسک 3</translation>
-<translation id="6670904050959156521"><ph name="PREFERENCE_TITLE" />، <ph name="EFFECT_NAME" />، <ph name="STATE" /></translation>
 <translation id="6671495933530132209">تصویر کاپی کریں</translation>
 <translation id="6671661918848783005">‏اپنے Chromebook کو غیر مقفل نہیں کر سکتے</translation>
 <translation id="6676552993057022464">اسپلٹ اسکرین کا سائز تبدیل کرنے کیلئے، اوپر اور نیچے تیر کے نشانات والی کلیدوں کا استعمال کریں</translation>
@@ -1923,6 +1923,7 @@
 <translation id="7613620083300976559">گیم کنٹرولز آن کریں</translation>
 <translation id="761736749114493194">کیمرا فریمنگ کو ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027">F °<ph name="TEMPERATURE_F" /></translation>
+<translation id="7627303771480696593">ایک سوال پوچھیں</translation>
 <translation id="7634648064048557203">کیمرا نیچے دائیں کونے میں اسنیپ کیا گیا ہے</translation>
 <translation id="7638572816805275740">ونڈو اسکرین شاٹ لیں یا اسکرین ریکارڈنگ کریں</translation>
 <translation id="7642106959537987271">رنگوں کی تقلیب کی وضع</translation>

@@ -43,6 +43,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1150989369772528668">Kalendář</translation>
 <translation id="1153356358378277386">Spárovaná zařízení</translation>
 <translation id="1155734730463845512">Aktuální stav baterie: <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="1157514002898505378">Generativní umělá inteligence je experimentální a obsah může být nepřesný, zavádějící nebo nevhodný. Pokud chcete nahlásit problém, obraťte se na administrátora. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">zapnutá a je používána</translation>
 <translation id="1163437384438183174">Odstranit Telefonní centrum z poličky</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1922,6 +1923,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="7613620083300976559">Zapnout herní ovládací prvky</translation>
 <translation id="761736749114493194">Přepnout automatické zabírání. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
+<translation id="7627303771480696593">Zeptejte se</translation>
 <translation id="7634648064048557203">Kamera byl připnuta do pravého dolního rohu</translation>
 <translation id="7638572816805275740">Pořídit snímek nebo záznam okna na obrazovce</translation>
 <translation id="7642106959537987271">režim převrácení barev</translation>

@@ -43,6 +43,7 @@
 <translation id="1150989369772528668">Каляндар</translation>
 <translation id="1153356358378277386">Спалучаныя прылады</translation>
 <translation id="1155734730463845512">Бягучы ўзровень зараду акумулятара: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">Генератыўны штучны інтэлект з’яўляецца эксперыментальнай тэхналогіяй, таму змесціва, створанае з яго дапамогай, можа быць недакладным, абразлівымі або ўводзіць у зман. Каб паведаміць пра праблему, звярніцеся да адміністратара. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">уключана і выкарыстоўваецца</translation>
 <translation id="1163437384438183174">Прыбраць Тэлефонны цэнтр з панэлі доступу</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1665,7 +1666,6 @@
 <translation id="6665545700722362599">Дазваляць вэб-сайтам, праграмам і пашырэнням выкарыстоўваць службы геалакацыі, мікрафон, камеру або іншыя функцыі прылады</translation>
 <translation id="6667908387435388584">Вы зможаце падключацца да хот-спота свайго тэлефона, выяўляць яго месцазнаходжанне, выключаць на ім гук, а таксама праглядаць адкрытыя на тэлефоне ўкладкі Chrome</translation>
 <translation id="6670153871843998651">Стол 3</translation>
-<translation id="6670904050959156521"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" /> <ph name="STATE" /></translation>
 <translation id="6671495933530132209">Скапіраваць відарыс</translation>
 <translation id="6671661918848783005">Не ўдалося разблакіраваць Chromebook</translation>
 <translation id="6676552993057022464">Змяняйце памер падзеленага экрана з дапамогай клавіш са стрэлкамі ўверх і ўніз</translation>
@@ -1924,6 +1924,7 @@
 <translation id="7613620083300976559">Уключыць гульнявы кантролер</translation>
 <translation id="761736749114493194">Уключыць/выключыць кадраванне. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
+<translation id="7627303771480696593">Задаць пытанне</translation>
 <translation id="7634648064048557203">Акно перадпрагляду камеры прывязана да правага ніжняга вугла</translation>
 <translation id="7638572816805275740">Зрабіць здымак або запіс экрана</translation>
 <translation id="7642106959537987271">рэжым інверсіі колераў</translation>

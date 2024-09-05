@@ -387,7 +387,6 @@
 <translation id="1668071460721346172">ইমেল রিসিভ করুন</translation>
 <translation id="1671391448414634642">এখন থেকে <ph name="SOURCE_LANGUAGE" /> ভাষার পৃষ্ঠা <ph name="TARGET_LANGUAGE" /> ভাষায় অনুবাদ করা হবে।</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> থেকে <ph name="TARGET_LANGUAGE" />-এ</translation>
-<translation id="1674542638006317838">আপনি দেখেন এমন পৃষ্ঠার সীমিত URL যেখানে <ph name="BEGIN_LINK" />পুরনো টেকনোলজি ইভেন্ট<ph name="END_LINK" /> চলছে।</translation>
 <translation id="1682696192498422849">আগে ছোট প্রান্ত</translation>
 <translation id="168693727862418163">এই নীতির মান সেটির স্কিমার সাথে যাচাই করা যায়নি, তাই সেটি উপেক্ষা করা হবে।</translation>
 <translation id="168841957122794586">সার্ভার সার্টিফিকেটে একটি দুর্বল ক্রিপ্টোগ্রাফিক কী আছে৷</translation>
@@ -1534,7 +1533,6 @@
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />"-এর জন্য মিলে যাওয়া সেরা ফলাফল</translation>
 <translation id="3789155188480882154">সাইজ ১৬</translation>
 <translation id="3789841737615482174">ইনস্টল করুন</translation>
-<translation id="3790417903123637354">কোনও সমস্যা হয়েছে। পরে আবার চেষ্টা করুন</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> ইঞ্চি)</translation>
 <translation id="3792826587784915501">কাল্ট এবং ইন্ডি সিনেমা</translation>
 <translation id="3793574014653384240">সম্প্রতি হওয়া ক্র্যাশের সংখ্যা এবং কারণ</translation>
@@ -2355,6 +2353,7 @@
 <translation id="5331585574693522196">ডিফল্ট হিসেবে সেট করুন</translation>
 <translation id="5332219387342487447">শিপিংয়ের মাধ্যম</translation>
 <translation id="5332769172018416402">মেসেজ করে অ্যাক্সেসের জন্য অনুরোধ করুন</translation>
+<translation id="5334013548165032829">বিস্তারিত সিস্টেম লগ</translation>
 <translation id="5334145288572353250">ঠিকানা সেভ করবেন?</translation>
 <translation id="5340250774223869109">অ্যাপ্লিকেশনটি ব্লক করা আছে</translation>
 <translation id="5342693890921195472">মিনিট আগে</translation>

@@ -139,6 +139,8 @@
 <translation id="571296537125272375">オフラインのため Chrome でアップデートを確認できません</translation>
 <translation id="5716154293141027663">他のアプリでタップしたリンクを Chrome で開くことができます</translation>
 <translation id="5808435672482059465">Chrome 履歴を表示</translation>
+<translation id="5833027901704861726">Chrome データの一部が <ph name="EMAIL" /> にまだ保存されていません。
+数分待ってからアカウントを切り替えてください。今すぐアカウントを切り替えると、このデータは削除されます。</translation>
 <translation id="5998675059699164418">Chrome を使用するためにログインするよう、組織が求めています。</translation>
 <translation id="6022659036123304283">Chrome を独自にカスタマイズ</translation>
 <translation id="6110625574506755980">Chrome の一部の機能は使用できなくなります。</translation>

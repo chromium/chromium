@@ -473,6 +473,7 @@
 <translation id="4169535189173047238">לא לאפשר</translation>
 <translation id="4172051516777682613">להציג תמיד</translation>
 <translation id="4181841719683918333">שפות</translation>
+<translation id="4184063163998877398">{count,plural, =1{יש סיסמה חלשה אחת ({count})}one{יש {count} סיסמאות חלשות}two{יש {count} סיסמאות חלשות}other{יש {count} סיסמאות חלשות}}</translation>
 <translation id="4195643157523330669">פתיחה בכרטיסייה חדשה</translation>
 <translation id="4197456013861852807">{count,plural, =1{‏פריט אחד ({count}) שמור רק במכשיר הזה. כדי להשתמש בו במכשירים אחרים, צריך לשמור אותו בחשבון Google עם הכתובת {email}.}one{‏{count} פריטים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google עם הכתובת {email}.}two{‏{count} פריטים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google עם הכתובת {email}.}other{‏{count} פריטים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google עם הכתובת {email}.}}</translation>
 <translation id="421070604241073551">‏כשההגדרה מופעלת, הנתונים נשמרים בחשבון שלך ב-Google. כשההגדרה מושבתת, הנתונים נשמרים רק במכשיר הזה.</translation>
@@ -664,6 +665,7 @@
 <translation id="5439618055789623719">נכנסת בתור <ph name="USER_EMAIL" /></translation>
 <translation id="5444892875087332195">סימניות</translation>
 <translation id="5454211924362324495">כדי למנוע מאנשים אחרים להשתמש בסיסמה שלך, <ph name="BEGIN_LINK" />עליך לשנות אותה באתר <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
+<translation id="5457082343331641453">הוספה טקסט לחיפוש</translation>
 <translation id="5478327362747197944">ניתן ליצור אירועים ישירות ביומן בלחיצה על תאריך בדף אינטרנט.</translation>
 <translation id="5482922178977937393">רוצה לקבל התראות לגבי חדשות, ספורט ועוד על סמך תחומי העניין שלך?</translation>
 <translation id="5483838506518938965">הכל מוכן</translation>
@@ -905,6 +907,7 @@
 <translation id="6732087373923685049">מצלמה</translation>
 <translation id="6746338529702829275">בדיקה של נתוני החשבון</translation>
 <translation id="6748108480210050150">מאת</translation>
+<translation id="6755200887046212842">נהל חשבונות</translation>
 <translation id="6779455296366983087">נתוני הגלישה יימחקו</translation>
 <translation id="6790502149545262384">בקרוב יוצגו סטוריז מהאתר <ph name="CHANNEL_NAME" /> בפתיחת כרטיסייה חדשה.</translation>
 <translation id="6800349425672670802">אפשר לגשת לכל הכרטיסיות הפתוחות דרך 'כלי למעבר בין כרטיסיות'.</translation>

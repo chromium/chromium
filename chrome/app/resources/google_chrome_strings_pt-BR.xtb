@@ -101,6 +101,7 @@
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2390624519615263404">Mostrar recursos de segurança</translation>
 <translation id="2401189691232800402">Sistema ChromeOS</translation>
+<translation id="2403703063067034158">Erro de inicialização: outra instância de configuração está sendo executada. Tente de novo mais tarde.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{unused plural form}=1{Uma ou mais extensões do Chrome estavam acessando 1 dispositivo HID}one{Uma ou mais extensões do Chrome estavam acessando # dispositivo HID}other{Uma ou mais extensões do Chrome estavam acessando # dispositivos HID}}</translation>
 <translation id="2424440923901031101">Esta extensão viola a política da Chrome Web Store e pode não ser segura. Remova do Chrome para que ela não apareça mais e altere seus dados nos sites que você visitar, incluindo suas informações pessoais.</translation>
 <translation id="2467438592969358367">O Google Chrome quer exportar suas senhas. Digite sua senha do Windows para permitir isso.</translation>
@@ -189,6 +190,7 @@
 <translation id="3503306920980160878">O Chrome precisa acessar seu local para compartilhá-lo com este site</translation>
 <translation id="3533694711092285624">Nenhuma senha salva. O Chrome poderá verificar suas senhas quando elas forem salvas.</translation>
 <translation id="3541482654983822893">Não foi possível verificar suas senhas. Tente novamente em 24 horas.</translation>
+<translation id="3556766595644676153">O Chrome pré-carrega páginas, deixando a navegação e a pesquisa mais rápidas.</translation>
 <translation id="3564543103555793392">Quando você faz login no Chrome, pode salvar favoritos, senhas e muito mais para usar no smartphone</translation>
 <translation id="3576528680708590453">O administrador do seu sistema configurou o Google Chrome para abrir um navegador alternativo ao acessar <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Sincronize e personalize o Chrome em todos os seus dispositivos</translation>
@@ -442,6 +444,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="7099479769133613710">Reinicializar para atualizar o &amp;ChromeOS</translation>
 <translation id="7100085796996987445">Para compartilhar a tela, permita a gravação de tela do Chrome nas "Preferências do sistema"</translation>
 <translation id="7106741999175697885">Gerenciador de tarefas - Google Chrome</translation>
+<translation id="7113423803153683764">O Chrome libera memória de guias inativas. Isso permite que essas guias e outros apps usem mais recursos do computador e mantém a velocidade do Chrome. Suas guias inativas são reativadas automaticamente quando você volta a elas.</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Uma nova atualização está disponível para o Chrome e será feita assim que você reiniciá-lo.}=1{Uma nova atualização está disponível para o Chrome e será feita assim que você reiniciá-lo. Sua janela anônima não será aberta novamente.}one{Uma nova atualização está disponível para o Chrome e será feita assim que você reiniciá-lo. Sua janela anônima não será aberta novamente.}other{Uma nova atualização está disponível para o Chrome e será feita assim que você reiniciá-lo. Suas # janelas anônimas não serão abertas novamente.}}</translation>
 <translation id="7155997830309522122">Se tiver mudado, edite a senha salva no Chrome para que ela seja igual à nova senha.</translation>
 <translation id="7161904924553537242">Bem-vindo ao Google Chrome</translation>
@@ -577,6 +580,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="8843389967774722327">O Chrome adiciona novos recursos com frequência para ajudar você a se organizar</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{O Chrome recomenda a remoção dela.}one{O Chrome recomenda a remoção dela.}other{O Chrome recomenda a remoção delas.}}</translation>
 <translation id="8862326446509486874">Você não tem os direitos adequados para instalação no nível do sistema. Tente executar o instalador novamente como administrador.</translation>
+<translation id="8877608230252444082">O Chrome economiza energia da bateria limitando atividades em segundo plano e efeitos visuais, como rolagem suave e frame rates de vídeos.</translation>
 <translation id="8908277254462331033">Mostrar recursos de segurança</translation>
 <translation id="8914504000324227558">Reiniciar o Google Chrome</translation>
 <translation id="8922193594870374009">Para enviar um número de <ph name="ORIGIN" /> ao seu smartphone Android, faça login no Chrome nos dois dispositivos.</translation>

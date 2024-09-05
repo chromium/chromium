@@ -387,7 +387,6 @@
 <translation id="1668071460721346172">Добијте е-порака</translation>
 <translation id="1671391448414634642">Отсега, страниците на <ph name="SOURCE_LANGUAGE" /> ќе се преведуваат на <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478">Од <ph name="SOURCE_LANGUAGE" /> на <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1674542638006317838">Ограничен список со URL-адреси на страниците што ги отворате на кои се случуваат <ph name="BEGIN_LINK" />настани со застарена технологија<ph name="END_LINK" />.</translation>
 <translation id="1682696192498422849">Прво краткиот раб</translation>
 <translation id="168693727862418163">Вредноста на правилото не може да се потврди според неговата шема и ќе биде игнорирана.</translation>
 <translation id="168841957122794586">Сертификатот на серверот содржи слаб криптографски клуч.</translation>
@@ -1533,7 +1532,6 @@
 <translation id="378611282717571199">Најдобри совпаѓања за „<ph name="SEARCH_QUERY" />“</translation>
 <translation id="3789155188480882154">Големина 16</translation>
 <translation id="3789841737615482174">Инсталирај</translation>
-<translation id="3790417903123637354">Нешто тргна наопаку. Обидете се повторно подоцна</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
 <translation id="3792826587784915501">Култни и независни филмови</translation>
 <translation id="3793574014653384240">Број на падови и причини за падовите што се случиле неодамна</translation>
@@ -2354,6 +2352,7 @@
 <translation id="5331585574693522196">Постави како стандардно</translation>
 <translation id="5332219387342487447">Метод на испорака</translation>
 <translation id="5332769172018416402">Побарајте со порака</translation>
+<translation id="5334013548165032829">Детални системски дневници</translation>
 <translation id="5334145288572353250">Да се зачува адресата?</translation>
 <translation id="5340250774223869109">Апликацијата е блокирана</translation>
 <translation id="5342693890921195472">пред # мин.</translation>

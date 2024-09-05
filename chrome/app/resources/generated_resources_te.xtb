@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="te">
 <translation id="1001033507375626788">ఈ నెట్‌వర్క్ మీతో షేర్ చేయబడింది</translation>
+<translation id="1001360573085135660">అనుమతిని టోగుల్ చేయడానికి క్లిక్ చేయండి.</translation>
 <translation id="1002085272681738789">ట్యాబ్ మళ్లీ యాక్టివేట్ చేయబడింది</translation>
 <translation id="1003088604756913841">కొత్త <ph name="APP" /> విండోలో లింక్‍ను తెరువు</translation>
 <translation id="100323615638474026">USB పరికరం (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -3297,6 +3298,7 @@
 <translation id="3333190335304955291">మీరు సెట్టింగ్‌లలో ఈ సర్వీస్‌ను ఆఫ్ చేయవచ్చు.</translation>
 <translation id="3333961966071413176">మొత్తం కాంటాక్ట్‌లు</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - చిత్రంలో చిత్రం మోడ్‌లో వీడియో ప్లే అవుతోంది</translation>
+<translation id="3335380372402547327">ఫ్లాష్ నోటిఫికేషన్‌లను ప్రివ్యూ చేయండి</translation>
 <translation id="3335947283844343239">మూసిన ట్యాబ్‌ను మళ్లీ తెరువు</translation>
 <translation id="3336855445806447827">ఖచ్చితంగా తెలియదు</translation>
 <translation id="3337568642696914359">ప్రోటోకాల్‌లను హ్యాండిల్ చేయడానికి సైట్‌లను అనుమతించకండి</translation>

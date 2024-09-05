@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mk">
 <translation id="1001033507375626788">Мрежава се споделува со вас</translation>
+<translation id="1001360573085135660">Кликнете за да ја овозможите/оневозможите дозволата.</translation>
 <translation id="1002085272681738789">Картичката е активна повторно</translation>
 <translation id="1003088604756913841">Отвори го линкот во нов прозорец на <ph name="APP" /></translation>
 <translation id="100323615638474026">USB-уред (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -3300,6 +3301,7 @@
 <translation id="3333190335304955291">Услугава може да ја исклучите во „Поставки“.</translation>
 <translation id="3333961966071413176">Сите контакти</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - видеото е пуштено во режимот „слика во слика“</translation>
+<translation id="3335380372402547327">Прегледајте ги известувањата со блиц</translation>
 <translation id="3335947283844343239">Повторно отвори затворена картичка</translation>
 <translation id="3336855445806447827">Не знам</translation>
 <translation id="3337568642696914359">Не им дозволувај на сајтовите да ракуваат со протоколи</translation>
@@ -10787,7 +10789,7 @@
 <translation id="876956356450740926">Пуштајте алатки за програмери, колачиња IDE и уредувачи. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Основен именик на екстензии</translation>
 <translation id="8771300903067484968">Заднината на почетната страница е ресетирана на стандардната заднина.</translation>
-<translation id="8773535891252326047">Линкот за нагласување е копиран</translation>
+<translation id="8773535891252326047">Линкот до нагласеното е копиран</translation>
 <translation id="8774379074441005279">Потврдете го враќањето</translation>
 <translation id="8774934320277480003">Маргина на врв</translation>
 <translation id="8775144690796719618">Неважечка URL-адреса</translation>

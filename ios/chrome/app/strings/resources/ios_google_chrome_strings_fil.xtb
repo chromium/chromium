@@ -139,6 +139,8 @@ Subukang maghintay nang ilang minuto bago mag-sign out. Kung magsa-sign out ka n
 <translation id="571296537125272375">Naka-offline, hindi matingnan ng Chrome kung may mga update</translation>
 <translation id="5716154293141027663">Buksan ang Chrome sa tuwing magta-tap ka sa mga link sa iba pang app</translation>
 <translation id="5808435672482059465">Tingnan ang Iyong History sa Chrome</translation>
+<translation id="5833027901704861726">Hindi pa nase-save sa <ph name="EMAIL" /> ang ilan sa iyong data sa Chrome.
+Subukang maghintay nang ilang minuto bago lumipat ng account. Kung lilipat ka ng account ngayon, made-delete ang data na ito.</translation>
 <translation id="5998675059699164418">Hinihiling sa iyo ng organisasyon mo na mag-sign in para magamit ang Chrome.</translation>
 <translation id="6022659036123304283">Gawing iyo ang Chrome</translation>
 <translation id="6110625574506755980">Hindi na magiging available ang ilang feature ng Chrome.</translation>
@@ -194,6 +196,7 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 <translation id="7394108421562933108">Maps sa Chrome</translation>
 <translation id="7400722733683201933">Tungkol sa Google Chrome</translation>
 <translation id="7466693328838535498">Sa box ng Mga Search Widget, ilagay ang salitang Chrome</translation>
+<translation id="7477056987201678345">Dine-delete ang data sa Chrome…</translation>
 <translation id="7492574581995589075">Ini-off ng iyong organisasyon ang kakayahang gumamit at mag-save ng data sa Chrome sa iyong Google Account. Sa device na ito lang mase-save ang mga bagong bookmark, password, at higit pa.</translation>
 <translation id="7581063337314642333">Bisitahin ang Tab Grid sa Chrome</translation>
 <translation id="7642373780953416937">Makatanggap ng mga alerto sa anumang isyu sa privacy o seguridad na awtomatikong dine-detect ng Chrome para sa iyo.</translation>

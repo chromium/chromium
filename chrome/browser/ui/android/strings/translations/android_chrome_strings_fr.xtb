@@ -1251,6 +1251,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6869056123412990582">ordinateur</translation>
 <translation id="6880903702195291049">Les autorisations semblent sûres</translation>
 <translation id="6883204995689174413">Partager</translation>
+<translation id="6883606786470492001">Gérez vos thèmes d'annonces et d'autres paramètres pour limiter ce que les sites peuvent apprendre à votre sujet afin de vous présenter des annonces personnalisées</translation>
 <translation id="6883906387682976294">Se désabonner des notifications de ce site</translation>
 <translation id="688398477366397178">Indiquez aux sites Web les langues que vous parlez. Ils afficheront du contenu dans ces langues, si possible.</translation>
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{Désabonné de 1 site}one{Désabonné de # site}other{Désabonné de # sites}}</translation>

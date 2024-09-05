@@ -387,7 +387,6 @@
 <translation id="1668071460721346172">Primește un e-mail</translation>
 <translation id="1671391448414634642">Paginile în <ph name="SOURCE_LANGUAGE" /> vor fi traduse în <ph name="TARGET_LANGUAGE" /> de acum înainte.</translation>
 <translation id="1674504678466460478">Din <ph name="SOURCE_LANGUAGE" /> în <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1674542638006317838">O listă limitată de adrese URL ale paginilor pe care le accesezi și unde au loc <ph name="BEGIN_LINK" />evenimente privind tehnologia veche<ph name="END_LINK" />.</translation>
 <translation id="1682696192498422849">Cu latura scurtă înainte</translation>
 <translation id="168693727862418163">Valoarea politicii nu s-a validat în raport cu schema și va fi ignorată.</translation>
 <translation id="168841957122794586">Certificatul de server conține o cheie criptografică slabă.</translation>
@@ -1533,7 +1532,6 @@
 <translation id="378611282717571199">Cele mai potrivite rezultate pentru „<ph name="SEARCH_QUERY" />”</translation>
 <translation id="3789155188480882154">Mărimea 16</translation>
 <translation id="3789841737615482174">Instalează</translation>
-<translation id="3790417903123637354">A apărut o eroare. Încearcă din nou mai târziu.</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
 <translation id="3792826587784915501">Filme cult și indie</translation>
 <translation id="3793574014653384240">Numărul și cauzele blocărilor apărute recent</translation>
@@ -2354,6 +2352,7 @@
 <translation id="5331585574693522196">Setează ca prestabilit</translation>
 <translation id="5332219387342487447">Metoda de expediere</translation>
 <translation id="5332769172018416402">Solicită într-un mesaj</translation>
+<translation id="5334013548165032829">Jurnale de sistem detaliate</translation>
 <translation id="5334145288572353250">Salvezi adresa?</translation>
 <translation id="5340250774223869109">Aplicația a fost blocată</translation>
 <translation id="5342693890921195472">acum min.</translation>

@@ -356,6 +356,7 @@
 <translation id="3311748811247479259">آف</translation>
 <translation id="3324193307694657476">پتہ 2</translation>
 <translation id="3328801116991980348">سائٹ کی معلومات</translation>
+<translation id="333229797575847124">اس خصوصیت کو فعال کرنے کا طریقہ</translation>
 <translation id="3344485292736684439">{count,plural, =1{بُک مارک کو آپ کے اکاؤنٹ {email} میں "{title}" میں محفوظ کیا گیا}other{بُک مارکس کو آپ کے اکاؤنٹ {email} میں "{title}" میں محفوظ کیا گیا}}</translation>
 <translation id="3348387552617855658">یہ کارڈ آپ کو اپنے پیکیجز پر نظر رکھنے، ساتھ ہی آپ کو اہم ڈیلیوری سے متعلق اپ ڈیٹس فراہم کرنے میں مدد کرتا ہے۔</translation>
 <translation id="3349676726073650389">‏آپ جن سائٹس اور تلاشوں کی پیروی کرتے ہیں وہ آپ کے Google اکاؤنٹ میں محفوظ کی جاتی ہیں۔ آپ کسی بھی وقت ترتیبات میں اپنی پیرویوں کا نظم کر سکتے ہیں۔</translation>
@@ -472,6 +473,7 @@
 <translation id="4169535189173047238">اجازت نہ دیں</translation>
 <translation id="4172051516777682613">ہمیشہ دکھائیں</translation>
 <translation id="4181841719683918333">زبانیں</translation>
+<translation id="4184063163998877398">{count,plural, =1{{count} کمزور پاس ورڈ}other{{count} کمزور پاس ورڈز}}</translation>
 <translation id="4195643157523330669">نئے ٹیب میں کھولیں</translation>
 <translation id="4197456013861852807">{count,plural, =1{‏{count} آئٹم صرف اس آلے پر محفوظ ہے۔ اسے اپنے دیگر آلات پر استعمال کرنے کیلئے، اسے اپنے Google اکاؤنٹ {email} میں محفوظ کریں۔}other{‏{count} آئٹمز صرف اس آلے پر محفوظ ہیں۔ انہیں اپنے دیگر آلات پر استعمال کرنے کیلئے، انہیں اپنے Google اکاؤنٹ، {email} میں محفوظ کریں۔}}</translation>
 <translation id="421070604241073551">‏آن ہونے پر، ڈیٹا آپ کے Google اکاؤنٹ میں محفوظ ہوتا ہے۔ آف ہونے پر، ڈیٹا صرف اس آلے میں محفوظ ہوتا ہے۔</translation>
@@ -600,6 +602,7 @@
 <translation id="5005498671520578047">پاس ورڈ کاپی کریں</translation>
 <translation id="5016420433031926653"><ph name="USER_EMAIL" /> پر بھیجیں</translation>
 <translation id="5017529052065664584">آخری 15 منٹ</translation>
+<translation id="5020732097997376541">"لینز آئیکن" پر تھپتھپائیں</translation>
 <translation id="5024511550058813796">آپ کو اپنے سِنک کردہ سبھی آلات پر اپنی سرگزشت دکھائی دیں گی تاکہ آپ کیا کر رہے تھے اسے جاری رکھ سکیں</translation>
 <translation id="5038113048373546701">اپنی دلچسپی کی بنیاد پر خبروں، کھیلوں اور بہت کچھ کے لیے اطلاعات موصول کریں</translation>
 <translation id="5039804452771397117">اجازت دیں</translation>
@@ -661,6 +664,7 @@
 <translation id="5439618055789623719"><ph name="USER_EMAIL" /> کے بطور سائن ان ہیں</translation>
 <translation id="5444892875087332195">بُک مارکس</translation>
 <translation id="5454211924362324495">دوسروں کو اپنا پاس ورڈ استعمال کرنے سے روکنے کے لیے، <ph name="BEGIN_LINK" />اسے <ph name="WEBSITE" /> پر تبدیل کریں<ph name="END_LINK" /></translation>
+<translation id="5457082343331641453">اپنی تلاش میں شامل کریں</translation>
 <translation id="5478327362747197944">ویب صفحہ میں کسی تاریخ پر کلک کر کے براہ راست کیلنڈر کے ایونٹس تخلیق کریں۔</translation>
 <translation id="5482922178977937393">کیا آپ اپنی دلچسپیوں کی بنیاد پر خبروں، اسپورٹس اور مزید کے لیے اطلاعات حاصل کرنا چاہیں گے؟</translation>
 <translation id="5483838506518938965">آپ پوری طرح سے تیار ہیں</translation>
@@ -902,6 +906,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6732087373923685049">کیمرا</translation>
 <translation id="6746338529702829275">اپنے اکاؤنٹ کے ڈیٹا کا جائزہ لیں</translation>
 <translation id="6748108480210050150">منجانب</translation>
+<translation id="6755200887046212842">اکاؤنٹس کا نظم کریں</translation>
 <translation id="6779455296366983087">آپ کا براؤزنگ ڈیٹا حذف کر دیا جائے گا</translation>
 <translation id="6790502149545262384">جلد ہی، نیا ٹیب کھولنے پر آپ کو <ph name="CHANNEL_NAME" /> سے کہانیاں دکھائی دیں گی۔</translation>
 <translation id="6800349425672670802">آپ ٹیب سوئچر سے اپنے تمام کھلے ہوئے ٹیبز تک رسائی حاصل کر سکتے ہیں۔</translation>
@@ -1254,6 +1259,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="9003677638446136377">دوبارہ چیک کریں</translation>
 <translation id="9008201768610948239">نظر انداز کریں</translation>
 <translation id="9012585441087414258">‏خطرناک مانی جانے والی ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے حفاظت کریں۔ صفحے میں کچھ مشکوک لگنے پر، صفحے کے مواد کے کچھ حصے اور URLs کو Google محفوظ براؤزنگ پر بھیجا جاتا ہے۔</translation>
+<translation id="9013605037177245304">اطلاعات آن کریں</translation>
 <translation id="9029650858822697271">آپ کو سائن آؤٹ کر دیا گیا</translation>
 <translation id="9034759925968272072">‏آپ اپنے Google اکاؤنٹ سے سائن آؤٹ نہیں ہوں گے۔ ممکن ہے کہ ‎<ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />‎ پر آپ کے Google اکاؤنٹ میں براؤزنگ کی سرگزشت کی دیگر شکلیں موجود ہوں۔</translation>
 <translation id="9039373489628511875">بینڈ وڈتھ</translation>

@@ -105,6 +105,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2359808026110333948">Pokračovat</translation>
 <translation id="2390624519615263404">Zobrazit bezpečnostní funkce</translation>
 <translation id="2401189691232800402">Systém ChromeOS</translation>
+<translation id="2403703063067034158">Chyba při spuštění: právě běží jiná instance instalace, zkuste to znovu později.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{1 zařízení HID bylo používáno jedním nebo více rozšířeními prohlížeče Chrome}=1{1 zařízení HID je používáno jedním nebo více rozšířeními prohlížeče Chrome}few{# zařízení HID jsou používána jedním nebo více rozšířeními prohlížeče Chrome}many{# zařízení HID je používáno jedním nebo více rozšířeními prohlížeče Chrome}other{# zařízení HID je používáno jedním nebo více rozšířeními prohlížeče Chrome}}</translation>
 <translation id="2424440923901031101">Toto rozšíření porušuje zásady Internetového obchodu Chrome a může být nebezpečné. Odstraňte ho z prohlížeče Chrome, aby již nemohlo číst a měnit data (včetně osobních údajů) na webech, které navštěvujete.</translation>
 <translation id="2467438592969358367">Google Chrome chce exportovat vaše hesla. Tato akce vyžaduje zadání hesla systému Windows.</translation>
@@ -193,6 +194,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="3503306920980160878">Chrome potřebuje přístup k vaší poloze, aby ji mohl sdílet s tímto webem</translation>
 <translation id="3533694711092285624">Nemáte žádná uložená hesla. Chrome může hesla zkontrolovat, pouze když si je uložíte.</translation>
 <translation id="3541482654983822893">Chrome nemůže zkontrolovat vaše hesla. Zkuste to znovu za 24 hodin.</translation>
+<translation id="3556766595644676153">Chrome načítá stránky předběžně, což zrychluje procházení a vyhledávání.</translation>
 <translation id="3564543103555793392">Když se do Chromu přihlásíte, můžete si ukládat záložky, hesla a další položky a pak je používat na telefonu</translation>
 <translation id="3576528680708590453">Administrátor systému nakonfiguroval prohlížeč Google Chrome tak, aby pro přístup k adrese <ph name="TARGET_URL_HOSTNAME" /> otevřel alternativní prohlížeč.</translation>
 <translation id="3582972582564653026">Synchronizujte a upravte si Chrome na různých zařízeních</translation>
@@ -449,6 +451,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="7099479769133613710">Znovu spustit a aktualizovat &amp;ChromeOS</translation>
 <translation id="7100085796996987445">Pokud chcete sdílet obrazovku, v Předvolbách systému povolte pro Chrome nahrávání obrazovky</translation>
 <translation id="7106741999175697885">Správce úloh - Google Chrome</translation>
+<translation id="7113423803153683764">Chrome uvolňuje paměť obsazenou neaktivními kartami. Aktivní karty a jiné aplikace tak mají k dispozici více výpočetních zdrojů a prohlížeč Chrome zůstává rychlý. Když se k neaktivním kartám vrátíte, automaticky se aktivují.</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Je k dispozici nová aktualizace Chromu, která bude použita po restartování.}=1{Je k dispozici nová aktualizace Chromu, která bude použita po restartování. Anonymní okno se neotevře znovu.}few{Je k dispozici nová aktualizace Chromu, která bude použita po restartování. # anonymní okna se neotevřou znovu.}many{Je k dispozici nová aktualizace Chromu, která bude použita po restartování. # anonymního okna se neotevře znovu.}other{Je k dispozici nová aktualizace Chromu, která bude použita po restartování. # anonymních oken se neotevře znovu.}}</translation>
 <translation id="7155997830309522122">Pokud ano, upravte uložené heslo v prohlížeči Chrome tak, aby odpovídalo novému heslu.</translation>
 <translation id="7161904924553537242">Vítá vás Google Chrome</translation>
@@ -584,6 +587,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="8843389967774722327">Chrome pravidelně přidává nové funkce, které vám pomohou dělat různé věci</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome vám doporučuje odstranit ho}few{Chrome vám doporučuje odstranit je}many{Chrome vám doporučuje odstranit je}other{Chrome vám doporučuje odstranit je}}</translation>
 <translation id="8862326446509486874">Nemáte práva nutná k provádění instalací na úrovni systému. Zkuste spustit instalační program jako správce.</translation>
+<translation id="8877608230252444082">Chrome šetří baterii tím, že omezuje aktivitu na pozadí a vizuální efekty, jako jsou plynulé posouvání a snímková frekvence videí.</translation>
 <translation id="8908277254462331033">Zobrazit bezpečnostní funkce</translation>
 <translation id="8914504000324227558">Znovu spustit Chrome</translation>
 <translation id="8922193594870374009">Chcete-li poslat číslo z webu <ph name="ORIGIN" /> na svůj telefon Android, v obou zařízeních se přihlaste do Chromu.</translation>

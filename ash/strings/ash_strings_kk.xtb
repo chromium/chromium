@@ -43,6 +43,7 @@
 <translation id="1150989369772528668">Күнтізбе</translation>
 <translation id="1153356358378277386">Жұпталған құрылғылар</translation>
 <translation id="1155734730463845512">Қазіргі батарея деңгейі: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">Жасампаз AI – эксперименттік жүйе, ол жасаған контент қате, жалған немесе намысқа тиетін болуы мүмкін. Мәселе туралы шағымдану үшін әкімшіге хабарласыңыз. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">қосулы және қолданыста</translation>
 <translation id="1163437384438183174">Сөреден Phone Hub-ты өшіру</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1923,6 +1924,7 @@
 <translation id="7613620083300976559">Ойынның басқару элементтерін қосу</translation>
 <translation id="761736749114493194">Камерамен кадрлауды ауыстыру. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7627303771480696593">Сұрақ қойыңыз</translation>
 <translation id="7634648064048557203">Камера төменгі оң жақ бұрышқа ауыстырылды.</translation>
 <translation id="7638572816805275740">Терезе скриншотын немесе экран жазбасын түсіру</translation>
 <translation id="7642106959537987271">түс инверсиясы режимі</translation>

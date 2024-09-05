@@ -473,6 +473,7 @@
 <translation id="4169535189173047238">اجازه داده نشود</translation>
 <translation id="4172051516777682613">همیشه نشان داده شود</translation>
 <translation id="4181841719683918333">زبان‌ها</translation>
+<translation id="4184063163998877398">{count,plural, =1{{count} گذرواژه ضعیف}one{{count} گذرواژه ضعیف}other{{count} گذرواژه ضعیف}}</translation>
 <translation id="4195643157523330669">باز کردن در برگهٔ جدید</translation>
 <translation id="4197456013861852807">{count,plural, =1{‏‫{count} مورد فقط در این دستگاه ذخیره شده است. برای استفاده از آن در دستگاه‌های دیگرتان، آن را در «حساب Google» خود ({email}) ذخیره کنید.}one{‏‫{count} مورد فقط در این دستگاه ذخیره شده است. برای استفاده از آن در دستگاه‌های دیگرتان، آن را در «حساب Google» خود ({email}) ذخیره کنید.}other{‏‫{count} مورد فقط در این دستگاه ذخیره شده است. برای استفاده از آن‌ها در دستگاه‌های دیگرتان، آن‌ها را در «حساب Google» خود ({email}) ذخیره کنید.}}</translation>
 <translation id="421070604241073551">‏وقتی روشن باشد، داده‌ها در «حساب Google» شما ذخیره می‌شود. وقتی خاموش باشد، داده‌ها فقط در این دستگاه ذخیره می‌شود.</translation>
@@ -664,6 +665,7 @@
 <translation id="5439618055789623719">ورود به سیستم با <ph name="USER_EMAIL" /></translation>
 <translation id="5444892875087332195">نشانک‌ها</translation>
 <translation id="5454211924362324495">برای اینکه دیگران از گذرواژه‌تان استفاده نکنند، <ph name="BEGIN_LINK" />آن را در <ph name="WEBSITE" /> تغییر دهید<ph name="END_LINK" /></translation>
+<translation id="5457082343331641453">افزودن به جستجو</translation>
 <translation id="5478327362747197944">با کلیک کردن روی تاریخ‌ها در صفحه وب، رویدادهای «تقویم» را مستقیماً ایجاد کنید.</translation>
 <translation id="5482922178977937393">مایلید برای اخبار، رویدادهای ورزشی، و موارد دیگر براساس علایقتان اعلان دریافت کنید؟</translation>
 <translation id="5483838506518938965">شما آماده‌اید!</translation>
@@ -905,6 +907,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6732087373923685049">دوربین</translation>
 <translation id="6746338529702829275">مرور داده‌های حساب</translation>
 <translation id="6748108480210050150">از</translation>
+<translation id="6755200887046212842">مدیریت حساب‌ها</translation>
 <translation id="6779455296366983087">داده‌های مرورتان حذف خواهد شد</translation>
 <translation id="6790502149545262384">به‌زودی وقتی برگه جدیدی باز می‌کنید، داستان‌هایی از <ph name="CHANNEL_NAME" /> خواهید دید.</translation>
 <translation id="6800349425672670802">از «تعویض‌کننده برگه» می‌توانید به همه برگه‌های باز خود دسترسی داشته باشید.</translation>

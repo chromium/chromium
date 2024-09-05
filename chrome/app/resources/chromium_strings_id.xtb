@@ -88,6 +88,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="2384373936468275798">ChromiumOS tidak dapat menyinkronkan data karena detail login akun Anda belum diperbarui.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Tidak ada perangkat HID yang diakses oleh ekstensi Chromium}=1{1 perangkat HID sedang diakses oleh satu atau beberapa ekstensi Chromium}other{# perangkat HID sedang diakses oleh satu atau beberapa ekstensi Chromium}}</translation>
 <translation id="2401032172288869980">Chromium memerlukan izin mikrofon dan kamera untuk situs ini</translation>
+<translation id="2403703063067034158">Error saat sistem dimulai: instance penyiapan lain sedang berjalan, coba lagi nanti.</translation>
 <translation id="2440750600860946460">Dengan <ph name="BEGIN_LINK" />alat dari Chromium<ph name="END_LINK" />, Anda dapat menjelajah dengan aman dan tetap memegang kendali</translation>
 <translation id="2451727308784734061">Gunakan pintasan Anda untuk mengakses Pengelola Sandi dengan cepat. Anda dapat memindahkan pintasan ke layar utama atau peluncur aplikasi di komputer.</translation>
 <translation id="2478295928299953161">Chromium akan segera ditutup</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ru">
 <translation id="1001033507375626788">У вас есть доступ к этой сети</translation>
+<translation id="1001360573085135660">Нажмите, чтобы включить или отключить разрешение.</translation>
 <translation id="1002085272681738789">Вкладка вновь активна</translation>
 <translation id="1003088604756913841">Открыть ссылку в новом окне приложения "<ph name="APP" />"</translation>
 <translation id="100323615638474026">USB-устройство (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -3288,6 +3289,7 @@
 <translation id="3333190335304955291">Эту функцию можно отключить в настройках.</translation>
 <translation id="3333961966071413176">Все контакты</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" />: видео воспроизводится в режиме "Картинка в картинке"</translation>
+<translation id="3335380372402547327">Предварительный просмотр уведомлений со вспышкой</translation>
 <translation id="3335947283844343239">Открыть закрытую вкладку</translation>
 <translation id="3336855445806447827">Не знаю</translation>
 <translation id="3337568642696914359">Запретить сайтам обрабатывать протоколы</translation>

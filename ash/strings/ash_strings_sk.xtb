@@ -43,6 +43,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1150989369772528668">Kalendár</translation>
 <translation id="1153356358378277386">Spárované zariadenia</translation>
 <translation id="1155734730463845512">Aktuálna úroveň batérie: <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="1157514002898505378">Generatívna umelá inteligencia je experimentálna a obsah môže byť nepresný, zavádzajúci alebo urážlivý. Kontaktujte svojho správcu a nahláste mu problém. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">zapnutá a používaná</translation>
 <translation id="1163437384438183174">Odstrániť Telefónne centrum z poličky</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1665,7 +1666,6 @@ Nová inštalácia</translation>
 <translation id="6665545700722362599">Udeľte webom, aplikáciám a rozšíreniam povolenie používať služby určovania polohy, mikrofón zariadenia, kameru alebo ďalšie funkcie</translation>
 <translation id="6667908387435388584">Pripojte sa k hotspotu telefónu, vypnite zvuk zariadenia, lokalizujte ho a zobrazte si nedávne karty Chromu otvorené v telefóne</translation>
 <translation id="6670153871843998651">3. plocha</translation>
-<translation id="6670904050959156521"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, <ph name="STATE" /></translation>
 <translation id="6671495933530132209">Kopírovať obrázok</translation>
 <translation id="6671661918848783005">Chromebook sa nedá odomknúť</translation>
 <translation id="6676552993057022464">Veľkosť rozdelenej obrazovky zmeníte šípkami nahor a nadol</translation>
@@ -1924,6 +1924,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="7613620083300976559">Zapnúť ovládanie hry</translation>
 <translation id="761736749114493194">Prepnúť centrovanie kamery. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7627303771480696593">Položiť otázku</translation>
 <translation id="7634648064048557203">Kamera bola prichytená do pravého dolného rohu</translation>
 <translation id="7638572816805275740">Vytvorenie snímky okna alebo záznamu obrazovky</translation>
 <translation id="7642106959537987271">režim inverzie farieb</translation>

@@ -1251,6 +1251,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6869056123412990582">számítógépén</translation>
 <translation id="6880903702195291049">Úgy tűnik, rendben vannak az engedélyek</translation>
 <translation id="6883204995689174413">Megosztás</translation>
+<translation id="6883606786470492001">Kezelheti a hirdetéstémákat és más beállításokat, hogy korlátozza, miket tudhassanak meg Önről a webhelyek azért, hogy aztán személyre szabott hirdetéseket jelenítsenek meg Önnek.</translation>
 <translation id="6883906387682976294">Az értesítésekről való leiratkozás ennél a webhelynél</translation>
 <translation id="688398477366397178">Jelezheti a webhelyeknek, hogy milyen nyelveken beszél. Amikor lehetséges, a webhelyek ezeken a nyelveken jelenítik meg a tartalmakat.</translation>
 <translation id="6885933993535178919">{NUM_SITES,plural, =1{Leiratkozott 1 webhelyről}other{Leiratkozott # webhelyről}}</translation>

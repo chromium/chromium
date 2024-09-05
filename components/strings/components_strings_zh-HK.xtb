@@ -243,7 +243,7 @@
 <translation id="1414134146594747368">幼兒園</translation>
 <translation id="1419305130220238697">管理 Chrome 嘅下載項目按鈕，啟動之後就可以管理您喺 Chrome 度下載嘅檔案</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />以允許配對</translation>
-<translation id="14222610277930434">你經常瀏覽</translation>
+<translation id="14222610277930434">經常瀏覽</translation>
 <translation id="1422930527989633628">可要求探索附近的藍牙裝置</translation>
 <translation id="1426410128494586442">是</translation>
 <translation id="1427192966110103169">家居游泳池、桑拿浴和水療</translation>
@@ -387,7 +387,6 @@
 <translation id="1668071460721346172">接收驗證電郵</translation>
 <translation id="1671391448414634642">從現在開始，來源語言為<ph name="SOURCE_LANGUAGE" />的網頁一律會翻譯成<ph name="TARGET_LANGUAGE" />。</translation>
 <translation id="1674504678466460478">從<ph name="SOURCE_LANGUAGE" />翻譯成<ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1674542638006317838">你瀏覽的網頁網址清單 (只列出發生<ph name="BEGIN_LINK" />舊版科技事件<ph name="END_LINK" />的網址)。</translation>
 <translation id="1682696192498422849">先從短邊開始</translation>
 <translation id="168693727862418163">此政策的值無法通過其綱要 (schema) 的驗證，因此會被忽略。</translation>
 <translation id="168841957122794586">伺服器憑證含有防護力薄弱的加密編譯金鑰。</translation>
@@ -901,7 +900,7 @@
 <translation id="2616412942031748191">搜尋引擎優化和推廣</translation>
 <translation id="2618206371527040026">學術會議和出版物</translation>
 <translation id="2619052155095999743">插入</translation>
-<translation id="2622754869869445457">你最近使用的分頁</translation>
+<translation id="2622754869869445457">最近使用的分頁</translation>
 <translation id="2625385379895617796">您時鐘的時間過快</translation>
 <translation id="262745152991669301">可要求連接 USB 裝置</translation>
 <translation id="2628224721443278970">登入 Microsoft OneDrive</translation>
@@ -1532,7 +1531,6 @@
 <translation id="378611282717571199">「<ph name="SEARCH_QUERY" />」的最相符項目</translation>
 <translation id="3789155188480882154">粗幼：16</translation>
 <translation id="3789841737615482174">安裝</translation>
-<translation id="3790417903123637354">發生錯誤，請稍後再試</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> 吋)</translation>
 <translation id="3792826587784915501">另類和獨立電影</translation>
 <translation id="3793574014653384240">最近發生的當機次數和原因</translation>
@@ -2353,6 +2351,7 @@
 <translation id="5331585574693522196">設定為預設</translation>
 <translation id="5332219387342487447">運送方式</translation>
 <translation id="5332769172018416402">透過訊息詢問</translation>
+<translation id="5334013548165032829">詳細系統記錄</translation>
 <translation id="5334145288572353250">要儲存地址嗎？</translation>
 <translation id="5340250774223869109">已封鎖應用程式</translation>
 <translation id="5342693890921195472">分鐘前</translation>
@@ -2421,7 +2420,7 @@
 <translation id="5465724643247062031">玻璃 (不透明)</translation>
 <translation id="5466018172325111652">沒有收到驗證碼嗎？<ph name="BEGIN_LINK" />取得新的驗證碼<ph name="END_LINK" /></translation>
 <translation id="5470861586879999274">重做編輯(&amp;R)</translation>
-<translation id="5472588168895083535">已封鎖手部追蹤功能</translation>
+<translation id="5472588168895083535">已封鎖手勢追蹤功能</translation>
 <translation id="547963486735802022">嘗試再次傳輸檔案</translation>
 <translation id="5481076368049295676">此內容可能會試圖在您的裝置上安裝危險的軟件，藉此竊取或刪除您的資料。<ph name="BEGIN_LINK" />仍要顯示<ph name="END_LINK" /></translation>
 <translation id="5481682542063333508">提供撰寫協助</translation>
@@ -3162,7 +3161,7 @@
 <translation id="6832753933931306326">已經填寫咗表格</translation>
 <translation id="6841864657731852591">凹版印刷滾筒</translation>
 <translation id="6842196666980060516">184 x 260 毫米</translation>
-<translation id="6844998850832008753">今次批准用手部追蹤功能</translation>
+<translation id="6844998850832008753">今次允許用手勢追蹤功能</translation>
 <translation id="6849023911358004088">管理安全設定按鈕，啟動之後就可以喺 Chrome 設定度管理安全瀏覽功能之類嘅功能</translation>
 <translation id="6852204201400771460">要重新載入應用程式嗎？</translation>
 <translation id="6857776781123259569">管理密碼…</translation>
@@ -4134,7 +4133,7 @@
 <translation id="8581064022803799721">此網頁已儲存在「<ph name="LAST_BOOKMARKS_FOLDER" />」中。</translation>
 <translation id="8586082901536468629">壁球和壁球用品</translation>
 <translation id="858637041960032120">新增電話號碼</translation>
-<translation id="8587100480629037893">唔批准用手部追蹤功能</translation>
+<translation id="8587100480629037893">唔允許用手勢追蹤功能</translation>
 <translation id="8589998999637048520">最佳品質</translation>
 <translation id="8590264442799989746"><ph name="HOST_NAME" /> 和其他主機名稱</translation>
 <translation id="8597726363542221027">二手車</translation>
@@ -4364,7 +4363,7 @@
 <translation id="9051072642122229460">咖啡及濃縮咖啡機</translation>
 <translation id="9053840549256861041">我們即將推出名為「廣告成效評估」的全新廣告私隱功能。Chrome 只會在網站間分享非常有限的資料 (例如向使用者放送廣告的時段)，以協助網站評估廣告成效。</translation>
 <translation id="9053955920216300738">你瀏覽的網址</translation>
-<translation id="9054288282721240609">批准用手部追蹤功能</translation>
+<translation id="9054288282721240609">允許用手勢追蹤功能</translation>
 <translation id="9056953843249698117">商店</translation>
 <translation id="9062620674789239642">此檔案可能已被移動、編輯或刪除。</translation>
 <translation id="9063398205799684336">Kaku 2 信封</translation>

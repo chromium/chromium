@@ -293,6 +293,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1507202001669085618">&lt;p&gt;Vedrai questo errore se stai utilizzando un portale Wi-Fi che richiede l'accesso per poterti connettere a Internet.&lt;/p&gt;
     &lt;p&gt;Per risolvere il problema, fai clic su &lt;strong&gt;Connetti&lt;/strong&gt; nella pagina che stai cercando di aprire.&lt;/p&gt;</translation>
 <translation id="1513706915089223971">Elenco di voci della cronologia</translation>
+<translation id="1515436033764190215">h fa</translation>
 <translation id="151720253492607760">Continua a non consentire</translation>
 <translation id="1517433312004943670">Numero di telefono obbligatorio</translation>
 <translation id="1519264250979466059">Data build</translation>
@@ -386,7 +387,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1668071460721346172">Ricevi un'email</translation>
 <translation id="1671391448414634642">D'ora in poi, le pagine in <ph name="SOURCE_LANGUAGE" /> verranno tradotte in <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1674504678466460478">Da <ph name="SOURCE_LANGUAGE" /> a <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="1674542638006317838">Un elenco limitato di URL di pagine visitate in cui si verificano <ph name="BEGIN_LINK" />eventi tecnologici legacy<ph name="END_LINK" />.</translation>
 <translation id="1682696192498422849">Prima il lato corto</translation>
 <translation id="168693727862418163">Impossibile convalidare il valore del criterio in base al relativo schema. Il valore verrà ignorato.</translation>
 <translation id="168841957122794586">Il certificato del server contiene una chiave crittografica debole.</translation>
@@ -749,6 +749,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2337852623177822836">Impostazione controllata dall'amministratore</translation>
 <translation id="2340263603246777781">Il sito <ph name="ORIGIN" /> desidera accoppiarsi</translation>
 <translation id="2346319942568447007">Immagine copiata</translation>
+<translation id="2348509731468399833">Monitoraggio del prezzo interrotto.</translation>
 <translation id="2349957959687031096">Pulsante Apri scheda di navigazione in incognito, attiva per aprire una nuova scheda di navigazione in incognito per navigare in privato</translation>
 <translation id="2350796302381711542">Consentire a <ph name="HANDLER_HOSTNAME" /> di aprire tutti i link <ph name="PROTOCOL" /> al posto di <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2353297238722298836">Videocamera e microfono consentiti</translation>
@@ -912,6 +913,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2651465929321991146">Cronologia e schede</translation>
 <translation id="2653659639078652383">Invia</translation>
 <translation id="2655752832536625875">Bagno</translation>
+<translation id="2656194288057285221">Pulsante chiusura suggerimento di Chrome, premi Invio per chiudere</translation>
 <translation id="2657637947725373811">{0,plural, =1{Vuoi trasferire il file riservato?}other{Vuoi trasferire i file riservati?}}</translation>
 <translation id="2658843814961855121">Normative sul lavoro</translation>
 <translation id="2660779039299703961">Evento</translation>
@@ -1248,6 +1250,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3324983252691184275">Cremisi</translation>
 <translation id="3325027355611702542">Camper e caravan</translation>
 <translation id="3325568918769906282">in ordine decrescente</translation>
+<translation id="3325662270238538525">Accessi e modifiche recenti ai file, inclusi nomi dei file, impronte digitali dei contenuti dei file, origine del download e metadati</translation>
 <translation id="3329013043687509092">Saturazione</translation>
 <translation id="3333762389743153920">Non idonea per carta virtuale</translation>
 <translation id="3336044043987989409">Premi il pulsante Ricarica per consentire la connessione a dispositivi o server sulla tua rete privata.</translation>
@@ -1526,7 +1529,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="378611282717571199">I risultati più pertinenti per "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="3789155188480882154">Dimensione 16</translation>
 <translation id="3789841737615482174">Installa</translation>
-<translation id="3790417903123637354">Si è verificato un problema. Riprova più tardi.</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
 <translation id="3792826587784915501">Film cult e indie</translation>
 <translation id="3793574014653384240">Numero e cause degli arresti anomali che si sono verificati di recente</translation>
@@ -2347,8 +2349,10 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5331585574693522196">Imposta come predefinito</translation>
 <translation id="5332219387342487447">Modalità di spedizione</translation>
 <translation id="5332769172018416402">Chiedi in un messaggio</translation>
+<translation id="5334013548165032829">Log di sistema dettagliati</translation>
 <translation id="5334145288572353250">Vuoi salvare l'indirizzo?</translation>
 <translation id="5340250774223869109">L'applicazione è bloccata</translation>
+<translation id="5342693890921195472">min fa</translation>
 <translation id="534295439873310000">Dispositivi NFC</translation>
 <translation id="5344522958567249764">Gestisci privacy per gli annunci</translation>
 <translation id="5344579389779391559">Questa pagina potrebbe tentare di addebitarti dei costi</translation>
@@ -2818,6 +2822,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6228346913624365233">Veicoli di lusso</translation>
 <translation id="6229196330202833460">Streaming di film e programmi TV</translation>
 <translation id="6234122620015464377">Taglia le pagine dopo la stampa di ciascun documento</translation>
+<translation id="6234310016144827337">Controlla la connessione e riprova</translation>
 <translation id="6236290670123303279">Gestisci impostazioni</translation>
 <translation id="623825323736974198">Gestisci i siti che rimarranno sempre attivi e che non verranno rimossi dalla memoria</translation>
 <translation id="6240447795304464094">Logo Google Pay</translation>
@@ -3635,6 +3640,7 @@ Ulteriori dettagli:
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, scade il giorno <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">Spedizione</translation>
 <translation id="7682451652090915298">Rugby</translation>
+<translation id="768344142657640519">Appena visitato</translation>
 <translation id="7684683146428206649">Metallo</translation>
 <translation id="7684817988830401358">Pulsante Elimina dati di navigazione, attiva per eliminare la cronologia di navigazione, i cookie e altri dati e svuotare la cache nelle impostazioni di Chrome</translation>
 <translation id="7684928361160505327">{0,plural, =1{Blocco del file <ph name="FILE_NAME" /> a causa di una norma}other{Blocco di <ph name="FILE_COUNT" /> file a causa di una norma}}</translation>
@@ -3654,6 +3660,7 @@ Ulteriori dettagli:
 <translation id="7705992072972338699">Disco ottico (lucido)</translation>
 <translation id="7706689436519265630">I file copiati o spostati vengono inviati a Google Cloud o a terze parti per essere analizzati. Ad esempio, potrebbero essere sottoposti a scansione per rilevare dati sensibili o malware e archiviati in base ai criteri aziendali.</translation>
 <translation id="7709911732293795808">Assicurazioni</translation>
+<translation id="7714351089363296478">Appena visitato</translation>
 <translation id="7714404809393719981">Foto (semilucida)</translation>
 <translation id="7714424966701020172">È stata selezionata l'opzione per inserire il nome completo</translation>
 <translation id="7714464543167945231">Certificato</translation>

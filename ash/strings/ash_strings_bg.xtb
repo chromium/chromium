@@ -43,6 +43,7 @@
 <translation id="1150989369772528668">Календар</translation>
 <translation id="1153356358378277386">Сдвоени устройства</translation>
 <translation id="1155734730463845512">Текущо ниво на батерията: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="1157514002898505378">Генеративният AI е експериментален и съдържанието може да е неточно, подвеждащо или обидно. Свържете се с администратора си, за да подадете сигнал за проблем. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">вкл. и се използва</translation>
 <translation id="1163437384438183174">Премахване на Phone Hub от лентата</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1665,7 +1666,6 @@
 <translation id="6665545700722362599">да разрешава на уебсайтове, приложения и разширения да използват услугите за местоположение и микрофона, камерата или други функции на устройството;</translation>
 <translation id="6667908387435388584">Свързвайте се с точката за достъп на телефона си, заглушавайте и намирайте устройството си и преглеждайте наскоро отворените на телефона ви раздели на Chrome</translation>
 <translation id="6670153871843998651">Работен кът 3</translation>
-<translation id="6670904050959156521"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, <ph name="STATE" /></translation>
 <translation id="6671495933530132209">Копиране на изображението</translation>
 <translation id="6671661918848783005">Chromebook не може да се отключи</translation>
 <translation id="6676552993057022464">Използвайте стрелките за нагоре и надолу, за да преоразмерите разделения екран</translation>
@@ -1924,6 +1924,7 @@
 <translation id="7613620083300976559">Включване на игровите контроли</translation>
 <translation id="761736749114493194">Превключване на функцията за центриране на камерата. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
+<translation id="7627303771480696593">Задайте въпрос</translation>
 <translation id="7634648064048557203">Картината от камерата е прилепена към долния десен ъгъл</translation>
 <translation id="7638572816805275740">Създаване на екранна снимка на прозорец или записване на прозорец</translation>
 <translation id="7642106959537987271">режим на инвертиране на цветовете</translation>

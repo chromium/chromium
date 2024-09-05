@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
 <translation id="1001033507375626788">Aquesta xarxa està compartida amb tu</translation>
+<translation id="1001360573085135660">Fes clic per commutar el permís.</translation>
 <translation id="1002085272681738789">La pestanya torna a estar activa</translation>
 <translation id="1003088604756913841">Obre l'enllaç en una nova finestra de l'aplicació <ph name="APP" /></translation>
 <translation id="100323615638474026">Dispositiu USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -3284,6 +3285,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3333190335304955291">Pots desactivar aquest servei a Configuració.</translation>
 <translation id="3333961966071413176">Tots els contactes</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" />: s'està reproduint el vídeo en mode d'imatge sobre imatge</translation>
+<translation id="3335380372402547327">Previsualitza les notificacions amb flaix</translation>
 <translation id="3335947283844343239">Torna a obrir la pestanya tancada</translation>
 <translation id="3336855445806447827">No ho sé</translation>
 <translation id="3337568642696914359">No permetis que els llocs web gestionin protocols</translation>

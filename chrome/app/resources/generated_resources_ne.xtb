@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
 <translation id="1001033507375626788">यो इन्टरनेट तपाईंसँग सेयर गरिएको छ</translation>
+<translation id="1001360573085135660">अनुमति टगल गर्न क्लिक गर्नुहोस्</translation>
 <translation id="1002085272681738789">यो ट्याब फेरि सक्रिय भएको छ</translation>
 <translation id="1003088604756913841">लिंकलाई नयाँ <ph name="APP" /> विन्डोमा खोल्नुहोस्</translation>
 <translation id="100323615638474026">USB डिभाइस (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -3282,6 +3283,7 @@
 <translation id="3333190335304955291">तपाईं सेटिङमा गई यो सेवालाई निष्क्रिय पार्न सक्नुहुन्छ।</translation>
 <translation id="3333961966071413176">सबै कन्ट्याक्टहरू</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - भिडियो Picture-in-Picture मोडमा प्ले हुँदै छ</translation>
+<translation id="3335380372402547327">सूचनाहरू आउँदा फ्ल्यास हुने सुविधाको प्रिभ्यू हेर्नुहोस्</translation>
 <translation id="3335947283844343239">बन्द गरिएको ट्याब पुन: खोल्नुहोस्</translation>
 <translation id="3336855445806447827">निश्चित छैन</translation>
 <translation id="3337568642696914359">साइटहरूलाई प्रोटोकोल व्यवस्थापन गर्ने अनुमति नदिनुहोस्</translation>

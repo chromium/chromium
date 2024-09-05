@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
 <translation id="1001033507375626788">Tato síť je s vámi sdílena</translation>
+<translation id="1001360573085135660">Kliknutím přepnete oprávnění.</translation>
 <translation id="1002085272681738789">Karta je opět aktivní</translation>
 <translation id="1003088604756913841">Otevřít odkaz v novém okně aplikace <ph name="APP" /></translation>
 <translation id="100323615638474026">Zařízení USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -3286,6 +3287,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3333190335304955291">Tuto službu můžete vypnout v Nastavení.</translation>
 <translation id="3333961966071413176">Všechny kontakty</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – video se přehrává v režimu obrazu v obraze</translation>
+<translation id="3335380372402547327">Zobrazit náhled světelných oznámení</translation>
 <translation id="3335947283844343239">Znovu otevřít zavřenou kartu</translation>
 <translation id="3336855445806447827">Nevím</translation>
 <translation id="3337568642696914359">Nepovolovat webům zpracovávat protokoly</translation>

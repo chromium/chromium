@@ -473,6 +473,7 @@
 <translation id="4169535189173047238">अनुमती देऊ नका</translation>
 <translation id="4172051516777682613">नेहमी दर्शवा</translation>
 <translation id="4181841719683918333">भाषा</translation>
+<translation id="4184063163998877398">{count,plural, =1{{count} कमकुवत पासवर्ड}other{{count} कमकुवत पासवर्ड}}</translation>
 <translation id="4195643157523330669">नवीन टॅबमध्ये उघडा</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} आयटम फक्त या डिव्हाइसवर सेव्ह केला आहे. तो इतर डिव्हाइसवर वापरण्यासाठी, तुमच्या {email} या Google खाते मध्ये सेव्ह करा.}other{{count} आयटम फक्त या डिव्हाइसवर सेव्ह केले आहेत. ते इतर डिव्हाइसवर वापरण्यासाठी, तुमच्या {email} या Google खाते मध्ये सेव्ह करा.}}</translation>
 <translation id="421070604241073551">सुरू असते, तेव्हा डेटा तुमच्या Google खाते मध्ये सेव्ह होतो. बंद असेल, तेव्हा डेटा फक्त या डिव्हाइसमध्ये सेव्ह केला जातो.</translation>
@@ -664,6 +665,7 @@
 <translation id="5439618055789623719"><ph name="USER_EMAIL" /> म्हणून साइन इन केले आहे</translation>
 <translation id="5444892875087332195">बुकमार्क</translation>
 <translation id="5454211924362324495">इतरांना तुमचा पासवर्ड वापरण्यापासून थांबवण्यासाठी, तो<ph name="BEGIN_LINK" /><ph name="WEBSITE" /> वर बदलणे<ph name="END_LINK" /> हे करा</translation>
+<translation id="5457082343331641453">तुमच्या शोधामध्ये जोडा</translation>
 <translation id="5478327362747197944">वेब पेजवरील तारखेवर क्लिक करून थेट कॅलेंडर इव्हेंट तयार करा.</translation>
 <translation id="5482922178977937393">तुम्हाला तुमच्या स्वारस्यांवर आधारित बातम्या, क्रीडा आणि आणखी बऱ्याच गोष्टींसाठी सूचना मिळवायच्या आहेत का?</translation>
 <translation id="5483838506518938965">तुम्ही पूर्णपणे तयार आहात</translation>
@@ -906,6 +908,7 @@
 <translation id="6732087373923685049">कॅमेरा</translation>
 <translation id="6746338529702829275">तुमच्या खाते डेटाचे पुनरावलोकन करा</translation>
 <translation id="6748108480210050150">प्रेषक</translation>
+<translation id="6755200887046212842">खाती व्यवस्थापित करा</translation>
 <translation id="6779455296366983087">तुमचा ब्राउझिंग डेटा हटवला जाईल</translation>
 <translation id="6790502149545262384">लवकरच, तुम्ही नवीन टॅब उघडल्यानंतर तुम्हाला <ph name="CHANNEL_NAME" /> वरील स्टोरी दिसतील.</translation>
 <translation id="6800349425672670802">तुम्ही टॅब स्विचर मधून तुमचे सर्व उघडे असलेले टॅब अ‍ॅक्सेस करू शकता.</translation>

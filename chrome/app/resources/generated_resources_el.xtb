@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="el">
 <translation id="1001033507375626788">Γίνεται κοινή χρήση αυτού του δικτύου με εσάς</translation>
+<translation id="1001360573085135660">Κάντε κλικ για εναλλαγή της άδειας.</translation>
 <translation id="1002085272681738789">Η καρτέλα είναι ξανά ενεργή</translation>
 <translation id="1003088604756913841">Άνοιγμα Συνδέσμου σε νέο παράθυρο <ph name="APP" /></translation>
 <translation id="100323615638474026">Συσκευή USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -3299,6 +3300,7 @@
 <translation id="3333190335304955291">Μπορείτε να απενεργοποιήσετε αυτή την υπηρεσία από τις Ρυθμίσεις.</translation>
 <translation id="3333961966071413176">Όλες οι επαφές</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Αναπαραγωγή βίντεο στη λειτουργία picture-in-picture</translation>
+<translation id="3335380372402547327">Προεπισκόπηση ειδοποιήσεων με λάμψη</translation>
 <translation id="3335947283844343239">Εκ Νέου Άνοιγμα Κλεισμένης Καρτέλας</translation>
 <translation id="3336855445806447827">Ίσως</translation>
 <translation id="3337568642696914359">Να μην επιτρέπεται στους ιστοτόπους να χειρίζονται πρωτόκολλα</translation>

@@ -43,6 +43,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1150989369772528668">Calendario</translation>
 <translation id="1153356358378277386">Dispositivos sincronizados</translation>
 <translation id="1155734730463845512">Nivel de batería actual: <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="1157514002898505378">A IA xenerativa ten carácter experimental, polo que o contido pode ser impreciso, enganoso ou ofensivo. Ponte en contacto coa persoa administradora para informar dun problema. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">activada e en uso</translation>
 <translation id="1163437384438183174">Quita O meu teléfono do andel</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
@@ -1666,7 +1667,6 @@ Nova instalación</translation>
 <translation id="6665545700722362599">Conceder permiso aos sitios web, as aplicacións e as extensións para utilizar funcións como os servizos de localización, o micrófono do dispositivo ou a cámara.</translation>
 <translation id="6667908387435388584">Conéctate á zona wifi do teléfono, silencia e localiza o teu dispositivo, e accede ás pestanas de Chrome que se abriron recentemente no teu teléfono</translation>
 <translation id="6670153871843998651">Escritorio 3</translation>
-<translation id="6670904050959156521"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, <ph name="STATE" /></translation>
 <translation id="6671495933530132209">Copiar imaxe</translation>
 <translation id="6671661918848783005">Non se puido desbloquear o Chromebook</translation>
 <translation id="6676552993057022464">Utiliza as frechas arriba e abaixo para cambiar o tamaño da pantalla dividida</translation>
@@ -1925,6 +1925,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7613620083300976559">Activar os controis de xogo</translation>
 <translation id="761736749114493194">Activar/desactivar zoom automático. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
+<translation id="7627303771480696593">Fai unha pregunta</translation>
 <translation id="7634648064048557203">Cámara axustada á esquina inferior dereita</translation>
 <translation id="7638572816805275740">Fai unha captura de pantalla da ventá ou grava a pantalla</translation>
 <translation id="7642106959537987271">modo de inversión da cor</translation>

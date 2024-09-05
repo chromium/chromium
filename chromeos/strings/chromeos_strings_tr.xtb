@@ -76,6 +76,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Tarama alanına sığdır</translation>
 <translation id="1343442362630695901">tuz gölü</translation>
+<translation id="1348657754632799065">Kayıt çubuğu</translation>
 <translation id="1367951781824006909">Dosya seç</translation>
 <translation id="1371650399987522809">Google Yapay Zeka destekli duvar kağıdı ile ilgili geri bildirim</translation>
 <translation id="1374385338586507108">Tanımla</translation>
@@ -99,6 +100,7 @@
 <translation id="1449035143498573192">Google Arama'da açın</translation>
 <translation id="1451536289672181509">Cihazın türü klavye.</translation>
 <translation id="1452939186874918380">şemsiyeler</translation>
+<translation id="145402479967797468">Oynatma kontrolleri</translation>
 <translation id="1459693405370120464">Hava durumu</translation>
 <translation id="1463084054301832672">kulübe</translation>
 <translation id="1468664791493211953">Teklifler</translation>
@@ -264,6 +266,7 @@
 <translation id="2212733584906323460">Ad Çözümlemesi</translation>
 <translation id="2215920961700443347">İnternet yok. İnternete bağlanıp tekrar deneyin.</translation>
 <translation id="2217935453350629363">Şu anki hız</translation>
+<translation id="221994303562837085">Kaydı durdur</translation>
 <translation id="2224337661447660594">İnternet bağlantısı yok</translation>
 <translation id="222447520299472966">En az bir Sanat galerisi albümü seçilmelidir</translation>
 <translation id="2230005943220647148">Santigrat</translation>
@@ -326,6 +329,7 @@
 <translation id="2533048460510040082">Önerilen yardım içeriği</translation>
 <translation id="2536159006530886390">İnternete bağlanamıyor.</translation>
 <translation id="2538719227433767804">+<ph name="NUM_HIDDEN_OPTIONS" /> tane daha</translation>
+<translation id="2560876255701405320">Ses kayıtlarının listesi</translation>
 <translation id="2561093647892030937">limonlar</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> adlı test çalıştırılıyor...</translation>
 <translation id="2575552334616524665">Bu özelliği Ayarlar'dan veya <ph name="THREE_DOTS_MENU_ICON" /> menüsünden açabilirsiniz</translation>
@@ -518,6 +522,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> yorum)</translation>
 <translation id="3748026146096797577">Bağlı Değil</translation>
 <translation id="3749289110408117711">Dosya adı</translation>
+<translation id="3767737419527918477">Kayıt dosyalarını ara</translation>
 <translation id="3771294271822695279">Video Dosyaları</translation>
 <translation id="3780740315729837296">Klavye tuşu atayın</translation>
 <translation id="3784455785234192852">Kilitle</translation>

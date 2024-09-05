@@ -473,6 +473,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4169535189173047238">No permetis</translation>
 <translation id="4172051516777682613">Mostra sempre</translation>
 <translation id="4181841719683918333">Idiomes</translation>
+<translation id="4184063163998877398">{count,plural, =1{{count} contrasenya poc segura}other{{count} contrasenyes poc segures}}</translation>
 <translation id="4195643157523330669">Obre en una pestanya nova</translation>
 <translation id="4197456013861852807">{count,plural, =1{{count} element s'ha desat només en aquest dispositiu. Per utilitzar-lo en altres dispositius, desa'l al teu Compte de Google {email}.}other{{count} elements s'han desat només en aquest dispositiu. Per utilitzar-los en altres dispositius, desa'ls al teu Compte de Google {email}.}}</translation>
 <translation id="421070604241073551">Si aquesta opció està activada, les dades es desen al teu Compte de Google. Si està desactivada, les dades només es desen en aquest dispositiu.</translation>
@@ -664,6 +665,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="5439618055789623719">Has iniciat la sessió com a <ph name="USER_EMAIL" /></translation>
 <translation id="5444892875087332195">Adreces d'interès</translation>
 <translation id="5454211924362324495">Per evitar que altres persones utilitzin la teva contrasenya, <ph name="BEGIN_LINK" />canvia-la a <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
+<translation id="5457082343331641453">Afegeix a la cerca</translation>
 <translation id="5478327362747197944">Crea esdeveniments del calendari directament fent clic en una data d'una pàgina web.</translation>
 <translation id="5482922178977937393">Vols rebre notificacions de notícies, esports i més temes segons els teus interessos?</translation>
 <translation id="5483838506518938965">Ja esteu a punt</translation>
@@ -905,6 +907,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="6732087373923685049">càmera</translation>
 <translation id="6746338529702829275">Revisa les dades del compte</translation>
 <translation id="6748108480210050150">De</translation>
+<translation id="6755200887046212842">Gestiona els comptes</translation>
 <translation id="6779455296366983087">Les dades de navegació se suprimiran</translation>
 <translation id="6790502149545262384">Aviat, quan obris una pestanya nova, veuràs històries de: <ph name="CHANNEL_NAME" />.</translation>
 <translation id="6800349425672670802">Pots accedir a totes les pestanyes obertes des del selector de pestanyes.</translation>

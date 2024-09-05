@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
 <translation id="1001033507375626788">Ibinabahagi sa iyo ang network na ito</translation>
+<translation id="1001360573085135660">I-click para i-toggle ang pahintulot.</translation>
 <translation id="1002085272681738789">Aktibo ulit ang tab</translation>
 <translation id="1003088604756913841">Buksan ang Link sa bagong Window ng <ph name="APP" /></translation>
 <translation id="100323615638474026">USB device (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -3300,6 +3301,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3333190335304955291">Puwede mong i-off ang serbisyong ito sa Mga Setting.</translation>
 <translation id="3333961966071413176">Lahat ng contact</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Nagpe-play ang video sa picture-in-picture mode</translation>
+<translation id="3335380372402547327">I-preview ang mga flash notification</translation>
 <translation id="3335947283844343239">Muling buksan ang Nakasarang Tab</translation>
 <translation id="3336855445806447827">Hindi sigurado</translation>
 <translation id="3337568642696914359">Huwag payagan ang mga site na mangasiwa ng mga protocol</translation>

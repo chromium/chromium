@@ -8240,6 +8240,7 @@ Wichtiger Hinweis: Die durch diese Richtlinie festgelegten Zeitpläne werden mö
 
       Diese Richtlinien sind nur aktiv, wenn der Chrome Remote Desktop-Host installiert ist.</translation>
 <translation id="7202925763179776247">Download-Einschränkungen zulassen</translation>
+<translation id="7203243973351251622">Rekorder (wird seit Version 130 unterstützt)</translation>
 <translation id="7207095846245296855">Google SafeSearch erzwingen</translation>
 <translation id="7211368186050418507">Zeitzone nie automatisch erkennen</translation>
 <translation id="721617466745658461">Nutzern erlauben, das <ph name="LACROS_NAME" />-Binärprogramm des Browsers auszuwählen</translation>
@@ -8508,6 +8509,7 @@ Ist die Richtlinie nicht konfiguriert, entspricht dies der Einstellung „<ph na
 
       Wenn die Richtlinie nicht konfiguriert ist, betragen die Intervalle standardmäßig 3 Minuten.</translation>
 <translation id="7469554574977894907">Suchvorschläge aktivieren</translation>
+<translation id="7471938371309017725">Die Kamera, Browser- und Betriebssystemeinstellungen sowie Scan-, Web Store-, Canvas-, Entdecken-, Crosh-, Galerie-, Terminal- und Rekorder-Funktionen deaktivieren</translation>
 <translation id="7472547030234093862">Domains angeben, die mit DNS‑over‑HTTPS aufgelöst werden sollen</translation>
 <translation id="747275827471712187">Auf diesen Websites das alte "<ph name="ATTRIBUTE_SAMESITE_NAME" />"-Verhalten für Cookies wiederherstellen</translation>
 <translation id="7476030153540156377">Auswählen, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Funktion „IP-Schutz“ aktiviert werden soll.</translation>
