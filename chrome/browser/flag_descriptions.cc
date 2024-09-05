@@ -272,9 +272,8 @@ const char kFontationsFontBackendDescription[] =
 
 const char kAvifGainmapHdrImagesName[] = "AVIF gainmap HDR image rendering";
 const char kAvifGainmapHdrImagesDescription[] =
-    "If enabled, and the 'Gainmap HDR image rendering' flag is also enabled, "
-    "Chrome uses the gainmap (if present) in AVIF images to render the HDR "
-    "version on HDR displays and the SDR version on SDR displays.";
+    "If enabled, Chrome uses the gainmap (if present) in AVIF images to render "
+    "the HDR version on HDR displays and the SDR version on SDR displays.";
 
 const char kCrabbyAvifName[] = "CrabbyAvif for decoding AVIF images";
 const char kCrabbyAvifDescription[] =
