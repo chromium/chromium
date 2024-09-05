@@ -497,7 +497,7 @@ FilePath GetUniquePath(const FilePath& path) {
 }
 
 FilePath GetUniquePathWithSuffixFormat(const FilePath& path,
-                                       cstring_view suffix_format) {
+                                       std::string_view suffix_format) {
   DCHECK(!path.empty());
   DCHECK_EQ(base::ranges::count(suffix_format, '%'), 1);
   DCHECK(base::Contains(suffix_format, "%d"));
@@ -505,14 +505,12 @@ FilePath GetUniquePathWithSuffixFormat(const FilePath& path,
   if (!PathExists(path)) {
     return path;
   }
-  std::string number;
   for (int count = 1; count <= kMaxUniqueFiles; ++count) {
-    StringAppendF(&number, suffix_format.c_str(), count);
-    FilePath candidate_path = path.InsertBeforeExtensionASCII(number);
+    FilePath candidate_path = path.InsertBeforeExtensionASCII(
+        StringPrintfNonConstexpr(suffix_format, count));
     if (!PathExists(candidate_path)) {
       return candidate_path;
     }
-    number.clear();
   }
   return FilePath();
 }
