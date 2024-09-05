@@ -399,12 +399,15 @@ void EmojiSearch::LoadEmojiLanguages(
 
 void EmojiSearch::LoadLanguage(std::string_view language_code) {
   std::optional<EmojiLanguageCode> lang = GetLanguageCode(language_code);
-  if (!lang.has_value() || language_data_.contains(*lang)) {
+  if (!lang.has_value()) {
     return;
   }
 
-  language_data_.emplace(*lang, EmojiLanguageData());
-  EmojiLanguageData& new_data = language_data_.at(*lang);
+  auto [it, inserted] = language_data_.emplace(*lang, EmojiLanguageData());
+  if (!inserted) {
+    return;
+  }
+  EmojiLanguageData& new_data = it->second;
 
   if (std::optional<EmojiLanguageResourceIds> resource_ids =
           GetLanguageResourceIds(*lang);
