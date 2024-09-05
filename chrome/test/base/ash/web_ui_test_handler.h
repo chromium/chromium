@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_ASH_WEB_UI_TEST_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_ASH_WEB_UI_TEST_HANDLER_H_
+#ifndef CHROME_TEST_BASE_ASH_WEB_UI_TEST_HANDLER_H_
+#define CHROME_TEST_BASE_ASH_WEB_UI_TEST_HANDLER_H_
 
 #include <optional>
 #include <string>
@@ -79,4 +79,4 @@ class WebUITestHandler {
   base::RepeatingClosure quit_closure_;
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_ASH_WEB_UI_TEST_HANDLER_H_
+#endif  // CHROME_TEST_BASE_ASH_WEB_UI_TEST_HANDLER_H_

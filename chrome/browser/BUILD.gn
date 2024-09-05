@@ -9286,13 +9286,6 @@ if (!is_android) {
       "//chrome/browser/profiles:profile",
       "//content/test:test_support",
     ]
-    if (is_chromeos_ash) {
-      sources += [
-        "ui/webui/ash/web_ui_test_handler.cc",
-        "ui/webui/ash/web_ui_test_handler.h",
-      ]
-      deps += [ "//chrome/test/data/webui/chromeos:web_ui_test_bindings" ]
-    }
 
     public_deps = [
       "//chrome/browser/web_applications/app_service",

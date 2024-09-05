@@ -10754,7 +10754,10 @@ if (!is_android) {
         "base/ash/mojo_web_ui_browser_test.h",
         "base/ash/web_ui_browser_test.cc",
         "base/ash/web_ui_browser_test.h",
+        "base/ash/web_ui_test_handler.cc",
+        "base/ash/web_ui_test_handler.h",
       ]
+
       deps += [
         "//ash",
         "//ash:test_support",
