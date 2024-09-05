@@ -35,7 +35,6 @@ export class BrowsingContextProcessor {
   readonly #browserCdpClient: CdpClient;
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #eventManager: EventManager;
-
   constructor(
     browserCdpClient: CdpClient,
     browsingContextStorage: BrowsingContextStorage,

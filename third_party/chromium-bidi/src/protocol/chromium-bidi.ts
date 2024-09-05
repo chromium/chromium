@@ -16,6 +16,7 @@
  */
 
 import type * as Cdp from './cdp.js';
+import type * as WebDriverBidiBluetooth from './generated/webdriver-bidi-bluetooth.js';
 import type * as WebDriverBidiPermissions from './generated/webdriver-bidi-permissions.js';
 import type * as WebDriverBidi from './generated/webdriver-bidi.js';
 
@@ -23,6 +24,7 @@ export type EventNames =
   // keep-sorted start
   | Cdp.EventNames
   | `${BiDiModule}`
+  | `${Bluetooth.EventNames}`
   | `${BrowsingContext.EventNames}`
   | `${Log.EventNames}`
   | `${Network.EventNames}`
@@ -31,6 +33,7 @@ export type EventNames =
 
 export enum BiDiModule {
   // keep-sorted start
+  Bluetooth = 'bluetooth',
   Browser = 'browser',
   BrowsingContext = 'browsingContext',
   Cdp = 'cdp',
@@ -88,6 +91,13 @@ export namespace Network {
   }
 }
 
+export namespace Bluetooth {
+  export enum EventNames {
+    RequestDevicePromptOpened = 'bluetooth.requestDevicePromptOpened',
+    RequestDevicePromptClosed = 'bluetooth.requestDevicePromptClosed',
+  }
+}
+
 export type Command = (
   | WebDriverBidi.Command
   | Cdp.Command
@@ -96,6 +106,11 @@ export type Command = (
       // not re-define it. Therefore, it's not part of generated types.
       id: WebDriverBidi.JsUint;
     } & WebDriverBidiPermissions.PermissionsCommand)
+  | ({
+      // id is defined by the main WebDriver BiDi spec and extension specs do
+      // not re-define it. Therefore, it's not part of generated types.
+      id: WebDriverBidi.JsUint;
+    } & WebDriverBidiBluetooth.Bluetooth.HandleRequestDevicePrompt)
 ) & {
   channel?: WebDriverBidi.Script.Channel;
 };
@@ -104,7 +119,14 @@ export type CommandResponse =
   | WebDriverBidi.CommandResponse
   | Cdp.CommandResponse;
 
-export type Event = WebDriverBidi.Event | Cdp.Event;
+export type BluetoothEvent = {
+  type: 'event';
+} & (
+  | WebDriverBidiBluetooth.Bluetooth.RequestDevicePromptOpened
+  | (WebDriverBidiBluetooth.Bluetooth.RequestDevicePromptClosed &
+      WebDriverBidi.Extensible)
+);
+export type Event = WebDriverBidi.Event | Cdp.Event | BluetoothEvent;
 
 export const EVENT_NAMES = new Set([
   // keep-sorted start
@@ -120,6 +142,6 @@ export type ResultData = WebDriverBidi.ResultData | Cdp.ResultData;
 
 export type BidiPlusChannel = string | null;
 
-export type Message = (WebDriverBidi.Message | Cdp.Message) & {
+export type Message = (WebDriverBidi.Message | Cdp.Message | BluetoothEvent) & {
   channel?: BidiPlusChannel;
 };

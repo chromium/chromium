@@ -26,6 +26,7 @@ import type {Result} from '../utils/result.js';
 import type {BidiCommandParameterParser} from './BidiParser.js';
 import type {BidiTransport} from './BidiTransport.js';
 import {CommandProcessor, CommandProcessorEvents} from './CommandProcessor.js';
+import {BluetoothProcessor} from './modules/bluetooth/BluetoothProcessor.js';
 import {CdpTargetManager} from './modules/cdp/CdpTargetManager.js';
 import {BrowsingContextStorage} from './modules/context/BrowsingContextStorage.js';
 import {NetworkStorage} from './modules/network/NetworkStorage.js';
@@ -55,6 +56,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
   #browsingContextStorage = new BrowsingContextStorage();
   #realmStorage = new RealmStorage();
   #preloadScriptStorage = new PreloadScriptStorage();
+  #bluetoothProcessor: BluetoothProcessor;
 
   #logger?: LoggerFn;
 
@@ -98,6 +100,10 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       browserCdpClient,
       logger
     );
+    this.#bluetoothProcessor = new BluetoothProcessor(
+      this.#eventManager,
+      this.#browsingContextStorage
+    );
     this.#commandProcessor = new CommandProcessor(
       cdpConnection,
       browserCdpClient,
@@ -106,6 +112,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
       this.#realmStorage,
       this.#preloadScriptStorage,
       networkStorage,
+      this.#bluetoothProcessor,
       parser,
       async (options: MapperOptions) => {
         // This is required to ignore certificate errors when service worker is fetched.
@@ -123,6 +130,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
           this.#browsingContextStorage,
           this.#realmStorage,
           networkStorage,
+          this.#bluetoothProcessor,
           this.#preloadScriptStorage,
           defaultUserContextId,
           options?.unhandledPromptBehavior,

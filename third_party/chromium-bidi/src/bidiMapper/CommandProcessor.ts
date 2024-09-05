@@ -31,6 +31,7 @@ import type {Result} from '../utils/result.js';
 import {BidiNoOpParser} from './BidiNoOpParser.js';
 import type {BidiCommandParameterParser} from './BidiParser.js';
 import type {MapperOptions} from './BidiServer.js';
+import type {BluetoothProcessor} from './modules/bluetooth/BluetoothProcessor.js';
 import {BrowserProcessor} from './modules/browser/BrowserProcessor.js';
 import {CdpProcessor} from './modules/cdp/CdpProcessor.js';
 import {BrowsingContextProcessor} from './modules/context/BrowsingContextProcessor.js';
@@ -60,6 +61,7 @@ type CommandProcessorEventsMap = {
 
 export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
   // keep-sorted start
+  #bluetoothProcessor: BluetoothProcessor;
   #browserProcessor: BrowserProcessor;
   #browsingContextProcessor: BrowsingContextProcessor;
   #cdpProcessor: CdpProcessor;
@@ -82,6 +84,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     realmStorage: RealmStorage,
     preloadScriptStorage: PreloadScriptStorage,
     networkStorage: NetworkStorage,
+    bluetoothProcessor: BluetoothProcessor,
     parser: BidiCommandParameterParser = new BidiNoOpParser(),
     initConnection: (options: MapperOptions) => Promise<void>,
     logger?: LoggerFn
@@ -89,6 +92,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     super();
     this.#parser = parser;
     this.#logger = logger;
+
+    this.#bluetoothProcessor = bluetoothProcessor;
 
     // keep-sorted start block=yes
     this.#browserProcessor = new BrowserProcessor(browserCdpClient);
@@ -136,6 +141,14 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       case 'session.end':
         // TODO: Implement.
         break;
+
+      // Bluetooth domain
+      // keep-sorted start block=yes
+      case 'bluetooth.handleRequestDevicePrompt':
+        return await this.#bluetoothProcessor.handleRequestDevicePrompt(
+          command.params
+        );
+      // keep-sorted end
 
       // Browser domain
       // keep-sorted start block=yes

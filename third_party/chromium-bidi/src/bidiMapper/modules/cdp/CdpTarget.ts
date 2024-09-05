@@ -170,6 +170,7 @@ export class CdpTarget {
         }),
         this.#initAndEvaluatePreloadScripts(),
         this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
+        this.toggleDeviceAccessIfNeeded(),
       ]);
     } catch (error: any) {
       this.#logger?.(LogType.debugError, 'Failed to unblock target', error);
@@ -287,6 +288,14 @@ export class CdpTarget {
       this.#logger?.(LogType.debugError, err);
       this.#networkDomainEnabled = !enabled;
     }
+  }
+
+  async toggleDeviceAccessIfNeeded(): Promise<void> {
+    const enabled = this.isSubscribedTo(BiDiModule.Bluetooth);
+    await this.#cdpClient.sendCommand(
+      enabled ? 'DeviceAccess.enable' : 'DeviceAccess.disable'
+    );
+    return;
   }
 
   #setEventListeners() {

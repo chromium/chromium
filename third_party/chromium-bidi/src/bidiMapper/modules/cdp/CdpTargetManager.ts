@@ -20,6 +20,7 @@ import type {CdpClient} from '../../../cdp/CdpClient.js';
 import type {CdpConnection} from '../../../cdp/CdpConnection.js';
 import type {Browser, Session} from '../../../protocol/protocol.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
+import type {BluetoothProcessor} from '../bluetooth/BluetoothProcessor.js';
 import {
   BrowsingContextImpl,
   serializeOrigin,
@@ -49,6 +50,7 @@ export class CdpTargetManager {
 
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #networkStorage: NetworkStorage;
+  readonly #bluetoothProcessor: BluetoothProcessor;
   readonly #preloadScriptStorage: PreloadScriptStorage;
   readonly #realmStorage: RealmStorage;
 
@@ -64,6 +66,7 @@ export class CdpTargetManager {
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,
     networkStorage: NetworkStorage,
+    bluetoothProcessor: BluetoothProcessor,
     preloadScriptStorage: PreloadScriptStorage,
     defaultUserContextId: Browser.UserContext,
     unhandledPromptBehavior?: Session.UserPromptHandler,
@@ -77,6 +80,7 @@ export class CdpTargetManager {
     this.#browsingContextStorage = browsingContextStorage;
     this.#preloadScriptStorage = preloadScriptStorage;
     this.#networkStorage = networkStorage;
+    this.#bluetoothProcessor = bluetoothProcessor;
     this.#realmStorage = realmStorage;
     this.#defaultUserContextId = defaultUserContextId;
     this.#unhandledPromptBehavior = unhandledPromptBehavior;
@@ -298,6 +302,7 @@ export class CdpTargetManager {
     );
 
     this.#networkStorage.onCdpTargetCreated(target);
+    this.#bluetoothProcessor.onCdpTargetCreated(target);
 
     return target;
   }
