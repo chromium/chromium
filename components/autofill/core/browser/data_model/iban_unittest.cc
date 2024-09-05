@@ -103,6 +103,40 @@ TEST(IbanTest, SetNickname) {
   EXPECT_EQ(u"My doctor's IBAN", iban.nickname());
 }
 
+// Verify that the value has been capitalized.
+TEST(IbanTest, SetValue_Capitalization) {
+  Iban iban;
+
+  iban.set_value(u"be71096123456769");
+  EXPECT_EQ(u"BE71096123456769", iban.value());
+  EXPECT_EQ(u"BE", iban.prefix());
+  EXPECT_EQ(u"6769", iban.suffix());
+
+  iban.set_value(u"Br1500000000000010932840814P2");
+  EXPECT_EQ(u"BR1500000000000010932840814P2", iban.value());
+  EXPECT_EQ(u"BR", iban.prefix());
+  EXPECT_EQ(u"14P2", iban.suffix());
+
+  iban.set_value(u"fR7630006000011234567890189");
+  EXPECT_EQ(u"FR7630006000011234567890189", iban.value());
+  EXPECT_EQ(u"FR", iban.prefix());
+  EXPECT_EQ(u"0189", iban.suffix());
+}
+
+// Verify that the prefix and suffix have been capitalized.
+TEST(IbanTest, SetPrefixAndSuffix_Capitalization) {
+  Iban iban;
+  iban.set_prefix(u"be");
+  iban.set_suffix(u"14p2");
+  EXPECT_EQ(u"BE", iban.prefix());
+  EXPECT_EQ(u"14P2", iban.suffix());
+
+  iban.set_prefix(u"Be");
+  iban.set_suffix(u"14p2");
+  EXPECT_EQ(u"BE", iban.prefix());
+  EXPECT_EQ(u"14P2", iban.suffix());
+}
+
 TEST(IbanTest, SetValue) {
   Iban iban;
 
