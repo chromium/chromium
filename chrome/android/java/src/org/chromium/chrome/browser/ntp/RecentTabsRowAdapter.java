@@ -42,6 +42,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
@@ -575,7 +576,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
             return childPosition == mRecentTabsManager.getRecentlyClosedEntries().size();
         }
 
-        private void setIconView(ViewHolder viewHolder, int colorId) {
+        private void setIconView(ViewHolder viewHolder, @TabGroupColorId int colorId) {
             ImageView iconView = viewHolder.iconView;
 
             if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {

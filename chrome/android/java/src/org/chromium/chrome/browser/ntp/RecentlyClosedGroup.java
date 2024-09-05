@@ -4,16 +4,19 @@
 
 package org.chromium.chrome.browser.ntp;
 
+import org.chromium.components.tab_groups.TabGroupColorId;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /** Represents a recently closed group from TabRestoreService. */
 public class RecentlyClosedGroup extends RecentlyClosedEntry {
     private final String mTitle;
-    private final int mColor;
+    private final @TabGroupColorId int mColor;
     private final List<RecentlyClosedTab> mTabs = new ArrayList<>();
 
-    public RecentlyClosedGroup(int sessionId, long timestamp, String title, int color) {
+    public RecentlyClosedGroup(
+            int sessionId, long timestamp, String title, @TabGroupColorId int color) {
         super(sessionId, timestamp);
         mTitle = title;
         mColor = color;
@@ -28,7 +31,7 @@ public class RecentlyClosedGroup extends RecentlyClosedEntry {
     }
 
     /** Returns the color of the group. */
-    public int getColor() {
+    public @TabGroupColorId int getColor() {
         return mColor;
     }
 
