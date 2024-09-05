@@ -228,9 +228,7 @@ BroadcastChannel::BroadcastChannel(
       receiver_(this, execution_context),
       remote_client_(execution_context),
       associated_remote_(execution_context) {
-  // TODO(crbug.com/327075943): Support BroadcastChannel created on workers.
-  if (!execution_context->IsWindow() ||
-      !base::FeatureList::IsEnabled(features::kBFCacheOpenBroadcastChannel)) {
+  if (!base::FeatureList::IsEnabled(features::kBFCacheOpenBroadcastChannel)) {
     feature_handle_for_scheduler_ =
         execution_context->GetScheduler()->RegisterFeature(
             SchedulingPolicy::Feature::kBroadcastChannel,
@@ -269,9 +267,7 @@ BroadcastChannel::BroadcastChannel(
       receiver_(this, execution_context),
       remote_client_(execution_context),
       associated_remote_(execution_context) {
-  // TODO(crbug.com/327075943): Support BroadcastChannel created on workers.
-  if (!execution_context->IsWindow() ||
-      !base::FeatureList::IsEnabled(features::kBFCacheOpenBroadcastChannel)) {
+  if (!base::FeatureList::IsEnabled(features::kBFCacheOpenBroadcastChannel)) {
     feature_handle_for_scheduler_ =
         execution_context->GetScheduler()->RegisterFeature(
             SchedulingPolicy::Feature::kBroadcastChannel,
