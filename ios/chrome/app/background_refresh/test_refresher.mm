@@ -31,7 +31,8 @@
   // TODO(crbug.com/354918403): If this provider is used outside of canary, it
   // *must* post the logging task (which reads from AppState) to the main
   // thread!
-  InitStageDuringBackgroundRefreshActions stage;
+  InitStageDuringBackgroundRefreshActions stage =
+      InitStageDuringBackgroundRefreshActions::kUnknown;
   switch (_appState.initStage) {
     case InitStageStart:
       stage = InitStageDuringBackgroundRefreshActions::kInitStageStart;

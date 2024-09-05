@@ -40,6 +40,11 @@ NSString* appStateInactiveCountDuringBackgroundRefreshKey =
 NSString* appStateBackgroundCountDuringBackgroundRefreshKey =
     @"debug_app_state_background_count_during_background_refresh";
 
+// Debug NSUserDefaults key used to collect debug data.
+// Number of times systemTriggeredRefreshForTask was run with no due tasks.
+NSString* appStateDueCountDuringBackgroundRefreshKey =
+    @"debug_app_state_no_due_count_during_background_refresh";
+
 }  // namespace
 
 @interface BGTaskScheduler (cheating)
@@ -154,11 +159,24 @@ NSString* appStateBackgroundCountDuringBackgroundRefreshKey =
   ProceduralBlock completion = ^{
     [task setTaskCompletedWithSuccess:YES];
   };
+
+  // YES if there is at least one due task.
+  BOOL hasDueTasks = NO;
   for (AppRefreshProvider* provider in self.providers) {
     // Only execute due tasks.
     if ([provider isDue]) {
+      hasDueTasks = YES;
       [provider handleRefreshWithCompletion:completion];
     }
+  }
+
+  // TODO(crbug.com/354918794): Remove this code once not needed anymore.
+  if (!hasDueTasks) {
+    [defaults
+        setInteger:[defaults integerForKey:
+                                 appStateDueCountDuringBackgroundRefreshKey] +
+                   1
+            forKey:appStateDueCountDuringBackgroundRefreshKey];
   }
 }
 
