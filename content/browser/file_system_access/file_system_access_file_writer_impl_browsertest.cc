@@ -9,6 +9,7 @@
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "components/services/quarantine/test_support.h"
@@ -24,6 +25,7 @@
 #include "content/public/test/file_system_chooser_test_helpers.h"
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/select_file_policy.h"
@@ -38,6 +40,11 @@ namespace content {
 // FileSystemAccessFileWriterImpl.
 class FileSystemAccessFileWriterBrowserTest : public ContentBrowserTest {
  public:
+  FileSystemAccessFileWriterBrowserTest() {
+    scoped_features_.InitAndEnableFeature(
+        blink::features::kFileSystemAccessLocal);
+  }
+
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
@@ -112,6 +119,9 @@ class FileSystemAccessFileWriterBrowserTest : public ContentBrowserTest {
  protected:
   base::ScopedTempDir temp_dir_;
   GURL test_url_;
+
+ private:
+  base::test::ScopedFeatureList scoped_features_;
 };
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
