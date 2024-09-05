@@ -18,7 +18,7 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/browser/profiles/android/jni_headers/CookiesFetcher_jni.h"
+#include "chrome/browser/android/cookies/jni_headers/CookiesFetcher_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
