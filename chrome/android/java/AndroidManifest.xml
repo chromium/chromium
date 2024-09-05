@@ -193,7 +193,7 @@ by a child template that "extends" this file.
         android:zygotePreloadName="{{ zygote_preload_class }}"
         {% if backup_key is defined %}
         android:allowBackup="true"
-        android:backupAgent="org.chromium.chrome.browser.ChromeBackupAgent"
+        android:backupAgent="org.chromium.chrome.browser.backup.ChromeBackupAgent"
         android:fullBackupOnly="false"
         android:restoreAnyVersion="true"
         {% else %}
