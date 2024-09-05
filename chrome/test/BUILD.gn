@@ -4980,7 +4980,6 @@ if (!is_android) {
         "//chrome/browser/ui/views/editor_menu:views",
         "//chrome/browser/ui/views/mahi",
         "//chrome/browser/ui/views/plugin_vm:browser_tests",
-        "//chrome/browser/ui/webui/ash",
         "//chrome/browser/ui/webui/ash:browser_tests",
         "//chrome/browser/ui/webui/ash/add_supervision",
         "//chrome/browser/ui/webui/ash/add_supervision:mojo_bindings",

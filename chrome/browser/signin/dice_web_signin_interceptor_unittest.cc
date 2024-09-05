@@ -1490,9 +1490,8 @@ TEST_F(DiceWebSigninInterceptorTest, MultiUserInterception) {
       SigninInterceptionHeuristicOutcome::kInterceptMultiUser, 1);
 }
 
-TEST_F(
-    DiceWebSigninInterceptorTest,
-    AccountInfoAndCapabilitiesAlreadyAvailable) {
+TEST_F(DiceWebSigninInterceptorTest,
+       AccountInfoAndCapabilitiesAlreadyAvailable) {
   base::HistogramTester histogram_tester;
   AccountInfo primary_account_info =
       identity_test_env()->MakePrimaryAccountAvailable(
@@ -1517,9 +1516,8 @@ TEST_F(
       SigninInterceptionHeuristicOutcome::kInterceptEnterprise, 1);
 }
 
-TEST_F(
-    DiceWebSigninInterceptorTest,
-    AccountInfoAlreadyAvailableWaitForCapabilities) {
+TEST_F(DiceWebSigninInterceptorTest,
+       AccountInfoAlreadyAvailableWaitForCapabilities) {
   base::HistogramTester histogram_tester;
   AccountInfo primary_account_info =
       identity_test_env()->MakePrimaryAccountAvailable(
@@ -1549,9 +1547,8 @@ TEST_F(
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
 }
 
-TEST_F(
-    DiceWebSigninInterceptorTest,
-    AccountCapabilitiesAlreadyAvailableWaitForInfo) {
+TEST_F(DiceWebSigninInterceptorTest,
+       AccountCapabilitiesAlreadyAvailableWaitForInfo) {
   base::HistogramTester histogram_tester;
   AccountInfo primary_account_info =
       identity_test_env()->MakePrimaryAccountAvailable(
@@ -1630,8 +1627,7 @@ TEST_F(DiceWebSigninInterceptorTest, AccountInfoRemovedWhileWaiting) {
       SigninInterceptionHeuristicOutcome::kAbortSignedOut, 1);
 }
 
-TEST_F(DiceWebSigninInterceptorTest,
-       WaitForAccountCapabilitiesTimeout) {
+TEST_F(DiceWebSigninInterceptorTest, WaitForAccountCapabilitiesTimeout) {
   base::HistogramTester histogram_tester;
   AccountInfo primary_account_info =
       identity_test_env()->MakePrimaryAccountAvailable(

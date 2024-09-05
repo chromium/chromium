@@ -55,7 +55,6 @@ static_library("system_web_apps") {
     "//chrome/browser/ash/url_handler",
     "//chrome/browser/chromeos/app_mode",
     "//chrome/browser/ui/views/borealis",
-    "//chrome/browser/ui/webui/ash",
     "//chrome/browser/ui/webui/ash/diagnostics_dialog",
     "//chrome/browser/ui/webui/ash/settings/pages/files",
   ]
@@ -76,7 +75,6 @@ static_library("system_web_apps") {
     "//chrome/browser/ash/url_handler",
     "//chrome/browser/chromeos/app_mode",
     "//chrome/browser/ui/views/borealis",
-    "//chrome/browser/ui/webui/ash",
     "//chrome/browser/ui/webui/ash/diagnostics_dialog",
     "//chrome/browser/ui/webui/ash/settings/pages/files",
   ]

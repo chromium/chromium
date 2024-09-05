@@ -20,7 +20,6 @@ static_library("smb_shares") {
 
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/ui/webui/ash",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
   ]
 

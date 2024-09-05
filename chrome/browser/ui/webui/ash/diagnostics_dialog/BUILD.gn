@@ -33,7 +33,6 @@ source_set("unit_tests") {
   deps = [
     ":diagnostics_dialog",
     "//base",
-    "//chrome/browser/ui/webui/ash",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//components/session_manager/core",
     "//testing/gtest",

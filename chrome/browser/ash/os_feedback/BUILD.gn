@@ -31,7 +31,6 @@ static_library("os_feedback") {
     "//chrome/browser/feedback",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/system_web_apps",
-    "//chrome/browser/ui/webui/ash",
     "//chrome/browser/ui/webui/ash/diagnostics_dialog",
     "//chrome/common",
     "//chromeos/ash/services/multidevice_setup/public/cpp",
@@ -51,7 +50,6 @@ static_library("os_feedback") {
   allow_circular_includes_from = [
     "//chrome/browser/ash/system_logs",
     "//chrome/browser/ash/system_web_apps/apps",
-    "//chrome/browser/ui/webui/ash",
   ]
 }
 
@@ -85,7 +83,6 @@ source_set("browser_tests") {
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/system_web_apps",
-    "//chrome/browser/ui/webui/ash",
     "//chrome/browser/ui/webui/ash/os_feedback_dialog",
     "//chrome/test:test_support",
     "//components/feedback",

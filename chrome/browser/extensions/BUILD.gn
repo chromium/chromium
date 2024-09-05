@@ -1274,7 +1274,6 @@ source_set("extensions") {
       "//chrome/browser/ui/ash/media_client",
       "//chrome/browser/ui/ash/shelf/app_service",
       "//chrome/browser/ui/ash/thumbnail_loader",
-      "//chrome/browser/ui/webui/ash",
       "//chrome/browser/ui/webui/ash/login",
       "//chrome/browser/ui/webui/ash/settings/pages/a11y",
       "//chromeos/ash/components/attestation",
@@ -1375,7 +1374,6 @@ source_set("extensions") {
       "//chrome/browser/ash/system_logs",
       "//chrome/browser/ui/ash/shelf/app_service",
       "//chrome/browser/ui/ash/thumbnail_loader",
-      "//chrome/browser/ui/webui/ash",
       "//chrome/browser/ui/webui/ash/login",
       "//chrome/browser/ui/webui/ash/settings/pages/a11y",
     ]

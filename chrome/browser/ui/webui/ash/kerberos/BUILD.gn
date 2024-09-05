@@ -18,7 +18,6 @@ static_library("kerberos") {
     "//ash/webui/common:chrome_os_webui_config",
     "//base",
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/ui/webui/ash",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//chrome/common",
     "//content/public/common",
