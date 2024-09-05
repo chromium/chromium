@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Timing of fullscreenchange and resize events
+  assert_array_equals: event order lengths differ, expected array ["resize", "fullscreenchange"] length 2, got ["fullscreenchange"] length 1
+Harness: the test ran to completion.
+

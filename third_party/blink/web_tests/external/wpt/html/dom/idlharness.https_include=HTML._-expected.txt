@@ -1,9 +1,13 @@
 This is a testharness.js-based test.
-Found 21 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] HTMLElement interface: attribute accessKeyLabel
   assert_true: The prototype object must have a property "accessKeyLabel" expected true got false
+[FAIL] HTMLElement interface: attribute autocorrect
+  assert_true: The prototype object must have a property "autocorrect" expected true got false
 [FAIL] HTMLElement interface: document.createElement("noscript") must inherit property "accessKeyLabel" with the proper type
   assert_inherits: property "accessKeyLabel" not found in prototype chain
+[FAIL] HTMLElement interface: document.createElement("noscript") must inherit property "autocorrect" with the proper type
+  assert_inherits: property "autocorrect" not found in prototype chain
 [FAIL] HTMLBodyElement interface: attribute onpagereveal
   assert_true: The prototype object must have a property "onpagereveal" expected true got false
 [FAIL] HTMLBodyElement interface: attribute onpageswap
