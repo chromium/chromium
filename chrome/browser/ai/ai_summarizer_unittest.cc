@@ -8,9 +8,8 @@
 #include "base/test/run_until.h"
 #include "chrome/browser/ai/ai_manager_keyed_service.h"
 #include "chrome/browser/ai/ai_manager_keyed_service_factory.h"
+#include "chrome/browser/ai/ai_test_utils.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/features/summarize.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
@@ -30,8 +29,6 @@ using optimization_guide::proto::SummarizeRequest;
 using optimization_guide::proto::SummarizerOutputFormat;
 using optimization_guide::proto::SummarizerOutputLength;
 using optimization_guide::proto::SummarizerOutputType;
-
-class MockSupportsUserData : public base::SupportsUserData {};
 
 class MockStreamingResponder : public blink::mojom::ModelStreamingResponder {
  public:
@@ -72,57 +69,22 @@ class MockStreamingResponder : public blink::mojom::ModelStreamingResponder {
   base::RunLoop run_loop_;
 };
 
-class AISummarizerUnitTest : public ChromeRenderViewHostTestHarness {
+class AISummarizerUnitTest : public AITestUtils::AITestBase {
  public:
   AISummarizerUnitTest() = default;
 
-  void SetUp() override { ChromeRenderViewHostTestHarness::SetUp(); }
-
-  void TearDown() override {
-    mock_optimization_guide_keyed_service_ = nullptr;
-    ChromeRenderViewHostTestHarness::TearDown();
-  }
-
   void SetupMockOptimizationGuideKeyedService() {
-    mock_optimization_guide_keyed_service_ =
-        static_cast<NiceMock<MockOptimizationGuideKeyedService>*>(
-            OptimizationGuideKeyedServiceFactory::GetInstance()
-                ->SetTestingFactoryAndUse(
-                    profile(),
-                    base::BindRepeating([](content::BrowserContext* context)
-                                            -> std::unique_ptr<KeyedService> {
-                      return std::make_unique<
-                          NiceMock<MockOptimizationGuideKeyedService>>();
-                    })));
+    AITestUtils::AITestBase::SetupMockOptimizationGuideKeyedService();
 
     ON_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
         .WillByDefault(
             [&] { return std::make_unique<MockSessionWrapper>(&session_); });
   }
 
-  void SetupNullOptimizationGuideKeyedService() {
-    mock_optimization_guide_keyed_service_ =
-        static_cast<NiceMock<MockOptimizationGuideKeyedService>*>(
-            OptimizationGuideKeyedServiceFactory::GetInstance()
-                ->SetTestingFactoryAndUse(
-                    profile(),
-                    base::BindRepeating([](content::BrowserContext* context)
-                                            -> std::unique_ptr<KeyedService> {
-                      return nullptr;
-                    })));
-  }
-
   ~AISummarizerUnitTest() override = default;
 
  protected:
-  MockSupportsUserData* mock_host() { return &mock_host_; }
-
-  raw_ptr<MockOptimizationGuideKeyedService>
-      mock_optimization_guide_keyed_service_;
   testing::NiceMock<MockSession> session_;
-
- private:
-  MockSupportsUserData mock_host_;
 };
 
 class MockCreateSummarizerClient
@@ -239,17 +201,12 @@ TEST_F(AISummarizerUnitTest, SummarizeSuccess) {
           SummarizerOutputLength::SUMMARIZER_OUTPUT_LENGTH_MEDIUM,
           "Test output"));
 
-  AIManagerKeyedService* ai_manager =
-      AIManagerKeyedServiceFactory::GetAIManagerKeyedService(
-          main_rfh()->GetBrowserContext());
   base::WeakPtr<AIContextBoundObjectSet> context_bound_objects =
       AIContextBoundObjectSet::GetFromContext(mock_host())
           ->GetWeakPtrForTesting();
   ASSERT_EQ(0u, context_bound_objects->GetSizeForTesting());
 
-  mojo::Remote<blink::mojom::AIManager> mock_remote;
-  ai_manager->AddReceiver(mock_remote.BindNewPipeAndPassReceiver(),
-                          mock_host());
+  mojo::Remote<blink::mojom::AIManager> mock_remote = GetAIManagerRemote();
   MockCreateSummarizerClient create_client;
   mock_remote->CreateSummarizer(
       create_client.BindNewPipeAndPassRemote(),
@@ -281,17 +238,12 @@ TEST_F(AISummarizerUnitTest, SessionDetachedDuringSummarization) {
   // for the response.
   SetupMockOptimizationGuideKeyedService();
 
-  AIManagerKeyedService* ai_manager =
-      AIManagerKeyedServiceFactory::GetAIManagerKeyedService(
-          main_rfh()->GetBrowserContext());
   base::WeakPtr<AIContextBoundObjectSet> context_bound_objects =
       AIContextBoundObjectSet::GetFromContext(mock_host())
           ->GetWeakPtrForTesting();
   ASSERT_EQ(0u, context_bound_objects->GetSizeForTesting());
 
-  mojo::Remote<blink::mojom::AIManager> mock_remote;
-  ai_manager->AddReceiver(mock_remote.BindNewPipeAndPassReceiver(),
-                          mock_host());
+  mojo::Remote<blink::mojom::AIManager> mock_remote = GetAIManagerRemote();
   MockCreateSummarizerClient create_client;
   mock_remote->CreateSummarizer(
       create_client.BindNewPipeAndPassRemote(),
@@ -317,18 +269,12 @@ TEST_F(AISummarizerUnitTest, SessionDetachedDuringSummarization) {
 TEST_F(AISummarizerUnitTest, MultipleSummarizeWithOptions) {
   SetupMockOptimizationGuideKeyedService();
 
-  AIManagerKeyedService* ai_manager =
-      AIManagerKeyedServiceFactory::GetAIManagerKeyedService(
-          main_rfh()->GetBrowserContext());
   base::WeakPtr<AIContextBoundObjectSet> context_bound_objects =
       AIContextBoundObjectSet::GetFromContext(mock_host())
           ->GetWeakPtrForTesting();
   ASSERT_EQ(0u, context_bound_objects->GetSizeForTesting());
 
-  mojo::Remote<blink::mojom::AIManager> mock_remote;
-  ai_manager->AddReceiver(mock_remote.BindNewPipeAndPassReceiver(),
-                          mock_host());
-
+  mojo::Remote<blink::mojom::AIManager> mock_remote = GetAIManagerRemote();
   EXPECT_CALL(session_, ExecuteModel(testing::_, testing::_))
       .WillOnce(CreateModelExecutionMock(
           "Test input1", "Shared context.\n",

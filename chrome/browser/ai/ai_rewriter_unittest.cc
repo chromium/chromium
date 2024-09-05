@@ -8,11 +8,9 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/mock_callback.h"
 #include "chrome/browser/ai/ai_manager_keyed_service_factory.h"
+#include "chrome/browser/ai/ai_test_utils.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -22,8 +20,6 @@
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 
 using ::testing::_;
-using ::testing::AtMost;
-using ::testing::NiceMock;
 
 namespace {
 
@@ -55,36 +51,10 @@ class MockCreateRewriterClient
   mojo::Receiver<blink::mojom::AIManagerCreateRewriterClient> receiver_{this};
 };
 
-// TODO(crbug.com/358214322): Move MockResponder to a common utils file.
-class MockResponder : public blink::mojom::ModelStreamingResponder {
- public:
-  MockResponder() = default;
-  ~MockResponder() override = default;
-  MockResponder(const MockResponder&) = delete;
-  MockResponder& operator=(const MockResponder&) = delete;
-
-  mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
-  BindNewPipeAndPassRemote() {
-    return receiver_.BindNewPipeAndPassRemote();
-  }
-
-  MOCK_METHOD(void,
-              OnResponse,
-              (blink::mojom::ModelStreamingResponseStatus status,
-               const std::optional<std::string>& text,
-               std::optional<uint64_t> current_tokens),
-              (override));
-
- private:
-  mojo::Receiver<blink::mojom::ModelStreamingResponder> receiver_{this};
-};
-
-class MockSupportsUserData : public base::SupportsUserData {};
-
 optimization_guide::OptimizationGuideModelStreamingExecutionResult
-CreateExecutionResult(const std::string_view outpt, bool is_complete) {
+CreateExecutionResult(const std::string_view output, bool is_complete) {
   optimization_guide::proto::ComposeResponse response;
-  *response.mutable_output() = outpt;
+  *response.mutable_output() = output;
   std::string serialized_metadata;
   response.SerializeToString(&serialized_metadata);
   optimization_guide::proto::Any any;
@@ -155,51 +125,8 @@ void CheckComposeRequestRewriteParamsRegenerateFlag(
 
 }  // namespace
 
-class AIRewriterTest : public ChromeRenderViewHostTestHarness {
- public:
-  void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
-    mock_host_ = std::make_unique<MockSupportsUserData>();
-  }
-
-  void TearDown() override {
-    optimization_guide_keyed_service_ = nullptr;
-    mock_host_.reset();
-    ChromeRenderViewHostTestHarness::TearDown();
-  }
-
+class AIRewriterTest : public AITestUtils::AITestBase {
  protected:
-  // Setting up MockOptimizationGuideKeyedService.
-  void SetupMockOptimizationGuideKeyedService() {
-    optimization_guide_keyed_service_ =
-        static_cast<MockOptimizationGuideKeyedService*>(
-            OptimizationGuideKeyedServiceFactory::GetInstance()
-                ->SetTestingFactoryAndUse(
-                    profile(),
-                    base::BindRepeating([](content::BrowserContext* context)
-                                            -> std::unique_ptr<KeyedService> {
-                      return std::make_unique<
-                          NiceMock<MockOptimizationGuideKeyedService>>();
-                    })));
-  }
-  void SetupNullOptimizationGuideKeyedService() {
-    OptimizationGuideKeyedServiceFactory::GetInstance()
-        ->SetTestingFactoryAndUse(
-            profile(),
-            base::BindRepeating(
-                [](content::BrowserContext* context)
-                    -> std::unique_ptr<KeyedService> { return nullptr; }));
-  }
-
-  mojo::Remote<blink::mojom::AIManager> GetAIManagerRemote() {
-    AIManagerKeyedService* ai_manager_keyed_service =
-        AIManagerKeyedServiceFactory::GetAIManagerKeyedService(
-            main_rfh()->GetBrowserContext());
-    mojo::Remote<blink::mojom::AIManager> ai_manager;
-    ai_manager_keyed_service->AddReceiver(
-        ai_manager.BindNewPipeAndPassReceiver(), mock_host_.get());
-    return ai_manager;
-  }
   void RunSimpleRewriteTest(
       blink::mojom::AIRewriterTone tone,
       blink::mojom::AIRewriterLength length,
@@ -208,13 +135,6 @@ class AIRewriterTest : public ChromeRenderViewHostTestHarness {
   void RunRewriteOptionCombinationFailureTest(
       blink::mojom::AIRewriterTone tone,
       blink::mojom::AIRewriterLength length);
-
-  void ResetMockHost() { mock_host_.reset(); }
-
-  raw_ptr<MockOptimizationGuideKeyedService> optimization_guide_keyed_service_;
-
- private:
-  std::unique_ptr<MockSupportsUserData> mock_host_;
 };
 
 void AIRewriterTest::RunSimpleRewriteTest(
@@ -223,7 +143,7 @@ void AIRewriterTest::RunSimpleRewriteTest(
     base::OnceCallback<void(const google::protobuf::MessageLite&
                                 request_metadata)> request_check_callback) {
   SetupMockOptimizationGuideKeyedService();
-  EXPECT_CALL(*optimization_guide_keyed_service_, StartSession(_, _))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce(testing::Invoke([&](optimization_guide::ModelBasedCapabilityKey
                                         feature,
                                     const std::optional<
@@ -273,7 +193,7 @@ void AIRewriterTest::RunSimpleRewriteTest(
                                                    length));
     run_loop.Run();
   }
-  MockResponder mock_responder;
+  AITestUtils::MockModelStreamingResponder mock_responder;
 
   base::RunLoop run_loop;
   EXPECT_CALL(mock_responder, OnResponse(_, _, _))
@@ -342,12 +262,12 @@ TEST_F(AIRewriterTest, CreateRewriterNoService) {
 
 TEST_F(AIRewriterTest, CreateRewriterModelNotAvailable) {
   SetupMockOptimizationGuideKeyedService();
-  EXPECT_CALL(*optimization_guide_keyed_service_, StartSession(_, _))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce(testing::Invoke(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
               const std::optional<optimization_guide::SessionConfigParams>&
                   config_params) { return nullptr; }));
-  EXPECT_CALL(*optimization_guide_keyed_service_,
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               CanCreateOnDeviceSession(_, _))
       .WillOnce(testing::Invoke(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
@@ -380,7 +300,7 @@ TEST_F(AIRewriterTest, CreateRewriterRetryAfterConfigNotAvailableForFeature) {
   SetupMockOptimizationGuideKeyedService();
 
   // StartSession must be called twice.
-  EXPECT_CALL(*optimization_guide_keyed_service_, StartSession(_, _))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce(testing::Invoke(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
               const std::optional<optimization_guide::SessionConfigParams>&
@@ -396,7 +316,7 @@ TEST_F(AIRewriterTest, CreateRewriterRetryAfterConfigNotAvailableForFeature) {
             return std::make_unique<optimization_guide::MockSession>();
           }));
 
-  EXPECT_CALL(*optimization_guide_keyed_service_,
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               CanCreateOnDeviceSession(_, _))
       .WillOnce(testing::Invoke(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
@@ -411,7 +331,7 @@ TEST_F(AIRewriterTest, CreateRewriterRetryAfterConfigNotAvailableForFeature) {
   optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
       nullptr;
   base::RunLoop run_loop_for_add_observer;
-  EXPECT_CALL(*optimization_guide_keyed_service_,
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               AddOnDeviceModelAvailabilityChangeObserver(_, _))
       .WillOnce(testing::Invoke(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
@@ -458,13 +378,13 @@ TEST_F(AIRewriterTest, CreateRewriterRetryAfterConfigNotAvailableForFeature) {
 TEST_F(AIRewriterTest, CreateRewriterAbortAfterConfigNotAvailableForFeature) {
   SetupMockOptimizationGuideKeyedService();
 
-  EXPECT_CALL(*optimization_guide_keyed_service_, StartSession(_, _))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce(testing::Invoke(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
               const std::optional<optimization_guide::SessionConfigParams>&
                   config_params) { return nullptr; }));
 
-  EXPECT_CALL(*optimization_guide_keyed_service_,
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               CanCreateOnDeviceSession(_, _))
       .WillOnce(testing::Invoke(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
@@ -480,7 +400,7 @@ TEST_F(AIRewriterTest, CreateRewriterAbortAfterConfigNotAvailableForFeature) {
       nullptr;
   base::RunLoop run_loop_for_add_observer;
   base::RunLoop run_loop_for_remove_observer;
-  EXPECT_CALL(*optimization_guide_keyed_service_,
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               AddOnDeviceModelAvailabilityChangeObserver(_, _))
       .WillOnce(testing::Invoke(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
@@ -488,7 +408,7 @@ TEST_F(AIRewriterTest, CreateRewriterAbortAfterConfigNotAvailableForFeature) {
             availability_observer = observer;
             run_loop_for_add_observer.Quit();
           }));
-  EXPECT_CALL(*optimization_guide_keyed_service_,
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               RemoveOnDeviceModelAvailabilityChangeObserver(_, _))
       .WillOnce(testing::Invoke(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
@@ -518,7 +438,7 @@ TEST_F(AIRewriterTest, CreateRewriterAbortAfterConfigNotAvailableForFeature) {
 
 TEST_F(AIRewriterTest, ContextDestroyed) {
   SetupMockOptimizationGuideKeyedService();
-  EXPECT_CALL(*optimization_guide_keyed_service_, StartSession(_, _))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce(testing::Invoke(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
               const std::optional<optimization_guide::SessionConfigParams>&
@@ -635,7 +555,7 @@ TEST_F(AIRewriterTest, RewriteOptionCombinationFailureTest) {
 
 TEST_F(AIRewriterTest, RewriteError) {
   SetupMockOptimizationGuideKeyedService();
-  EXPECT_CALL(*optimization_guide_keyed_service_, StartSession(_, _))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce(testing::Invoke([&](optimization_guide::ModelBasedCapabilityKey
                                         feature,
                                     const std::optional<
@@ -688,7 +608,7 @@ TEST_F(AIRewriterTest, RewriteError) {
             blink::mojom::AIRewriterLength::kAsIs));
     run_loop.Run();
   }
-  MockResponder mock_responder;
+  AITestUtils::MockModelStreamingResponder mock_responder;
 
   base::RunLoop run_loop;
   EXPECT_CALL(mock_responder, OnResponse(_, _, _))
@@ -709,7 +629,7 @@ TEST_F(AIRewriterTest, RewriteError) {
 
 TEST_F(AIRewriterTest, RewriteMultipleResponse) {
   SetupMockOptimizationGuideKeyedService();
-  EXPECT_CALL(*optimization_guide_keyed_service_, StartSession(_, _))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce(testing::Invoke([&](optimization_guide::ModelBasedCapabilityKey
                                         feature,
                                     const std::optional<
@@ -762,7 +682,7 @@ TEST_F(AIRewriterTest, RewriteMultipleResponse) {
             blink::mojom::AIRewriterLength::kAsIs));
     run_loop.Run();
   }
-  MockResponder mock_responder;
+  AITestUtils::MockModelStreamingResponder mock_responder;
 
   base::RunLoop run_loop;
   EXPECT_CALL(mock_responder, OnResponse(_, _, _))
@@ -798,7 +718,7 @@ TEST_F(AIRewriterTest, RewriteMultipleResponse) {
 
 TEST_F(AIRewriterTest, MultipleRewrite) {
   SetupMockOptimizationGuideKeyedService();
-  EXPECT_CALL(*optimization_guide_keyed_service_, StartSession(_, _))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce(testing::Invoke([&](optimization_guide::ModelBasedCapabilityKey
                                         feature,
                                     const std::optional<
@@ -864,7 +784,7 @@ TEST_F(AIRewriterTest, MultipleRewrite) {
     run_loop.Run();
   }
   {
-    MockResponder mock_responder;
+    AITestUtils::MockModelStreamingResponder mock_responder;
     base::RunLoop run_loop;
     EXPECT_CALL(mock_responder, OnResponse(_, _, _))
         .WillOnce(testing::Invoke(
@@ -889,7 +809,7 @@ TEST_F(AIRewriterTest, MultipleRewrite) {
     run_loop.Run();
   }
   {
-    MockResponder mock_responder;
+    AITestUtils::MockModelStreamingResponder mock_responder;
     base::RunLoop run_loop;
     EXPECT_CALL(mock_responder, OnResponse(_, _, _))
         .WillOnce(testing::Invoke(
@@ -921,7 +841,7 @@ TEST_F(AIRewriterTest, ResponderDisconnected) {
   base::RunLoop run_loop_for_callback;
   optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
       streaming_callback;
-  EXPECT_CALL(*optimization_guide_keyed_service_, StartSession(_, _))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce(testing::Invoke([&](optimization_guide::ModelBasedCapabilityKey
                                         feature,
                                     const std::optional<
@@ -971,8 +891,8 @@ TEST_F(AIRewriterTest, ResponderDisconnected) {
             blink::mojom::AIRewriterLength::kAsIs));
     run_loop.Run();
   }
-  std::unique_ptr<MockResponder> mock_responder =
-      std::make_unique<MockResponder>();
+  std::unique_ptr<AITestUtils::MockModelStreamingResponder> mock_responder =
+      std::make_unique<AITestUtils::MockModelStreamingResponder>();
   rewriter_remote->Rewrite(kInputString, kContextString,
                            mock_responder->BindNewPipeAndPassRemote());
   mock_responder.reset();
@@ -993,7 +913,7 @@ TEST_F(AIRewriterTest, RewriterDisconnected) {
   base::RunLoop run_loop_for_callback;
   optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
       streaming_callback;
-  EXPECT_CALL(*optimization_guide_keyed_service_, StartSession(_, _))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce(testing::Invoke([&](optimization_guide::ModelBasedCapabilityKey
                                         feature,
                                     const std::optional<
@@ -1044,7 +964,7 @@ TEST_F(AIRewriterTest, RewriterDisconnected) {
     run_loop.Run();
   }
 
-  MockResponder mock_responder;
+  AITestUtils::MockModelStreamingResponder mock_responder;
   base::RunLoop run_loop_for_response;
   EXPECT_CALL(mock_responder, OnResponse(_, _, _))
       .WillOnce(testing::Invoke([&](blink::mojom::ModelStreamingResponseStatus

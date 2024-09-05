@@ -10,8 +10,12 @@
 
 using testing::Test;
 
+namespace {
+
 const uint32_t kTestMaxContextToken = 10u;
 const uint32_t kTestSystemPromptToken = 5u;
+
+}  // namespace
 
 // Tests `AITextSession::Context` creation without system prompt.
 TEST(AITextSessionTest, CreateContext_WithoutSystemPrompt) {

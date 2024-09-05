@@ -8,11 +8,9 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/mock_callback.h"
 #include "chrome/browser/ai/ai_manager_keyed_service_factory.h"
+#include "chrome/browser/ai/ai_test_utils.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -22,8 +20,6 @@
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 
 using ::testing::_;
-using ::testing::AtMost;
-using ::testing::NiceMock;
 
 namespace {
 
@@ -55,36 +51,10 @@ class MockCreateWriterClient
   mojo::Receiver<blink::mojom::AIManagerCreateWriterClient> receiver_{this};
 };
 
-// TODO(crbug.com/357967382): Move MockResponder to a common utils file.
-class MockResponder : public blink::mojom::ModelStreamingResponder {
- public:
-  MockResponder() = default;
-  ~MockResponder() override = default;
-  MockResponder(const MockResponder&) = delete;
-  MockResponder& operator=(const MockResponder&) = delete;
-
-  mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
-  BindNewPipeAndPassRemote() {
-    return receiver_.BindNewPipeAndPassRemote();
-  }
-
-  MOCK_METHOD(void,
-              OnResponse,
-              (blink::mojom::ModelStreamingResponseStatus status,
-               const std::optional<std::string>& text,
-               std::optional<uint64_t> current_tokens),
-              (override));
-
- private:
-  mojo::Receiver<blink::mojom::ModelStreamingResponder> receiver_{this};
-};
-
-class MockSupportsUserData : public base::SupportsUserData {};
-
 optimization_guide::OptimizationGuideModelStreamingExecutionResult
-CreateExecutionResult(const std::string_view outpt, bool is_complete) {
+CreateExecutionResult(const std::string_view output, bool is_complete) {
   optimization_guide::proto::ComposeResponse response;
-  *response.mutable_output() = outpt;
+  *response.mutable_output() = output;
   std::string serialized_metadata;
   response.SerializeToString(&serialized_metadata);
   optimization_guide::proto::Any any;
@@ -128,59 +98,7 @@ void CheckComposeRequestUserInput(
 
 }  // namespace
 
-class AIWriterTest : public ChromeRenderViewHostTestHarness {
- public:
-  void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
-    mock_host_ = std::make_unique<MockSupportsUserData>();
-  }
-
-  void TearDown() override {
-    optimization_guide_keyed_service_ = nullptr;
-    mock_host_.reset();
-    ChromeRenderViewHostTestHarness::TearDown();
-  }
-
- protected:
-  // Setting up MockOptimizationGuideKeyedService.
-  void SetupMockOptimizationGuideKeyedService() {
-    optimization_guide_keyed_service_ =
-        static_cast<MockOptimizationGuideKeyedService*>(
-            OptimizationGuideKeyedServiceFactory::GetInstance()
-                ->SetTestingFactoryAndUse(
-                    profile(),
-                    base::BindRepeating([](content::BrowserContext* context)
-                                            -> std::unique_ptr<KeyedService> {
-                      return std::make_unique<
-                          NiceMock<MockOptimizationGuideKeyedService>>();
-                    })));
-  }
-  void SetupNullOptimizationGuideKeyedService() {
-    OptimizationGuideKeyedServiceFactory::GetInstance()
-        ->SetTestingFactoryAndUse(
-            profile(),
-            base::BindRepeating(
-                [](content::BrowserContext* context)
-                    -> std::unique_ptr<KeyedService> { return nullptr; }));
-  }
-
-  mojo::Remote<blink::mojom::AIManager> GetAIManagerRemote() {
-    AIManagerKeyedService* ai_manager_keyed_service =
-        AIManagerKeyedServiceFactory::GetAIManagerKeyedService(
-            main_rfh()->GetBrowserContext());
-    mojo::Remote<blink::mojom::AIManager> ai_manager;
-    ai_manager_keyed_service->AddReceiver(
-        ai_manager.BindNewPipeAndPassReceiver(), mock_host_.get());
-    return ai_manager;
-  }
-
-  void ResetMockHost() { mock_host_.reset(); }
-
-  raw_ptr<MockOptimizationGuideKeyedService> optimization_guide_keyed_service_;
-
- private:
-  std::unique_ptr<MockSupportsUserData> mock_host_;
-};
+class AIWriterTest : public AITestUtils::AITestBase {};
 
 TEST_F(AIWriterTest, CreateWriterNoService) {
   SetupNullOptimizationGuideKeyedService();
@@ -203,12 +121,12 @@ TEST_F(AIWriterTest, CreateWriterNoService) {
 
 TEST_F(AIWriterTest, CreateWriterModelNotAvailable) {
   SetupMockOptimizationGuideKeyedService();
-  EXPECT_CALL(*optimization_guide_keyed_service_, StartSession(_, _))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce(testing::Invoke(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
               const std::optional<optimization_guide::SessionConfigParams>&
                   config_params) { return nullptr; }));
-  EXPECT_CALL(*optimization_guide_keyed_service_,
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               CanCreateOnDeviceSession(_, _))
       .WillOnce(testing::Invoke(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
@@ -239,7 +157,7 @@ TEST_F(AIWriterTest, CreateWriterRetryAfterConfigNotAvailableForFeature) {
   SetupMockOptimizationGuideKeyedService();
 
   // StartSession must be called twice.
-  EXPECT_CALL(*optimization_guide_keyed_service_, StartSession(_, _))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce(testing::Invoke(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
               const std::optional<optimization_guide::SessionConfigParams>&
@@ -255,7 +173,7 @@ TEST_F(AIWriterTest, CreateWriterRetryAfterConfigNotAvailableForFeature) {
             return std::make_unique<optimization_guide::MockSession>();
           }));
 
-  EXPECT_CALL(*optimization_guide_keyed_service_,
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               CanCreateOnDeviceSession(_, _))
       .WillOnce(testing::Invoke(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
@@ -270,7 +188,7 @@ TEST_F(AIWriterTest, CreateWriterRetryAfterConfigNotAvailableForFeature) {
   optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
       nullptr;
   base::RunLoop run_loop_for_add_observer;
-  EXPECT_CALL(*optimization_guide_keyed_service_,
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               AddOnDeviceModelAvailabilityChangeObserver(_, _))
       .WillOnce(testing::Invoke(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
@@ -315,13 +233,13 @@ TEST_F(AIWriterTest, CreateWriterRetryAfterConfigNotAvailableForFeature) {
 TEST_F(AIWriterTest, CreateWriterAbortAfterConfigNotAvailableForFeature) {
   SetupMockOptimizationGuideKeyedService();
 
-  EXPECT_CALL(*optimization_guide_keyed_service_, StartSession(_, _))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce(testing::Invoke(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
               const std::optional<optimization_guide::SessionConfigParams>&
                   config_params) { return nullptr; }));
 
-  EXPECT_CALL(*optimization_guide_keyed_service_,
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               CanCreateOnDeviceSession(_, _))
       .WillOnce(testing::Invoke(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
@@ -337,7 +255,7 @@ TEST_F(AIWriterTest, CreateWriterAbortAfterConfigNotAvailableForFeature) {
       nullptr;
   base::RunLoop run_loop_for_add_observer;
   base::RunLoop run_loop_for_remove_observer;
-  EXPECT_CALL(*optimization_guide_keyed_service_,
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               AddOnDeviceModelAvailabilityChangeObserver(_, _))
       .WillOnce(testing::Invoke(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
@@ -345,7 +263,7 @@ TEST_F(AIWriterTest, CreateWriterAbortAfterConfigNotAvailableForFeature) {
             availability_observer = observer;
             run_loop_for_add_observer.Quit();
           }));
-  EXPECT_CALL(*optimization_guide_keyed_service_,
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               RemoveOnDeviceModelAvailabilityChangeObserver(_, _))
       .WillOnce(testing::Invoke(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
@@ -372,7 +290,7 @@ TEST_F(AIWriterTest, CreateWriterAbortAfterConfigNotAvailableForFeature) {
 
 TEST_F(AIWriterTest, ContextDestroyed) {
   SetupMockOptimizationGuideKeyedService();
-  EXPECT_CALL(*optimization_guide_keyed_service_, StartSession(_, _))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce(testing::Invoke(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
               const std::optional<optimization_guide::SessionConfigParams>&
@@ -410,7 +328,7 @@ TEST_F(AIWriterTest, ContextDestroyed) {
 
 TEST_F(AIWriterTest, SimpleWrite) {
   SetupMockOptimizationGuideKeyedService();
-  EXPECT_CALL(*optimization_guide_keyed_service_, StartSession(_, _))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce(testing::Invoke([&](optimization_guide::ModelBasedCapabilityKey
                                         feature,
                                     const std::optional<
@@ -458,7 +376,7 @@ TEST_F(AIWriterTest, SimpleWrite) {
         blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
     run_loop.Run();
   }
-  MockResponder mock_responder;
+  AITestUtils::MockModelStreamingResponder mock_responder;
 
   base::RunLoop run_loop;
   EXPECT_CALL(mock_responder, OnResponse(_, _, _))
@@ -486,7 +404,7 @@ TEST_F(AIWriterTest, SimpleWrite) {
 
 TEST_F(AIWriterTest, WriteError) {
   SetupMockOptimizationGuideKeyedService();
-  EXPECT_CALL(*optimization_guide_keyed_service_, StartSession(_, _))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce(testing::Invoke([&](optimization_guide::ModelBasedCapabilityKey
                                         feature,
                                     const std::optional<
@@ -537,7 +455,7 @@ TEST_F(AIWriterTest, WriteError) {
         blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
     run_loop.Run();
   }
-  MockResponder mock_responder;
+  AITestUtils::MockModelStreamingResponder mock_responder;
 
   base::RunLoop run_loop;
   EXPECT_CALL(mock_responder, OnResponse(_, _, _))
@@ -558,7 +476,7 @@ TEST_F(AIWriterTest, WriteError) {
 
 TEST_F(AIWriterTest, WriteMultipleResponse) {
   SetupMockOptimizationGuideKeyedService();
-  EXPECT_CALL(*optimization_guide_keyed_service_, StartSession(_, _))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce(testing::Invoke([&](optimization_guide::ModelBasedCapabilityKey
                                         feature,
                                     const std::optional<
@@ -608,7 +526,7 @@ TEST_F(AIWriterTest, WriteMultipleResponse) {
         blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
     run_loop.Run();
   }
-  MockResponder mock_responder;
+  AITestUtils::MockModelStreamingResponder mock_responder;
 
   base::RunLoop run_loop;
   EXPECT_CALL(mock_responder, OnResponse(_, _, _))
@@ -644,7 +562,7 @@ TEST_F(AIWriterTest, WriteMultipleResponse) {
 
 TEST_F(AIWriterTest, MultipleWrite) {
   SetupMockOptimizationGuideKeyedService();
-  EXPECT_CALL(*optimization_guide_keyed_service_, StartSession(_, _))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce(testing::Invoke([&](optimization_guide::ModelBasedCapabilityKey
                                         feature,
                                     const std::optional<
@@ -707,7 +625,7 @@ TEST_F(AIWriterTest, MultipleWrite) {
     run_loop.Run();
   }
   {
-    MockResponder mock_responder;
+    AITestUtils::MockModelStreamingResponder mock_responder;
     base::RunLoop run_loop;
     EXPECT_CALL(mock_responder, OnResponse(_, _, _))
         .WillOnce(testing::Invoke(
@@ -732,7 +650,7 @@ TEST_F(AIWriterTest, MultipleWrite) {
     run_loop.Run();
   }
   {
-    MockResponder mock_responder;
+    AITestUtils::MockModelStreamingResponder mock_responder;
     base::RunLoop run_loop;
     EXPECT_CALL(mock_responder, OnResponse(_, _, _))
         .WillOnce(testing::Invoke(
@@ -764,7 +682,7 @@ TEST_F(AIWriterTest, ResponderDisconnected) {
   base::RunLoop run_loop_for_callback;
   optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
       streaming_callback;
-  EXPECT_CALL(*optimization_guide_keyed_service_, StartSession(_, _))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce(testing::Invoke([&](optimization_guide::ModelBasedCapabilityKey
                                         feature,
                                     const std::optional<
@@ -811,8 +729,8 @@ TEST_F(AIWriterTest, ResponderDisconnected) {
         blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
     run_loop.Run();
   }
-  std::unique_ptr<MockResponder> mock_responder =
-      std::make_unique<MockResponder>();
+  std::unique_ptr<AITestUtils::MockModelStreamingResponder> mock_responder =
+      std::make_unique<AITestUtils::MockModelStreamingResponder>();
   writer_remote->Write(kInputString, kContextString,
                        mock_responder->BindNewPipeAndPassRemote());
   mock_responder.reset();
@@ -833,7 +751,7 @@ TEST_F(AIWriterTest, WriterDisconnected) {
   base::RunLoop run_loop_for_callback;
   optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
       streaming_callback;
-  EXPECT_CALL(*optimization_guide_keyed_service_, StartSession(_, _))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
       .WillOnce(testing::Invoke([&](optimization_guide::ModelBasedCapabilityKey
                                         feature,
                                     const std::optional<
@@ -881,7 +799,7 @@ TEST_F(AIWriterTest, WriterDisconnected) {
     run_loop.Run();
   }
 
-  MockResponder mock_responder;
+  AITestUtils::MockModelStreamingResponder mock_responder;
   base::RunLoop run_loop_for_response;
   EXPECT_CALL(mock_responder, OnResponse(_, _, _))
       .WillOnce(testing::Invoke([&](blink::mojom::ModelStreamingResponseStatus

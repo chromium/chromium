@@ -8,13 +8,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/supports_user_data.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ai/ai_manager_keyed_service_factory.h"
+#include "chrome/browser/ai/ai_test_utils.h"
 #include "chrome/browser/ai/ai_text_session.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
@@ -28,14 +26,10 @@
 using optimization_guide::MockSession;
 using optimization_guide::MockSessionWrapper;
 using testing::_;
-using testing::An;
 using testing::AtMost;
 using testing::Invoke;
 using testing::NiceMock;
-using testing::Return;
 namespace {
-
-class MockSupportsUserData : public base::SupportsUserData {};
 
 const optimization_guide::TokenLimits& GetFakeTokenLimits() {
   static const optimization_guide::TokenLimits limits{
@@ -49,37 +43,10 @@ const optimization_guide::TokenLimits& GetFakeTokenLimits() {
 
 }  // namespace
 
-class AIManagerKeyedServiceTest : public ChromeRenderViewHostTestHarness {
- public:
-  void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
-    SetUpOptimizationGuide();
-  }
-
-  void TearDown() override {
-    mock_optimization_guide_keyed_service_ = nullptr;
-    ChromeRenderViewHostTestHarness::TearDown();
-  }
-
+class AIManagerKeyedServiceTest : public AITestUtils::AITestBase {
  protected:
-  MockSupportsUserData* mock_host() { return &mock_host_; }
-
-  testing::NiceMock<MockOptimizationGuideKeyedService>* MockService() {
-    return mock_optimization_guide_keyed_service_;
-  }
-
- private:
-  void SetUpOptimizationGuide() {
-    mock_optimization_guide_keyed_service_ =
-        static_cast<NiceMock<MockOptimizationGuideKeyedService>*>(
-            OptimizationGuideKeyedServiceFactory::GetInstance()
-                ->SetTestingFactoryAndUse(
-                    profile(),
-                    base::BindRepeating([](content::BrowserContext* context)
-                                            -> std::unique_ptr<KeyedService> {
-                      return std::make_unique<
-                          NiceMock<MockOptimizationGuideKeyedService>>();
-                    })));
+  void SetupMockOptimizationGuideKeyedService() {
+    AITestUtils::AITestBase::SetupMockOptimizationGuideKeyedService();
 
     ON_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
         .WillByDefault(
@@ -87,21 +54,22 @@ class AIManagerKeyedServiceTest : public ChromeRenderViewHostTestHarness {
     ON_CALL(session_, GetTokenLimits()).WillByDefault(GetFakeTokenLimits);
   }
 
-  raw_ptr<testing::NiceMock<MockOptimizationGuideKeyedService>>
-      mock_optimization_guide_keyed_service_;
+ private:
   testing::NiceMock<MockSession> session_;
-  MockSupportsUserData mock_host_;
 };
 
 // Tests that involve invalid on-device model file paths should not crash when
 // the associated RFH is destroyed.
 TEST_F(AIManagerKeyedServiceTest, NoUAFWithInvalidOnDeviceModelPath) {
+  SetupMockOptimizationGuideKeyedService();
+
   auto* command_line = base::CommandLine::ForCurrentProcess();
   command_line->AppendSwitchASCII(
       optimization_guide::switches::kOnDeviceModelExecutionOverride,
       "invalid-on-device-model-file-path");
 
-  EXPECT_CALL(*MockService(), CanCreateOnDeviceSession(_, _))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              CanCreateOnDeviceSession(_, _))
       .Times(AtMost(1))
       .WillOnce(Invoke([](optimization_guide::ModelBasedCapabilityKey feature,
                           optimization_guide::OnDeviceModelEligibilityReason*
@@ -136,6 +104,8 @@ TEST_F(AIManagerKeyedServiceTest, NoUAFWithInvalidOnDeviceModelPath) {
 // Tests the `AIUserDataSet`'s behavior of managing the lifetime of
 // `AITextSession`s.
 TEST_F(AIManagerKeyedServiceTest, AIContextBoundObjectSet) {
+  SetupMockOptimizationGuideKeyedService();
+
   base::MockCallback<blink::mojom::AIManager::CreateTextSessionCallback>
       callback;
   base::RunLoop run_loop;
@@ -146,14 +116,8 @@ TEST_F(AIManagerKeyedServiceTest, AIContextBoundObjectSet) {
         run_loop.Quit();
       }));
 
-  AIManagerKeyedService* ai_manager =
-      AIManagerKeyedServiceFactory::GetAIManagerKeyedService(
-          main_rfh()->GetBrowserContext());
-
-  mojo::Remote<blink::mojom::AIManager> mock_remote;
+  mojo::Remote<blink::mojom::AIManager> mock_remote = GetAIManagerRemote();
   mojo::Remote<blink::mojom::AITextSession> mock_session;
-  ai_manager->AddReceiver(mock_remote.BindNewPipeAndPassReceiver(),
-                          mock_host());
   // Initially the `AIUserDataSet` is empty.
   base::WeakPtr<AIContextBoundObjectSet> context_bound_objects =
       AIContextBoundObjectSet::GetFromContext(mock_host())

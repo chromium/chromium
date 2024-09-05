@@ -6031,6 +6031,8 @@ test("unit_tests") {
     "../browser/ai/ai_manager_keyed_service_unittest.cc",
     "../browser/ai/ai_rewriter_unittest.cc",
     "../browser/ai/ai_summarizer_unittest.cc",
+    "../browser/ai/ai_test_utils.cc",
+    "../browser/ai/ai_test_utils.h",
     "../browser/ai/ai_text_session_unittest.cc",
     "../browser/ai/ai_writer_unittest.cc",
     "../browser/apps/icon_standardizer_unittest.cc",
