@@ -48,6 +48,7 @@ static_library("camera_app") {
     "//chrome/browser/pdf:pdf_service",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/ash/internet",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chrome/common:constants",

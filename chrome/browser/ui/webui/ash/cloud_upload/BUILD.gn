@@ -49,6 +49,7 @@ static_library("cloud_upload") {
     "//chrome/browser/ash/hats",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/ash",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//chrome/browser/web_applications",
     "//chrome/common",
     "//chromeos/ash/components/drivefs",

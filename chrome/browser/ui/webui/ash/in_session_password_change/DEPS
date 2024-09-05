@@ -15,7 +15,7 @@ include_rules = [
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/profiles/profile.h",
-  "+chrome/browser/ui/webui/ash/system_web_dialog_delegate.h",
+  "+chrome/browser/ui/webui/ash/system_web_dialog",
   "+chrome/browser/ui/webui/webui_util.h",
   "+chrome/common",
   "+chrome/grit",

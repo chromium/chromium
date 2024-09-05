@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/values.h"
-#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/test/browser_test_utils.h"
 

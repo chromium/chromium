@@ -7,7 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/values.h"
-#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "extensions/common/api/feedback_private.h"
 
 namespace ash {

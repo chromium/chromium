@@ -118,6 +118,7 @@ static_library("crostini") {
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/webui/ash/crostini_installer",
     "//chrome/browser/ui/webui/ash/crostini_upgrader:mojo_bindings",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//chrome/common",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",

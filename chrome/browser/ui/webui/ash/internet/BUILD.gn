@@ -21,6 +21,7 @@ static_library("internet") {
     "//chrome/browser/resources/chromeos/internet_detail_dialog:resources",
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui/ash/cellular_setup",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//chrome/common",
     "//chromeos/ash/components/network",
     "//chromeos/services/network_config/public/cpp",

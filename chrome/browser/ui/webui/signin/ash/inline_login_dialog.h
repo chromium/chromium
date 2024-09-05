@@ -11,7 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
-#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "chrome/browser/ui/webui/signin/ash/inline_login_handler_modal_delegate.h"
 #include "components/account_manager_core/account_addition_options.h"
 #include "components/web_modal/modal_dialog_host.h"

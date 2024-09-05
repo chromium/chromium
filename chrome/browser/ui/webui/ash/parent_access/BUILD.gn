@@ -42,6 +42,7 @@ static_library("parent_access") {
     "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/webui/ash",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//chrome/common",
     "//components/signin/public/identity_manager",
     "//content/public/browser",

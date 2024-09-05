@@ -29,6 +29,7 @@ static_library("add_supervision") {
   public_deps = [
     ":mojo_bindings",
     "//base",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//chrome/common",
     "//components/signin/public/identity_manager",
     "//content/public/browser",

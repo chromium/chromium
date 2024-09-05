@@ -15,6 +15,7 @@ static_library("set_time_dialog") {
 
   deps = [
     "//base",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//chrome/common",
     "//chromeos/ash/components/login/login_state",
     "//ui/gfx",

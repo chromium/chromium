@@ -27,6 +27,7 @@ static_library("extended_updates") {
     "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/webui/ash",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//ui/web_dialogs",

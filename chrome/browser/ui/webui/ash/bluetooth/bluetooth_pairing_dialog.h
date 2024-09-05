@@ -9,7 +9,7 @@
 #include <string>
 #include <string_view>
 
-#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-forward.h"
 #include "content/public/browser/webui_config.h"
@@ -40,7 +40,7 @@ class BluetoothPairingDialog : public SystemWebDialogDelegate {
   // should be in the form "XX:XX:XX:XX:XX:XX". When |device_address| is not
   // provided the dialog will show the device list instead. The returned object
   // manages its own lifetime, for more information see
-  // chrome/browser/ui/webui/ash/system_web_dialog_delegate.h.
+  // chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h.
   static SystemWebDialogDelegate* ShowDialog(
       std::optional<std::string_view> device_address = std::nullopt);
 

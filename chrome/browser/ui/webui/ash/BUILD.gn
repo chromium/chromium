@@ -24,10 +24,6 @@ static_library("ash") {
     "slow_trace_ui.h",
     "slow_ui.cc",
     "slow_ui.h",
-    "system_web_dialog_delegate.cc",
-    "system_web_dialog_delegate.h",
-    "system_web_dialog_view.cc",
-    "system_web_dialog_view.h",
     "user_image_source.cc",
     "user_image_source.h",
   ]
@@ -38,6 +34,7 @@ static_library("ash") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/ash/login",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//chrome/common",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/services/bluetooth_config/public/mojom",
@@ -254,10 +251,7 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [
-    "cros_components_browsertest.cc",
-    "system_web_dialog_browsertest.cc",
-  ]
+  sources = [ "cros_components_browsertest.cc" ]
 
   deps = [
     "//ash:test_support",
@@ -299,6 +293,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/webui/ash/settings/pages/power:browser_tests",
     "//chrome/browser/ui/webui/ash/skyvault:browser_tests",
     "//chrome/browser/ui/webui/ash/smb_shares:browser_tests",
+    "//chrome/browser/ui/webui/ash/system_web_dialog:browser_tests",
   ]
 }
 

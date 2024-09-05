@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/values.h"
-#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "content/public/browser/webui_config.h"

@@ -8,7 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
-#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
