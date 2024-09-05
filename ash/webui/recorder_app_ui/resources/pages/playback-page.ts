@@ -533,11 +533,15 @@ export class PlaybackPage extends ReactiveLitElement {
   }
 
   private renderPlayPauseButton() {
+    const ariaLabel = this.audioPlayer.playing.value ?
+      i18n.playbackPauseButtonTooltip :
+      i18n.playbackPlayButtonTooltip;
     return html`<cra-icon-button
       id="play-button"
       shape="circle"
       @click=${this.onPlayPauseClick}
       ${ref(this.playPauseButton)}
+      aria-label=${ariaLabel}
     >
       <cra-icon
         slot="icon"
@@ -615,6 +619,9 @@ export class PlaybackPage extends ReactiveLitElement {
   }
 
   private renderHeader() {
+    const transcriptionLabel = this.showTranscription.value ?
+      i18n.playbackHideTranscriptButtonTooltip :
+      i18n.playbackShowTranscriptButtonTooltip;
     const transcriptionToggleButton =
       this.transcription.value === null ? nothing : html`
             <cra-icon-button
@@ -622,6 +629,7 @@ export class PlaybackPage extends ReactiveLitElement {
               .selected=${live(this.showTranscription.value)}
               @click=${this.toggleTranscription}
               ${ref(this.transcriptionButtonRef)}
+              aria-label=${transcriptionLabel}
             >
               <cra-icon slot="icon" name="notes"></cra-icon>
               <cra-icon slot="selectedIcon" name="notes"></cra-icon>
@@ -634,6 +642,7 @@ export class PlaybackPage extends ReactiveLitElement {
           buttonstyle="floating"
           @click=${() => navigateTo('/')}
           ${ref(this.backButton)}
+          aria-label=${i18n.backToMainButtonTooltip}
         >
           <cra-icon slot="icon" name="arrow_back"></cra-icon>
         </cra-icon-button>
@@ -647,6 +656,7 @@ export class PlaybackPage extends ReactiveLitElement {
           buttonstyle="floating"
           id="show-menu"
           @click=${this.toggleMenu}
+          aria-label=${i18n.playbackMenuButtonTooltip}
         >
           <cra-icon slot="icon" name="more_vertical"></cra-icon>
         </cra-icon-button>
@@ -679,6 +689,7 @@ export class PlaybackPage extends ReactiveLitElement {
         step="0.1"
         .value=${currentTime}
         @input=${this.onTimelineInput}
+        aria-label=${i18n.playbackSeekSliderAriaLabel}
       ></cros-slider>
       <div>
         <span>${currentTimeString}</span>
@@ -730,6 +741,8 @@ export class PlaybackPage extends ReactiveLitElement {
         id="show-speed-menu"
         @click=${togglePlaybackSpeedMenu}
         .selected=${live(this.playbackSpeedMenuOpened.value)}
+        aria-haspopup="true"
+        aria-label=${i18n.playbackSpeedButtonTooltip}
       >
         <cra-icon slot="icon" .name=${iconName}></cra-icon>
         <cra-icon slot="selectedIcon" .name=${iconName}></cra-icon>
@@ -773,6 +786,7 @@ export class PlaybackPage extends ReactiveLitElement {
         min="0"
         max="100"
         @input=${this.onVolumeInput}
+        aria-label=${i18n.playbackVolumeAriaLabel}
       ></cros-slider>
     `;
   }
@@ -793,7 +807,11 @@ export class PlaybackPage extends ReactiveLitElement {
   private renderVolumeControl(): RenderResult {
     return html`
       <div id="inline-slider">
-        <cra-icon-button buttonstyle="floating" @click=${this.toggleMuted}>
+        <cra-icon-button
+          buttonstyle="floating"
+          @click=${this.toggleMuted}
+          aria-label=${i18n.playbackMuteButtonTooltip}
+        >
           ${this.renderVolumeIcon()}
         </cra-icon-button>
         ${this.renderVolumeSlider()}
@@ -802,6 +820,7 @@ export class PlaybackPage extends ReactiveLitElement {
         <cra-icon-button
           buttonstyle="floating"
           @click=${this.showFloatingVolume}
+          aria-label=${i18n.playbackVolumeAriaLabel}
         >
           ${this.renderVolumeIcon()}
         </cra-icon-button>
@@ -836,7 +855,12 @@ export class PlaybackPage extends ReactiveLitElement {
           <div id="audio-waveform-container" class="sheet">
             ${this.renderAudioWaveform()}
           </div>
-          <div id="transcription-container" class="sheet">
+          <div
+            id="transcription-container"
+            class="sheet"
+            aria-label=${i18n.playbackTranscriptLandmarkAriaLabel}
+            role="region"
+          >
             ${this.renderTranscription()}
           </div>
         </div>
@@ -850,11 +874,17 @@ export class PlaybackPage extends ReactiveLitElement {
         <div id="actions">
           <div id="volume-controls">${this.renderVolumeControl()}</div>
           <div id="middle-controls">
-            <secondary-button @click=${this.onRewind10Secs}>
+            <secondary-button
+              @click=${this.onRewind10Secs}
+              aria-label=${i18n.playbackBackwardButtonTooltip}
+            >
               <cra-icon slot="icon" name="replay_10"></cra-icon>
             </secondary-button>
             ${this.renderPlayPauseButton()}
-            <secondary-button @click=${this.onForward10Secs}>
+            <secondary-button
+              @click=${this.onForward10Secs}
+              aria-label=${i18n.playbackForwardButtonTooltip}
+            >
               <cra-icon slot="icon" name="forward_10"></cra-icon>
             </secondary-button>
           </div>

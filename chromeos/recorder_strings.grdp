@@ -8,6 +8,9 @@
   <message desc="Tooltip of the button to navigate back to main page." meaning="Go back to main page." name="IDS_RECORDER_BACK_TO_MAIN_BUTTON_TOOLTIP">
     Back
   </message>
+  <message desc="Tooltip of the button to close the dialog." meaning="Close the dialog." name="IDS_RECORDER_CLOSE_DIALOG_BUTTON_TOOLTIP">
+    Close
+  </message>
   <message desc="Label of the menu item to choose webm as audio format in the export dialog." name="IDS_RECORDER_EXPORT_DIALOG_AUDIO_FORMAT_WEBM_OPTION">
     WEBM
   </message>
@@ -28,6 +31,12 @@
   </message>
   <message desc="Header of the export transcription section in the export dialog." name="IDS_RECORDER_EXPORT_DIALOG_TRANSCRIPTION_HEADER">
     Export transcript
+  </message>
+  <message desc="Tooltip of the button to send negative feedback for the output from generative AI features." name="IDS_RECORDER_GENAI_NEGATIVE_FEEDBACK_BUTTON_TOOLTIP">
+    Bad suggestion
+  </message>
+  <message desc="Tooltip of the button to send positive feedback for the output from generative AI features." name="IDS_RECORDER_GENAI_POSITIVE_FEEDBACK_BUTTON_TOOLTIP">
+    Good suggestion
   </message>
   <message desc="Disclaimer under generative AI features." name="IDS_RECORDER_GEN_AI_DISCLAIMER_TEXT">
     Generative AI is experimental and content may be inaccurate, misleading, or offensive.
@@ -123,8 +132,20 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Button to go next in the welcome step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_WELCOME_NEXT_BUTTON">
     Next
   </message>
+  <message desc="Tooltip of the button to rewind the recording playback 10 seconds." name="IDS_RECORDER_PLAYBACK_BACKWARD_BUTTON_TOOLTIP">
+    Backward 10 seconds
+  </message>
   <message desc="Accessibility label of the landmark for the playback controls section in the playback page." name="IDS_RECORDER_PLAYBACK_CONTROLS_LANDMARK_ARIA_LABEL">
     Playback controls
+  </message>
+  <message desc="Tooltip of the button to forward the recording playback 10 seconds." name="IDS_RECORDER_PLAYBACK_FORWARD_BUTTON_TOOLTIP">
+    Forward 10 seconds
+  </message>
+  <message desc="Tooltip of the button to hide the recording transcript in playback page." name="IDS_RECORDER_PLAYBACK_HIDE_TRANSCRIPT_BUTTON_TOOLTIP">
+    Hide transcript
+  </message>
+  <message desc="Tooltip of the button to open the menu item listing playback options." name="IDS_RECORDER_PLAYBACK_MENU_BUTTON_TOOLTIP">
+    More options
   </message>
   <message desc="Label of the menu item to delete the recording in playback page." name="IDS_RECORDER_PLAYBACK_MENU_DELETE_OPTION">
     Delete
@@ -135,8 +156,32 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Label of the menu item to show recording details in playback page." name="IDS_RECORDER_PLAYBACK_MENU_SHOW_DETAIL_OPTION">
     More details
   </message>
+  <message desc="Tooltip of the button to toggle mute on and off for the playback." meaning="Toggle mute for recording playback." name="IDS_RECORDER_PLAYBACK_MUTE_BUTTON_TOOLTIP">
+    Toggle mute
+  </message>
+  <message desc="Tooltip of the button to pause the recording playback." meaning="Pause the audio recording playback." name="IDS_RECORDER_PLAYBACK_PAUSE_BUTTON_TOOLTIP">
+    Pause
+  </message>
+  <message desc="Tooltip of the button to play the recording playback." meaning="Play the audio recording playback." name="IDS_RECORDER_PLAYBACK_PLAY_BUTTON_TOOLTIP">
+    Play
+  </message>
+  <message desc="Accessibility label for the seek slider in playback page." name="IDS_RECORDER_PLAYBACK_SEEK_SLIDER_ARIA_LABEL">
+    Seek
+  </message>
+  <message desc="Tooltip of the button to show the recording transcript in playback page." name="IDS_RECORDER_PLAYBACK_SHOW_TRANSCRIPT_BUTTON_TOOLTIP">
+    Show transcript
+  </message>
+  <message desc="Tooltip of the button to open the menu item listing playback speed." name="IDS_RECORDER_PLAYBACK_SPEED_BUTTON_TOOLTIP">
+    Playback speed
+  </message>
   <message desc="Label of the menu item to set playback speed to normal (1.0)." name="IDS_RECORDER_PLAYBACK_SPEED_NORMAL_OPTION">
     Normal
+  </message>
+  <message desc="Accessibility label of the landmark for recording transcript in playback page." meaning="Transcript of the audio recording." name="IDS_RECORDER_PLAYBACK_TRANSCRIPT_LANDMARK_ARIA_LABEL">
+    Transcript
+  </message>
+  <message desc="Accessibility label of the volume slider for the playback." meaning="Set the playback volume." name="IDS_RECORDER_PLAYBACK_VOLUME_ARIA_LABEL">
+    Volume
   </message>
   <message desc="Tooltip of the button to open more record options." name="IDS_RECORDER_RECORDING_ITEM_OPTIONS_BUTTON_TOOLTIP">
     More options
@@ -338,6 +383,9 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   </message>
   <message desc="Tooltip of the record title renaming text input." name="IDS_RECORDER_TITLE_RENAME_TOOLTIP">
     Rename
+  </message>
+  <message desc="Tooltip of the button to suggest the recording title." name="IDS_RECORDER_TITLE_SUGGESTION_BUTTON_TOOLTIP">
+    Create name using Google AI
   </message>
   <message desc="Header of title suggestion." name="IDS_RECORDER_TITLE_SUGGESTION_HEADER">
     A few options:

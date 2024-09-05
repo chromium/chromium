@@ -212,6 +212,7 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
           size="small"
           shape="circle"
           @click=${this.onCloseClick}
+          aria-label=${i18n.closeDialogButtonTooltip}
         >
           <cra-icon slot="icon" name="close"></cra-icon>
         </cra-icon-button>

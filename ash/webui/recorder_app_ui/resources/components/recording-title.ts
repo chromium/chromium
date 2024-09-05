@@ -266,6 +266,7 @@ export class RecordingTitle extends ReactiveLitElement {
               shape="circle"
               @click=${this.openSuggestionDialog}
               ${ref(this.suggestTitleButton)}
+              aria-label=${i18n.titleSuggestionButtonTooltip}
             >
               <cra-icon slot="icon" name="pen_spark"></cra-icon>
             </cra-icon-button>`;
