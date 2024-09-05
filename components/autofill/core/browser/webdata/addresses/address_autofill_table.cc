@@ -317,14 +317,6 @@ WebDatabaseTable::TypeKey GetKey() {
   return reinterpret_cast<void*>(&table_key);
 }
 
-time_t GetEndTime(base::Time end) {
-  if (end.is_null() || end == base::Time::Max()) {
-    return std::numeric_limits<time_t>::max();
-  }
-
-  return end.ToTimeT();
-}
-
 // In an older version of the schema, local and account addresses were stored in
 // different tables with the same layout. This function was used to get the
 // correct table based on the record type. It shouldn't be used anymore, except
@@ -816,44 +808,6 @@ bool AddressAutofillTable::GetAutofillProfilesFromLegacyTable(
   }
 
   return s.Succeeded();
-}
-
-bool AddressAutofillTable::RemoveAutofillDataModifiedBetween(
-    base::Time delete_begin,
-    base::Time delete_end,
-    std::vector<AutofillProfile>& profiles) {
-  DCHECK(delete_end.is_null() || delete_begin < delete_end);
-
-  // Remember Autofill profiles in the time range.
-  sql::Statement s_profiles_get;
-  SelectBuilder(db(), s_profiles_get, kAddressesTable, {kGuid},
-                base::StrCat({"WHERE ", kRecordType, " = ? AND ", kDateModified,
-                              " >= ? AND ", kDateModified, " < ?"}));
-  s_profiles_get.BindInt(
-      0, static_cast<int>(AutofillProfile::RecordType::kLocalOrSyncable));
-  s_profiles_get.BindInt64(1, delete_begin.ToTimeT());
-  s_profiles_get.BindInt64(2, GetEndTime(delete_end));
-
-  profiles.clear();
-  while (s_profiles_get.Step()) {
-    std::string guid = s_profiles_get.ColumnString(0);
-    std::optional<AutofillProfile> profile = GetAutofillProfile(guid);
-    if (!profile) {
-      return false;
-    }
-    profiles.push_back(std::move(*profile));
-  }
-  if (!s_profiles_get.Succeeded()) {
-    return false;
-  }
-
-  // Remove Autofill profiles in the time range.
-  for (const AutofillProfile& profile : profiles) {
-    if (!RemoveAutofillProfile(profile.guid())) {
-      return false;
-    }
-  }
-  return true;
 }
 
 bool AddressAutofillTable::MigrateToVersion88AddNewNameColumns() {

@@ -18,6 +18,8 @@
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
+#import "components/autofill/core/browser/address_data_manager.h"
+#import "components/autofill/core/browser/payments_data_manager.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/browser/strike_databases/strike_database.h"
 #import "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -524,28 +526,6 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
       tab_service->ClearEntries();
     }
 
-    // The saved Autofill profiles and credit cards can include the origin from
-    // which these profiles and credit cards were learned.  These are a form of
-    // history, so clear them as well.
-    scoped_refptr<autofill::AutofillWebDataService> web_data_service =
-        ios::WebDataServiceFactory::GetAutofillWebDataForBrowserState(
-            browser_state_, ServiceAccessType::EXPLICIT_ACCESS);
-    if (web_data_service.get()) {
-      web_data_service->RemoveOriginURLsModifiedBetween(delete_begin,
-                                                        delete_end);
-      // Ask for a call back when the above call is finished.
-      web_data_service->GetDBTaskRunner()->PostTaskAndReply(
-          FROM_HERE, base::DoNothing(), CreatePendingTaskCompletionClosure());
-
-      autofill::PersonalDataManager* data_manager =
-          autofill::PersonalDataManagerFactory::GetForBrowserState(
-              browser_state_);
-
-      if (data_manager) {
-        data_manager->Refresh();
-      }
-    }
-
     // Remove language histogram history.
     language::UrlLanguageHistogram* language_histogram =
         UrlLanguageHistogramFactory::GetForBrowserState(browser_state_);
@@ -592,8 +572,6 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
     if (web_data_service.get()) {
       web_data_service->RemoveFormElementsAddedBetween(delete_begin,
                                                        delete_end);
-      web_data_service->RemoveAutofillDataModifiedBetween(delete_begin,
-                                                          delete_end);
 
       // Clear out the Autofill StrikeDatabase in its entirety.
       autofill::StrikeDatabase* strike_database =
@@ -602,17 +580,17 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
         strike_database->ClearAllStrikes();
       }
 
-      // Ask for a call back when the above calls are finished.
-      web_data_service->GetDBTaskRunner()->PostTaskAndReply(
-          FROM_HERE, base::DoNothing(), CreatePendingTaskCompletionClosure());
-
       autofill::PersonalDataManager* data_manager =
           autofill::PersonalDataManagerFactory::GetForBrowserState(
               browser_state_);
+      data_manager->address_data_manager().RemoveLocalProfilesModifiedBetween(
+          delete_begin, delete_end);
+      data_manager->payments_data_manager().RemoveLocalDataModifiedBetween(
+          delete_begin, delete_end);
 
-      if (data_manager) {
-        data_manager->Refresh();
-      }
+      // Ask for a call back when the above calls are finished.
+      web_data_service->GetDBTaskRunner()->PostTaskAndReply(
+          FROM_HERE, base::DoNothing(), CreatePendingTaskCompletionClosure());
     }
   }
 

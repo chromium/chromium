@@ -219,18 +219,6 @@ class AutofillWebDataBackendImpl
 
   WebDatabase::State ClearAllServerData(WebDatabase* db);
 
-  // Removes Autofill records from the database. Valid only for local cards and
-  // kLocalOrSyncable profiles.
-  WebDatabase::State RemoveAutofillDataModifiedBetween(base::Time delete_begin,
-                                                       base::Time delete_end,
-                                                       WebDatabase* db);
-
-  // Removes origin URLs associated with local credit cards from the database.
-  // Autofill profiles don't store an origin, so this doesn't apply to them.
-  WebDatabase::State RemoveOriginURLsModifiedBetween(base::Time delete_begin,
-                                                     base::Time delete_end,
-                                                     WebDatabase* db);
-
   // Clears all the credit card benefits from the database.
   WebDatabase::State ClearAllCreditCardBenefits(WebDatabase* db);
 

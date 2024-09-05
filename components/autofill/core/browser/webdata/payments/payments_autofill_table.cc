@@ -459,13 +459,6 @@ WebDatabaseTable::TypeKey GetKey() {
   return reinterpret_cast<void*>(&table_key);
 }
 
-time_t GetEndTime(base::Time end) {
-  if (end.is_null() || end == base::Time::Max())
-    return std::numeric_limits<time_t>::max();
-
-  return end.ToTimeT();
-}
-
 }  // namespace
 
 PaymentsAutofillTable::PaymentsAutofillTable() = default;
@@ -1584,85 +1577,6 @@ bool PaymentsAutofillTable::ClearAllServerData() {
 
   transaction.Commit();
   return changed;
-}
-
-bool PaymentsAutofillTable::RemoveAutofillDataModifiedBetween(
-    base::Time delete_begin,
-    base::Time delete_end,
-    std::vector<std::unique_ptr<CreditCard>>* credit_cards) {
-  DCHECK(delete_end.is_null() || delete_begin < delete_end);
-
-  time_t delete_begin_t = delete_begin.ToTimeT();
-  time_t delete_end_t = GetEndTime(delete_end);
-
-  // Remember Autofill credit cards in the time range.
-  sql::Statement s_credit_cards_get;
-  SelectBetween(db(), s_credit_cards_get, kCreditCardsTable, {kGuid},
-                kDateModified, delete_begin_t, delete_end_t);
-
-  credit_cards->clear();
-  while (s_credit_cards_get.Step()) {
-    std::string guid = s_credit_cards_get.ColumnString(0);
-    std::unique_ptr<CreditCard> credit_card = GetCreditCard(guid);
-    if (!credit_card)
-      return false;
-    credit_cards->push_back(std::move(credit_card));
-  }
-  if (!s_credit_cards_get.Succeeded())
-    return false;
-
-  // Remove Autofill credit cards in the time range.
-  sql::Statement s_credit_cards;
-  DeleteBuilder(db(), s_credit_cards, kCreditCardsTable,
-                "date_modified >= ? AND date_modified < ?");
-  s_credit_cards.BindInt64(0, delete_begin_t);
-  s_credit_cards.BindInt64(1, delete_end_t);
-  if (!s_credit_cards.Run())
-    return false;
-
-  // Remove credit card cvcs in the time range.
-  sql::Statement s_cvc;
-  DeleteBuilder(db(), s_cvc, kLocalStoredCvcTable,
-                "last_updated_timestamp >= ? AND last_updated_timestamp < ?");
-  s_cvc.BindInt64(0, delete_begin_t);
-  s_cvc.BindInt64(1, delete_end_t);
-  return s_cvc.Run();
-}
-
-bool PaymentsAutofillTable::RemoveOriginURLsModifiedBetween(
-    base::Time delete_begin,
-    base::Time delete_end) {
-  DCHECK(delete_end.is_null() || delete_begin < delete_end);
-
-  time_t delete_begin_t = delete_begin.ToTimeT();
-  time_t delete_end_t = GetEndTime(delete_end);
-
-  // Remember Autofill credit cards with URL origins in the time range.
-  sql::Statement s_credit_cards_get;
-  SelectBetween(db(), s_credit_cards_get, kCreditCardsTable, {kGuid, kOrigin},
-                kDateModified, delete_begin_t, delete_end_t);
-
-  std::vector<std::string> credit_card_guids;
-  while (s_credit_cards_get.Step()) {
-    std::string guid = s_credit_cards_get.ColumnString(0);
-    std::string origin = s_credit_cards_get.ColumnString(1);
-    if (GURL(origin).is_valid())
-      credit_card_guids.push_back(guid);
-  }
-  if (!s_credit_cards_get.Succeeded())
-    return false;
-
-  // Clear out the origins for the found credit cards.
-  for (const std::string& guid : credit_card_guids) {
-    sql::Statement s_credit_card;
-    UpdateBuilder(db(), s_credit_card, kCreditCardsTable, {kOrigin}, "guid=?");
-    s_credit_card.BindString(0, "");
-    s_credit_card.BindString(1, guid);
-    if (!s_credit_card.Run())
-      return false;
-  }
-
-  return true;
 }
 
 bool PaymentsAutofillTable::SetCreditCardBenefits(

@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/webdata/common/web_database_table.h"
 
@@ -107,19 +106,6 @@ class AddressAutofillTable : public WebDatabaseTable {
   bool GetAutofillProfiles(
       std::optional<AutofillProfile::RecordType> record_type,
       std::vector<AutofillProfile>& profiles) const;
-
-  // Removes all local profiles created on or after `delete_begin` and strictly
-  // before `delete_end`. Returns the list of of deleted profiles in `profiles`.
-  // Return value is true if all rows were successfully removed. Returns false
-  // on database error. In that case, the output vector state is undefined, and
-  // may be partially filled.
-  // TODO(crbug.com/40151750): This function is solely used to remove browsing
-  // data. Once explicit save dialogs are fully launched, it can be removed. For
-  // this reason account profiles are not considered.
-  bool RemoveAutofillDataModifiedBetween(
-      base::Time delete_begin,
-      base::Time delete_end,
-      std::vector<AutofillProfile>& profiles);
 
   // Table migration functions. NB: These do not and should not rely on other
   // functions in this class. The implementation of a function such as

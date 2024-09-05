@@ -17,6 +17,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/strike_databases/address_suggestion_strike_database.h"
@@ -148,6 +149,11 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // Removes the profile by `guid`.
   virtual void RemoveProfile(const std::string& guid);
+
+  // Removes all local profiles modified on or after `delete_begin` and strictly
+  // before `delete_end`. Used for browsing data deletion purposes.
+  // TODO(crbug.com/363970493): Consider account addresses somehow?
+  void RemoveLocalProfilesModifiedBetween(base::Time begin, base::Time end);
 
   // Determines whether the logged in user (if any) is eligible to store
   // Autofill address profiles to their account.

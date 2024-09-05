@@ -609,6 +609,29 @@ TEST_F(AddressDataManagerTest, AddUpdateRemoveProfiles) {
               UnorderedElementsAre(Pointee(profile0), Pointee(profile2)));
 }
 
+TEST_F(AddressDataManagerTest, RemoveLocalProfilesModifiedBetween) {
+  const base::Time now = base::Time::Now();
+  AutofillProfile local_profile1 = test::GetFullProfile();
+  local_profile1.set_modification_date(now - base::Minutes(5));
+  AutofillProfile local_profile2 = test::GetFullProfile2();
+  local_profile2.set_modification_date(now + base::Minutes(1));
+  AutofillProfile account_profile = test::GetFullCanadianProfile();
+  test_api(account_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
+  account_profile.set_modification_date(now + base::Minutes(3));
+
+  AddProfileToAddressDataManager(local_profile1);
+  AddProfileToAddressDataManager(local_profile2);
+  AddProfileToAddressDataManager(account_profile);
+
+  address_data_manager().RemoveLocalProfilesModifiedBetween(
+      now, now + base::Minutes(10));
+  WaitForOnAddressDataChanged();
+  EXPECT_THAT(
+      address_data_manager().GetProfiles(),
+      UnorderedElementsAre(Pointee(local_profile1), Pointee(account_profile)));
+}
+
 // Tests that `UpdateProfile()` takes changes in the `ProfileTokenQuality`
 // observations into considerations.
 TEST_F(AddressDataManagerTest, UpdateProfile_NewObservations) {

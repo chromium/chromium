@@ -338,26 +338,6 @@ void AutofillWebDataService::UpdateServerCardMetadata(
                      autofill_backend_, credit_card));
 }
 
-void AutofillWebDataService::RemoveAutofillDataModifiedBetween(
-    base::Time delete_begin,
-    base::Time delete_end) {
-  wdbs_->ScheduleDBTask(
-      FROM_HERE,
-      base::BindOnce(
-          &AutofillWebDataBackendImpl::RemoveAutofillDataModifiedBetween,
-          autofill_backend_, delete_begin, delete_end));
-}
-
-void AutofillWebDataService::RemoveOriginURLsModifiedBetween(
-    base::Time delete_begin,
-    base::Time delete_end) {
-  wdbs_->ScheduleDBTask(
-      FROM_HERE,
-      base::BindOnce(
-          &AutofillWebDataBackendImpl::RemoveOriginURLsModifiedBetween,
-          autofill_backend_, delete_begin, delete_end));
-}
-
 void AutofillWebDataService::AddObserver(
     AutofillWebDataServiceObserverOnDBSequence* observer) {
   if (autofill_backend_)

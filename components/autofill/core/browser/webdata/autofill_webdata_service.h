@@ -206,15 +206,6 @@ class AutofillWebDataService : public WebDataServiceBase {
   // Updates the metadata for a server card (masked or not).
   void UpdateServerCardMetadata(const CreditCard& credit_card);
 
-  // Removes Autofill records from the database.
-  void RemoveAutofillDataModifiedBetween(base::Time delete_begin,
-                                         base::Time delete_end);
-
-  // Removes origin URLs associated with Autofill profiles and credit cards from
-  // the database.
-  void RemoveOriginURLsModifiedBetween(base::Time delete_begin,
-                                       base::Time delete_end);
-
   void AddObserver(AutofillWebDataServiceObserverOnDBSequence* observer);
   void RemoveObserver(AutofillWebDataServiceObserverOnDBSequence* observer);
 

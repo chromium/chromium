@@ -292,6 +292,17 @@ void AddressDataManager::RemoveProfile(const std::string& guid) {
   HandleNextProfileChange(guid);
 }
 
+void AddressDataManager::RemoveLocalProfilesModifiedBetween(base::Time begin,
+                                                            base::Time end) {
+  for (const AutofillProfile* profile :
+       GetProfilesByRecordType(AutofillProfile::RecordType::kLocalOrSyncable)) {
+    if (profile->modification_date() >= begin &&
+        (end.is_null() || profile->modification_date() < end)) {
+      RemoveProfile(profile->guid());
+    }
+  }
+}
+
 bool AddressDataManager::IsEligibleForAddressAccountStorage() const {
   if (!sync_service_) {
     return false;

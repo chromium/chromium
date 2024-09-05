@@ -408,54 +408,6 @@ TEST_F(WebDataServiceAutofillTest, CreditUpdate) {
               UnorderedElementsAre(Pointee(card1), Pointee(card2_changed)));
 }
 
-TEST_F(WebDataServiceAutofillTest, AutofillRemoveModifiedBetween) {
-  // Add a profile.
-  EXPECT_CALL(observer_, AutofillProfileChanged)
-      .WillOnce(SignalEvent(&done_event_));
-  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
-  wds_->AddAutofillProfile(profile);
-  done_event_.TimedWait(kWebDataServiceTimeout);
-
-  // Check that it was added.
-  AutofillWebDataServiceWaiter<std::vector<AutofillProfile>> profile_consumer;
-  wds_->GetAutofillProfiles(AutofillProfile::RecordType::kLocalOrSyncable,
-                            &profile_consumer);
-  EXPECT_THAT(profile_consumer.result(), UnorderedElementsAre(profile));
-
-  // Add a credit card.
-  CreditCard credit_card;
-  wds_->AddCreditCard(credit_card);
-
-  // Check that it was added.
-  AutofillWebDataServiceWaiter<std::vector<std::unique_ptr<CreditCard>>>
-      card_consumer;
-  wds_->GetCreditCards(&card_consumer);
-  EXPECT_THAT(card_consumer.result(),
-              UnorderedElementsAre(Pointee(credit_card)));
-
-  // Check that GUID-based notification was sent for the profile.
-  EXPECT_CALL(observer_,
-              AutofillProfileChanged(AutofillProfileChange(
-                  AutofillProfileChange::REMOVE, profile.guid(), profile)))
-      .WillOnce(SignalEvent(&done_event_));
-
-  // Remove the profile using time range of "all time".
-  wds_->RemoveAutofillDataModifiedBetween(base::Time(), base::Time());
-  done_event_.TimedWait(kWebDataServiceTimeout);
-
-  // Check that the profile was removed.
-  AutofillWebDataServiceWaiter<std::vector<AutofillProfile>> profile_consumer2;
-  wds_->GetAutofillProfiles(AutofillProfile::RecordType::kLocalOrSyncable,
-                            &profile_consumer2);
-  ASSERT_TRUE(profile_consumer2.result().empty());
-
-  // Check that the credit card was removed.
-  AutofillWebDataServiceWaiter<std::vector<std::unique_ptr<CreditCard>>>
-      card_consumer2;
-  wds_->GetCreditCards(&card_consumer2);
-  ASSERT_TRUE(card_consumer2.result().empty());
-}
-
 // Verify that WebDatabase.AutofillWebDataBackendImpl.OperationSuccess records
 // success and failures in the methods of AutofillWebDataBackendImpl.
 TEST_F(WebDataServiceAutofillTest, SuccessReporting) {

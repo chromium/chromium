@@ -857,65 +857,6 @@ WebDatabase::State AutofillWebDataBackendImpl::ClearAllServerData(
   return WebDatabase::COMMIT_NOT_NEEDED;
 }
 
-WebDatabase::State
-AutofillWebDataBackendImpl::RemoveAutofillDataModifiedBetween(
-    base::Time delete_begin,
-    base::Time delete_end,
-    WebDatabase* db) {
-  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  std::vector<AutofillProfile> profiles;
-  bool commit_needed = false;
-  bool failures_observed = false;
-  if (AddressAutofillTable::FromWebDatabase(db)
-          ->RemoveAutofillDataModifiedBetween(delete_begin, delete_end,
-                                              profiles)) {
-    for (const AutofillProfile& profile : profiles) {
-      for (auto& db_observer : db_observer_list_) {
-        db_observer.AutofillProfileChanged(AutofillProfileChange(
-            AutofillProfileChange::REMOVE, profile.guid(), profile));
-      }
-    }
-    commit_needed = true;
-  } else {
-    failures_observed = true;
-  }
-  std::vector<std::unique_ptr<CreditCard>> credit_cards;
-  if (PaymentsAutofillTable::FromWebDatabase(db)
-          ->RemoveAutofillDataModifiedBetween(delete_begin, delete_end,
-                                              &credit_cards)) {
-    for (const std::unique_ptr<CreditCard>& credit_card : credit_cards) {
-      for (auto& db_observer : db_observer_list_) {
-        db_observer.CreditCardChanged(CreditCardChange(
-            CreditCardChange::REMOVE, credit_card->guid(), *credit_card));
-      }
-    }
-    commit_needed = true;
-  } else {
-    failures_observed = true;
-  }
-  ReportResult(failures_observed
-                   ? Result::kRemoveAutofillDataModifiedBetween_Success
-                   : Result::kRemoveAutofillDataModifiedBetween_Failure);
-  return commit_needed ? WebDatabase::COMMIT_NEEDED
-                       : WebDatabase::COMMIT_NOT_NEEDED;
-}
-
-WebDatabase::State AutofillWebDataBackendImpl::RemoveOriginURLsModifiedBetween(
-    base::Time delete_begin,
-    base::Time delete_end,
-    WebDatabase* db) {
-  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  if (!PaymentsAutofillTable::FromWebDatabase(db)
-           ->RemoveOriginURLsModifiedBetween(delete_begin, delete_end)) {
-    ReportResult(Result::kRemoveOriginURLsModifiedBetween_Failure);
-    return WebDatabase::COMMIT_NOT_NEEDED;
-  }
-  // Note: It is the caller's responsibility to post notifications for any
-  // changes, e.g. by calling the Refresh() method of PersonalDataManager.
-  ReportResult(Result::kRemoveOriginURLsModifiedBetween_Success);
-  return WebDatabase::COMMIT_NEEDED;
-}
-
 WebDatabase::State AutofillWebDataBackendImpl::ClearAllCreditCardBenefits(
     WebDatabase* db) {
   CHECK(owning_task_runner()->RunsTasksInCurrentSequence());

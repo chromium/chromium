@@ -616,6 +616,49 @@ TEST_F(PaymentsDataManagerTest, AddUpdateRemoveCreditCards) {
   ExpectSameElements(cards, payments_data_manager().GetCreditCards());
 }
 
+// Adds two local cards and one server cards with different modification dates.
+// - `local_card1`'s modification date doesn't fall in the removal range, but
+//   its CVC does. Expect that the CVC is cleared.
+// - `local_card2`'s and `server_card`'s modification dates fall in the removal
+//   range. Expect that only the local card is removed.
+TEST_F(PaymentsDataManagerTest, RemoveLocalDataModifiedBetween) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableCvcStorageAndFilling);
+
+  TestAutofillClock test_clock;
+  test_clock.SetNow(kArbitraryTime);
+  CreditCard local_card1 = test::GetCreditCard();
+  // PaymentsAutofillTable sets modification dates when adding/updating.
+  payments_data_manager().AddCreditCard(local_card1);
+  WaitForOnPaymentsDataChanged();
+
+  CreditCard local_card2 = test::GetCreditCard2();
+  test_clock.Advance(base::Minutes(2));
+  payments_data_manager().AddCreditCard(local_card2);
+  WaitForOnPaymentsDataChanged();
+
+  payments_data_manager().UpdateLocalCvc(local_card1.guid(), u"234");
+  WaitForOnPaymentsDataChanged();
+
+  CreditCard server_card = test::GetMaskedServerCard();
+  test_clock.Advance(base::Minutes(3));
+  test_api(payments_data_manager()).AddServerCreditCard(server_card);
+  WaitForOnPaymentsDataChanged();
+
+  payments_data_manager().RemoveLocalDataModifiedBetween(
+      kArbitraryTime + base::Minutes(1), kArbitraryTime + base::Minutes(10));
+  WaitForOnPaymentsDataChanged();
+  local_card1.clear_cvc();
+  EXPECT_THAT(payments_data_manager().GetLocalCreditCards(),
+              testing::UnorderedElementsAre(Pointee(local_card1)));
+  // TODO(crbug.com/40276087): `CreditCard::operator==()` compares GUIDs even
+  // for server cards, which change after every load from the database.
+  std::vector<CreditCard*> server_cards =
+      payments_data_manager().GetServerCreditCards();
+  ASSERT_EQ(server_cards.size(), 1u);
+  EXPECT_EQ(server_cards[0]->Compare(server_card), 0);
+}
+
 TEST_F(PaymentsDataManagerTest, RecordUseOfCard) {
   TestAutofillClock test_clock;
   test_clock.SetNow(kArbitraryTime);

@@ -296,6 +296,11 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Returns true if something was removed.
   virtual bool RemoveByGUID(const std::string& guid);
 
+  // Removes all local credit cards and CVCs modified on or after `delete_begin`
+  // and strictly before `delete_end`. Used for browsing data deletion purposes.
+  // TODO(crbug.com/310301981): Consider local IBANs?
+  void RemoveLocalDataModifiedBetween(base::Time begin, base::Time end);
+
   // Called to indicate `credit_card` was used (to fill in a form).
   // Updates the database accordingly.
   virtual void RecordUseOfCard(const CreditCard* card);

@@ -1545,6 +1545,23 @@ bool PaymentsDataManager::RemoveByGUID(const std::string& guid) {
   return false;
 }
 
+void PaymentsDataManager::RemoveLocalDataModifiedBetween(base::Time begin,
+                                                         base::Time end) {
+  if (end.is_null()) {
+    end = base::Time::Max();
+  }
+  for (const CreditCard* card : GetLocalCreditCards()) {
+    if (card->modification_date() >= begin && card->modification_date() < end) {
+      RemoveByGUID(card->guid());
+    } else if (base::FeatureList::IsEnabled(
+                   features::kAutofillEnableCvcStorageAndFilling) &&
+               card->cvc_modification_date() >= begin &&
+               card->cvc_modification_date() < end) {
+      UpdateLocalCvc(card->guid(), u"");
+    }
+  }
+}
+
 void PaymentsDataManager::RecordUseOfCard(const CreditCard* card) {
   CreditCard* credit_card = GetCreditCardByGUID(card->guid());
   if (!credit_card) {

@@ -201,18 +201,4 @@ bool SelectByGuid(sql::Database* db,
   return statement.is_valid() && statement.Step();
 }
 
-void SelectBetween(sql::Database* db,
-                   sql::Statement& statement,
-                   std::string_view table_name,
-                   std::initializer_list<std::string_view> columns,
-                   std::string_view column_between,
-                   int64_t low,
-                   int64_t high) {
-  auto between_selector = base::StrCat(
-      {"WHERE ", column_between, " >= ? AND ", column_between, " < ?"});
-  SelectBuilder(db, statement, table_name, columns, between_selector);
-  statement.BindInt64(0, low);
-  statement.BindInt64(1, high);
-}
-
 }  // namespace autofill

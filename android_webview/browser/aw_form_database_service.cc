@@ -79,7 +79,6 @@ void AwFormDatabaseService::ClearFormData() {
   base::Time begin;
   base::Time end = base::Time::Max();
   autofill_data_->RemoveFormElementsAddedBetween(begin, end);
-  autofill_data_->RemoveAutofillDataModifiedBetween(begin, end);
 }
 
 bool AwFormDatabaseService::HasFormData() {
