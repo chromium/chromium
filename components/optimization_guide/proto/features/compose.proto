@@ -175,7 +175,7 @@ enum FinalStatus {
   // User pressed 'X' or started a new session with a selection.
   STATUS_ABANDONED = 2;
 
-  // This case includes: close tab, navigation, etc.
+  // This case includes: close tab, navigation, session expired etc.
   // Used after M124.
   STATUS_FINISHED_WITHOUT_INSERT = 3;
 }
