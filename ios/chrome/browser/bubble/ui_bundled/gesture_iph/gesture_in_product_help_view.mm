@@ -976,7 +976,7 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
       }
       completion:^(BOOL completed) {
         [previousBubbleView removeFromSuperview];
-        if (completed) {
+        if (completed && weakSelf.superview) {
           [weakSelf setInitialBubbleViewWithDirection:
                         GetExpectedBubbleArrowDirectionForSwipeDirection(
                             weakSelf.animatingDirection)
