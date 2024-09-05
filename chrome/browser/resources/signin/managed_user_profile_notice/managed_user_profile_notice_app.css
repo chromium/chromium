@@ -16,7 +16,7 @@
   color: var(--cr-primary-text-color);
   display: flex;
   flex-direction: column;
-  min-height: 600px;
+  min-height: 560px;
   min-width: 600px;
   height: 100vh;
   width: 100vw;
@@ -24,17 +24,19 @@
 }
 
 .main-container {
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  overflow: hidden;
+  padding-block-start: 40px;
   width: 100vw;
-  margin-block-start: auto;
 }
 
 .action-container {
   align-items: flex-end;
   box-sizing: border-box;
+  flex: 0 0 auto;
   margin-block-start: auto;
   width: 100vw;
-  flex-wrap: wrap-reverse;
-  max-width: 100%;
 }
 
 .action-container cr-button {
@@ -43,6 +45,7 @@
 }
 
 .tangible-sync-style #content-container {
+  height: 100%;
   position: relative;
 }
 

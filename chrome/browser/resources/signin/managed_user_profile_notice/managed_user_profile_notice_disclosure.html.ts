@@ -7,7 +7,7 @@ import type {ManagedUserProfileNoticeDisclosureElement} from './managed_user_pro
 
 export function getHtml(this: ManagedUserProfileNoticeDisclosureElement) {
   return html`<!--_html_template_start_-->
-<div class="tangible-sync-style">
+<main class="tangible-sync-style">
   <div id="header-container">
     <div id="avatar-container">
       <img id="avatar" alt="" src="${this.pictureUrl}">
@@ -17,25 +17,25 @@ export function getHtml(this: ManagedUserProfileNoticeDisclosureElement) {
     </div>
   </div>
   <div id="text-container">
-    ${this.title ? html`
-      <h1 class="title">${this.title}</h1>
-    ` : ''}
-    ${this.subtitle ? html`
-      <p class="subtitle">${this.subtitle}</p>
-    ` : ''}
+    <h1 class="title">$i18n{profileDisclosureTitle}</h1>
+    <p class="subtitle">$i18n{profileDisclosureSubtitle}</p>
   </div>
   <div class="disclaimer-container">
     <section class="disclaimer">
       <cr-icon class="icon" icon="signin:person-outline"></cr-icon>
-      <h2>$i18n{profileInformationTitle}</h2>
-      <p>$i18n{profileInformationDetails}</p>
+      <div>
+        <h2>$i18n{profileInformationTitle}</h2>
+        <p>$i18n{profileInformationDetails}</p>
+      </div>
     </section>
     <section class="disclaimer">
       <cr-icon class="icon" icon="cr:phonelink"></cr-icon>
-      <h2>$i18n{deviceInformationTitle}</h2>
-      <p>$i18n{deviceInformationDetails}</p>
+      <div>
+        <h2>$i18n{deviceInformationTitle}</h2>
+        <p>$i18n{deviceInformationDetails}</p>
+      </div>
     </section>
   </div>
-</div>
+</main>
 <!--_html_template_end_-->`;
 }

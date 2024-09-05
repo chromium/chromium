@@ -312,7 +312,9 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
 
       // Initial values.
       checkTextValues(
-          'title', 'subtitle', 'enterprise_info',
+          useUpdatedUi ? app.i18n('profileDisclosureTitle') : 'title',
+          useUpdatedUi ? app.i18n('profileDisclosureSubtitle') : 'subtitle',
+          'enterprise_info',
           useUpdatedUi ? app.i18n('continueLabel') : 'proceed_label');
       checkImageUrl(AVATAR_URL_1);
       assertFalse(isChildVisible(targetElement, '.work-badge'));
@@ -331,7 +333,9 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
       await microtasksFinished();
 
       checkTextValues(
-          'new_title', 'new_subtitle', 'new_enterprise_info',
+          useUpdatedUi ? app.i18n('profileDisclosureTitle') : 'new_title',
+          useUpdatedUi ? app.i18n('profileDisclosureSubtitle') : 'new_subtitle',
+          'new_enterprise_info',
           useUpdatedUi ? app.i18n('continueLabel') : 'new_proceed_label');
       checkImageUrl(AVATAR_URL_2);
       assertTrue(isChildVisible(targetElement, '.work-badge'));

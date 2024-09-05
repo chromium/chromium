@@ -111,6 +111,12 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
   source->AddLocalizedString("linkDataText",
                              IDS_ENTERPRISE_PROFILE_WELCOME_LINK_DATA_CHECKBOX);
 
+  source->AddLocalizedString("profileDisclosureTitle",
+                             IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_TITLE);
+  source->AddLocalizedString(
+      "profileDisclosureSubtitle",
+      IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_SUBTITLE);
+
   source->AddLocalizedString("profileInformationTitle",
                              IDS_ENTERPRISE_WELCOME_PROFILE_INFORMATION_TITLE);
   source->AddLocalizedString(
