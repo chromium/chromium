@@ -15,6 +15,7 @@ import android.view.View;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -125,6 +126,7 @@ public class SimpleNoticeSheetRenderTest {
                                     .with(SimpleNoticeSheetProperties.SHEET_TITLE, sTitle)
                                     .with(SimpleNoticeSheetProperties.SHEET_TEXT, sText)
                                     .with(SimpleNoticeSheetProperties.BUTTON_TITLE, sButtonText)
+                                    .with(SimpleNoticeSheetProperties.BUTTON_ACTION, Assert::fail)
                                     .build();
                     mCoordinator.showSheet(model);
                 });
