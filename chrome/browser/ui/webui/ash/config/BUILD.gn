@@ -99,6 +99,7 @@ static_library("config") {
     "//chrome/browser/ui/webui/ash/sensor_info",
     "//chrome/browser/ui/webui/ash/settings",
     "//chrome/browser/ui/webui/ash/skyvault",
+    "//chrome/browser/ui/webui/ash/slow",
     "//chrome/browser/ui/webui/ash/smb_shares",
     "//chrome/browser/ui/webui/ash/sys_internals",
     "//chrome/browser/ui/webui/ash/vc_tray_tester",

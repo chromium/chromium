@@ -16,10 +16,6 @@ static_library("ash") {
     "set_time_ui.h",
     "shimless_rma_dialog.cc",
     "shimless_rma_dialog.h",
-    "slow_trace_ui.cc",
-    "slow_trace_ui.h",
-    "slow_ui.cc",
-    "slow_ui.h",
     "user_image_source.cc",
     "user_image_source.h",
   ]
