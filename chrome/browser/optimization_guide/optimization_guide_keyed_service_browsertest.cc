@@ -214,7 +214,8 @@ class OptimizationGuideKeyedServiceBrowserTest
           {{"allow_unsigned_user", "true"}}}},
         /*disabled_features=*/
         {features::internal::kWallpaperSearchGraduated,
-         features::internal::kComposeGraduated});
+         features::internal::kComposeGraduated,
+         features::internal::kTabOrganizationGraduated});
   }
 
   OptimizationGuideKeyedServiceBrowserTest(
@@ -1243,13 +1244,14 @@ class OptimizationGuideKeyedServiceBrowserWithModelExecutionFeatureDisabledTest
            // Enabled.
            features::kOptimizationGuideModelExecution,
            features::internal::kTabOrganizationSettingsVisibility},
-          {});
+          {features::internal::kTabOrganizationGraduated});
     } else {
       scoped_feature_list_.InitWithFeatures(
           {features::kOptimizationHints,
            features::internal::kTabOrganizationSettingsVisibility},
           // Disabled.
-          {features::kOptimizationGuideModelExecution});
+          {features::kOptimizationGuideModelExecution,
+           features::internal::kTabOrganizationGraduated});
     }
   }
 

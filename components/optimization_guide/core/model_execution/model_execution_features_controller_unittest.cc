@@ -149,7 +149,8 @@ TEST_F(ModelExecutionFeaturesControllerTest,
   scoped_feature_list.InitWithFeaturesAndParameters(
       {{features::internal::kComposeSettingsVisibility, {}},
        {features::internal::kTabOrganizationSettingsVisibility, {}}},
-      {features::internal::kComposeGraduated});
+      {features::internal::kComposeGraduated,
+       features::internal::kTabOrganizationGraduated});
   CreateController();
   EXPECT_FALSE(controller()->IsSettingVisible(UserVisibleFeatureKey::kCompose));
   EXPECT_FALSE(
@@ -171,7 +172,8 @@ TEST_F(ModelExecutionFeaturesControllerTest,
         {{"allow_unsigned_user", "true"}}},
        {features::internal::kTabOrganizationSettingsVisibility,
         {{"allow_unsigned_user", "true"}}}},
-      {features::internal::kComposeGraduated});
+      {features::internal::kComposeGraduated,
+       features::internal::kTabOrganizationGraduated});
   CreateController();
   EXPECT_TRUE(controller()->IsSettingVisible(UserVisibleFeatureKey::kCompose));
   EXPECT_TRUE(
@@ -193,7 +195,8 @@ TEST_F(ModelExecutionFeaturesControllerTest,
         {{"allow_unsigned_user", "true"}}},
        {features::internal::kTabOrganizationSettingsVisibility,
         {{"allow_unsigned_user", "true"}}}},
-      {features::internal::kComposeGraduated});
+      {features::internal::kComposeGraduated,
+       features::internal::kTabOrganizationGraduated});
   CreateController();
   EXPECT_TRUE(controller()->IsSettingVisible(UserVisibleFeatureKey::kCompose));
   EXPECT_TRUE(
@@ -245,6 +248,7 @@ TEST_F(ModelExecutionFeaturesControllerTest,
        features::internal::kTabOrganizationSettingsVisibility,
        features::internal::kWallpaperSearchSettingsVisibility},
       {features::internal::kComposeGraduated,
+       features::internal::kTabOrganizationGraduated,
        features::internal::kWallpaperSearchGraduated});
   CreateController();
   EnableSignIn();
@@ -297,9 +301,11 @@ TEST_F(ModelExecutionFeaturesControllerTest, GraduatedFeatureIsNotVisible) {
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/
       {features::internal::kComposeGraduated,
+       features::internal::kTabOrganizationGraduated,
        features::internal::kWallpaperSearchGraduated},
       /*disabled_features=*/
       {features::internal::kComposeSettingsVisibility,
+       features::internal::kTabOrganizationSettingsVisibility,
        features::internal::kWallpaperSearchSettingsVisibility});
   CreateController();
 
@@ -313,7 +319,7 @@ TEST_F(ModelExecutionFeaturesControllerTest, GraduatedFeatureIsNotVisible) {
   // ShouldFeatureBeCurrentlyEnabledForUser
   EXPECT_TRUE(controller()->ShouldFeatureBeCurrentlyEnabledForUser(
       UserVisibleFeatureKey::kCompose));
-  EXPECT_FALSE(controller()->ShouldFeatureBeCurrentlyEnabledForUser(
+  EXPECT_TRUE(controller()->ShouldFeatureBeCurrentlyEnabledForUser(
       UserVisibleFeatureKey::kTabOrganization));
   EXPECT_TRUE(controller()->ShouldFeatureBeCurrentlyEnabledForUser(
       UserVisibleFeatureKey::kWallpaperSearch));

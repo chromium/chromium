@@ -43,7 +43,7 @@ BASE_FEATURE(kComposeGraduated,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kTabOrganizationGraduated,
              "TabOrganizationGraduated",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kWallpaperSearchGraduated,
              "WallpaperSearchGraduated",
              base::FEATURE_ENABLED_BY_DEFAULT);

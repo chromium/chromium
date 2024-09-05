@@ -9576,25 +9576,6 @@
             ]
         }
     ],
-    "ExperimentalFeaturesVisibilityDesktop": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TabOrganizationSettingsVisibility"
-                    ]
-                }
-            ]
-        }
-    ],
     "ExploreSitesDense": [
         {
             "platforms": [
@@ -22983,29 +22964,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "TabHoverCardImages"
-                    ]
-                }
-            ]
-        }
-    ],
-    "TabOrganization": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "trigger_period": "30m"
-                    },
-                    "enable_features": [
-                        "TabOrganization"
                     ]
                 }
             ]

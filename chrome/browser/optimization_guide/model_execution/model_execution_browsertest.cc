@@ -668,8 +668,9 @@ class ModelExecutionEnabledBrowserTestWithExplicitBrowserSignin
     : public ModelExecutionEnabledBrowserTest {
  public:
   void InitializeFeatureList() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::switches::kExplicitBrowserSigninUIOnDesktop);
+    scoped_feature_list_.InitWithFeatures(
+        {::switches::kExplicitBrowserSigninUIOnDesktop},
+        {features::internal::kTabOrganizationGraduated});
   }
 };
 
