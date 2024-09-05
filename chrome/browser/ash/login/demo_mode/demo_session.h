@@ -16,7 +16,6 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
-#include "chrome/browser/ash/login/demo_mode/demo_extensions_external_loader.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_window_closer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/component_updater/ash/component_manager_ash.h"
@@ -164,10 +163,6 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // offline.
   bool ShouldShowAppInShelf(const std::string& app_id_or_package);
 
-  // Sets `extensions_external_loader_` and starts installing the screensaver.
-  void SetExtensionsExternalLoader(
-      scoped_refptr<DemoExtensionsExternalLoader> extensions_external_loader);
-
   // Sets app IDs and package names that shouldn't be pinned by policy when the
   // device is offline in Demo Mode.
   void OverrideIgnorePinPolicyAppsForTesting(std::vector<std::string> apps);
@@ -239,8 +234,6 @@ class DemoSession : public session_manager::SessionManagerObserver,
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
       session_manager_observation_{this};
-
-  scoped_refptr<DemoExtensionsExternalLoader> extensions_external_loader_;
 
   // The fallback timer that ensures the splash screen is removed in case the
   // screensaver app takes an extra long time to be shown.

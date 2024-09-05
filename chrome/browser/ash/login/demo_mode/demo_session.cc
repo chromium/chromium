@@ -524,11 +524,6 @@ void DemoSession::RecordAppLaunchSource(AppLaunchSource source) {
   UMA_HISTOGRAM_ENUMERATION("DemoMode.AppLaunchSource", source);
 }
 
-void DemoSession::SetExtensionsExternalLoader(
-    scoped_refptr<DemoExtensionsExternalLoader> extensions_external_loader) {
-  extensions_external_loader_ = extensions_external_loader;
-}
-
 void DemoSession::OverrideIgnorePinPolicyAppsForTesting(
     std::vector<std::string> apps) {
   ignore_pin_policy_offline_apps_ = std::move(apps);

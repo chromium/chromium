@@ -30,10 +30,6 @@ constexpr base::FilePath::CharType kDemoAndroidAppsPath[] =
 constexpr base::FilePath::CharType kExternalExtensionsPrefsPath[] =
     FILE_PATH_LITERAL("demo_extensions.json");
 
-// Used in tests to override default location where deprecated
-// preinstalled offline demo mode resources component used to be located.
-const base::FilePath* g_preinstalled_resources_root_override = nullptr;
-
 PrefService* LocalState() {
   if (!g_browser_process) {
     return nullptr;
@@ -69,26 +65,6 @@ const char DemoComponents::kDemoModeResourcesComponentName[] =
     "demo-mode-resources";
 
 const char DemoComponents::kDemoModeAppComponentName[] = "demo-mode-app";
-
-// static
-const char DemoComponents::kOfflineDemoModeResourcesComponentName[] =
-    "offline-demo-mode-resources";
-
-// static
-base::FilePath DemoComponents::GetPreInstalledPath() {
-  base::FilePath preinstalled_components_root =
-      g_preinstalled_resources_root_override
-          ? *g_preinstalled_resources_root_override
-          : base::FilePath("/mnt/stateful_partition/unencrypted");
-  return preinstalled_components_root.AppendASCII("cros-components")
-      .AppendASCII(kOfflineDemoModeResourcesComponentName);
-}
-
-// static
-void DemoComponents::OverridePreinstalledResourcesRootPathForTesting(
-    const base::FilePath* path) {
-  g_preinstalled_resources_root_override = path;
-}
 
 DemoComponents::DemoComponents(DemoSession::DemoModeConfig config)
     : config_(config) {

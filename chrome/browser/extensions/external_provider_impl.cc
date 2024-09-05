@@ -67,8 +67,6 @@
 #include "base/path_service.h"
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/extensions/signin_screen_extensions_external_loader.h"
-#include "chrome/browser/ash/login/demo_mode/demo_extensions_external_loader.h"
-#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -814,22 +812,6 @@ void ExternalProviderImpl::CreateExternalProviders(
         ManifestLocation::kExternalPrefDownload, oem_extension_creation_flags));
   }
 
-  // For Chrome OS demo sessions, add pre-installed demo extensions and apps.
-  if (ash::DemoExtensionsExternalLoader::SupportedForProfile(profile)) {
-    base::FilePath cache_dir;
-    CHECK(base::PathService::Get(ash::DIR_DEVICE_EXTENSION_LOCAL_CACHE,
-                                 &cache_dir));
-    auto loader =
-        base::MakeRefCounted<ash::DemoExtensionsExternalLoader>(cache_dir);
-    std::unique_ptr<ExternalProviderImpl> demo_apps_provider =
-        std::make_unique<ExternalProviderImpl>(
-            service, loader, profile, ManifestLocation::kExternalPolicy,
-            ManifestLocation::kExternalPolicyDownload, Extension::NO_FLAGS);
-    demo_apps_provider->set_auto_acknowledge(true);
-    demo_apps_provider->set_install_immediately(true);
-    ash::DemoSession::Get()->SetExtensionsExternalLoader(loader);
-    provider_list->push_back(std::move(demo_apps_provider));
-  }
 #endif
   if (!profile->GetPrefs()->GetBoolean(pref_names::kBlockExternalExtensions)) {
 // TODO(crbug.com/40118868): Revisit the macro expression once build flag switch

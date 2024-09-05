@@ -382,7 +382,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/lock_screen_apps/state_controller.h"
-#include "chrome/browser/ash/login/demo_mode/demo_mode_resources_remover.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/quick_unlock/fingerprint_storage.h"
@@ -1071,6 +1070,13 @@ constexpr char kSyncPasswordHash[] = "profile.sync_password_hash";
 constexpr char kSyncPasswordLengthAndHashSalt[] =
     "profile.sync_password_length_and_hash_salt";
 
+// Deprecated 09/2024
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kDemoModeResourcesRemoved[] = "demo_mode_resources_removed";
+constexpr char kAccumulatedUsagePref[] =
+    "demo_mode_resources_remover.accumulated_device_usage_s";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1158,6 +1164,12 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   // Deprecated 08/2024.
   registry->RegisterStringPref(kDeviceDMTokenV1, std::string());
   registry->RegisterStringPref(kDeviceDMTokenV2, std::string());
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Deprecated 08/2024.
+  registry->RegisterBooleanPref(kDemoModeResourcesRemoved, false);
+  registry->RegisterIntegerPref(kAccumulatedUsagePref, 0);
 #endif
 }
 
@@ -1663,7 +1675,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
       registry);
   ash::bluetooth_config::DeviceNameManagerImpl::RegisterLocalStatePrefs(
       registry);
-  ash::DemoModeResourcesRemover::RegisterLocalStatePrefs(registry);
   ash::DemoSession::RegisterLocalStatePrefs(registry);
   ash::DemoSetupController::RegisterLocalStatePrefs(registry);
   ash::DeviceNameStore::RegisterLocalStatePrefs(registry);
@@ -2395,6 +2406,12 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kDeviceDMTokenV1);
   local_state->ClearPref(kDeviceDMTokenV2);
 #endif
+
+// Added 08/2024.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  local_state->ClearPref(kDemoModeResourcesRemoved);
+  local_state->ClearPref(kAccumulatedUsagePref);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

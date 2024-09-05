@@ -32,11 +32,8 @@ DemoModeTestHelper::DemoModeTestHelper()
   DemoSession::SetDemoConfigForTesting(DemoSession::DemoModeConfig::kNone);
 
   CHECK(components_temp_dir_.CreateUniqueTempDir());
-  DemoComponents::OverridePreinstalledResourcesRootPathForTesting(
-      &components_temp_dir_.GetPath());
 
   CHECK(base::CreateDirectory(GetDemoResourcesPath()));
-  CHECK(base::CreateDirectory(GetPreinstalledDemoResourcesPath()));
 }
 
 DemoModeTestHelper::~DemoModeTestHelper() {
@@ -45,7 +42,6 @@ DemoModeTestHelper::~DemoModeTestHelper() {
   }
 
   DemoSession::ShutDownIfInitialized();
-  DemoComponents::OverridePreinstalledResourcesRootPathForTesting(nullptr);
 
   DemoSession::ResetDemoConfigForTesting();
   if (fake_component_manager_ash_) {
@@ -78,12 +74,6 @@ base::FilePath DemoModeTestHelper::GetDemoResourcesPath() {
   return components_temp_dir_.GetPath()
       .AppendASCII("cros-components")
       .AppendASCII(DemoComponents::kDemoModeResourcesComponentName);
-}
-
-base::FilePath DemoModeTestHelper::GetPreinstalledDemoResourcesPath() {
-  return components_temp_dir_.GetPath()
-      .AppendASCII("cros-components")
-      .AppendASCII(DemoComponents::kOfflineDemoModeResourcesComponentName);
 }
 
 void DemoModeTestHelper::InitializeComponentManager() {

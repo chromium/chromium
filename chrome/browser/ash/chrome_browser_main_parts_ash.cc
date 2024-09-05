@@ -111,7 +111,6 @@
 #include "chrome/browser/ash/locale/startup_settings_cache.h"
 #include "chrome/browser/ash/lock_screen_apps/state_controller.h"
 #include "chrome/browser/ash/logging/logging.h"
-#include "chrome/browser/ash/login/demo_mode/demo_mode_resources_remover.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
@@ -1318,8 +1317,6 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
     }
 
     gnubby_notification_ = std::make_unique<GnubbyNotification>();
-    demo_mode_resources_remover_ = DemoModeResourcesRemover::CreateIfNeeded(
-        g_browser_process->local_state());
 
     login_screen_extensions_storage_cleaner_ =
         std::make_unique<LoginScreenExtensionsStorageCleaner>();
@@ -1600,7 +1597,6 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
     ScreenLocker::ShutDownClass();
   }
   low_disk_notification_.reset();
-  demo_mode_resources_remover_.reset();
   smart_charging_manager_.reset();
   adaptive_screen_brightness_manager_.reset();
   auto_screen_brightness_controller_.reset();
