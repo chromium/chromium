@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "components/paint_preview/browser/paint_preview_base_service.h"
 #include "components/paint_preview/browser/paint_preview_policy.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace content {
@@ -101,7 +102,7 @@ class LongScreenshotsTabService
   // (confirming that the contents are alive using the |frame_routing_id|).
   // Calls PaintPreviewBaseService to retrieve the bitmap and write it to file.
   void CaptureTabInternal(int tab_id,
-                          int frame_tree_node_id,
+                          content::FrameTreeNodeId frame_tree_node_id,
                           content::GlobalRenderFrameHostId frame_routing_id,
                           int clip_x,
                           int clip_y,
