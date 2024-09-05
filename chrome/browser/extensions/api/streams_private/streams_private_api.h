@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "content/public/browser/frame_tree_node_id.h"
 #include "extensions/common/extension_id.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
 
@@ -26,7 +27,7 @@ class StreamsPrivateAPI {
       const ExtensionId& extension_id,
       const std::string& stream_id,
       bool embedded,
-      int frame_tree_node_id,
+      content::FrameTreeNodeId frame_tree_node_id,
       blink::mojom::TransferrableURLLoaderPtr transferrable_loader,
       const GURL& original_url,
       const std::string& internal_id);

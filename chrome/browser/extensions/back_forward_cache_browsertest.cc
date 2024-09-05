@@ -959,7 +959,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionBackForwardCacheBrowserTest,
   ASSERT_TRUE(iframe.get());
 
   // Cache the iframe's frame tree node id to send it a message later.
-  int iframe_frame_tree_node_id = iframe->GetFrameTreeNodeId();
+  content::FrameTreeNodeId iframe_frame_tree_node_id =
+      iframe->GetFrameTreeNodeId();
 
   // 2) Navigate to B.
   content::RenderFrameHostWrapper render_frame_host_b(
@@ -984,10 +985,10 @@ IN_PROC_BROWSER_TEST_P(ExtensionBackForwardCacheBrowserTest,
           chrome.test.sendScriptResult(chrome.runtime.lastError ? 'false'
         : 'true')});
       )HTML";
-  EXPECT_EQ("false",
-            ExecuteScriptInBackgroundPage(
-                extension->id(),
-                base::StringPrintf(kScript, iframe_frame_tree_node_id)));
+  EXPECT_EQ("false", ExecuteScriptInBackgroundPage(
+                         extension->id(),
+                         base::StringPrintf(
+                             kScript, iframe_frame_tree_node_id.value())));
   // Go back to A.
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -995,10 +996,10 @@ IN_PROC_BROWSER_TEST_P(ExtensionBackForwardCacheBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(web_contents));
 
   // Re-execute the script.
-  EXPECT_EQ("true",
-            ExecuteScriptInBackgroundPage(
-                extension->id(),
-                base::StringPrintf(kScript, iframe_frame_tree_node_id)));
+  EXPECT_EQ("true", ExecuteScriptInBackgroundPage(
+                        extension->id(),
+                        base::StringPrintf(kScript,
+                                           iframe_frame_tree_node_id.value())));
 }
 
 // Test that running extensions message dispatching via a ScriptContext::ForEach
