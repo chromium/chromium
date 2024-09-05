@@ -1768,7 +1768,7 @@ class ClientSideDetectionRTLookupResponseForceRequestTest
     auto* tracker = AsyncCheckTracker::GetOrCreateForWebContents(
         web_contents(), /*ui_manager=*/nullptr);
     auto checker = std::make_unique<UrlCheckerHolder>(
-        /*delegate_getter=*/base::NullCallback(), /*frame_tree_node_id=*/-1,
+        /*delegate_getter=*/base::NullCallback(), content::FrameTreeNodeId(),
         /*navigation_id=*/0,
         /*web_contents_getter=*/base::NullCallback(),
         /*complete_callback=*/base::NullCallback(),
