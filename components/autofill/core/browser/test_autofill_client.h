@@ -276,6 +276,11 @@ class TestAutofillClientTemplate : public T {
       FillingProduct main_filling_product,
       AutofillSuggestionTriggerSource trigger_source) override {}
 
+  std::optional<AutofillClient::SuggestionUiSessionId>
+  GetSessionIdForCurrentAutofillSuggestions() const override {
+    return suggestion_ui_session_id_;
+  }
+
   void HideAutofillSuggestions(SuggestionHidingReason reason) override {
     popup_hidden_reason_ = reason;
     is_showing_popup_ = false;
@@ -452,6 +457,11 @@ class TestAutofillClientTemplate : public T {
     plus_address_delegate_ = std::move(plus_address_delegate);
   }
 
+  void set_suggestion_ui_session_id(
+      std::optional<AutofillClient::SuggestionUiSessionId> session_id) {
+    suggestion_ui_session_id_ = session_id;
+  }
+
   GURL form_origin() { return form_origin_; }
 
   ukm::TestUkmRecorder* GetTestUkmRecorder() { return &test_ukm_recorder_; }
@@ -534,6 +544,9 @@ class TestAutofillClientTemplate : public T {
   // The last URL submitted in the primary main frame by the user. Set in the
   // constructor.
   GURL last_committed_primary_main_frame_url_{"https://example.test"};
+
+  std::optional<AutofillClient::SuggestionUiSessionId>
+      suggestion_ui_session_id_;
 
   LogRouter log_router_;
   struct LogToTerminal {

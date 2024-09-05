@@ -2221,6 +2221,8 @@ TEST_F(AutofillExternalDelegateUnitTest, PlusAddressExtraButtonAction) {
   OnSuggestionsReturned(queried_field().global_id(), suggestions);
   ON_CALL(client(), GetAutofillSuggestions)
       .WillByDefault(Return(base::span<const Suggestion>(suggestions)));
+  client().set_suggestion_ui_session_id(
+      AutofillClient::SuggestionUiSessionId(123));
 
   {
     InSequence s;
@@ -2242,6 +2244,46 @@ TEST_F(AutofillExternalDelegateUnitTest, PlusAddressExtraButtonAction) {
 
   external_delegate().DidPerformButtonActionForSuggestion(
       suggestions[0], SuggestionButtonAction());
+}
+
+// Tests that running the update callback is a no-op if the session id of the
+// suggestions UI has changed since the update callback was requested.
+TEST_F(AutofillExternalDelegateUnitTest,
+       PlusAddressExtraButtonActionUiSessionIdChanged) {
+  IssueOnQuery();
+
+  const std::u16string plus_address = u"test+plus@test.example";
+  std::vector<Suggestion> suggestions;
+  suggestions.emplace_back(u"Some other suggestion");
+  suggestions.emplace_back(/*main_text=*/u"Create plus address",
+                           SuggestionType::kCreateNewPlusAddressInline);
+  suggestions.back().payload = Suggestion::PlusAddressPayload(plus_address);
+  OnSuggestionsReturned(queried_field().global_id(), suggestions);
+  ON_CALL(client(), GetAutofillSuggestions)
+      .WillByDefault(Return(base::span<const Suggestion>(suggestions)));
+
+  base::OnceCallback<void(std::vector<Suggestion>,
+                          AutofillSuggestionTriggerSource)>
+      update_callback;
+
+  EXPECT_CALL(client(), UpdateAutofillSuggestions).Times(0);
+  EXPECT_CALL(plus_address_delegate(),
+              OnClickedRefreshInlineSuggestion(
+                  _, base::span<const Suggestion>(suggestions),
+                  /*current_suggestion_index=*/1, _))
+      .WillOnce(MoveArg<3>(&update_callback));
+
+  client().set_suggestion_ui_session_id(
+      AutofillClient::SuggestionUiSessionId(3));
+  external_delegate().DidPerformButtonActionForSuggestion(
+      suggestions[1], SuggestionButtonAction());
+  ASSERT_TRUE(update_callback);
+
+  // Now simulate that the popup has a new session id.
+  client().set_suggestion_ui_session_id(
+      AutofillClient::SuggestionUiSessionId(4));
+  std::move(update_callback)
+      .Run(suggestions, AutofillSuggestionTriggerSource::kUnspecified);
 }
 
 // Tests that running the update callback is safe even after AED has been

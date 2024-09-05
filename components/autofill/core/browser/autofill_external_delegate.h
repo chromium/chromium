@@ -163,10 +163,10 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
       bool is_update);
 
   // Returns a callback that, when run, attempts to update the currently shown
-  // suggestions. The callback is safe to call even if `this` is no longer
-  // alive.
-  // TODO(crbug.com/362445807): Take SuggestionUiSessionId into account once it
-  // is implemented.
+  // suggestions. If the `SuggestionUiSessionId` of the currently showing UI
+  // surface has changed between when this callback is created and when it is
+  // run, running it is a no-op. The callback is also safe to call even if
+  // `this` is no longer alive.
   base::OnceCallback<void(std::vector<Suggestion>,
                           AutofillSuggestionTriggerSource)>
   CreateUpdateSuggestionsCallback();
