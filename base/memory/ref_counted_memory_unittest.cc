@@ -30,12 +30,6 @@ TEST(RefCountedMemoryUnitTest, RefCountedStaticMemory) {
     EXPECT_THAT(base::span(*mem),
                 ElementsAre('s', 't', 'a', 't', 'i', 'c', ' ', 'm', 'e', 'm'));
   }
-  {
-    auto mem = MakeRefCounted<RefCountedStaticMemory>("static mem00", 10);
-
-    EXPECT_THAT(base::span(*mem),
-                ElementsAre('s', 't', 'a', 't', 'i', 'c', ' ', 'm', 'e', 'm'));
-  }
 }
 
 TEST(RefCountedMemoryUnitTest, RefCountedBytes) {

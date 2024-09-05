@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
@@ -80,10 +79,6 @@ class BASE_EXPORT RefCountedStaticMemory : public RefCountedMemory {
   RefCountedStaticMemory();
   explicit RefCountedStaticMemory(base::span<const uint8_t> bytes);
 
-  // TODO(crbug.com/40284755): Remove this overload, use the span ctor instead.
-  RefCountedStaticMemory(const void* data, size_t length)
-      : UNSAFE_TODO(bytes_(static_cast<const uint8_t*>(data), length)) {}
-
   RefCountedStaticMemory(const RefCountedStaticMemory&) = delete;
   RefCountedStaticMemory& operator=(const RefCountedStaticMemory&) = delete;
 
@@ -107,11 +102,6 @@ class BASE_EXPORT RefCountedBytes : public RefCountedMemory {
 
   // Constructs a RefCountedBytes object by copying from `initializer`.
   explicit RefCountedBytes(base::span<const uint8_t> initializer);
-
-  // Constructs a RefCountedBytes object by copying `size` bytes from `p`.
-  //
-  // TODO(crbug.com/40284755): Remove this overload, use the span ctor instead.
-  RefCountedBytes(const uint8_t* p, size_t size);
 
   // Constructs a RefCountedBytes object by zero-initializing a new vector of
   // `size` bytes.

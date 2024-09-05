@@ -38,9 +38,6 @@ RefCountedBytes::RefCountedBytes(std::vector<uint8_t> initializer)
 RefCountedBytes::RefCountedBytes(base::span<const uint8_t> initializer)
     : bytes_(initializer.begin(), initializer.end()) {}
 
-RefCountedBytes::RefCountedBytes(const uint8_t* p, size_t size)
-    : bytes_(p, p + size) {}
-
 RefCountedBytes::RefCountedBytes(size_t size) : bytes_(size, 0u) {}
 
 scoped_refptr<RefCountedBytes> RefCountedBytes::TakeVector(
