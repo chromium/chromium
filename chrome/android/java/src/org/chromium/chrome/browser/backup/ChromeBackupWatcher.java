@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
-import org.chromium.components.sync.internal.SyncPrefNames;
 
 /**
  * Class for watching for changes to the Android preferences that are backed up using Android
@@ -59,11 +58,11 @@ class ChromeBackupWatcher {
                         });
 
         mPrefChangeRegistrar = new PrefChangeRegistrar();
-        for (String name : ChromeBackupAgentImpl.BACKUP_NATIVE_SYNC_TYPE_BOOL_PREFS) {
-            mPrefChangeRegistrar.addObserver(name, this::onBackupPrefsChanged);
+        for (PrefBackupSerializer serializer : ChromeBackupAgentImpl.NATIVE_PREFS_SERIALIZERS) {
+            for (String pref : serializer.getAllowlistedPrefs()) {
+                mPrefChangeRegistrar.addObserver(pref, this::onBackupPrefsChanged);
+            }
         }
-        mPrefChangeRegistrar.addObserver(
-                SyncPrefNames.SELECTED_TYPES_PER_ACCOUNT, this::onBackupPrefsChanged);
 
         // Update the backup if the sign-in status changes.
         IdentityManager identityManager =

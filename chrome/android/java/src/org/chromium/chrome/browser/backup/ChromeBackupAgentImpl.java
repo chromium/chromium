@@ -9,6 +9,7 @@ import android.app.backup.BackupDataOutput;
 import android.app.backup.BackupManager;
 import android.content.SharedPreferences;
 import android.os.ParcelFileDescriptor;
+import android.util.Pair;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -45,8 +46,6 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.components.sync.UserSelectableType;
-import org.chromium.components.sync.internal.SyncPrefNames;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.common.ContentProcessInfo;
 
@@ -71,8 +70,6 @@ import java.util.function.Predicate;
 @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
 public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
     private static final String ANDROID_DEFAULT_PREFIX = "AndroidDefault.";
-    private static final String NATIVE_BOOL_PREF_PREFIX = "native.";
-    private static final String NATIVE_DICT_PREF_PREFIX = "NativeJsonDict.";
 
     private static final String TAG = "ChromeBackupAgent";
 
@@ -133,22 +130,10 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER,
     };
 
-    // Bool entries from PrefService that should be backed up / restored.
-    static final String[] BACKUP_NATIVE_SYNC_TYPE_BOOL_PREFS = {
-        SyncPrefNames.SYNC_KEEP_EVERYTHING_SYNCED,
-        SyncPrefNames.SYNC_APPS,
-        SyncPrefNames.SYNC_AUTOFILL,
-        SyncPrefNames.SYNC_BOOKMARKS,
-        SyncPrefNames.SYNC_HISTORY,
-        SyncPrefNames.SYNC_PASSWORDS,
-        SyncPrefNames.SYNC_PAYMENTS,
-        SyncPrefNames.SYNC_PREFERENCES,
-        SyncPrefNames.SYNC_PRODUCT_COMPARISON,
-        SyncPrefNames.SYNC_READING_LIST,
-        SyncPrefNames.SYNC_SAVED_TAB_GROUPS,
-        SyncPrefNames.SYNC_SHARED_TAB_GROUP_DATA,
-        SyncPrefNames.SYNC_TABS,
-    };
+    // The supported PrefBackupSerializers, each responsible for allowlisting certain prefs for
+    // backup & restore.
+    static final List<PrefBackupSerializer> NATIVE_PREFS_SERIALIZERS =
+            List.of(new BoolPrefBackupSerializer(), new DictPrefBackupSerializer());
 
     // Key used to store the email of the syncing account. This email is obtained from
     // IdentityManager during the backup.
@@ -267,24 +252,14 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                                         "Recorded signed in account differs from syncing account");
                             }
 
-                            // When new data type is added to the UserSelectableType enum, also add
-                            // it to BACKUP_NATIVE_SYNC_TYPE_BOOL_PREFS (if the type is supported on
-                            // Android).
-                            assert UserSelectableType.LAST_TYPE == 14;
                             PrefService prefService = UserPrefs.get(profile);
-                            for (String name : BACKUP_NATIVE_SYNC_TYPE_BOOL_PREFS) {
-                                backupNames.add(NATIVE_BOOL_PREF_PREFIX + name);
-                                backupValues.add(booleanToBytes(prefService.getBoolean(name)));
+                            for (PrefBackupSerializer serializer : NATIVE_PREFS_SERIALIZERS) {
+                                for (Pair<String, byte[]> serializedNameAndValue :
+                                        serializer.serializeAllowlistedPrefs(prefService)) {
+                                    backupNames.add(serializedNameAndValue.first);
+                                    backupValues.add(serializedNameAndValue.second);
+                                }
                             }
-                            backupNames.add(
-                                    NATIVE_DICT_PREF_PREFIX
-                                            + SyncPrefNames.SELECTED_TYPES_PER_ACCOUNT);
-                            backupValues.add(
-                                    ChromeBackupAgentImplJni.get()
-                                            .getSerializedDict(
-                                                    prefService,
-                                                    SyncPrefNames.SELECTED_TYPES_PER_ACCOUNT)
-                                            .getBytes());
 
                             return true;
                         });
@@ -519,47 +494,13 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                 () -> {
                     PrefService prefService =
                             UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
-
                     for (int i = 0; i < backupNames.size(); i++) {
-                        String name = backupNames.get(i);
-                        if (name.startsWith(NATIVE_BOOL_PREF_PREFIX)) {
-                            name = name.substring(NATIVE_BOOL_PREF_PREFIX.length());
-                            if (!Arrays.asList(BACKUP_NATIVE_SYNC_TYPE_BOOL_PREFS).contains(name)) {
-                                // Not among the known prefs, do not restore. In the worst case,
-                                // this could attempt to write a pref which is no longer exists,
-                                // causing a crash.
-                                continue;
+                        for (PrefBackupSerializer s : NATIVE_PREFS_SERIALIZERS) {
+                            if (s.tryDeserialize(
+                                    prefService, backupNames.get(i), backupValues.get(i))) {
+                                // Found the correct type.
+                                break;
                             }
-
-                            prefService.setBoolean(name, bytesToBoolean(backupValues.get(i)));
-                            continue;
-                        }
-
-                        // Restore the account settings if possible.
-                        // It should be done before the potential migration of global boolean
-                        // preferences to account settings:
-                        // - If the user was syncing, the global prefs are more up-to-date so the
-                        // converted global prefs should take precedence;
-                        // - If the user was signed-in only, the global preferences will not be
-                        // migrated to account settings if the latter is restored, so no risk of
-                        // override here.
-                        if (name.startsWith(NATIVE_DICT_PREF_PREFIX)) {
-                            name = name.substring(NATIVE_DICT_PREF_PREFIX.length());
-                            if (!name.equals(SyncPrefNames.SELECTED_TYPES_PER_ACCOUNT)
-                                    || !SigninFeatureMap.isEnabled(
-                                            SigninFeatures
-                                                    .RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP)) {
-                                // Same as above, do not restore prefs if the name is unknown
-                                // or if the restore flag is not enabled.
-                                continue;
-                            }
-
-                            ChromeBackupAgentImplJni.get()
-                                    .setDict(
-                                            prefService,
-                                            SyncPrefNames.SELECTED_TYPES_PER_ACCOUNT,
-                                            new String(backupValues.get(i)));
-                            continue;
                         }
                     }
 
@@ -909,20 +850,6 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
     interface Natives {
         // See PrefService::CommitPendingWrite().
         void commitPendingPrefWrites(@JniType("PrefService*") PrefService prefService);
-
-        // Returns a serialized version of PrefService::GetDict(), which can be stored in backups.
-        @JniType("std::string")
-        String getSerializedDict(
-                @JniType("PrefService*") PrefService prefService,
-                @JniType("std::string") String prefName);
-
-        // If `serializedDict` was obtained from `getSerializedDict(prefService, prefName)`,
-        // deserializes and passes the result to PrefService::SetDict(). If deserialization fails,
-        // does nothing.
-        void setDict(
-                @JniType("PrefService*") PrefService prefService,
-                @JniType("std::string") String prefName,
-                @JniType("std::string") String serializedDict);
 
         // Calls syncer::MigrateGlobalDataTypePrefsToAccount() to migrate global boolean sync prefs
         // to account settings.

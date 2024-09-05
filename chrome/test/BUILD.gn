@@ -7399,7 +7399,7 @@ test("unit_tests") {
   if (is_android) {
     sources += [
       "../browser/android/auxiliary_search/auxiliary_search_provider_unittest.cc",
-      "../browser/android/backup/chrome_backup_agent_unittest.cc",
+      "../browser/android/backup/dict_pref_backup_serializer_unittest.cc",
       "../browser/android/bookmarks/partner_bookmarks_shim_unittest.cc",
       "../browser/android/compositor/layer/tab_layer_unittest.cc",
       "../browser/android/compositor/tab_content_manager_unittest.cc",

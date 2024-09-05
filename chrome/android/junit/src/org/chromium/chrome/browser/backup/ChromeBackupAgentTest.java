@@ -89,7 +89,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
@@ -130,6 +129,7 @@ public class ChromeBackupAgentTest {
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
     @Mock private ChromeBackupAgentImpl.Natives mChromeBackupAgentJniMock;
+    @Mock private DictPrefBackupSerializer.Natives mDictPrefBackupSerializerJniMock;
     @Mock private IdentityManager mIdentityManagerMock;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private PrefService mPrefService;
@@ -148,23 +148,27 @@ public class ChromeBackupAgentTest {
     private static final String NATIVE_PREF_NOT_BACKED_UP = "native_pref_not_backed_up";
     private static final String ACCOUNT_SETTINGS_PREF_VALUE = "account_settings_pref_value";
     private static final int BACKUP_BOOL_PREF_COUNT =
-            ChromeBackupAgentImpl.BACKUP_NATIVE_SYNC_TYPE_BOOL_PREFS.length
+            new BoolPrefBackupSerializer().getAllowlistedPrefs().size()
                     + ChromeBackupAgentImpl.BACKUP_ANDROID_BOOL_PREFS.length;
-    // The 3 additional preferences are: SELECTED_TYPES_PER_ACCOUNT, the syncing account and the
-    // signed-in account.
-    private static final int BACKUP_PREF_COUNT = BACKUP_BOOL_PREF_COUNT + 3;
+    // The 2 additional preferences are: the syncing account and the signed-in account.
+    private static final int BACKUP_PREF_COUNT =
+            ChromeBackupAgentImpl.NATIVE_PREFS_SERIALIZERS.stream()
+                            .mapToInt(serializer -> serializer.getAllowlistedPrefs().size())
+                            .sum()
+                    + ChromeBackupAgentImpl.BACKUP_ANDROID_BOOL_PREFS.length
+                    + 2;
     // Number of preferences that default to true in the test, see setUpPrefsToBackup().
     private static final int DEFAULT_TRUE_BOOL_PREF_COUNT = 2;
 
     // Mutable map containing boolean preferences names and their values for the fake backup.
-    private HashMap<String, Boolean> mNativeBoolPrefBackupValues =
-            new HashMap(
-                    Arrays.stream(ChromeBackupAgentImpl.BACKUP_NATIVE_SYNC_TYPE_BOOL_PREFS)
-                            .collect(Collectors.toMap(identity(), pref -> false)));
+    private Map<String, Boolean> mNativeBoolPrefBackupValues =
+            new BoolPrefBackupSerializer()
+                    .getAllowlistedPrefs().stream()
+                            .collect(Collectors.toMap(identity(), pref -> false));
 
     // Sets up default values for native and android prefs to be backed up.
     private void setUpPrefsToBackup(SharedPreferences prefs) {
-        when(mChromeBackupAgentJniMock.getSerializedDict(
+        when(mDictPrefBackupSerializerJniMock.getSerializedDict(
                         mPrefService, SyncPrefNames.SELECTED_TYPES_PER_ACCOUNT))
                 .thenReturn(ACCOUNT_SETTINGS_PREF_VALUE);
         // Other boolean prefs in BACKUP_NATIVE_SYNC_TYPE_BOOL_PREFS are false by default.
@@ -204,6 +208,7 @@ public class ChromeBackupAgentTest {
         MockitoAnnotations.initMocks(this);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         mocker.mock(ChromeBackupAgentImplJni.TEST_HOOKS, mChromeBackupAgentJniMock);
+        mocker.mock(DictPrefBackupSerializerJni.TEST_HOOKS, mDictPrefBackupSerializerJniMock);
 
         mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
@@ -1056,10 +1061,11 @@ public class ChromeBackupAgentTest {
 
         verifyRestoreFinishWithSignin();
         verifySyncTypeBoolPrefsRestored(true);
-        InOrder inOrder = inOrder(mChromeBackupAgentJniMock, mPrefService);
+        InOrder inOrder =
+                inOrder(mChromeBackupAgentJniMock, mDictPrefBackupSerializerJniMock, mPrefService);
         inOrder.verify(mPrefService, times(mNativeBoolPrefBackupValues.size()))
                 .setBoolean(anyString(), anyBoolean());
-        inOrder.verify(mChromeBackupAgentJniMock, times(1))
+        inOrder.verify(mDictPrefBackupSerializerJniMock, times(1))
                 .setDict(
                         mPrefService,
                         SyncPrefNames.SELECTED_TYPES_PER_ACCOUNT,
@@ -1359,13 +1365,13 @@ public class ChromeBackupAgentTest {
 
     private void verifyAccountSettingsBackupRestored(boolean isRestored) {
         if (isRestored) {
-            verify(mChromeBackupAgentJniMock, times(1))
+            verify(mDictPrefBackupSerializerJniMock, times(1))
                     .setDict(
                             mPrefService,
                             SyncPrefNames.SELECTED_TYPES_PER_ACCOUNT,
                             ACCOUNT_SETTINGS_PREF_VALUE);
         } else {
-            verify(mChromeBackupAgentJniMock, never())
+            verify(mDictPrefBackupSerializerJniMock, never())
                     .setDict(any(), eq(SyncPrefNames.SELECTED_TYPES_PER_ACCOUNT), anyString());
         }
     }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/backup/chrome_backup_agent.h"
+#include "chrome/browser/android/backup/dict_pref_backup_serializer.h"
 
 #include <string>
 #include <vector>
@@ -13,10 +13,10 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chrome_backup_agent {
+namespace dict_pref_backup_serializer {
 namespace {
 
-TEST(ChromeBackupAgentTest, ShouldDeserializeValidNonEmptyDict) {
+TEST(DictPrefBackupSerializerTest, ShouldDeserializeValidNonEmptyDict) {
   // Set up a dictionary pref with some arbitrary non-empty value.
   std::string pref_name = "dict";
   TestingPrefServiceSimple pref_service;
@@ -34,7 +34,7 @@ TEST(ChromeBackupAgentTest, ShouldDeserializeValidNonEmptyDict) {
   EXPECT_EQ(pref_service.GetDict(pref_name), dict_value);
 }
 
-TEST(ChromeBackupAgentTest, ShouldDeserializeValidEmptyDict) {
+TEST(DictPrefBackupSerializerTest, ShouldDeserializeValidEmptyDict) {
   // Set up a dictionary pref in its default empty state.
   std::string pref_name = "dict";
   TestingPrefServiceSimple pref_service;
@@ -51,7 +51,7 @@ TEST(ChromeBackupAgentTest, ShouldDeserializeValidEmptyDict) {
   EXPECT_EQ(pref_service.GetDict(pref_name), base::Value::Dict());
 }
 
-TEST(ChromeBackupAgentTest, ShouldNotDeserializeCorruptDict) {
+TEST(DictPrefBackupSerializerTest, ShouldNotDeserializeCorruptDict) {
   // Set up a dictionary pref with some arbitrary value.
   std::string pref_name = "dict";
   TestingPrefServiceSimple pref_service;
@@ -66,4 +66,4 @@ TEST(ChromeBackupAgentTest, ShouldNotDeserializeCorruptDict) {
 }
 
 }  // namespace
-}  // namespace chrome_backup_agent
+}  // namespace dict_pref_backup_serializer

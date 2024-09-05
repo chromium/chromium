@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/backup/chrome_backup_agent.h"
-
 #include <string>
 
 #include "base/android/jni_string.h"
-#include "base/json/json_string_value_serializer.h"
 #include "base/values.h"
 #include "components/prefs/android/pref_service_android.h"
 #include "components/prefs/pref_service.h"
@@ -20,8 +17,7 @@
 
 static_assert(14 == static_cast<int>(syncer::UserSelectableType::kLastType),
               "When adding a new selectable type, add its pref to"
-              "ChromeBackupAgentImpl.BACKUP_NATIVE_SYNC_TYPE_BOOL_PREFS if the"
-              "type exists on Android");
+              "BoolPrefBackupSerializer if the type exists on Android");
 
 void JNI_ChromeBackupAgentImpl_CommitPendingPrefWrites(
     JNIEnv* env,
@@ -32,20 +28,6 @@ void JNI_ChromeBackupAgentImpl_CommitPendingPrefWrites(
   pref_service->CommitPendingWrite();
 }
 
-std::string JNI_ChromeBackupAgentImpl_GetSerializedDict(
-    JNIEnv* env,
-    PrefService* pref_service,
-    std::string& pref_name) {
-  return chrome_backup_agent::GetSerializedDict(pref_service, pref_name);
-}
-
-void JNI_ChromeBackupAgentImpl_SetDict(JNIEnv* env,
-                                       PrefService* pref_service,
-                                       std::string& pref_name,
-                                       std::string& serialized_dict) {
-  chrome_backup_agent::SetDict(pref_service, pref_name, serialized_dict);
-}
-
 void JNI_ChromeBackupAgentImpl_MigrateGlobalDataTypePrefsToAccount(
     JNIEnv* env,
     PrefService* pref_service,
@@ -54,32 +36,3 @@ void JNI_ChromeBackupAgentImpl_MigrateGlobalDataTypePrefsToAccount(
   sync_prefs.MigrateGlobalDataTypePrefsToAccount(
       pref_service, signin::GaiaIdHash::FromGaiaId(gaia_id));
 }
-
-namespace chrome_backup_agent {
-
-std::string GetSerializedDict(PrefService* pref_service,
-                              const std::string& pref_name) {
-  std::string serialized_dict;
-  const bool serializer_result =
-      JSONStringValueSerializer(&serialized_dict)
-          .Serialize(pref_service->GetDict(pref_name));
-  CHECK(serializer_result);
-  return serialized_dict;
-}
-
-void SetDict(PrefService* pref_service,
-             const std::string& pref_name,
-             const std::string& serialized_dict) {
-  std::unique_ptr<base::Value> dict =
-      JSONStringValueDeserializer(serialized_dict)
-          .Deserialize(/*error_code=*/nullptr, /*error_message=*/nullptr);
-  if (!dict || !dict->is_dict()) {
-    // This should only happen if there was a bug when backing up the data, or
-    // if data was corrupted. It's not appropriate to crash for the latter, so
-    // just no-op.
-    return;
-  }
-  pref_service->SetDict(pref_name, dict->GetDict().Clone());
-}
-
-}  // namespace chrome_backup_agent

@@ -3715,6 +3715,7 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/background_task_scheduler/ProxyNativeTask.java",
     "java/src/org/chromium/chrome/browser/backup/ChromeBackupAgentImpl.java",
     "java/src/org/chromium/chrome/browser/backup/ChromeBackupWatcher.java",
+    "java/src/org/chromium/chrome/browser/backup/DictPrefBackupSerializer.java",
     "java/src/org/chromium/chrome/browser/bookmarks/BookmarkBridge.java",
     "java/src/org/chromium/chrome/browser/browserservices/digitalgoods/SiteIsolator.java",
     "java/src/org/chromium/chrome/browser/browserservices/permissiondelegation/InstalledWebappBridge.java",
