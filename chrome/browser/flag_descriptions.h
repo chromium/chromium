@@ -3699,6 +3699,9 @@ extern const char kConchDescription[];
 extern const char kConchFeatureKeyName[];
 extern const char kConchFeatureKeyDescription[];
 
+extern const char kConchSystemAudioFromMicName[];
+extern const char kConchSystemAudioFromMicDescription[];
+
 extern const char kDeskProfilesName[];
 extern const char kDeskProfilesDescription[];
 

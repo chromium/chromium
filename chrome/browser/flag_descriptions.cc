@@ -6391,6 +6391,10 @@ const char kConchFeatureKeyName[] = "Feature key for Conch";
 const char kConchFeatureKeyDescription[] =
     "Feature key to use the Conch on ChromeOS.";
 
+const char kConchSystemAudioFromMicName[] = "System audio capture for Conch";
+const char kConchSystemAudioFromMicDescription[] =
+    "Capture system audio from microphone for Conch on ChromeOS.";
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kDemoModeComponentUpdaterTestTagName[] = "Demo Mode test tag";
 const char kDemoModeComponentUpdaterTestTagDescription[] =

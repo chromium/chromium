@@ -11511,6 +11511,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"conch-key", flag_descriptions::kConchFeatureKeyName,
      flag_descriptions::kConchFeatureKeyDescription, kOsCrOS,
      STRING_VALUE_TYPE(ash::switches::kConchKey, "")},
+
+    {"conch-system-audio-from-mic",
+     flag_descriptions::kConchSystemAudioFromMicName,
+     flag_descriptions::kConchSystemAudioFromMicDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kConchSystemAudioFromMic)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)

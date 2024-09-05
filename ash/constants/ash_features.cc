@@ -457,6 +457,11 @@ BASE_FEATURE(kClipboardHistoryUrlTitles,
 // Controls enabling/disabling conch.
 BASE_FEATURE(kConch, "Conch", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, conch will use microphone to capture system audio.
+BASE_FEATURE(kConchSystemAudioFromMic,
+             "ConchSystemAudioFromMic",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled and account falls under the new deal, will be allowed to toggle
 // auto updates.
 BASE_FEATURE(kConsumerAutoUpdateToggleAllowed,
