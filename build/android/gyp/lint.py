@@ -217,7 +217,7 @@ def _RunLint(custom_lint_jar_path,
     lint_xmx = '4G'
   else:
     creating_baseline = False
-    lint_xmx = '2G'
+    lint_xmx = '3G'
 
   # Lint requires this directory to exist and be cleared.
   # See b/324598620
