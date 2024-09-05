@@ -26,6 +26,7 @@
 #include "net/cert/cert_verify_proc.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/ct_policy_enforcer.h"
+#include "net/cert/ct_policy_status.h"
 #include "net/cert/ct_verifier.h"
 #include "net/cert/ev_root_ca_metadata.h"
 #include "net/cert/internal/cert_issuer_source_aia.h"
@@ -295,8 +296,9 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
       std::string_view stapled_leaf_ocsp_response,
       std::string_view sct_list_from_tls_extension,
       const EVRootCAMetadata* ev_metadata,
-      bool* checked_revocation_for_some_path,
       base::TimeTicks deadline,
+      base::Time current_time,
+      bool* checked_revocation_for_some_path,
       const NetLogWithSource& net_log)
       : bssl::SimplePathBuilderDelegate(1024, digest_policy),
         crl_set_(crl_set),
@@ -310,8 +312,9 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
         stapled_leaf_ocsp_response_(stapled_leaf_ocsp_response),
         sct_list_from_tls_extension_(sct_list_from_tls_extension),
         ev_metadata_(ev_metadata),
-        checked_revocation_for_some_path_(checked_revocation_for_some_path),
         deadline_(deadline),
+        current_time_(current_time),
+        checked_revocation_for_some_path_(checked_revocation_for_some_path),
         net_log_(net_log) {}
 
   // This is called for each built chain, including ones which failed. It is
@@ -344,8 +347,8 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
     auto cert_for_ct_verify = X509Certificate::CreateFromBuffer(
         bssl::UpRef(path->certs[0]->cert_buffer()), std::move(intermediates));
     ct_verifier_->Verify(cert_for_ct_verify.get(), stapled_leaf_ocsp_response_,
-                         sct_list_from_tls_extension_, &delegate_data->scts,
-                         *net_log_);
+                         sct_list_from_tls_extension_, current_time_,
+                         &delegate_data->scts, *net_log_);
 
     // Check any extra constraints that might exist outside of the certificates.
     CheckExtraConstraints(path->certs, &path->errors);
@@ -400,8 +403,8 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
     // respective certificates, so |errors->ContainsHighSeverityErrors()| will
     // reflect the revocation status of the chain after this call.
     CheckValidatedChainRevocation(path->certs, policy, deadline_,
-                                  stapled_leaf_ocsp_response_, net_fetcher_,
-                                  &path->errors,
+                                  stapled_leaf_ocsp_response_, current_time_,
+                                  net_fetcher_, &path->errors,
                                   &delegate_data->stapled_ocsp_verify_result);
 
     ct::SCTList verified_scts;
@@ -411,7 +414,7 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
       }
     }
     delegate_data->ct_policy_compliance = ct_policy_enforcer_->CheckCompliance(
-        cert_for_ct_verify.get(), verified_scts, *net_log_);
+        cert_for_ct_verify.get(), verified_scts, current_time_, *net_log_);
   }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
@@ -663,8 +666,9 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
   const std::string_view stapled_leaf_ocsp_response_;
   const std::string_view sct_list_from_tls_extension_;
   raw_ptr<const EVRootCAMetadata> ev_metadata_;
-  raw_ptr<bool> checked_revocation_for_some_path_;
   base::TimeTicks deadline_;
+  base::Time current_time_;
+  raw_ptr<bool> checked_revocation_for_some_path_;
   raw_ref<const NetLogWithSource> net_log_;
 };
 
@@ -948,6 +952,7 @@ bssl::CertPathBuilder::Result TryBuildPath(
     const std::vector<net::CertVerifyProc::CertificateWithConstraints>&
         additional_constraints,
     const bssl::der::GeneralizedTime& der_verification_time,
+    base::Time current_time,
     base::TimeTicks deadline,
     VerificationType verification_type,
     bssl::SimplePathBuilderDelegate::DigestPolicy digest_policy,
@@ -975,7 +980,8 @@ bssl::CertPathBuilder::Result TryBuildPath(
   PathBuilderDelegateImpl path_builder_delegate(
       crl_set, ct_verifier, ct_policy_enforcer, net_fetcher, verification_type,
       digest_policy, flags, trust_store, additional_constraints, ocsp_response,
-      sct_list, ev_metadata, checked_revocation, deadline, net_log);
+      sct_list, ev_metadata, deadline, current_time, checked_revocation,
+      net_log);
 
   std::optional<CertIssuerSourceAia> aia_cert_issuer_source;
 
@@ -1096,10 +1102,15 @@ bool CanTryAgainWithWeakerDigestPolicy(
 // Returns true if retrying with the system time as the verification time might
 // successfully build a path, based on the earlier failed |result|.
 bool CanTryAgainWithSystemTime(const bssl::CertPathBuilder::Result& result) {
+  // TODO(crbug.com/363034686): Retries should also be triggered for CT
+  // failures.
   return result.AnyPathContainsError(
              bssl::cert_errors::kValidityFailedNotAfter) ||
          result.AnyPathContainsError(
-             bssl::cert_errors::kValidityFailedNotBefore);
+             bssl::cert_errors::kValidityFailedNotBefore) ||
+         result.AnyPathContainsError(bssl::cert_errors::kCertificateRevoked) ||
+         result.AnyPathContainsError(
+             bssl::cert_errors::kUnableToCheckRevocation);
 }
 
 int CertVerifyProcBuiltin::VerifyInternal(X509Certificate* input_cert,
@@ -1119,16 +1130,17 @@ int CertVerifyProcBuiltin::VerifyInternal(X509Certificate* input_cert,
     verify_result->cert_status |= CERT_STATUS_AUTHORITY_INVALID;
     return ERR_CERT_AUTHORITY_INVALID;
   }
-  bool tracker_time_available = false;
+  bool custom_time_available = false;
+  base::Time custom_time;
   if (time_tracker_.has_value()) {
-    base::Time time_now;
-    tracker_time_available = time_tracker_->GetTime(
-        base::Time::Now(), base::TimeTicks::Now(), &time_now, nullptr);
-    if (tracker_time_available &&
-        !EncodeTimeAsGeneralizedTime(time_now, &der_verification_custom_time)) {
+    custom_time_available = time_tracker_->GetTime(
+        base::Time::Now(), base::TimeTicks::Now(), &custom_time, nullptr);
+    if (custom_time_available &&
+        !EncodeTimeAsGeneralizedTime(custom_time,
+                                     &der_verification_custom_time)) {
       // This shouldn't be possible, but if it somehow happens, just use system
       // time.
-      tracker_time_available = false;
+      custom_time_available = false;
     }
   }
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
@@ -1188,10 +1200,10 @@ int CertVerifyProcBuiltin::VerifyInternal(X509Certificate* input_cert,
   // First try EV validation. Can skip this if the leaf certificate has no
   // chance of verifying as EV (lacks an EV policy).
   if (IsEVCandidate(ev_metadata, target.get()))
-    attempts.emplace_back(VerificationType::kEV, !tracker_time_available);
+    attempts.emplace_back(VerificationType::kEV, !custom_time_available);
 
   // Next try DV validation.
-  attempts.emplace_back(VerificationType::kDV, !tracker_time_available);
+  attempts.emplace_back(VerificationType::kDV, !custom_time_available);
 
   bssl::CertPathBuilder::Result result;
   VerificationType verification_type = VerificationType::kDV;
@@ -1223,8 +1235,9 @@ int CertVerifyProcBuiltin::VerifyInternal(X509Certificate* input_cert,
         target, &intermediates, &trust_store, additional_constraints_,
         cur_attempt.use_system_time ? der_verification_system_time
                                     : der_verification_custom_time,
-        deadline, cur_attempt.verification_type, cur_attempt.digest_policy,
-        flags, ocsp_response, sct_list, crl_set(), ct_verifier_.get(),
+        cur_attempt.use_system_time ? base::Time::Now() : custom_time, deadline,
+        cur_attempt.verification_type, cur_attempt.digest_policy, flags,
+        ocsp_response, sct_list, crl_set(), ct_verifier_.get(),
         ct_policy_enforcer_.get(), net_fetcher_.get(), ev_metadata,
         &checked_revocation_for_some_path, net_log);
 

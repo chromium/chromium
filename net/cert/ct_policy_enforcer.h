@@ -41,6 +41,7 @@ class NET_EXPORT CTPolicyEnforcer
   virtual ct::CTPolicyCompliance CheckCompliance(
       X509Certificate* cert,
       const ct::SCTList& verified_scts,
+      base::Time current_time,
       const NetLogWithSource& net_log) const = 0;
 
   // Returns the timestamp that the log identified by |log_id| (the SHA-256
@@ -73,6 +74,7 @@ class NET_EXPORT DefaultCTPolicyEnforcer : public net::CTPolicyEnforcer {
   ct::CTPolicyCompliance CheckCompliance(
       X509Certificate* cert,
       const ct::SCTList& verified_scts,
+      base::Time current_time,
       const NetLogWithSource& net_log) const override;
 
   std::optional<base::Time> GetLogDisqualificationTime(

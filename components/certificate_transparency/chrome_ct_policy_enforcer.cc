@@ -57,19 +57,8 @@ ChromeCTPolicyEnforcer::ChromeCTPolicyEnforcer(
     base::Time log_list_date,
     std::vector<std::pair<std::string, base::Time>> disqualified_logs,
     std::map<std::string, OperatorHistoryEntry> log_operator_history)
-    : ChromeCTPolicyEnforcer(log_list_date,
-                             std::move(disqualified_logs),
-                             std::move(log_operator_history),
-                             base::DefaultClock::GetInstance()) {}
-
-ChromeCTPolicyEnforcer::ChromeCTPolicyEnforcer(
-    base::Time log_list_date,
-    std::vector<std::pair<std::string, base::Time>> disqualified_logs,
-    std::map<std::string, OperatorHistoryEntry> log_operator_history,
-    const base::Clock* clock)
     : disqualified_logs_(std::move(disqualified_logs)),
       log_operator_history_(std::move(log_operator_history)),
-      clock_(clock),
       log_list_date_(log_list_date) {}
 
 ChromeCTPolicyEnforcer::~ChromeCTPolicyEnforcer() {}
@@ -77,18 +66,19 @@ ChromeCTPolicyEnforcer::~ChromeCTPolicyEnforcer() {}
 CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCompliance(
     net::X509Certificate* cert,
     const net::ct::SCTList& verified_scts,
+    base::Time current_time,
     const net::NetLogWithSource& net_log) const {
   // If the build is not timely, no certificate is considered compliant
   // with CT policy. The reasoning is that, for example, a log might
   // have been pulled and is no longer considered valid; thus, a client
   // needs up-to-date information about logs to consider certificates to
   // be compliant with policy.
-  bool build_timely = IsLogDataTimely();
+  bool build_timely = IsLogDataTimely(current_time);
   CTPolicyCompliance compliance;
   if (!build_timely) {
     compliance = CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY;
   } else {
-    compliance = CheckCTPolicyCompliance(*cert, verified_scts);
+    compliance = CheckCTPolicyCompliance(*cert, verified_scts, current_time);
   }
 
   net_log.AddEvent(net::NetLogEventType::CERT_CT_COMPLIANCE_CHECKED, [&] {
@@ -118,6 +108,7 @@ bool ChromeCTPolicyEnforcer::IsCtEnabled() const {
 
 bool ChromeCTPolicyEnforcer::IsLogDisqualified(
     std::string_view log_id,
+    base::Time current_time,
     base::Time* out_disqualification_date) const {
   std::optional<base::Time> disqualification_date =
       GetLogDisqualificationTime(log_id);
@@ -125,12 +116,12 @@ bool ChromeCTPolicyEnforcer::IsLogDisqualified(
     return false;
   }
   *out_disqualification_date = disqualification_date.value();
-  return base::Time::Now() >= disqualification_date.value();
+  return current_time >= disqualification_date.value();
 }
 
-bool ChromeCTPolicyEnforcer::IsLogDataTimely() const {
+bool ChromeCTPolicyEnforcer::IsLogDataTimely(base::Time current_time) const {
   // We consider built-in information to be timely for 10 weeks.
-  return (clock_->Now() - log_list_date_).InDays() < 70 /* 10 weeks */;
+  return (current_time - log_list_date_).InDays() < 70 /* 10 weeks */;
 }
 
 // Evaluates against the "on-or-after 15 April 2022" policy specified at
@@ -138,7 +129,8 @@ bool ChromeCTPolicyEnforcer::IsLogDataTimely() const {
 // (No certificate issued before that date could still be valid.)
 CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCTPolicyCompliance(
     const net::X509Certificate& cert,
-    const net::ct::SCTList& verified_scts) const {
+    const net::ct::SCTList& verified_scts,
+    base::Time current_time) const {
   // Cert is outside the bounds of parsable; reject it.
   if (cert.valid_start().is_null() || cert.valid_expiry().is_null() ||
       cert.valid_start().is_max() || cert.valid_expiry().is_max()) {
@@ -159,8 +151,9 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCTPolicyCompliance(
   base::Time issuance_date = base::Time::Max();
   for (const auto& sct : verified_scts) {
     base::Time unused;
-    if (IsLogDisqualified(sct->log_id, &unused))
+    if (IsLogDisqualified(sct->log_id, current_time, &unused)) {
       continue;
+    }
     issuance_date = std::min(sct->timestamp, issuance_date);
   }
 
@@ -172,7 +165,7 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCTPolicyCompliance(
   for (const auto& sct : verified_scts) {
     base::Time disqualification_date;
     bool is_disqualified =
-        IsLogDisqualified(sct->log_id, &disqualification_date);
+        IsLogDisqualified(sct->log_id, current_time, &disqualification_date);
     if (is_disqualified &&
         sct->origin != net::ct::SignedCertificateTimestamp::SCT_EMBEDDED) {
       // For OCSP and TLS delivered SCTs, only SCTs that are valid at the

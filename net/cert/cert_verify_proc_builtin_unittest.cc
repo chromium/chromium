@@ -199,19 +199,21 @@ class BlockingTrustStore : public bssl::TrustStore {
 
 class MockCTVerifier : public CTVerifier {
  public:
-  MOCK_CONST_METHOD5(Verify,
+  MOCK_CONST_METHOD6(Verify,
                      void(X509Certificate*,
                           std::string_view,
                           std::string_view,
+                          base::Time current_time,
                           SignedCertificateTimestampAndStatusList*,
                           const NetLogWithSource&));
 };
 
 class MockCTPolicyEnforcer : public CTPolicyEnforcer {
  public:
-  MOCK_CONST_METHOD3(CheckCompliance,
+  MOCK_CONST_METHOD4(CheckCompliance,
                      ct::CTPolicyCompliance(X509Certificate* cert,
                                             const ct::SCTList&,
+                                            base::Time,
                                             const NetLogWithSource&));
   MOCK_CONST_METHOD1(GetLogDisqualificationTime,
                      std::optional<base::Time>(std::string_view log_id));
@@ -454,9 +456,9 @@ TEST_F(CertVerifyProcBuiltinTest, CallsCtVerifierAndReturnsSctStatus) {
   sct_and_status.status = kSctVerifyStatus;
   SignedCertificateTimestampAndStatusList sct_and_status_list;
   sct_and_status_list.push_back(sct_and_status);
-  EXPECT_CALL(*mock_ct_verifier(), Verify(_, kOcspResponse, kSctList, _, _))
-      .WillOnce(testing::SetArgPointee<3>(sct_and_status_list));
-  EXPECT_CALL(*mock_ct_policy_enforcer(), CheckCompliance(_, _, _))
+  EXPECT_CALL(*mock_ct_verifier(), Verify(_, kOcspResponse, kSctList, _, _, _))
+      .WillOnce(testing::SetArgPointee<4>(sct_and_status_list));
+  EXPECT_CALL(*mock_ct_policy_enforcer(), CheckCompliance(_, _, _, _))
       .WillRepeatedly(
           testing::Return(ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS));
 
@@ -491,8 +493,8 @@ TEST_F(CertVerifyProcBuiltinTest, EVCertStatusMaintainedForCompliantCert) {
   InitializeVerifyProc(CreateParams(
       /*additional_trust_anchors=*/{root->GetX509Certificate()}));
 
-  EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, _, _, _));
-  EXPECT_CALL(*mock_ct_policy_enforcer(), CheckCompliance(_, _, _))
+  EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, _, _, _, _));
+  EXPECT_CALL(*mock_ct_policy_enforcer(), CheckCompliance(_, _, _, _))
       .WillRepeatedly(
           testing::Return(ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS));
 
@@ -814,6 +816,44 @@ TEST_F(CertVerifyProcBuiltinTest, TimeTrackerFailureIsRetriedWithSystemTime) {
   EXPECT_THAT(error, IsOk());
 }
 
+TEST_F(CertVerifyProcBuiltinTest,
+       TimeTrackerRevocationFailureIsRetriedWithSystemTime) {
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
+  root->SetValidity(/*not_before=*/base::Time::Now() - base::Days(3),
+                    /*not_after=*/base::Time::Now() + base::Days(2));
+  // The CRL DP sets its this_update time to base::Time::Now() - 1 day. Use two
+  // days before now as the current time to cause checks to fail with
+  // UNABLE_TO_CHECK_REVOCATION, which then should be retried with the system
+  // time and succeed.
+  InitializeVerifyProc(
+      CreateParams(
+          /*additional_trust_anchors=*/{},
+          /*additional_trust_anchors_with_enforced_constraints=*/
+          {root->GetX509Certificate()},
+          /*additional_distrusted_certificates=*/{}),
+      base::Time::Now() - base::Days(2));
+
+  EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTP);
+  ASSERT_TRUE(test_server.InitializeAndListen());
+  // Valid CRL that does not mark the leaf as revoked.
+  leaf->SetCrlDistributionPointUrl(
+      CreateAndServeCrl(&test_server, root.get(), {1234}));
+  test_server.StartAcceptingConnections();
+
+  scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
+  ASSERT_TRUE(chain.get());
+
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(chain.get(), "www.example.com",
+         CertVerifyProc::VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS,
+         &verify_result, &verify_net_log_source, callback.callback());
+
+  int error = callback.WaitForResult();
+  EXPECT_THAT(error, IsOk());
+}
+
 TEST_F(CertVerifyProcBuiltinTest, CRLNotCheckedForKnownRoots) {
   auto [leaf, root] = CertBuilder::CreateSimpleChain2();
   InitializeVerifyProc(CreateParams(
@@ -1108,7 +1148,7 @@ TEST_F(CertVerifyProcBuiltinTest,
 
   EXPECT_CALL(*mock_ct_policy_enforcer(), IsCtEnabled())
       .WillRepeatedly(testing::Return(false));
-  EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, _, _, _)).Times(2);
+  EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, _, _, _, _)).Times(2);
 
   scoped_refptr<X509Certificate> chain = leaf->GetX509Certificate();
   ASSERT_TRUE(chain.get());
@@ -1166,8 +1206,8 @@ TEST_F(CertVerifyProcBuiltinTest, ChromeRootStoreConstraintSctNotAfter) {
   sct_and_status_list.emplace_back(MakeSct(t1, kLog1), ct::SCT_STATUS_OK);
   sct_and_status_list.emplace_back(MakeSct(t2, kLog2), ct::SCT_STATUS_OK);
 
-  EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, kSctList, _, _))
-      .WillRepeatedly(testing::SetArgPointee<3>(sct_and_status_list));
+  EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, kSctList, _, _, _))
+      .WillRepeatedly(testing::SetArgPointee<4>(sct_and_status_list));
 
   SetMockChromeRootConstraints({{.sct_not_after = t1}});
 
@@ -1177,7 +1217,7 @@ TEST_F(CertVerifyProcBuiltinTest, ChromeRootStoreConstraintSctNotAfter) {
       .WillRepeatedly(testing::Return(std::nullopt));
   EXPECT_CALL(*mock_ct_policy_enforcer(), GetLogDisqualificationTime(kLog2))
       .WillRepeatedly(testing::Return(std::nullopt));
-  EXPECT_CALL(*mock_ct_policy_enforcer(), CheckCompliance(_, _, _))
+  EXPECT_CALL(*mock_ct_policy_enforcer(), CheckCompliance(_, _, _, _))
       .WillRepeatedly(
           testing::Return(ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS));
 
@@ -1238,8 +1278,8 @@ TEST_F(CertVerifyProcBuiltinTest,
 
   EXPECT_CALL(*mock_ct_policy_enforcer(), IsCtEnabled())
       .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, kSctList, _, _))
-      .WillOnce(testing::SetArgPointee<3>(sct_and_status_list));
+  EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, kSctList, _, _, _))
+      .WillOnce(testing::SetArgPointee<4>(sct_and_status_list));
 
   SetMockChromeRootConstraints({{.sct_not_after = t1}});
 
@@ -1282,8 +1322,8 @@ TEST_F(
   sct_and_status_list.emplace_back(MakeSct(t1, kLog1), ct::SCT_STATUS_OK);
   sct_and_status_list.emplace_back(MakeSct(t2, kLog2), ct::SCT_STATUS_OK);
 
-  EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, kSctList, _, _))
-      .WillOnce(testing::SetArgPointee<3>(sct_and_status_list));
+  EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, kSctList, _, _, _))
+      .WillOnce(testing::SetArgPointee<4>(sct_and_status_list));
 
   SetMockChromeRootConstraints({{.sct_not_after = t1}});
 
@@ -1294,7 +1334,7 @@ TEST_F(
   EXPECT_CALL(*mock_ct_policy_enforcer(), GetLogDisqualificationTime(kLog2))
       .WillRepeatedly(testing::Return(std::nullopt));
 
-  EXPECT_CALL(*mock_ct_policy_enforcer(), CheckCompliance(_, _, _))
+  EXPECT_CALL(*mock_ct_policy_enforcer(), CheckCompliance(_, _, _, _))
       .WillRepeatedly(
           testing::Return(ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS));
 
@@ -1334,8 +1374,8 @@ TEST_F(
   sct_and_status_list.emplace_back(MakeSct(t1, kLog1), ct::SCT_STATUS_OK);
   sct_and_status_list.emplace_back(MakeSct(t2, kLog2), ct::SCT_STATUS_OK);
 
-  EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, kSctList, _, _))
-      .WillOnce(testing::SetArgPointee<3>(sct_and_status_list));
+  EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, kSctList, _, _, _))
+      .WillOnce(testing::SetArgPointee<4>(sct_and_status_list));
 
   SetMockChromeRootConstraints({{.sct_not_after = t1}});
 
@@ -1346,7 +1386,7 @@ TEST_F(
   EXPECT_CALL(*mock_ct_policy_enforcer(), GetLogDisqualificationTime(kLog2))
       .WillRepeatedly(testing::Return(std::nullopt));
 
-  EXPECT_CALL(*mock_ct_policy_enforcer(), CheckCompliance(_, _, _))
+  EXPECT_CALL(*mock_ct_policy_enforcer(), CheckCompliance(_, _, _, _))
       .WillRepeatedly(
           testing::Return(ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS));
 
@@ -1380,8 +1420,8 @@ TEST_F(CertVerifyProcBuiltinTest,
   SignedCertificateTimestampAndStatusList sct_and_status_list;
   sct_and_status_list.emplace_back(MakeSct(t1, kLog1), ct::SCT_STATUS_OK);
 
-  EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, kSctList, _, _))
-      .WillOnce(testing::SetArgPointee<3>(sct_and_status_list));
+  EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, kSctList, _, _, _))
+      .WillOnce(testing::SetArgPointee<4>(sct_and_status_list));
 
   SetMockChromeRootConstraints({{.sct_not_after = t1}});
 
@@ -1390,7 +1430,7 @@ TEST_F(CertVerifyProcBuiltinTest,
   EXPECT_CALL(*mock_ct_policy_enforcer(), GetLogDisqualificationTime(kLog1))
       .WillRepeatedly(testing::Return(future_t));
 
-  EXPECT_CALL(*mock_ct_policy_enforcer(), CheckCompliance(_, _, _))
+  EXPECT_CALL(*mock_ct_policy_enforcer(), CheckCompliance(_, _, _, _))
       .WillRepeatedly(
           testing::Return(ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS));
 
@@ -1425,8 +1465,8 @@ TEST_F(CertVerifyProcBuiltinTest, ChromeRootStoreConstraintSctAllAfter) {
   sct_and_status_list.emplace_back(MakeSct(t1, kLog1), ct::SCT_STATUS_OK);
   sct_and_status_list.emplace_back(MakeSct(t2, kLog2), ct::SCT_STATUS_OK);
 
-  EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, kSctList, _, _))
-      .WillRepeatedly(testing::SetArgPointee<3>(sct_and_status_list));
+  EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, kSctList, _, _, _))
+      .WillRepeatedly(testing::SetArgPointee<4>(sct_and_status_list));
 
   // Set a SctAllAfter constraint before the timestamp of either SCT.
   SetMockChromeRootConstraints({{.sct_all_after = t0}});
@@ -1437,7 +1477,7 @@ TEST_F(CertVerifyProcBuiltinTest, ChromeRootStoreConstraintSctAllAfter) {
       .WillRepeatedly(testing::Return(std::nullopt));
   EXPECT_CALL(*mock_ct_policy_enforcer(), GetLogDisqualificationTime(kLog2))
       .WillRepeatedly(testing::Return(std::nullopt));
-  EXPECT_CALL(*mock_ct_policy_enforcer(), CheckCompliance(_, _, _))
+  EXPECT_CALL(*mock_ct_policy_enforcer(), CheckCompliance(_, _, _, _))
       .WillRepeatedly(
           testing::Return(ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS));
 
@@ -1646,11 +1686,11 @@ TEST_F(CertVerifyProcBuiltinTest,
 
   EXPECT_CALL(*mock_ct_policy_enforcer(), IsCtEnabled())
       .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, kSctList, _, _))
-      .WillOnce(testing::SetArgPointee<3>(sct_and_status_list));
+  EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, kSctList, _, _, _))
+      .WillOnce(testing::SetArgPointee<4>(sct_and_status_list));
   EXPECT_CALL(*mock_ct_policy_enforcer(), GetLogDisqualificationTime(kLog1))
       .WillRepeatedly(testing::Return(std::nullopt));
-  EXPECT_CALL(*mock_ct_policy_enforcer(), CheckCompliance(_, _, _))
+  EXPECT_CALL(*mock_ct_policy_enforcer(), CheckCompliance(_, _, _, _))
       .WillRepeatedly(
           testing::Return(ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS));
 
