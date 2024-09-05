@@ -199,6 +199,18 @@ constexpr base::FeatureParam<int> kLensOverlayMaxSignificantRegions{
 constexpr base::FeatureParam<int> kLensOverlayLivePageBlurRadiusPixels{
     &kLensOverlay, "live-page-blur-radius-pixels", 200};
 
+constexpr base::FeatureParam<bool> kLensOverlayUseCustomBlur{
+    &kLensOverlay, "use-custom-blur", true};
+
+constexpr base::FeatureParam<int> kLensOverlayCustomBlurBlurRadiusPixels{
+    &kLensOverlay, "custom-blur-blur-radius-pixels", 60};
+
+constexpr base::FeatureParam<double> kLensOverlayCustomBlurQuality{
+    &kLensOverlay, "custom-blur-quality", 0.1};
+
+constexpr base::FeatureParam<double> kLensOverlayCustomBlurRefreshRateHertz{
+    &kLensOverlay, "custom-blur-refresh-rate-hertz", 30};
+
 constexpr base::FeatureParam<double>
     kLensOverlayPostSelectionComparisonThreshold{
         &kLensOverlay, "post-selection-comparison-threshold", 0.005};
@@ -553,6 +565,22 @@ double GetLensOverlayPostSelectionComparisonThreshold() {
 
 int GetLensOverlayLivePageBlurRadiusPixels() {
   return kLensOverlayLivePageBlurRadiusPixels.Get();
+}
+
+bool GetLensOverlayUseCustomBlur() {
+  return kLensOverlayUseCustomBlur.Get();
+}
+
+int GetLensOverlayCustomBlurBlurRadiusPixels() {
+  return kLensOverlayCustomBlurBlurRadiusPixels.Get();
+}
+
+double GetLensOverlayCustomBlurQuality() {
+  return kLensOverlayCustomBlurQuality.Get();
+}
+
+double GetLensOverlayCustomBlurRefreshRateHertz() {
+  return kLensOverlayCustomBlurRefreshRateHertz.Get();
 }
 
 int GetLensOverlayServerRequestTimeout() {

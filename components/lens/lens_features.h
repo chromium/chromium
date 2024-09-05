@@ -458,6 +458,30 @@ extern double GetLensOverlayPostSelectionComparisonThreshold();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetLensOverlayLivePageBlurRadiusPixels();
 
+// Enables our custom blur layer instead of that built into the ui::Layer.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetLensOverlayUseCustomBlur();
+
+// The radius of blur in pixels for the custom blur. This is separate from
+// LivePageBlurRadiusPixels because the custom blur applies a lower blur since
+// it is being applied to a downsampled image.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensOverlayCustomBlurBlurRadiusPixels();
+
+// Sets the quality of the custom blur layer. This is a number between 0 and 1
+// used to down sample the screenshot and apply the blur to less pixels. For
+// example, a value of 0.5 on a viewport of 1000x500 will take a down sampled
+// screenshot of 500x250 and blur that then upsampled instead of the blurring
+// the entire viewport.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern double GetLensOverlayCustomBlurQuality();
+
+// The amount of times per second to update the background blur. This should be
+// a value in Hertz. Meaning, a value of 30 will refresh the blur 30 times a
+// second, while a value of 0.5 will update once every two seconds.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern double GetLensOverlayCustomBlurRefreshRateHertz();
+
 // The timeout set for every request from the browser to the server in
 // milliseconds.
 COMPONENT_EXPORT(LENS_FEATURES)
