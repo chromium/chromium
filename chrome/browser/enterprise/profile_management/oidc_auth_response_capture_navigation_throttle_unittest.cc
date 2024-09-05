@@ -17,9 +17,11 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -58,7 +60,8 @@ constexpr char kExampleAuthSubject[] = "example_auth_subject";
 constexpr char kExampleIdSubject[] = "example_id_subject";
 constexpr char kExampleIdIssuer[] = "example_id_issuer";
 
-const char kOidcEnrollmentHistogramName[] = "Enterprise.OidcEnrollment";
+constexpr char kOidcEnrollmentHistogramName[] = "Enterprise.OidcEnrollment";
+constexpr char kProfileEnrollmentUkm[] = "Enterprise.Profile.Enrollment";
 
 std::string BuildTokenFromDict(const base::Value::Dict& dict) {
   return base::StringPrintf(
@@ -274,7 +277,9 @@ class OidcAuthResponseCaptureNavigationThrottleTest
     }
   }
 
-  void TestInterceptionForUrl(bool add_oidc_state, std::string source_url) {
+  void TestInterceptionForUrl(bool add_oidc_state,
+                              bool should_log_ukm,
+                              std::string source_url) {
     std::string auth_token = BuildTokenFromDict(
         base::Value::Dict()
             .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
@@ -327,6 +332,12 @@ class OidcAuthResponseCaptureNavigationThrottleTest
                 throttle->WillRedirectRequest().action());
       task_environment()->RunUntilQuit();
     }
+
+    if (should_log_ukm) {
+      ExpectUkmLogged(navigation_handle.GetNavigationId());
+    } else {
+      ExpectNoUkmLogged();
+    }
   }
 
   void CheckFunnelAndResultHistogram(
@@ -345,6 +356,27 @@ class OidcAuthResponseCaptureNavigationThrottleTest
         expected_enrollment_result.value(), enable_oidc_interception() ? 1 : 0);
   }
 
+  void ExpectNoUkmLogged() const {
+    EXPECT_TRUE(
+        test_ukm_recorder_.GetEntriesByName(kProfileEnrollmentUkm).empty());
+  }
+
+  void ExpectUkmLogged(uint64_t navigation_id) const {
+    const auto& entries =
+        test_ukm_recorder_.GetEntriesByName(kProfileEnrollmentUkm);
+    ASSERT_EQ(entries.size(), 1U);
+    const auto& entry = entries[0];
+    ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+        entry,
+        ukm::builders::Enterprise_Profile_Enrollment::
+            kIsUntrustedOidcRedirectName,
+        true);
+
+    EXPECT_EQ(entry->source_id,
+              ukm::ConvertToSourceId(navigation_id,
+                                     ukm::SourceIdType::NAVIGATION_ID));
+  }
+
   content::WebContents* web_contents() const {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
@@ -360,6 +392,7 @@ class OidcAuthResponseCaptureNavigationThrottleTest
  protected:
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   base::HistogramTester histogram_tester_;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -390,8 +423,15 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
     navigation_handle.set_url(GURL(direct_navigate_url));
     EXPECT_EQ(NavigationThrottle::PROCEED,
               throttle->WillProcessResponse().action());
+
+    if (enable_process_response()) {
+      ExpectUkmLogged(navigation_handle.GetNavigationId());
+    } else {
+      ExpectNoUkmLogged();
+    }
   } else {
     ASSERT_EQ(nullptr, throttle);
+    ExpectNoUkmLogged();
   }
 }
 
@@ -447,6 +487,7 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, MissingRedirectionChain) {
 
 TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, SuccessfulInterception) {
   TestInterceptionForUrl(/*add_oidc_state=*/false,
+                         /*should_log_ukm=*/false,
                          /*source_url=*/kOidcEntraReprocessUrl);
   CheckFunnelAndResultHistogram(
       OidcInterceptionFunnelStep::kSuccessfulInfoParsed, std::nullopt);
@@ -455,9 +496,11 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, SuccessfulInterception) {
 TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
        SuccessfulInterceptionWithState) {
   TestInterceptionForUrl(/*add_oidc_state=*/true,
+                         /*should_log_ukm=*/false,
                          /*source_url=*/kOidcEntraReprocessUrl);
   CheckFunnelAndResultHistogram(
       OidcInterceptionFunnelStep::kSuccessfulInfoParsed, std::nullopt);
+  ExpectNoUkmLogged();
 }
 
 // Test case for when the source URL of OIDC authentication is not considered to
@@ -465,8 +508,10 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
 // enabled.
 TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
        SuccessfulInterceptionWithState_invalidSourceUrl) {
-  TestInterceptionForUrl(/*add_oidc_state=*/true,
-                         /*source_url=*/kOidcNonEntraReprocessUrl);
+  TestInterceptionForUrl(
+      /*add_oidc_state=*/true,
+      /*should_log_ukm=*/!enable_generic_oidc() && enable_oidc_interception(),
+      /*source_url=*/kOidcNonEntraReprocessUrl);
 
   if (enable_generic_oidc()) {
     CheckFunnelAndResultHistogram(
@@ -476,6 +521,7 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
 
 TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, MsftKmsiThrottling) {
   TestInterceptionForUrl(/*add_oidc_state=*/false,
+                         /*should_log_ukm=*/false,
                          /*source_url=*/kOidcEntraKmsiUrl);
   CheckFunnelAndResultHistogram(
       OidcInterceptionFunnelStep::kSuccessfulInfoParsed, std::nullopt);
@@ -484,6 +530,7 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, MsftKmsiThrottling) {
 TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, MsftGuidThrottling) {
   TestInterceptionForUrl(
       /*add_oidc_state=*/false,
+      /*should_log_ukm=*/false,
       /*source_url=*/"https://login.microsoftonline.com/some-tenant-id/login");
   CheckFunnelAndResultHistogram(
       OidcInterceptionFunnelStep::kSuccessfulInfoParsed, std::nullopt);
@@ -491,7 +538,8 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, MsftGuidThrottling) {
 
 TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, McasThrottling) {
   TestInterceptionForUrl(
-      /*add_oidc_state=*/false, /*source_url=*/
+      /*add_oidc_state=*/false,
+      /*should_log_ukm=*/false, /*source_url=*/
       "https://come-dmain-com.access.mcas.ms/aad_login?some-query");
   CheckFunnelAndResultHistogram(
       OidcInterceptionFunnelStep::kSuccessfulInfoParsed, std::nullopt);

@@ -25,6 +25,9 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
 
 using url_matcher::URLMatcher;
@@ -86,6 +89,15 @@ std::unique_ptr<URLMatcher> CreateOidcEnrollmentUrlMatcher() {
       matcher.get(),
       std::vector<std::string>({kEntraLoginHost, kEntraMcasHost}));
   return matcher;
+}
+
+void RecordUntrustedRedirectChain(
+    content::NavigationHandle& navigation_handle) {
+  ukm::SourceId source_id = ukm::ConvertToSourceId(
+      navigation_handle.GetNavigationId(), ukm::SourceIdType::NAVIGATION_ID);
+  ukm::builders::Enterprise_Profile_Enrollment(source_id)
+      .SetIsUntrustedOidcRedirect(true)
+      .Record(ukm::UkmRecorder::Get());
 }
 
 }  // namespace
@@ -169,6 +181,10 @@ OidcAuthResponseCaptureNavigationThrottle::AttemptToTriggerInterception() {
     }
 
     if (!accept_redirect) {
+      RecordUntrustedRedirectChain(*navigation_handle());
+      VLOG_POLICY(1, OIDC_ENROLLMENT)
+          << "Enrollment flow cannot be initiated due to an untrusted chain of "
+             "redirects.";
       return PROCEED;
     }
   }

@@ -7671,6 +7671,19 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Enterprise.Profile.Enrollment">
+  <owner>cbe-device-trust-team@google.com</owner>
+  <summary>
+    Metrics related to Profiles enrolling into Enterprise cloud management.
+  </summary>
+  <metric name="IsUntrustedOidcRedirect">
+    <summary>
+      A boolean capturing that a Profile enrollment flow was blocked due to a
+      lack of trust in the chain of navigation redirects.
+    </summary>
+  </metric>
+</event>
+
 <event name="Event.Scroll">
   <owner>woa-performance@google.com</owner>
   <summary>
