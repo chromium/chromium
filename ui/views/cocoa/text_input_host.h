@@ -6,6 +6,7 @@
 #define UI_VIEWS_COCOA_TEXT_INPUT_HOST_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/remote_cocoa/common/text_input_host.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -84,12 +85,12 @@ class VIEWS_EXPORT TextInputHost : public remote_cocoa::mojom::TextInputHost {
   // Weak. If non-null the TextInputClient of the currently focused views::View
   // in the hierarchy rooted at the root view of |host_impl_|. Owned by the
   // focused views::View.
-  raw_ptr<ui::TextInputClient> text_input_client_ = nullptr;
+  base::WeakPtr<ui::TextInputClient> text_input_client_;
 
   // The TextInputClient about to be set. Requests for a new -inputContext will
   // use this, but while the input is changing the NSView still needs to service
   // IME requests using the old |text_input_client_|.
-  raw_ptr<ui::TextInputClient> pending_text_input_client_ = nullptr;
+  base::WeakPtr<ui::TextInputClient> pending_text_input_client_;
 
   const raw_ptr<NativeWidgetMacNSWindowHost> host_impl_;
 
