@@ -526,7 +526,10 @@ bool AutofillManager::GetCachedFormAndField(
   // to work if `autofill_count() == 0`. See
   // BrowserAutofillManager::AskForValuesToFillImpl() and
   // BrowserAutofillManager::FillOrPreviewField().
-  if (!cached_form || cached_form->autofill_count() == 0) {
+  if (!cached_form ||
+      (cached_form->autofill_count() == 0 &&
+       !base::FeatureList::IsEnabled(
+           features::kAutofillDecoupleAutofillCountFromCache))) {
     return false;
   }
   *form_structure = cached_form;

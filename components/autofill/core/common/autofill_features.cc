@@ -272,6 +272,13 @@ BASE_FEATURE(kAutofillDontUpdateSelectionRangeOnPreviewClearing,
              "AutofillDontUpdateSelectionRangeOnPreviewClearing",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, AutofillManager::GetCachedFormAndField will return the cached
+// form if found, even if it doesn't satisfy
+// `cached_form->autofill_count() != 0`.
+BASE_FEATURE(kAutofillDecoupleAutofillCountFromCache,
+             "AutofillDecoupleAutofillCountFromCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Gives precedence to local heuristics if they indicate that a field is an
 // EMAIL_ADDRESS field and the server believes that it is a USERNAME or
 // SINGLE_USERNAME field.
