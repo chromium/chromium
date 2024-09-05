@@ -333,7 +333,7 @@ bool SynchronizedMinidumpManager::WriteFiles(
     lockfile += "\n";  // Add line seperatators
   }
 
-  if (WriteFile(lockfile_path_, lockfile.c_str(), lockfile.size()) < 0) {
+  if (!WriteFile(lockfile_path_, lockfile)) {
     return false;
   }
 

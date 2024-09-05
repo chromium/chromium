@@ -29,6 +29,17 @@ const float kMinApiBrightness = 0.0f;
 const float kMaxApiBrightness = 1.0f;
 const float kDefaultApiBrightness = kMaxApiBrightness;
 
+#if defined(USE_AURA)
+// A wrapper function for converting a PowerToggleCallback to a
+// display::ConfigureCallback. Calls `callback` with the resulting status.
+void AsConfigureCallback(
+    ScreenPowerController::Delegate::PowerToggleCallback callback,
+    const std::vector<display::DisplayConfigurationParams>& request_results,
+    bool status) {
+  std::move(callback).Run(status);
+}
+#endif  // defined(USE_AURA)
+
 }  // namespace
 
 DisplaySettingsManagerImpl::DisplaySettingsManagerImpl(
@@ -95,13 +106,15 @@ void DisplaySettingsManagerImpl::AddReceiver(
 
 void DisplaySettingsManagerImpl::SetScreenPowerOn(PowerToggleCallback callback) {
 #if defined(USE_AURA)
-  display_configurator_->EnableDisplay(std::move(callback));
+  display_configurator_->EnableDisplay(
+      base::BindOnce(&AsConfigureCallback, std::move(callback)));
 #endif  // defined(USE_AURA)
 }
 
 void DisplaySettingsManagerImpl::SetScreenPowerOff(PowerToggleCallback callback) {
 #if defined(USE_AURA)
-  display_configurator_->DisableDisplay(std::move(callback));
+  display_configurator_->DisableDisplay(
+      base::BindOnce(&AsConfigureCallback, std::move(callback)));
 #endif  // defined(USE_AURA)
 }
 

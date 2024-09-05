@@ -621,8 +621,8 @@ int CastBrowserMainParts::PreMainMessageLoopRun() {
       ::ui_devtools::UiDevToolsServer::IsUiDevToolsEnabled(
           ::ui_devtools::switches::kEnableUiDevTools)) {
     // Starts the UI Devtools server for browser Aura UI
-    ui_devtools_ = std::make_unique<CastUIDevTools>(
-        cast_content_browser_client_->GetSystemNetworkContext());
+    ui_devtools_ =
+        std::make_unique<CastUIDevTools>(content::GetIOThreadTaskRunner({}));
   }
 #endif
 
