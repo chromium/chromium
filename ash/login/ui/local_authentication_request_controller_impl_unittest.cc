@@ -16,6 +16,7 @@
 #include "ash/login/ui/views_utils.h"
 #include "ash/public/cpp/login/local_authentication_request_controller.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
@@ -30,6 +31,7 @@
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
@@ -279,6 +281,17 @@ TEST_F(LocalAuthenticationRequestControllerImplTest,
 
   view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(ax::mojom::Role::kDialog, data.role);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringFUTF16(
+                IDS_ASH_LOGIN_LOCAL_AUTHENTICATION_REQUEST_DESCRIPTION,
+                u"user@test.com"));
+
+  data = ui::AXNodeData();
+  view->UpdateState(LocalAuthenticationRequestViewState::kNormal, u"",
+                    u"Sample Description");
+  view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"Sample Description");
 }
 
 }  // namespace

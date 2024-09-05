@@ -89,7 +89,6 @@ class ASH_EXPORT LocalAuthenticationRequestView
   ~LocalAuthenticationRequestView() override;
 
   // views::DialogDelegateView:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void RequestFocus() override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
@@ -131,6 +130,10 @@ class ASH_EXPORT LocalAuthenticationRequestView
   // Returns the view dimensions.
   gfx::Size GetLocalAuthenticationRequestViewSize() const;
 
+  void OnDescriptionLabelTextChanged();
+
+  void UpdateAccessibleName();
+
   const base::WeakPtr<Delegate> delegate_;
 
   // Strings as on view construction to enable restoring the original state.
@@ -152,6 +155,8 @@ class ASH_EXPORT LocalAuthenticationRequestView
 
   // Current user context.
   std::unique_ptr<UserContext> user_context_;
+
+  base::CallbackListSubscription description_label_changed_subscription_;
 
   base::WeakPtrFactory<LocalAuthenticationRequestView> weak_ptr_factory_{this};
 };

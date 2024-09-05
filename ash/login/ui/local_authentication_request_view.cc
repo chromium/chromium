@@ -307,15 +307,14 @@ LocalAuthenticationRequestView::LocalAuthenticationRequestView(
   SetPreferredSize(GetLocalAuthenticationRequestViewSize());
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
+  UpdateAccessibleName();
+  description_label_changed_subscription_ =
+      description_label_->AddTextChangedCallback(base::BindRepeating(
+          &LocalAuthenticationRequestView::OnDescriptionLabelTextChanged,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 LocalAuthenticationRequestView::~LocalAuthenticationRequestView() = default;
-
-void LocalAuthenticationRequestView::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  views::DialogDelegateView::GetAccessibleNodeData(node_data);
-  node_data->SetNameChecked(description_label_->GetText());
-}
 
 void LocalAuthenticationRequestView::RequestFocus() {
   login_password_view_->RequestFocus();
@@ -417,6 +416,19 @@ void LocalAuthenticationRequestView::OnAuthComplete(
   } else {
     LocalAuthenticationRequestWidget::Get()->Close(true /* success */,
                                                    std::move(user_context));
+  }
+}
+
+void LocalAuthenticationRequestView::OnDescriptionLabelTextChanged() {
+  UpdateAccessibleName();
+}
+
+void LocalAuthenticationRequestView::UpdateAccessibleName() {
+  if (description_label_->GetText().empty()) {
+    GetViewAccessibility().SetName(
+        std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  } else {
+    GetViewAccessibility().SetName(description_label_->GetText());
   }
 }
 

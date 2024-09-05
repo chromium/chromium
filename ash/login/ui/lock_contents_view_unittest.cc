@@ -3549,16 +3549,32 @@ TEST_F(LockContentsViewUnitTest, MetricsRecordedOnFailedLoginAttempt) {
       kNbPasswordAttemptsUntilFailureHistogramName, num_failed_attempts, 1);
 }
 
-TEST_F(LockContentsViewUnitTest, AccessibleProperties) {
+TEST_F(LockContentsViewUnitTest, LoginAccessibleProperties) {
   auto contents = std::make_unique<LockContentsView>(
       mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
       DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetWidget(CreateWidgetWithContent(contents.get()));
-  ui::AXNodeData data;
 
+  ui::AXNodeData data;
   contents.get()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kWindow);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SCREEN_ACCESSIBLE_NAME));
+}
+
+TEST_F(LockContentsViewUnitTest, LockAccessibleProperties) {
+  auto contents = std::make_unique<LockContentsView>(
+      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
+      DataDispatcher(),
+      std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
+  SetWidget(CreateWidgetWithContent(contents.get()));
+
+  ui::AXNodeData data;
+  contents.get()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kWindow);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringUTF16(IDS_ASH_LOCK_SCREEN_ACCESSIBLE_NAME));
 }
 
 TEST_F(LockContentsViewUnitTest, LoginToolTipViewAccessibleProperties) {

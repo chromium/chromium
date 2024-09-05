@@ -151,6 +151,11 @@ DisabledAuthMessageView::TestApi::GetDisabledAuthMessageContent() const {
   return view_->message_contents_->GetText();
 }
 
+void DisabledAuthMessageView::TestApi::SetDisabledAuthMessageTitleForTesting(
+    std::u16string message_title) {
+  view_->SetAuthDisabledMessage(message_title, u"");
+}
+
 DisabledAuthMessageView::DisabledAuthMessageView() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
@@ -190,6 +195,10 @@ DisabledAuthMessageView::DisabledAuthMessageView() {
   message_contents_->SetEnabledColorId(kColorAshTextColorPrimary);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kPane);
+  UpdateAccessibleName();
+  message_title_changed_subscription_ = message_title_->AddTextChangedCallback(
+      base::BindRepeating(&DisabledAuthMessageView::OnMessageTitleChanged,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 DisabledAuthMessageView::~DisabledAuthMessageView() = default;
@@ -230,7 +239,11 @@ gfx::Size DisabledAuthMessageView::CalculatePreferredSize(
   return gfx::Size(preferred_width_, height);
 }
 
-void DisabledAuthMessageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+void DisabledAuthMessageView::OnMessageTitleChanged() {
+  UpdateAccessibleName();
+}
+
+void DisabledAuthMessageView::UpdateAccessibleName() {
   // Any view which claims to be focusable is expected to have an accessible
   // name so that screen readers know what to present to the user when it gains
   // focus. In the case of this particular view, `RequestFocus` gives focus to
@@ -240,9 +253,10 @@ void DisabledAuthMessageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // name to that text; otherwise set the name explicitly empty to prevent
   // the paint check from failing during tests.
   if (message_title_->GetText().empty()) {
-    node_data->SetNameExplicitlyEmpty();
+    GetViewAccessibility().SetName(
+        std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
   } else {
-    node_data->SetNameChecked(message_title_->GetText());
+    GetViewAccessibility().SetName(message_title_->GetText());
   }
 }
 

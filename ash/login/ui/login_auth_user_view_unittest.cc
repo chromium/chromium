@@ -45,6 +45,7 @@
 using testing::_;
 
 namespace ash {
+
 namespace {
 
 // Input field mode to element visibility mapping.
@@ -606,6 +607,15 @@ TEST_F(LoginAuthUserViewUnittest, DisabledAuthMessageViewAccessibleProperties) {
 
   message_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kPane);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName), u"");
+
+  data = ui::AXNodeData();
+  const std::u16string message_title = u"Sample Description";
+  DisabledAuthMessageView::TestApi(message_view)
+      .SetDisabledAuthMessageTitleForTesting(message_title);
+  message_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            message_title);
 }
 
 class LoginAuthUserViewOnlineUnittest
