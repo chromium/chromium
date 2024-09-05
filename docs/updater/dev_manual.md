@@ -221,6 +221,25 @@ Updater branding affects the path the updater installs itself to, among other
 things. Differently-branded copies of Chromium Updater are intended to coexist
 on a machine, operating independently from each other.
 
+### Build output
+The build generates the following main files:
+
+  - `updater.exe` (Windows) / `ChromiumUpdater.app` (macOS): The actual updater
+    application.
+  - `UpdaterSetup.exe` (Windows): The self-extracting "metainstaller", suitable
+    for tagging, signing, and further distribution.
+  - `UpdaterSigning`: A collection of scripts and tools used to sign the
+    updater.
+  - `qualification_app` (.exe on Windows): A simple app run by each version of
+    the updater prior to taking over as the active updater. Updaters will
+    download and run whatever version is actually released (not what you've
+    built), and the qualification app can be version skewed with the updater.
+  - `ChromiumUpdaterUtil` (macOS): A utility program for debugging the updater.
+  - `chrome/updater/.install` (macOS): A Keystone-compatible install script that
+    drives the updater's installation during update.
+  - `updater.zip`: A zip file containing all of the above, for uploading to the
+    archive / signing infrastructure.
+
 ### Cleaning the build output
 Running `ninja` with `t clean` cleans the build out directory. For example:
 ```
