@@ -128,6 +128,18 @@ class OidcAuthResponseCaptureNavigationThrottleTest
          {features::kOidcAuthResponseInterception, enable_process_response()}});
   }
 
+  // ctor to test URL matching and additional hosts from feature flag.
+  explicit OidcAuthResponseCaptureNavigationThrottleTest(
+      const std::string& additional_hosts) {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{features::kOidcAuthProfileManagement, {}},
+                              {features::kOidcEnrollmentAuthSource,
+                               {{features::kOidcAuthAdditionalHosts.name,
+                                 additional_hosts}}}},
+        /*disabled_features=*/{
+            features::kEnableGenericOidcAuthProfileManagement});
+  }
+
   OidcAuthResponseCaptureNavigationThrottleTest(bool enable_oidc_interception,
                                                 bool enable_generic_oidc,
                                                 bool enable_process_response) {
@@ -816,9 +828,8 @@ class OidcAuthNavigationThrottleUrlMatchingTest
  public:
   OidcAuthNavigationThrottleUrlMatchingTest()
       : OidcAuthResponseCaptureNavigationThrottleTest(
-            /*enable_oidc_interception=*/true,
-            /*enable_generic_oidc=*/false,
-            /*enable_process_response=*/false) {}
+            /*additional_hosts=*/
+            "https://add-host1.com, https://add-host2.com, add-host3.com") {}
 
   ~OidcAuthNavigationThrottleUrlMatchingTest() override = default;
 
@@ -841,8 +852,18 @@ TEST_F(OidcAuthNavigationThrottleUrlMatchingTest, MsftThrottleUrlMatching) {
   TestUrlMatching("https://login.microsoftonline.com/common/somethingelse");
 }
 
+TEST_F(OidcAuthNavigationThrottleUrlMatchingTest, AdditionalHostMatching) {
+  TestUrlMatching("https://add-host1.com/some-tenant-id/reprocess");
+  TestUrlMatching("https://add-host2.com/common/reprocess");
+  TestUrlMatching("https://add-host3.com/common/reprocess");
+}
+
 TEST_F(OidcAuthNavigationThrottleUrlMatchingTest, MsftThrottleUrlNotMatching) {
   TestUrlMatching("https://mismatchhost.microsoftonline.com/common/reprocess",
+                  /*expect_matched=*/false);
+  TestUrlMatching("https://add-host1.ca/common/reprocess",
+                  /*expect_matched=*/false);
+  TestUrlMatching("https://add-host4.com/common/reprocess",
                   /*expect_matched=*/false);
 }
 

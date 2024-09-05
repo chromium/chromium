@@ -85,9 +85,20 @@ bool IsEnrollmentUrl(GURL& url) {
 
 std::unique_ptr<URLMatcher> CreateOidcEnrollmentUrlMatcher() {
   auto matcher = std::make_unique<URLMatcher>();
-  url_matcher::util::AddAllowFilters(
-      matcher.get(),
-      std::vector<std::string>({kEntraLoginHost, kEntraMcasHost}));
+
+  std::vector<std::string> allowed_hosts({kEntraLoginHost, kEntraMcasHost});
+  if (base::FeatureList::IsEnabled(
+          profile_management::features::kOidcEnrollmentAuthSource)) {
+    const std::vector<std::string>& hosts = base::SplitString(
+        profile_management::features::kOidcAuthAdditionalHosts.Get(), ",",
+        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+    for (std::string host : hosts) {
+      allowed_hosts.push_back(host);
+    }
+  }
+
+  url_matcher::util::AddAllowFilters(matcher.get(), allowed_hosts);
   return matcher;
 }
 
