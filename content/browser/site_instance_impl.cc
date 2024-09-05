@@ -1082,12 +1082,17 @@ bool SiteInstanceImpl::IsNavigationSameSite(
   if (!SandboxConfigurationsMatch(GetSiteInfo(), dest_url_info))
     return false;
 
+  // Similarly, do not consider PDF and non-PDF documents to be same-site; they
+  // should never share a SiteInstance. See https://crbug.com/359345045.
+  if (IsPdf() != dest_url_info.is_pdf) {
+    return false;
+  }
+
   const GURL& dest_url = dest_url_info.url;
   BrowserContext* browser_context = GetBrowserContext();
 
   bool should_compare_effective_urls = ShouldCompareEffectiveURLs(
       browser_context, this, for_outermost_main_frame, dest_url);
-
   // If IsSuitableForUrlInfo finds a process type mismatch, return false
   // even if |dest_url| is same-site.  (The URL may have been installed as an
   // app since the last time we visited it.)
@@ -1096,6 +1101,14 @@ bool SiteInstanceImpl::IsNavigationSameSite(
   // app to non-hosted app, and vice versa, to keep them in the same process
   // due to scripting requirements. Otherwise, this would return false due to
   // a process privilege level mismatch.
+  //
+  // TODO(alexmos): Skipping this check is dangerous, since other bits in
+  // SiteInfo may disqualify the navigation from being same-site, even when a
+  // hosted app URL embeds a non-hosted-app same-site URL. Two of these cases,
+  // sandboxed frames and PDF, are currently handled explicitly above, and a
+  // couple more are handled in the callers of this function, but this should be
+  // refactored to more systematically check everything else in SiteInfo. See
+  // https://crbug.com/349777779.
   bool should_check_for_wrong_process =
       !IsNavigationAllowedToStayInSameProcessDueToEffectiveURLs(
           browser_context, for_outermost_main_frame, dest_url);
