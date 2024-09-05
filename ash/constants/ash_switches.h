@@ -190,8 +190,6 @@ extern const char kEnterpriseEnableUnifiedStateDetermination[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEnterpriseEnableInitialEnrollment[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kEnterpriseEnableZeroTouchEnrollment[];
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEnterpriseEnrollmentInitialModulus[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEnterpriseEnrollmentModulusLimit[];

@@ -598,10 +598,6 @@ const char kEnterpriseEnableForcedReEnrollmentOnFlex[] =
 const char kEnterpriseEnableInitialEnrollment[] =
     "enterprise-enable-initial-enrollment";
 
-// Enables the zero-touch enterprise enrollment flow.
-const char kEnterpriseEnableZeroTouchEnrollment[] =
-    "enterprise-enable-zero-touch-enrollment";
-
 // Power of the power-of-2 initial modulus that will be used by the
 // auto-enrollment client. E.g. "4" means the modulus will be 2^4 = 16.
 const char kEnterpriseEnrollmentInitialModulus[] =
