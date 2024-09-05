@@ -1791,6 +1791,7 @@ void DownloadItemImpl::OnDownloadTargetDetermined(
   if (state_ == TARGET_PENDING_INTERNAL &&
       target_info.interrupt_reason != DOWNLOAD_INTERRUPT_REASON_NONE) {
     deferred_interrupt_reason_ = target_info.interrupt_reason;
+    insecure_download_status_ = target_info.insecure_download_status;
     TransitionTo(INTERRUPTED_TARGET_PENDING_INTERNAL);
     OnTargetResolved();
     return;

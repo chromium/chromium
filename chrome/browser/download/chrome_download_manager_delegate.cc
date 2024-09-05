@@ -673,9 +673,8 @@ bool ChromeDownloadManagerDelegate::DetermineDownloadTarget(
     } else {
       action = DownloadPathReservationTracker::OVERWRITE;
     }
-  } else if (!download->RequireSafetyChecks() &&
-             download_prefs_->download_restriction() ==
-                 DownloadPrefs::DownloadRestriction::ALL_FILES) {
+  } else if (download_prefs_->download_restriction() ==
+             DownloadPrefs::DownloadRestriction::ALL_FILES) {
     // If download will be blocked, no need to prompt the user.
     action = DownloadPathReservationTracker::UNIQUIFY;
   } else if (!download_path.empty()) {

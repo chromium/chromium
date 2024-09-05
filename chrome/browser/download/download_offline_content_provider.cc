@@ -438,14 +438,22 @@ void DownloadOfflineContentProvider::OnDownloadStarted(DownloadItem* item) {
 }
 
 void DownloadOfflineContentProvider::OnDownloadUpdated(DownloadItem* item) {
+  // Notify user if this download is blocked.
+  bool should_notify =
+      item->GetState() == DownloadItem::INTERRUPTED &&
+      item->GetLastReason() ==
+          download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED &&
+      item->GetInsecureDownloadStatus() !=
+          download::DownloadItem::InsecureDownloadStatus::SILENT_BLOCK;
   // Wait until the target path is determined or the download is canceled.
-  if (item->GetTargetFilePath().empty() &&
+  if (!should_notify && item->GetTargetFilePath().empty() &&
       item->GetState() != DownloadItem::CANCELLED) {
     return;
   }
 
-  if (!ShouldShowDownloadItem(item))
+  if (!should_notify && !ShouldShowDownloadItem(item)) {
     return;
+  }
 
   UpdateDelta update_delta;
   auto offline_item = OfflineItemUtils::CreateOfflineItem(name_space_, item);

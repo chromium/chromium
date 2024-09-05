@@ -2952,6 +2952,11 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
           =1 {1 download pending}
           other {# downloads pending}}
       </message>
+      <message name="IDS_DOWNLOAD_MESSAGE_MULTIPLE_DOWNLOAD_BLOCKED" desc="Download message label describing that one or more downloads are blocked due to corporate policy">
+        {FILE_COUNT, plural,
+          =1 {Blocked by your organization}
+          other {# were blocked by your organization}}
+      </message>
 
       <message name="IDS_INCOGNITO_DOWNLOAD_MESSAGE_TITLE" desc="Download title displayed in a prompt message when the user downloads a file in Incognito mode.">
         Download file?
