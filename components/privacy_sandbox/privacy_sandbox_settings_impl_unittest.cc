@@ -2269,25 +2269,25 @@ INSTANTIATE_TEST_SUITE_P(PrivacySandbox3pcdExperimentTests,
 
 namespace {
 
-const char* attestation_failed_template =
+constexpr char kAttestationFailedTemplate[] =
     "Attestation check for Shared Storage on %s failed.\nReturned status %d; "
     "see `PrivacySandboxSettingsImpl::Status` at "
     "https://chromium.googlesource.com/chromium/src/+/refs/heads/main/"
     "components/privacy_sandbox/privacy_sandbox_settings_impl.h.";
 
-const char* site_settings_template =
+constexpr char kSiteSettingsTemplate[] =
     "Site access settings returned status %d for accessing origin "
     "%s and top-frame origin %s; see `PrivacySandboxSettingsImpl::Status` at "
     "https://chromium.googlesource.com/chromium/src/+/refs/heads/main/"
     "components/privacy_sandbox/privacy_sandbox_settings_impl.h.";
 
-const char* sandbox_restricted_template =
+constexpr char kSandboxRestrictedTemplate[] =
     "Privacy Sandbox settings returned status %d; see "
     "`PrivacySandboxSettingsImpl::Status` at "
     "https://chromium.googlesource.com/chromium/src/+/refs/heads/main/"
     "components/privacy_sandbox/privacy_sandbox_settings_impl.h.";
 
-const char* select_url_template =
+constexpr char kSelectUrlTemplate[] =
     "M1 measurement settings returned status %d for accessing origin "
     "%s and top-frame origin %s; see `PrivacySandboxSettingsImpl::Status` at "
     "https://chromium.googlesource.com/chromium/src/+/refs/heads/main/"
@@ -2318,11 +2318,11 @@ class PrivacySandboxSettingsSharedStorageDebugTest
 
 TEST_F(PrivacySandboxSettingsSharedStorageDebugTest, ApiPreferenceEnabled) {
   std::string expected_out_shared_storage_debug_message = base::StringPrintf(
-      site_settings_template, static_cast<int>(Status::kAllowed),
+      kSiteSettingsTemplate, static_cast<int>(Status::kAllowed),
       "https://embedded.com", "https://top-frame.com");
-  std::string expected_out_select_url_debug_message = base::StringPrintf(
-      select_url_template, static_cast<int>(Status::kAllowed),
-      "https://embedded.com", "https://top-frame.com");
+  std::string expected_out_select_url_debug_message =
+      base::StringPrintf(kSelectUrlTemplate, static_cast<int>(Status::kAllowed),
+                         "https://embedded.com", "https://top-frame.com");
 
   // Confirm that the expected debug messages are received when `sharedStorage`
   // and `sharedStorage.selectURL()` are enabled.
@@ -2358,10 +2358,10 @@ TEST_F(PrivacySandboxSettingsSharedStorageDebugTest, ApiPreferenceEnabled) {
 
 TEST_F(PrivacySandboxSettingsSharedStorageDebugTest, ApiPreferenceDisabled) {
   std::string expected_out_shared_storage_debug_message = base::StringPrintf(
-      site_settings_template, static_cast<int>(Status::kAllowed),
+      kSiteSettingsTemplate, static_cast<int>(Status::kAllowed),
       "https://embedded.com", "https://top-frame.com");
   std::string expected_out_select_url_debug_message = base::StringPrintf(
-      select_url_template, static_cast<int>(Status::kApisDisabled),
+      kSelectUrlTemplate, static_cast<int>(Status::kApisDisabled),
       "https://embedded.com", "https://top-frame.com");
 
   // Confirm that the expected debug messages are received when `sharedStorage`
@@ -2399,9 +2399,9 @@ TEST_F(PrivacySandboxSettingsSharedStorageDebugTest, ApiPreferenceDisabled) {
 TEST_F(PrivacySandboxSettingsSharedStorageDebugTest,
        ApisAreOffForRestrictedAccounts) {
   std::string expected_out_shared_storage_debug_message = base::StringPrintf(
-      sandbox_restricted_template, static_cast<int>(Status::kRestricted));
+      kSandboxRestrictedTemplate, static_cast<int>(Status::kRestricted));
   std::string expected_out_select_url_debug_message = base::StringPrintf(
-      select_url_template, static_cast<int>(Status::kRestricted),
+      kSelectUrlTemplate, static_cast<int>(Status::kRestricted),
       "https://embedded.com", "https://top-frame.com");
 
   // Confirm that the expected debug messages are received for a restricted
@@ -2441,10 +2441,10 @@ TEST_F(PrivacySandboxSettingsSharedStorageDebugTest,
 TEST_F(PrivacySandboxSettingsSharedStorageDebugTest,
        SiteDataDefaultBlockExceptionApplies) {
   std::string expected_out_shared_storage_debug_message = base::StringPrintf(
-      site_settings_template, static_cast<int>(Status::kSiteDataAccessBlocked),
+      kSiteSettingsTemplate, static_cast<int>(Status::kSiteDataAccessBlocked),
       "https://embedded.com", "https://top-frame.com");
   std::string expected_out_select_url_debug_message = base::StringPrintf(
-      select_url_template, static_cast<int>(Status::kSiteDataAccessBlocked),
+      kSelectUrlTemplate, static_cast<int>(Status::kSiteDataAccessBlocked),
       "https://embedded.com", "https://top-frame.com");
 
   // Confirm that the expected debug messages are received when site settings
@@ -2482,7 +2482,7 @@ TEST_F(PrivacySandboxSettingsSharedStorageDebugTest,
 
 TEST_F(PrivacySandboxSettingsSharedStorageDebugTest, NoEnrollments) {
   std::string expected_out_shared_storage_debug_message =
-      base::StringPrintf(attestation_failed_template, "https://embedded.com",
+      base::StringPrintf(kAttestationFailedTemplate, "https://embedded.com",
                          static_cast<int>(Status::kAttestationFailed));
   ;
 
