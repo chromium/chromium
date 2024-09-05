@@ -185,6 +185,47 @@ public class RecentTabsPageTest {
     }
 
     @Test
+    @MediumTest
+    @Feature({"RecentTabsPage"})
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
+    public void testRecentlyClosedGroupIconDoesNotPersist() throws ExecutionException {
+        mPage = loadRecentTabsPage();
+        // Set a recently closed group and confirm a view is rendered for it.
+        final RecentlyClosedGroup group = new RecentlyClosedGroup(2, 0, "Group Title", COLOR_ID);
+
+        setRecentlyClosedEntries(Collections.singletonList(group));
+        assertEquals(1, mManager.getRecentlyClosedEntries(1).size());
+        final String groupString =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return mActivity
+                                    .getResources()
+                                    .getString(
+                                            R.string.recent_tabs_group_closure_with_title,
+                                            group.getTitle());
+                        });
+        final View view = waitForView(groupString);
+
+        // Test clicking the group to simulate an open action.
+        final int groupIdx = !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity) ? 0 : 1;
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPage.onChildClick(null, null, groupIdx, 0, 0);
+                });
+        verify(mManager, times(1)).openRecentlyClosedEntry(mTabModel, group);
+
+        // Clear the recently closed tabs with the context menu and confirm the view is gone.
+        openContextMenuAndInvokeItem(
+                mActivity, view, RecentTabsRowAdapter.RecentlyClosedTabsGroup.ID_REMOVE_ALL);
+        assertEquals(0, mManager.getRecentlyClosedEntries(1).size());
+        waitForViewToDisappear(groupString);
+
+        // Check that the remaining show history row item does not have an icon visible.
+        ImageView iconView = (ImageView) mPage.getView().findViewById(R.id.row_icon);
+        assertEquals(View.GONE, iconView.getVisibility());
+    }
+
+    @Test
     @LargeTest
     @Feature({"RecentTabsPage", "RenderTest"})
     @DisableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
