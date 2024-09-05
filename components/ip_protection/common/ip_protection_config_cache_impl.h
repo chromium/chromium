@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_CONFIG_CACHE_IMPL_H_
-#define SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_CONFIG_CACHE_IMPL_H_
+#ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CONFIG_CACHE_IMPL_H_
+#define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CONFIG_CACHE_IMPL_H_
 
 #include <deque>
 #include <map>
@@ -15,20 +15,20 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/ip_protection/common/ip_protection_config_cache.h"
+#include "components/ip_protection/common/ip_protection_config_getter.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
+#include "components/ip_protection/common/ip_protection_token_manager.h"
 #include "net/base/features.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/proxy_chain.h"
-#include "services/network/ip_protection/ip_protection_config_cache.h"
-#include "services/network/ip_protection/ip_protection_config_getter.h"
-#include "services/network/ip_protection/ip_protection_proxy_list_manager.h"
-#include "services/network/ip_protection/ip_protection_token_cache_manager.h"
 
-namespace network {
+namespace ip_protection {
 
 // An implementation of IpProtectionConfigCache that fills itself by making
 // IPC calls to the IpProtectionConfigGetter in the browser process.
-class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
+class IpProtectionConfigCacheImpl
     : public IpProtectionConfigCache,
       net::NetworkChangeNotifier::NetworkChangeObserver {
  public:
@@ -39,24 +39,22 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
 
   // IpProtectionConfigCache implementation.
   bool AreAuthTokensAvailable() override;
-  std::optional<ip_protection::BlindSignedAuthToken> GetAuthToken(
-      size_t chain_index) override;
+  std::optional<BlindSignedAuthToken> GetAuthToken(size_t chain_index) override;
   void InvalidateTryAgainAfterTime() override;
   bool IsProxyListAvailable() override;
   void QuicProxiesFailed() override;
   std::vector<net::ProxyChain> GetProxyChainList() override;
   void RequestRefreshProxyList() override;
   void GeoObserved(const std::string& geo_id) override;
-  void SetIpProtectionTokenCacheManagerForTesting(
-      ip_protection::ProxyLayer proxy_layer,
-      std::unique_ptr<IpProtectionTokenCacheManager> ipp_token_cache_manager)
+  void SetIpProtectionTokenManagerForTesting(
+      ProxyLayer proxy_layer,
+      std::unique_ptr<IpProtectionTokenManager> ipp_token_manager) override;
+  IpProtectionTokenManager* GetIpProtectionTokenManagerForTesting(
+      ProxyLayer proxy_layer) override;
+  void SetIpProtectionProxyConfigManagerForTesting(
+      std::unique_ptr<IpProtectionProxyConfigManager> ipp_proxy_config_manager)
       override;
-  IpProtectionTokenCacheManager* GetIpProtectionTokenCacheManagerForTesting(
-      ip_protection::ProxyLayer proxy_layer) override;
-  void SetIpProtectionProxyListManagerForTesting(
-      std::unique_ptr<IpProtectionProxyListManager> ipp_proxy_list_manager)
-      override;
-  IpProtectionProxyListManager* GetIpProtectionProxyListManagerForTesting()
+  IpProtectionProxyConfigManager* GetIpProtectionProxyConfigManagerForTesting()
       override;
 
   // `NetworkChangeNotifier::NetworkChangeObserver` implementation.
@@ -68,12 +66,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
   std::unique_ptr<IpProtectionConfigGetter> config_getter_;
 
   // A manager for the list of currently cached proxy hostnames.
-  std::unique_ptr<IpProtectionProxyListManager> ipp_proxy_list_manager_;
+  std::unique_ptr<IpProtectionProxyConfigManager> ipp_proxy_config_manager_;
 
   // Proxy layer managers for cache of blind-signed auth tokens.
-  std::map<ip_protection::ProxyLayer,
-           std::unique_ptr<IpProtectionTokenCacheManager>>
-      ipp_token_cache_managers_;
+  std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>
+      ipp_token_managers_;
 
   // If true, this class will try to connect to IP Protection proxies via QUIC.
   // Once this value becomes false, it stays false until a network change or
@@ -86,6 +83,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
   base::WeakPtrFactory<IpProtectionConfigCacheImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace network
+}  // namespace ip_protection
 
-#endif  // SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_CONFIG_CACHE_IMPL_H_
+#endif  // COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CONFIG_CACHE_IMPL_H_

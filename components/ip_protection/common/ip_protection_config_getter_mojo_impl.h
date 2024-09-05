@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_CONFIG_GETTER_MOJO_IMPL_H_
-#define SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_CONFIG_GETTER_MOJO_IMPL_H_
+#ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CONFIG_GETTER_MOJO_IMPL_H_
+#define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CONFIG_GETTER_MOJO_IMPL_H_
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
+#include "components/ip_protection/common/ip_protection_config_getter.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/network/ip_protection/ip_protection_config_getter.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
-namespace network {
-class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigGetterMojoImpl final
+namespace ip_protection {
+class IpProtectionConfigGetterMojoImpl final
     : public IpProtectionConfigGetter {
  public:
   explicit IpProtectionConfigGetterMojoImpl(
@@ -43,6 +43,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigGetterMojoImpl final
   base::WeakPtrFactory<IpProtectionConfigGetterMojoImpl> weak_ptr_factory_{
       this};
 };
-}  // namespace network
+}  // namespace ip_protection
 
-#endif  // SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_CONFIG_GETTER_MOJO_IMPL_H_
+#endif  // COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CONFIG_GETTER_MOJO_IMPL_H_

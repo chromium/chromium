@@ -45,6 +45,8 @@
 #include "build/chromeos_buildflags.h"
 #include "components/cookie_config/cookie_store_util.h"
 #include "components/domain_reliability/monitor.h"
+#include "components/ip_protection/common/ip_protection_config_cache_impl.h"
+#include "components/ip_protection/common/ip_protection_config_getter_mojo_impl.h"
 #include "components/network_session_configurator/browser/network_session_configurator.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/os_crypt/async/common/encryptor.h"
@@ -103,10 +105,7 @@
 #include "services/network/http_auth_cache_copier.h"
 #include "services/network/http_server_properties_pref_delegate.h"
 #include "services/network/ignore_errors_cert_verifier.h"
-#include "services/network/ip_protection/ip_protection_config_cache_impl.h"
-#include "services/network/ip_protection/ip_protection_config_getter_mojo_impl.h"
 #include "services/network/ip_protection/ip_protection_proxy_delegate.h"
-#include "services/network/ip_protection/ip_protection_token_cache_manager_impl.h"
 #include "services/network/is_browser_initiated.h"
 #include "services/network/net_log_exporter.h"
 #include "services/network/network_service.h"
@@ -2532,14 +2531,16 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   // custom proxy configs, or IpProtection, using the proxy allowlist.
   // TODO(https://crbug.com/40947771): Once the WebView traffic experiment is
   // done, we should only create an IpProtectionProxyDelegate when
-  // `params_->ip_protection_config_getter` is set (to avoid creating proxy
-  // delegates for network contexts that don't participate in IP Protection, or
-  // for any network context when the IP Protection feature is disabled).
+  // `params_->ip_protection_config_getter` is set (to avoid creating
+  // proxynetwork_conte delegates for network contexts that don't participate in
+  // IP Protection, or for any network context when the IP Protection feature is
+  // disabled).
   auto* nspal = network_service_->masked_domain_list_manager();
   if (!params_->initial_custom_proxy_config && nspal->IsEnabled()) {
-    auto ipp_config_cache = std::make_unique<IpProtectionConfigCacheImpl>(
-        std::make_unique<IpProtectionConfigGetterMojoImpl>(
-            std::move(params_->ip_protection_config_getter)));
+    auto ipp_config_cache =
+        std::make_unique<ip_protection::IpProtectionConfigCacheImpl>(
+            std::make_unique<ip_protection::IpProtectionConfigGetterMojoImpl>(
+                std::move(params_->ip_protection_config_getter)));
     std::unique_ptr<IpProtectionProxyDelegate> proxy_delegate =
         std::make_unique<IpProtectionProxyDelegate>(
             nspal, std::move(ipp_config_cache), params_->enable_ip_protection);

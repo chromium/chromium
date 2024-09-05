@@ -109,7 +109,7 @@ class IpProtectionTelemetry {
 
   // Token batch generation has completed, with the given duration.
   // This measures the whole token batch generation process, from an
-  // `IpProtectionTokenCacheManagerImpl`'s perspective, from just before calling
+  // `IpProtectionTokenManagerImpl`'s perspective, from just before calling
   // `IpProtectionConfigGetter::TryGetAuthTokens` until `OnGotAuthTokens`.
   virtual void TokenBatchGenerationComplete(base::TimeDelta duration) = 0;
 

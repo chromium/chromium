@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_CONFIG_GETTER_H_
-#define SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_CONFIG_GETTER_H_
+#ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CONFIG_GETTER_H_
+#define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CONFIG_GETTER_H_
 
 #include <memory>
 
@@ -12,10 +12,10 @@
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "net/base/proxy_chain.h"
 
-namespace network {
+namespace ip_protection {
 // Interface used by the network service to get the IP Protection configuration
 // (authentication tokens + proxy list).
-class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigGetter {
+class IpProtectionConfigGetter {
  public:
   virtual ~IpProtectionConfigGetter() = default;
 
@@ -63,6 +63,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigGetter {
   // Checks if the getter is available for use after construction.
   virtual bool IsAvailable() = 0;
 };
-}  // namespace network
+}  // namespace ip_protection
 
-#endif  // SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_CONFIG_GETTER_H_
+#endif  // COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CONFIG_GETTER_H_

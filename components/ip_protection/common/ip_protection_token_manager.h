@@ -2,25 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_TOKEN_CACHE_MANAGER_H_
-#define SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_TOKEN_CACHE_MANAGER_H_
+#ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_TOKEN_MANAGER_H_
+#define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_TOKEN_MANAGER_H_
 
 #include <optional>
 #include <string>
 
-#include "base/component_export.h"
+#include "components/ip_protection/common/ip_protection_config_getter.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
-#include "services/network/ip_protection/ip_protection_config_getter.h"
 
-namespace network {
+namespace ip_protection {
 
 // Manages the cache of blind-signed auth tokens.
 //
 // This class is responsible for checking, fetching, and refilling auth tokens
 // for IpProtectionConfigCache.
-class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionTokenCacheManager {
+class IpProtectionTokenManager {
  public:
-  virtual ~IpProtectionTokenCacheManager() = default;
+  virtual ~IpProtectionTokenManager() = default;
 
   // Check whether tokens are available for the current geo id.
   //
@@ -39,14 +38,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionTokenCacheManager {
   // Returns `nullopt` if no token is available, whether for a transient or
   // permanent reason. This method may return `nullopt` even if
   // `IsAuthTokenAvailable()` recently returned `true`.
-  virtual std::optional<ip_protection::BlindSignedAuthToken> GetAuthToken() = 0;
+  virtual std::optional<BlindSignedAuthToken> GetAuthToken() = 0;
 
   // Get a token, if one is available.
   //
   // Returns `nullopt` if no token is available, whether for a transient or
   // permanent reason. This method may return `nullopt` even if
   // `IsAuthTokenAvailable()` recently returned `true`.
-  virtual std::optional<ip_protection::BlindSignedAuthToken> GetAuthToken(
+  virtual std::optional<BlindSignedAuthToken> GetAuthToken(
       const std::string& geo_id) = 0;
 
   // Invalidate any previous instruction that token requests should not be made
@@ -64,6 +63,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionTokenCacheManager {
   virtual void SetCurrentGeo(const std::string& geo_id) = 0;
 };
 
-}  // namespace network
+}  // namespace ip_protection
 
-#endif  // SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_TOKEN_CACHE_MANAGER_H_
+#endif  // COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_TOKEN_MANAGER_H_

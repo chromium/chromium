@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/ip_protection/ip_protection_config_getter_mojo_impl.h"
+#include "components/ip_protection/common/ip_protection_config_getter_mojo_impl.h"
 
 #include <memory>
 #include <optional>
@@ -10,12 +10,12 @@
 
 #include "base/check.h"
 #include "base/logging.h"
+#include "components/ip_protection/common/ip_protection_config_cache_impl.h"
+#include "components/ip_protection/common/ip_protection_config_getter.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
-#include "services/network/ip_protection/ip_protection_config_cache_impl.h"
-#include "services/network/ip_protection/ip_protection_config_getter.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
-namespace network {
+namespace ip_protection {
 
 namespace {
 
@@ -78,4 +78,4 @@ void IpProtectionConfigGetterMojoImpl::OnGotAuthTokens(
   std::move(callback).Run(tokens, expiration_time);
 }
 
-}  // namespace network
+}  // namespace ip_protection

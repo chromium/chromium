@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/ip_protection/ip_protection_token_cache_manager_impl.h"
+#include "components/ip_protection/common/ip_protection_token_manager_impl.h"
 
 #include <memory>
 #include <string>
@@ -12,12 +12,12 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "components/ip_protection/common/ip_protection_config_cache.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "net/base/features.h"
-#include "services/network/ip_protection/ip_protection_config_cache.h"
 
-namespace network {
+namespace ip_protection {
 
 namespace {
 
@@ -40,12 +40,10 @@ constexpr char kDefaultGeo[] = "EARTH";
 
 }  // namespace
 
-using ::ip_protection::BlindSignedAuthToken;
-
-IpProtectionTokenCacheManagerImpl::IpProtectionTokenCacheManagerImpl(
+IpProtectionTokenManagerImpl::IpProtectionTokenManagerImpl(
     IpProtectionConfigCache* config_cache,
     IpProtectionConfigGetter* config_getter,
-    ip_protection::ProxyLayer proxy_layer,
+    ProxyLayer proxy_layer,
     bool disable_cache_management_for_testing)
     : batch_size_(net::features::kIpPrivacyAuthTokenCacheBatchSize.Get()),
       cache_low_water_mark_(
@@ -65,9 +63,8 @@ IpProtectionTokenCacheManagerImpl::IpProtectionTokenCacheManagerImpl(
 
   last_token_rate_measurement_ = base::TimeTicks::Now();
   // Start the timer. The timer is owned by `this` and thus cannot outlive it.
-  measurement_timer_.Start(
-      FROM_HERE, kTokenRateMeasurementInterval, this,
-      &IpProtectionTokenCacheManagerImpl::MeasureTokenRates);
+  measurement_timer_.Start(FROM_HERE, kTokenRateMeasurementInterval, this,
+                           &IpProtectionTokenManagerImpl::MeasureTokenRates);
 
   if (!disable_cache_management_for_testing_) {
     // Schedule a call to `MaybeRefillCache()`. This will occur soon, since the
@@ -76,14 +73,13 @@ IpProtectionTokenCacheManagerImpl::IpProtectionTokenCacheManagerImpl(
   }
 }
 
-IpProtectionTokenCacheManagerImpl::~IpProtectionTokenCacheManagerImpl() =
-    default;
+IpProtectionTokenManagerImpl::~IpProtectionTokenManagerImpl() = default;
 
-bool IpProtectionTokenCacheManagerImpl::IsAuthTokenAvailable() {
+bool IpProtectionTokenManagerImpl::IsAuthTokenAvailable() {
   return IsAuthTokenAvailable(current_geo_id_);
 }
 
-bool IpProtectionTokenCacheManagerImpl::IsAuthTokenAvailable(
+bool IpProtectionTokenManagerImpl::IsAuthTokenAvailable(
     const std::string& geo_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -101,7 +97,7 @@ bool IpProtectionTokenCacheManagerImpl::IsAuthTokenAvailable(
 
 // If this is a good time to request another batch of tokens, do so. This
 // method is idempotent, and can be called at any time.
-void IpProtectionTokenCacheManagerImpl::MaybeRefillCache() {
+void IpProtectionTokenManagerImpl::MaybeRefillCache() {
   RemoveExpiredTokens();
   if (fetching_auth_tokens_ || !config_getter_ ||
       !ip_protection_config_cache_ || disable_cache_management_for_testing_) {
@@ -124,7 +120,7 @@ void IpProtectionTokenCacheManagerImpl::MaybeRefillCache() {
     config_getter_->TryGetAuthTokens(
         batch_size_, proxy_layer_,
         base::BindOnce(
-            &IpProtectionTokenCacheManagerImpl::OnGotAuthTokens,
+            &IpProtectionTokenManagerImpl::OnGotAuthTokens,
             weak_ptr_factory_.GetWeakPtr(),
             /*attempt_start_time_for_metrics=*/base::TimeTicks::Now()));
   }
@@ -132,17 +128,16 @@ void IpProtectionTokenCacheManagerImpl::MaybeRefillCache() {
   ScheduleMaybeRefillCache();
 }
 
-void IpProtectionTokenCacheManagerImpl::InvalidateTryAgainAfterTime() {
+void IpProtectionTokenManagerImpl::InvalidateTryAgainAfterTime() {
   try_get_auth_tokens_after_ = base::Time();
   ScheduleMaybeRefillCache();
 }
 
-std::string IpProtectionTokenCacheManagerImpl::CurrentGeo() const {
+std::string IpProtectionTokenManagerImpl::CurrentGeo() const {
   return current_geo_id_;
 }
 
-void IpProtectionTokenCacheManagerImpl::SetCurrentGeo(
-    const std::string& geo_id) {
+void IpProtectionTokenManagerImpl::SetCurrentGeo(const std::string& geo_id) {
   // If caching by geo is disabled, no further action is needed.
   if (!enable_token_caching_by_geo_) {
     return;
@@ -151,8 +146,7 @@ void IpProtectionTokenCacheManagerImpl::SetCurrentGeo(
   // Ensuring that a geo change has occurred.
   if (emitted_geo_presence_histogram_before_refill_ && current_geo_id_ != "" &&
       current_geo_id_ != geo_id) {
-    ip_protection::Telemetry().GeoChangeTokenPresence(
-        cache_by_geo_.contains(geo_id));
+    Telemetry().GeoChangeTokenPresence(cache_by_geo_.contains(geo_id));
   }
 
   current_geo_id_ = geo_id;
@@ -168,7 +162,7 @@ void IpProtectionTokenCacheManagerImpl::SetCurrentGeo(
 
 // Schedule the next timed call to `MaybeRefillCache()`. This method is
 // idempotent, and may be called at any time.
-void IpProtectionTokenCacheManagerImpl::ScheduleMaybeRefillCache() {
+void IpProtectionTokenManagerImpl::ScheduleMaybeRefillCache() {
   // Early return cases:
   // 1. If currently retrieving tokens, the call will be rescheduled when that
   //    completes, so there is no need to call a refill here.
@@ -200,13 +194,13 @@ void IpProtectionTokenCacheManagerImpl::ScheduleMaybeRefillCache() {
 
   next_maybe_refill_cache_.Start(
       FROM_HERE, delay,
-      base::BindOnce(&IpProtectionTokenCacheManagerImpl::MaybeRefillCache,
+      base::BindOnce(&IpProtectionTokenManagerImpl::MaybeRefillCache,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 // Returns true if the cache map does not contain the necessary geo or the
 // number of tokens in the latest geo is below the low water mark.
-bool IpProtectionTokenCacheManagerImpl::NeedsRefill(
+bool IpProtectionTokenManagerImpl::NeedsRefill(
     const std::string& geo_id) const {
   if (cache_by_geo_.empty()) {
     return true;
@@ -237,7 +231,7 @@ bool IpProtectionTokenCacheManagerImpl::NeedsRefill(
 // This indicates a possible bad state where new tokens are continually
 // being requested "on-demand" due to a geo mismatch between token and proxy
 // list signals in `IpProtectionConfigCache`.
-bool IpProtectionTokenCacheManagerImpl::IsTokenLimitExceeded(
+bool IpProtectionTokenManagerImpl::IsTokenLimitExceeded(
     const std::string& geo_id) const {
   auto it = cache_by_geo_.find(geo_id);
   if (it == cache_by_geo_.end()) {
@@ -248,7 +242,7 @@ bool IpProtectionTokenCacheManagerImpl::IsTokenLimitExceeded(
   return cache.size() > batch_size_ + cache_low_water_mark_;
 }
 
-void IpProtectionTokenCacheManagerImpl::OnGotAuthTokens(
+void IpProtectionTokenManagerImpl::OnGotAuthTokens(
     const base::TimeTicks attempt_start_time_for_metrics,
     std::optional<std::vector<BlindSignedAuthToken>> tokens,
     std::optional<base::Time> try_again_after) {
@@ -301,7 +295,7 @@ void IpProtectionTokenCacheManagerImpl::OnGotAuthTokens(
   bool has_geo_id_changed = geo_id_from_token != current_geo_id_;
   if (enable_token_caching_by_geo_ && has_geo_id_changed &&
       current_geo_id_ != "") {
-    ip_protection::Telemetry().GeoChangeTokenPresence(
+    Telemetry().GeoChangeTokenPresence(
         cache_by_geo_.contains(geo_id_from_token));
     emitted_geo_presence_histogram_before_refill_ = false;
   }
@@ -342,8 +336,8 @@ void IpProtectionTokenCacheManagerImpl::OnGotAuthTokens(
     ip_protection_config_cache_->GeoObserved(geo_id_from_token);
   }
 
-  ip_protection::Telemetry().TokenBatchGenerationComplete(
-      base::TimeTicks::Now() - attempt_start_time_for_metrics);
+  Telemetry().TokenBatchGenerationComplete(base::TimeTicks::Now() -
+                                           attempt_start_time_for_metrics);
 
   if (on_try_get_auth_tokens_completed_for_testing_) {
     std::move(on_try_get_auth_tokens_completed_for_testing_).Run();
@@ -353,12 +347,12 @@ void IpProtectionTokenCacheManagerImpl::OnGotAuthTokens(
 }
 
 std::optional<BlindSignedAuthToken>
-IpProtectionTokenCacheManagerImpl::GetAuthToken() {
+IpProtectionTokenManagerImpl::GetAuthToken() {
   return GetAuthToken(current_geo_id_);
 }
 
-std::optional<BlindSignedAuthToken>
-IpProtectionTokenCacheManagerImpl::GetAuthToken(const std::string& geo_id) {
+std::optional<BlindSignedAuthToken> IpProtectionTokenManagerImpl::GetAuthToken(
+    const std::string& geo_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   RemoveExpiredTokens();
@@ -376,7 +370,7 @@ IpProtectionTokenCacheManagerImpl::GetAuthToken(const std::string& geo_id) {
     tokens_spent_++;
   }
 
-  ip_protection::Telemetry().GetAuthTokenResultForGeo(
+  Telemetry().GetAuthTokenResultForGeo(
       result.has_value(), enable_token_caching_by_geo_, cache_by_geo_.empty(),
       geo_id == current_geo_id_);
   VLOG(2) << "IPPATC::GetAuthToken with " << tokens_in_cache
@@ -387,7 +381,7 @@ IpProtectionTokenCacheManagerImpl::GetAuthToken(const std::string& geo_id) {
 
 // All calls to this function should be accompanied by a call to
 // `MaybeRefillCache()`.
-void IpProtectionTokenCacheManagerImpl::RemoveExpiredTokens() {
+void IpProtectionTokenManagerImpl::RemoveExpiredTokens() {
   base::Time fresh_after = base::Time::Now();
   for (auto it = cache_by_geo_.begin(); it != cache_by_geo_.end();) {
     std::deque<BlindSignedAuthToken>& tokens = it->second;
@@ -408,7 +402,7 @@ void IpProtectionTokenCacheManagerImpl::RemoveExpiredTokens() {
   }
 }
 
-void IpProtectionTokenCacheManagerImpl::MeasureTokenRates() {
+void IpProtectionTokenManagerImpl::MeasureTokenRates() {
   auto now = base::TimeTicks::Now();
   auto interval = now - last_token_rate_measurement_;
   auto interval_ms = interval.InMilliseconds();
@@ -420,14 +414,13 @@ void IpProtectionTokenCacheManagerImpl::MeasureTokenRates() {
     auto spend_rate = tokens_spent_ * denominator / interval_ms;
     // A maximum of 1000 would correspond to a spend rate of about 16/min,
     // which is higher than we expect to see.
-    ip_protection::Telemetry().TokenSpendRate(proxy_layer_, spend_rate);
+    Telemetry().TokenSpendRate(proxy_layer_, spend_rate);
 
     auto expiration_rate = tokens_expired_ * denominator / interval_ms;
     // Entire batches of tokens are likely to expire within a single 5-minute
     // measurement interval. 1024 tokens in 5 minutes is equivalent to 12288
     // tokens per hour, comfortably under 100,000.
-    ip_protection::Telemetry().TokenExpirationRate(proxy_layer_,
-                                                   expiration_rate);
+    Telemetry().TokenExpirationRate(proxy_layer_, expiration_rate);
   }
 
   last_token_rate_measurement_ = now;
@@ -435,7 +428,7 @@ void IpProtectionTokenCacheManagerImpl::MeasureTokenRates() {
   tokens_expired_ = 0;
 }
 
-void IpProtectionTokenCacheManagerImpl::DisableCacheManagementForTesting(
+void IpProtectionTokenManagerImpl::DisableCacheManagementForTesting(
     base::OnceClosure on_cache_management_disabled) {
   disable_cache_management_for_testing_ = true;
   ScheduleMaybeRefillCache();
@@ -450,23 +443,23 @@ void IpProtectionTokenCacheManagerImpl::DisableCacheManagementForTesting(
   std::move(on_cache_management_disabled).Run();
 }
 
-void IpProtectionTokenCacheManagerImpl::EnableTokenExpirationFuzzingForTesting(
+void IpProtectionTokenManagerImpl::EnableTokenExpirationFuzzingForTesting(
     bool enable) {
   enable_token_expiration_fuzzing_for_testing_ = enable;
 }
 
 // Call `TryGetAuthTokens()`, which will call
 // `on_try_get_auth_tokens_completed_for_testing_` when complete.
-void IpProtectionTokenCacheManagerImpl::CallTryGetAuthTokensForTesting() {
+void IpProtectionTokenManagerImpl::CallTryGetAuthTokensForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(config_getter_);
   CHECK(on_try_get_auth_tokens_completed_for_testing_);
   config_getter_->TryGetAuthTokens(
       batch_size_, proxy_layer_,
       base::BindOnce(
-          &IpProtectionTokenCacheManagerImpl::OnGotAuthTokens,
+          &IpProtectionTokenManagerImpl::OnGotAuthTokens,
           weak_ptr_factory_.GetWeakPtr(),
           /*attempt_start_time_for_metrics=*/base::TimeTicks::Now()));
 }
 
-}  // namespace network
+}  // namespace ip_protection

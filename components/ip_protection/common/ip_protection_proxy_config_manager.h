@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_PROXY_LIST_MANAGER_H_
-#define SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_PROXY_LIST_MANAGER_H_
+#ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_PROXY_CONFIG_MANAGER_H_
+#define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_PROXY_CONFIG_MANAGER_H_
 
 #include <string>
 #include <vector>
-
-#include "base/component_export.h"
 
 namespace net {
 
@@ -16,15 +14,15 @@ class ProxyChain;
 
 }  // namespace net
 
-namespace network {
+namespace ip_protection {
 
 // Manages a list of currently cached proxy hostnames.
 //
 // This class is responsible for checking, fetching, and refreshing the proxy
 // list for IpProtectionConfigCache.
-class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyListManager {
+class IpProtectionProxyConfigManager {
  public:
-  virtual ~IpProtectionProxyListManager() = default;
+  virtual ~IpProtectionProxyConfigManager() = default;
 
   // Check whether a proxy list is available.
   virtual bool IsProxyListAvailable() = 0;
@@ -49,6 +47,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyListManager {
   virtual void RequestRefreshProxyList() = 0;
 };
 
-}  // namespace network
+}  // namespace ip_protection
 
-#endif  // SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_PROXY_LIST_MANAGER_H_
+#endif  // COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_PROXY_CONFIG_MANAGER_H_

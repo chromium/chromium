@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/ip_protection/ip_protection_token_cache_manager_impl.h"
+#include "components/ip_protection/common/ip_protection_token_manager_impl.h"
 
 #include <deque>
 #include <map>
@@ -16,20 +16,19 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/ip_protection/common/ip_protection_config_cache.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
+#include "components/ip_protection/common/ip_protection_token_manager.h"
 #include "net/base/features.h"
-#include "services/network/ip_protection/ip_protection_config_cache.h"
-#include "services/network/ip_protection/ip_protection_token_cache_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace network {
+namespace ip_protection {
 
 namespace {
 
 constexpr char kGeoChangeTokenPresence[] =
     "NetworkService.IpProtection.GeoChangeTokenPresence";
-using ::ip_protection::BlindSignedAuthToken;
 
 constexpr char kGetAuthTokenResultHistogram[] =
     "NetworkService.IpProtection.GetAuthTokenResult";
@@ -52,15 +51,15 @@ constexpr base::TimeDelta kTokenRateMeasurementInterval = base::Minutes(5);
 const bool kEnableTokenCacheByGeo = true;
 const bool kDisableTokenCacheByGeo = false;
 
-const ip_protection::GeoHint kMountainViewGeo = {.country_code = "US",
-                                                 .iso_region = "US-CA",
-                                                 .city_name = "MOUNTAIN VIEW"};
+const GeoHint kMountainViewGeo = {.country_code = "US",
+                                  .iso_region = "US-CA",
+                                  .city_name = "MOUNTAIN VIEW"};
 const std::string kMountainViewGeoId =
     ip_protection::GetGeoIdFromGeoHint(kMountainViewGeo);
 
-const ip_protection::GeoHint kSunnyvaleGeo = {.country_code = "US",
-                                              .iso_region = "US-CA",
-                                              .city_name = "SUNNYVALE"};
+const GeoHint kSunnyvaleGeo = {.country_code = "US",
+                               .iso_region = "US-CA",
+                               .city_name = "SUNNYVALE"};
 const std::string kSunnyvaleGeoId =
     ip_protection::GetGeoIdFromGeoHint(kSunnyvaleGeo);
 
@@ -112,7 +111,7 @@ class MockIpProtectionConfigGetter : public IpProtectionConfigGetter {
   bool IsAvailable() override { return true; }
 
   void TryGetAuthTokens(uint32_t batch_size,
-                        ip_protection::ProxyLayer proxy_layer,
+                        ProxyLayer proxy_layer,
                         TryGetAuthTokensCallback callback) override {
     ASSERT_FALSE(expected_try_get_auth_token_calls_.empty())
         << "Unexpected call to TryGetAuthTokens";
@@ -139,18 +138,17 @@ class MockIpProtectionConfigCache : public IpProtectionConfigCache {
     return std::nullopt;
   }
   void InvalidateTryAgainAfterTime() override {}
-  void SetIpProtectionTokenCacheManagerForTesting(
-      ip_protection::ProxyLayer proxy_layer,
-      std::unique_ptr<IpProtectionTokenCacheManager> ipp_token_cache_manager)
-      override {}
-  IpProtectionTokenCacheManager* GetIpProtectionTokenCacheManagerForTesting(
-      ip_protection::ProxyLayer proxy_layer) override {
+  void SetIpProtectionTokenManagerForTesting(
+      ProxyLayer proxy_layer,
+      std::unique_ptr<IpProtectionTokenManager> ipp_token_manager) override {}
+  IpProtectionTokenManager* GetIpProtectionTokenManagerForTesting(
+      ProxyLayer proxy_layer) override {
     return nullptr;
   }
-  void SetIpProtectionProxyListManagerForTesting(
-      std::unique_ptr<IpProtectionProxyListManager> ipp_proxy_list_manager)
+  void SetIpProtectionProxyConfigManagerForTesting(
+      std::unique_ptr<IpProtectionProxyConfigManager> ipp_proxy_config_manager)
       override {}
-  IpProtectionProxyListManager* GetIpProtectionProxyListManagerForTesting()
+  IpProtectionProxyConfigManager* GetIpProtectionProxyConfigManagerForTesting()
       override {
     return nullptr;
   }
@@ -169,15 +167,15 @@ struct HistogramState {
   int generated;
 };
 
-class IpProtectionTokenCacheManagerImplTest : public testing::Test {
+class IpProtectionTokenManagerImplTest : public testing::Test {
  protected:
-  IpProtectionTokenCacheManagerImplTest()
+  IpProtectionTokenManagerImplTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         mock_() {}
 
   // In order to test geo caching feature, the initialization of the token cache
   // manager must be after the feature value is set.
-  void SetUpIpProtectionTokenCacheManager(bool enable_cache_by_geo) {
+  void SetUpIpProtectionTokenManager(bool enable_cache_by_geo) {
     // Set token caching by geo param value.
     std::map<std::string, std::string> parameters;
     parameters[net::features::kIpPrivacyCacheTokensByGeo.name] =
@@ -190,28 +188,24 @@ class IpProtectionTokenCacheManagerImplTest : public testing::Test {
     // token cache managers.
     ON_CALL(mock_config_cache_, GeoObserved(testing::_))
         .WillByDefault([this](const std::string& geo_id) {
-          if (ipp_proxy_a_token_cache_manager_->CurrentGeo() != geo_id) {
-            ipp_proxy_a_token_cache_manager_->SetCurrentGeo(geo_id);
+          if (ipp_proxy_a_token_manager_->CurrentGeo() != geo_id) {
+            ipp_proxy_a_token_manager_->SetCurrentGeo(geo_id);
           }
-          if (ipp_proxy_b_token_cache_manager_->CurrentGeo() != geo_id) {
-            ipp_proxy_b_token_cache_manager_->SetCurrentGeo(geo_id);
+          if (ipp_proxy_b_token_manager_->CurrentGeo() != geo_id) {
+            ipp_proxy_b_token_manager_->SetCurrentGeo(geo_id);
           }
         });
 
-    ipp_proxy_a_token_cache_manager_ =
-        std::make_unique<IpProtectionTokenCacheManagerImpl>(
-            &mock_config_cache_, &mock_, ip_protection::ProxyLayer::kProxyA,
-            /* disable_cache_management_for_testing=*/true);
-    ipp_proxy_b_token_cache_manager_ =
-        std::make_unique<IpProtectionTokenCacheManagerImpl>(
-            &mock_config_cache_, &mock_, ip_protection::ProxyLayer::kProxyB,
-            /* disable_cache_management_for_testing=*/true);
+    ipp_proxy_a_token_manager_ = std::make_unique<IpProtectionTokenManagerImpl>(
+        &mock_config_cache_, &mock_, ProxyLayer::kProxyA,
+        /* disable_cache_management_for_testing=*/true);
+    ipp_proxy_b_token_manager_ = std::make_unique<IpProtectionTokenManagerImpl>(
+        &mock_config_cache_, &mock_, ProxyLayer::kProxyB,
+        /* disable_cache_management_for_testing=*/true);
 
     // Default to disabling token expiration fuzzing.
-    ipp_proxy_a_token_cache_manager_->EnableTokenExpirationFuzzingForTesting(
-        false);
-    ipp_proxy_b_token_cache_manager_->EnableTokenExpirationFuzzingForTesting(
-        false);
+    ipp_proxy_a_token_manager_->EnableTokenExpirationFuzzingForTesting(false);
+    ipp_proxy_b_token_manager_->EnableTokenExpirationFuzzingForTesting(false);
   }
 
   void ExpectHistogramState(HistogramState state) {
@@ -227,7 +221,7 @@ class IpProtectionTokenCacheManagerImplTest : public testing::Test {
   std::vector<BlindSignedAuthToken> TokenBatch(
       int count,
       base::Time expiration,
-      ip_protection::GeoHint geo_hint = kMountainViewGeo) {
+      GeoHint geo_hint = kMountainViewGeo) {
     std::vector<BlindSignedAuthToken> tokens;
     for (int i = 0; i < count; i++) {
       tokens.emplace_back(
@@ -238,32 +232,27 @@ class IpProtectionTokenCacheManagerImplTest : public testing::Test {
     return tokens;
   }
 
-  void CallTryGetAuthTokensAndWait(ip_protection::ProxyLayer proxy_layer) {
-    if (proxy_layer == ip_protection::ProxyLayer::kProxyA) {
-      ipp_proxy_a_token_cache_manager_
-          ->SetOnTryGetAuthTokensCompletedForTesting(
-              task_environment_.QuitClosure());
-      ipp_proxy_a_token_cache_manager_->CallTryGetAuthTokensForTesting();
+  void CallTryGetAuthTokensAndWait(ProxyLayer proxy_layer) {
+    if (proxy_layer == ProxyLayer::kProxyA) {
+      ipp_proxy_a_token_manager_->SetOnTryGetAuthTokensCompletedForTesting(
+          task_environment_.QuitClosure());
+      ipp_proxy_a_token_manager_->CallTryGetAuthTokensForTesting();
     } else {
-      ipp_proxy_b_token_cache_manager_
-          ->SetOnTryGetAuthTokensCompletedForTesting(
-              task_environment_.QuitClosure());
-      ipp_proxy_b_token_cache_manager_->CallTryGetAuthTokensForTesting();
+      ipp_proxy_b_token_manager_->SetOnTryGetAuthTokensCompletedForTesting(
+          task_environment_.QuitClosure());
+      ipp_proxy_b_token_manager_->CallTryGetAuthTokensForTesting();
     }
     task_environment_.RunUntilQuit();
   }
 
   // Wait until the cache fills itself.
-  void WaitForTryGetAuthTokensCompletion(
-      ip_protection::ProxyLayer proxy_layer) {
-    if (proxy_layer == ip_protection::ProxyLayer::kProxyA) {
-      ipp_proxy_a_token_cache_manager_
-          ->SetOnTryGetAuthTokensCompletedForTesting(
-              task_environment_.QuitClosure());
+  void WaitForTryGetAuthTokensCompletion(ProxyLayer proxy_layer) {
+    if (proxy_layer == ProxyLayer::kProxyA) {
+      ipp_proxy_a_token_manager_->SetOnTryGetAuthTokensCompletedForTesting(
+          task_environment_.QuitClosure());
     } else {
-      ipp_proxy_b_token_cache_manager_
-          ->SetOnTryGetAuthTokensCompletedForTesting(
-              task_environment_.QuitClosure());
+      ipp_proxy_b_token_manager_->SetOnTryGetAuthTokensCompletedForTesting(
+          task_environment_.QuitClosure());
     }
     task_environment_.RunUntilQuit();
   }
@@ -284,11 +273,9 @@ class IpProtectionTokenCacheManagerImplTest : public testing::Test {
 
   testing::NiceMock<MockIpProtectionConfigCache> mock_config_cache_;
 
-  std::unique_ptr<IpProtectionTokenCacheManagerImpl>
-      ipp_proxy_a_token_cache_manager_;
+  std::unique_ptr<IpProtectionTokenManagerImpl> ipp_proxy_a_token_manager_;
 
-  std::unique_ptr<IpProtectionTokenCacheManagerImpl>
-      ipp_proxy_b_token_cache_manager_;
+  std::unique_ptr<IpProtectionTokenManagerImpl> ipp_proxy_b_token_manager_;
 
   base::HistogramTester histogram_tester_;
 
@@ -298,118 +285,116 @@ class IpProtectionTokenCacheManagerImplTest : public testing::Test {
 
 // `IsAuthTokenAvailable()` returns false on an empty cache. Geo Caching
 // disabled.
-TEST_F(IpProtectionTokenCacheManagerImplTest, IsAuthTokenAvailableFalseEmpty) {
-  SetUpIpProtectionTokenCacheManager(kDisableTokenCacheByGeo);
-  EXPECT_FALSE(ipp_proxy_a_token_cache_manager_->IsAuthTokenAvailable());
+TEST_F(IpProtectionTokenManagerImplTest, IsAuthTokenAvailableFalseEmpty) {
+  SetUpIpProtectionTokenManager(kDisableTokenCacheByGeo);
+  EXPECT_FALSE(ipp_proxy_a_token_manager_->IsAuthTokenAvailable());
 }
 
 // `IsAuthTokenAvailable()` returns false on an empty cache. Geo Caching
 // enabled.
-TEST_F(IpProtectionTokenCacheManagerImplTest,
+TEST_F(IpProtectionTokenManagerImplTest,
        IsAuthTokenAvailableFalseEmptyGeoCachingEnabled) {
-  SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
+  SetUpIpProtectionTokenManager(kEnableTokenCacheByGeo);
 
   mock_.ExpectTryGetAuthTokensCall(
       expected_batch_size_, TokenBatch(1, kFutureExpiration, kSunnyvaleGeo));
-  CallTryGetAuthTokensAndWait(ip_protection::ProxyLayer::kProxyA);
+  CallTryGetAuthTokensAndWait(ProxyLayer::kProxyA);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
   // Looking for geo that is not found in the token. In this case, only
   // sunnyvale tokens are available, thus, a check for Mountain View will be
   // false.
-  EXPECT_FALSE(ipp_proxy_a_token_cache_manager_->IsAuthTokenAvailable(
-      kMountainViewGeoId));
+  EXPECT_FALSE(
+      ipp_proxy_a_token_manager_->IsAuthTokenAvailable(kMountainViewGeoId));
 }
 
 // `IsAuthTokenAvailable()` returns true on a cache containing unexpired
 // tokens.
-TEST_F(IpProtectionTokenCacheManagerImplTest, IsAuthTokenAvailableTrue) {
-  SetUpIpProtectionTokenCacheManager(kDisableTokenCacheByGeo);
+TEST_F(IpProtectionTokenManagerImplTest, IsAuthTokenAvailableTrue) {
+  SetUpIpProtectionTokenManager(kDisableTokenCacheByGeo);
 
   mock_.ExpectTryGetAuthTokensCall(expected_batch_size_,
                                    TokenBatch(1, kFutureExpiration));
-  CallTryGetAuthTokensAndWait(ip_protection::ProxyLayer::kProxyA);
+  CallTryGetAuthTokensAndWait(ProxyLayer::kProxyA);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
-  EXPECT_TRUE(ipp_proxy_a_token_cache_manager_->IsAuthTokenAvailable());
+  EXPECT_TRUE(ipp_proxy_a_token_manager_->IsAuthTokenAvailable());
 }
 
 // `IsAuthTokenAvailable()` returns true on a cache containing unexpired
 // tokens. Geo caching is enabled.
-TEST_F(IpProtectionTokenCacheManagerImplTest,
+TEST_F(IpProtectionTokenManagerImplTest,
        IsAuthTokenAvailableTrueGeoCachingEnabled) {
-  SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
+  SetUpIpProtectionTokenManager(kEnableTokenCacheByGeo);
 
   mock_.ExpectTryGetAuthTokensCall(
       expected_batch_size_, TokenBatch(1, kFutureExpiration, kMountainViewGeo));
-  CallTryGetAuthTokensAndWait(ip_protection::ProxyLayer::kProxyA);
+  CallTryGetAuthTokensAndWait(ProxyLayer::kProxyA);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
-  EXPECT_TRUE(ipp_proxy_a_token_cache_manager_->IsAuthTokenAvailable(
-      kMountainViewGeoId));
+  EXPECT_TRUE(
+      ipp_proxy_a_token_manager_->IsAuthTokenAvailable(kMountainViewGeoId));
 }
 
 // `IsAuthTokenAvailable()` returns false on a cache containing expired
 // tokens.
-TEST_F(IpProtectionTokenCacheManagerImplTest,
-       IsAuthTokenAvailableFalseExpired) {
-  SetUpIpProtectionTokenCacheManager(kDisableTokenCacheByGeo);
+TEST_F(IpProtectionTokenManagerImplTest, IsAuthTokenAvailableFalseExpired) {
+  SetUpIpProtectionTokenManager(kDisableTokenCacheByGeo);
 
   mock_.ExpectTryGetAuthTokensCall(expected_batch_size_,
                                    TokenBatch(1, kPastExpiration));
-  CallTryGetAuthTokensAndWait(ip_protection::ProxyLayer::kProxyA);
+  CallTryGetAuthTokensAndWait(ProxyLayer::kProxyA);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
-  EXPECT_FALSE(ipp_proxy_a_token_cache_manager_->IsAuthTokenAvailable());
+  EXPECT_FALSE(ipp_proxy_a_token_manager_->IsAuthTokenAvailable());
 }
 
 // `IsAuthTokenAvailable()` returns false on a geo's cache containing expired
 // tokens.
-TEST_F(IpProtectionTokenCacheManagerImplTest,
+TEST_F(IpProtectionTokenManagerImplTest,
        IsAuthTokenAvailableGeoCachingExpiration) {
-  SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
+  SetUpIpProtectionTokenManager(kEnableTokenCacheByGeo);
 
   // Expired tokens added
   mock_.ExpectTryGetAuthTokensCall(
       expected_batch_size_, TokenBatch(1, kPastExpiration, kMountainViewGeo));
-  CallTryGetAuthTokensAndWait(ip_protection::ProxyLayer::kProxyA);
+  CallTryGetAuthTokensAndWait(ProxyLayer::kProxyA);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
-  EXPECT_FALSE(ipp_proxy_a_token_cache_manager_->IsAuthTokenAvailable(
-      kMountainViewGeoId));
+  EXPECT_FALSE(
+      ipp_proxy_a_token_manager_->IsAuthTokenAvailable(kMountainViewGeoId));
 }
 
 // `GetAuthToken()` returns nullopt on an empty cache.
-TEST_F(IpProtectionTokenCacheManagerImplTest, GetAuthTokenEmpty) {
-  SetUpIpProtectionTokenCacheManager(kDisableTokenCacheByGeo);
+TEST_F(IpProtectionTokenManagerImplTest, GetAuthTokenEmpty) {
+  SetUpIpProtectionTokenManager(kDisableTokenCacheByGeo);
 
-  EXPECT_FALSE(ipp_proxy_a_token_cache_manager_->GetAuthToken());
+  EXPECT_FALSE(ipp_proxy_a_token_manager_->GetAuthToken());
   ExpectHistogramState(HistogramState{.success = 0, .failure = 1});
   // No sample taken since geo caching is disabled.
   histogram_tester_.ExpectTotalCount(kGetAuthTokenResultForGeoHistogram, 0);
 }
 
 // `GetAuthToken()` returns nullopt on an empty cache for specified geo.
-TEST_F(IpProtectionTokenCacheManagerImplTest, GetAuthTokenEmptyForGeo) {
-  SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
+TEST_F(IpProtectionTokenManagerImplTest, GetAuthTokenEmptyForGeo) {
+  SetUpIpProtectionTokenManager(kEnableTokenCacheByGeo);
 
-  EXPECT_FALSE(
-      ipp_proxy_a_token_cache_manager_->GetAuthToken(kMountainViewGeoId));
+  EXPECT_FALSE(ipp_proxy_a_token_manager_->GetAuthToken(kMountainViewGeoId));
   ExpectHistogramState(HistogramState{.success = 0, .failure = 1});
   histogram_tester_.ExpectUniqueSample(
       kGetAuthTokenResultForGeoHistogram,
-      ip_protection::AuthTokenResultForGeo::kUnavailableCacheEmpty, 1);
+      AuthTokenResultForGeo::kUnavailableCacheEmpty, 1);
 }
 
 // `GetAuthToken()` returns a token on a cache containing unexpired tokens.
-TEST_F(IpProtectionTokenCacheManagerImplTest, GetAuthTokenSuccessful) {
-  SetUpIpProtectionTokenCacheManager(kDisableTokenCacheByGeo);
+TEST_F(IpProtectionTokenManagerImplTest, GetAuthTokenSuccessful) {
+  SetUpIpProtectionTokenManager(kDisableTokenCacheByGeo);
 
   mock_.ExpectTryGetAuthTokensCall(
       expected_batch_size_, TokenBatch(1, kFutureExpiration, kMountainViewGeo));
-  CallTryGetAuthTokensAndWait(ip_protection::ProxyLayer::kProxyA);
+  CallTryGetAuthTokensAndWait(ProxyLayer::kProxyA);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   std::optional<BlindSignedAuthToken> token =
-      ipp_proxy_a_token_cache_manager_->GetAuthToken();
+      ipp_proxy_a_token_manager_->GetAuthToken();
   ASSERT_TRUE(token);
   EXPECT_EQ(token->token, "token-0");
   EXPECT_EQ(token->expiration, kFutureExpiration);
@@ -421,18 +406,18 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, GetAuthTokenSuccessful) {
 }
 
 // `GetAuthToken()` returns a token cached by geo.
-TEST_F(IpProtectionTokenCacheManagerImplTest, GetAuthTokenForGeoSuccessful) {
-  SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
+TEST_F(IpProtectionTokenManagerImplTest, GetAuthTokenForGeoSuccessful) {
+  SetUpIpProtectionTokenManager(kEnableTokenCacheByGeo);
 
   EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_)).Times(1);
 
   mock_.ExpectTryGetAuthTokensCall(
       expected_batch_size_, TokenBatch(1, kFutureExpiration, kMountainViewGeo));
-  CallTryGetAuthTokensAndWait(ip_protection::ProxyLayer::kProxyA);
+  CallTryGetAuthTokensAndWait(ProxyLayer::kProxyA);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
   std::optional<BlindSignedAuthToken> token =
-      ipp_proxy_a_token_cache_manager_->GetAuthToken(kMountainViewGeoId);
+      ipp_proxy_a_token_manager_->GetAuthToken(kMountainViewGeoId);
 
   ASSERT_TRUE(token);
   EXPECT_EQ(token->token, "token-0");
@@ -442,146 +427,141 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, GetAuthTokenForGeoSuccessful) {
       HistogramState{.success = 1, .failure = 0, .generated = 1});
   histogram_tester_.ExpectUniqueSample(
       kGetAuthTokenResultForGeoHistogram,
-      ip_protection::AuthTokenResultForGeo::kAvailableForCurrentGeo, 1);
+      AuthTokenResultForGeo::kAvailableForCurrentGeo, 1);
 }
 
 // `GetAuthToken()` requested for geo not available while other tokens are
 // available.
-TEST_F(IpProtectionTokenCacheManagerImplTest, GetAuthTokenForUnavailableGeo) {
-  SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
+TEST_F(IpProtectionTokenManagerImplTest, GetAuthTokenForUnavailableGeo) {
+  SetUpIpProtectionTokenManager(kEnableTokenCacheByGeo);
 
   EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_)).Times(1);
 
   // Cache contains Mountain view geo tokens.
   mock_.ExpectTryGetAuthTokensCall(
       expected_batch_size_, TokenBatch(1, kFutureExpiration, kMountainViewGeo));
-  CallTryGetAuthTokensAndWait(ip_protection::ProxyLayer::kProxyA);
+  CallTryGetAuthTokensAndWait(ProxyLayer::kProxyA);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
   // Requesting token from geo that is not Mountain View.
   std::optional<BlindSignedAuthToken> token =
-      ipp_proxy_a_token_cache_manager_->GetAuthToken(kSunnyvaleGeoId);
+      ipp_proxy_a_token_manager_->GetAuthToken(kSunnyvaleGeoId);
 
   ASSERT_FALSE(token);
   ExpectHistogramState(
       HistogramState{.success = 0, .failure = 1, .generated = 1});
   histogram_tester_.ExpectUniqueSample(
       kGetAuthTokenResultForGeoHistogram,
-      ip_protection::AuthTokenResultForGeo::kUnavailableButCacheContainsTokens,
-      1);
+      AuthTokenResultForGeo::kUnavailableButCacheContainsTokens, 1);
 }
 
 // `GetAuthToken()` returns nullopt on a cache containing expired tokens.
-TEST_F(IpProtectionTokenCacheManagerImplTest, GetAuthTokenFalseExpired) {
-  SetUpIpProtectionTokenCacheManager(kDisableTokenCacheByGeo);
+TEST_F(IpProtectionTokenManagerImplTest, GetAuthTokenFalseExpired) {
+  SetUpIpProtectionTokenManager(kDisableTokenCacheByGeo);
 
   mock_.ExpectTryGetAuthTokensCall(expected_batch_size_,
                                    TokenBatch(1, kPastExpiration));
-  CallTryGetAuthTokensAndWait(ip_protection::ProxyLayer::kProxyA);
+  CallTryGetAuthTokensAndWait(ProxyLayer::kProxyA);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
-  EXPECT_FALSE(ipp_proxy_a_token_cache_manager_->GetAuthToken());
+  EXPECT_FALSE(ipp_proxy_a_token_manager_->GetAuthToken());
   ExpectHistogramState(
       HistogramState{.success = 0, .failure = 1, .generated = 1});
 }
 
 // `GetAuthToken()` returns nullopt for particular geo where tokens are
 // expired.
-TEST_F(IpProtectionTokenCacheManagerImplTest, GetAuthTokenForGeoFalseExpired) {
-  SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
+TEST_F(IpProtectionTokenManagerImplTest, GetAuthTokenForGeoFalseExpired) {
+  SetUpIpProtectionTokenManager(kEnableTokenCacheByGeo);
 
   // Expired tokens added.
   mock_.ExpectTryGetAuthTokensCall(
       expected_batch_size_, TokenBatch(1, kPastExpiration, kMountainViewGeo));
-  CallTryGetAuthTokensAndWait(ip_protection::ProxyLayer::kProxyA);
+  CallTryGetAuthTokensAndWait(ProxyLayer::kProxyA);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
-  EXPECT_FALSE(
-      ipp_proxy_a_token_cache_manager_->GetAuthToken(kMountainViewGeoId));
+  EXPECT_FALSE(ipp_proxy_a_token_manager_->GetAuthToken(kMountainViewGeoId));
   ExpectHistogramState(
       HistogramState{.success = 0, .failure = 1, .generated = 1});
 }
 
 // `CurrentGeo()` returns "EARTH" when token caching by geo is disabled.
-TEST_F(IpProtectionTokenCacheManagerImplTest,
-       CurrentGeoNoGeoCachingReturnsEarth) {
-  SetUpIpProtectionTokenCacheManager(kDisableTokenCacheByGeo);
+TEST_F(IpProtectionTokenManagerImplTest, CurrentGeoNoGeoCachingReturnsEarth) {
+  SetUpIpProtectionTokenManager(kDisableTokenCacheByGeo);
 
-  EXPECT_FALSE(ipp_proxy_a_token_cache_manager_->GetAuthToken());
-  EXPECT_EQ(ipp_proxy_a_token_cache_manager_->CurrentGeo(), "EARTH");
+  EXPECT_FALSE(ipp_proxy_a_token_manager_->GetAuthToken());
+  EXPECT_EQ(ipp_proxy_a_token_manager_->CurrentGeo(), "EARTH");
 }
 
 // `CurrentGeo()` should return empty if no tokens have been requested yet and
 // token caching by geo is enabled.
-TEST_F(IpProtectionTokenCacheManagerImplTest,
+TEST_F(IpProtectionTokenManagerImplTest,
        CurrentGeoTokensNotRequestedGeoCachingEnabledReturnsEmpty) {
-  SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
+  SetUpIpProtectionTokenManager(kEnableTokenCacheByGeo);
   // If no tokens have been added, this should not be called.
   EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_)).Times(0);
 
-  EXPECT_EQ(ipp_proxy_a_token_cache_manager_->CurrentGeo(), "");
+  EXPECT_EQ(ipp_proxy_a_token_manager_->CurrentGeo(), "");
 }
 
 // `CurrentGeo()` should return the current geo of the most recently returned
 // tokens.
-TEST_F(IpProtectionTokenCacheManagerImplTest,
+TEST_F(IpProtectionTokenManagerImplTest,
        CurrentGeoTokensFilledGeoCachingEnabledReturnsGeo) {
-  SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
+  SetUpIpProtectionTokenManager(kEnableTokenCacheByGeo);
 
   mock_.ExpectTryGetAuthTokensCall(
       expected_batch_size_, TokenBatch(1, kFutureExpiration, kMountainViewGeo));
-  CallTryGetAuthTokensAndWait(ip_protection::ProxyLayer::kProxyA);
+  CallTryGetAuthTokensAndWait(ProxyLayer::kProxyA);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
-  EXPECT_EQ(ipp_proxy_a_token_cache_manager_->CurrentGeo(), kMountainViewGeoId);
+  EXPECT_EQ(ipp_proxy_a_token_manager_->CurrentGeo(), kMountainViewGeoId);
 }
 
 // If `TryGetAuthTokens()` returns a batch smaller than the low-water mark,
 // the cache does not immediately refill.
-TEST_F(IpProtectionTokenCacheManagerImplTest, SmallBatch) {
-  SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
+TEST_F(IpProtectionTokenManagerImplTest, SmallBatch) {
+  SetUpIpProtectionTokenManager(kEnableTokenCacheByGeo);
 
   mock_.ExpectTryGetAuthTokensCall(
       expected_batch_size_,
       TokenBatch(cache_low_water_mark_ - 1, kFutureExpiration));
-  CallTryGetAuthTokensAndWait(ip_protection::ProxyLayer::kProxyA);
+  CallTryGetAuthTokensAndWait(ProxyLayer::kProxyA);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
-  ASSERT_TRUE(ipp_proxy_a_token_cache_manager_->IsAuthTokenAvailable(
-      kMountainViewGeoId));
   ASSERT_TRUE(
-      ipp_proxy_a_token_cache_manager_->GetAuthToken(kMountainViewGeoId));
+      ipp_proxy_a_token_manager_->IsAuthTokenAvailable(kMountainViewGeoId));
+  ASSERT_TRUE(ipp_proxy_a_token_manager_->GetAuthToken(kMountainViewGeoId));
 
-  ASSERT_TRUE(ipp_proxy_a_token_cache_manager_
-                  ->try_get_auth_tokens_after_for_testing() >
-              base::Time::Now());
+  ASSERT_TRUE(
+      ipp_proxy_a_token_manager_->try_get_auth_tokens_after_for_testing() >
+      base::Time::Now());
   ExpectHistogramState(
       HistogramState{.success = 1, .failure = 0, .generated = 1});
 }
 
 // If `TryGetAuthTokens()` returns an backoff due to an error, the cache
 // remains empty.
-TEST_F(IpProtectionTokenCacheManagerImplTest, ErrorBatch) {
-  SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
+TEST_F(IpProtectionTokenManagerImplTest, ErrorBatch) {
+  SetUpIpProtectionTokenManager(kEnableTokenCacheByGeo);
 
   EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_)).Times(0);
 
   const base::TimeDelta kBackoff = base::Seconds(10);
   mock_.ExpectTryGetAuthTokensCall(expected_batch_size_,
                                    base::Time::Now() + kBackoff);
-  CallTryGetAuthTokensAndWait(ip_protection::ProxyLayer::kProxyA);
+  CallTryGetAuthTokensAndWait(ProxyLayer::kProxyA);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
-  ASSERT_FALSE(ipp_proxy_a_token_cache_manager_->IsAuthTokenAvailable(
-      kMountainViewGeoId));
   ASSERT_FALSE(
-      ipp_proxy_a_token_cache_manager_->GetAuthToken(kMountainViewGeoId));
+      ipp_proxy_a_token_manager_->IsAuthTokenAvailable(kMountainViewGeoId));
+  ASSERT_FALSE(ipp_proxy_a_token_manager_->GetAuthToken(kMountainViewGeoId));
   ExpectHistogramState(
       HistogramState{.success = 0, .failure = 1, .generated = 0});
 }
 
 // `GetAuthToken()` skips expired tokens and returns a non-expired token, if
 // one is found in the cache.
-TEST_F(IpProtectionTokenCacheManagerImplTest, SkipExpiredTokens) {
-  SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
+TEST_F(IpProtectionTokenManagerImplTest, SkipExpiredTokens) {
+  SetUpIpProtectionTokenManager(kEnableTokenCacheByGeo);
 
   std::vector<BlindSignedAuthToken> tokens =
       TokenBatch(10, kPastExpiration, kMountainViewGeo);
@@ -589,11 +569,10 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, SkipExpiredTokens) {
                                            .expiration = kFutureExpiration,
                                            .geo_hint = kMountainViewGeo});
   mock_.ExpectTryGetAuthTokensCall(expected_batch_size_, std::move(tokens));
-  CallTryGetAuthTokensAndWait(ip_protection::ProxyLayer::kProxyA);
+  CallTryGetAuthTokensAndWait(ProxyLayer::kProxyA);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
-  auto got_token =
-      ipp_proxy_a_token_cache_manager_->GetAuthToken(kMountainViewGeoId);
+  auto got_token = ipp_proxy_a_token_manager_->GetAuthToken(kMountainViewGeoId);
   EXPECT_EQ(got_token.value().token, "good-token");
   EXPECT_EQ(got_token.value().expiration, kFutureExpiration);
   EXPECT_EQ(got_token.value().geo_hint, kMountainViewGeo);
@@ -601,19 +580,17 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, SkipExpiredTokens) {
       HistogramState{.success = 1, .failure = 0, .generated = 1});
 }
 
-TEST_F(IpProtectionTokenCacheManagerImplTest, TokenExpirationFuzzed) {
-  SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
-  ipp_proxy_a_token_cache_manager_->EnableTokenExpirationFuzzingForTesting(
-      true);
+TEST_F(IpProtectionTokenManagerImplTest, TokenExpirationFuzzed) {
+  SetUpIpProtectionTokenManager(kEnableTokenCacheByGeo);
+  ipp_proxy_a_token_manager_->EnableTokenExpirationFuzzingForTesting(true);
 
   std::vector<BlindSignedAuthToken> tokens =
       TokenBatch(1, kFutureExpiration, kMountainViewGeo);
   mock_.ExpectTryGetAuthTokensCall(expected_batch_size_, std::move(tokens));
-  CallTryGetAuthTokensAndWait(ip_protection::ProxyLayer::kProxyA);
+  CallTryGetAuthTokensAndWait(ProxyLayer::kProxyA);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
-  auto got_token =
-      ipp_proxy_a_token_cache_manager_->GetAuthToken(kMountainViewGeoId);
+  auto got_token = ipp_proxy_a_token_manager_->GetAuthToken(kMountainViewGeoId);
   EXPECT_EQ(got_token.value().token, "token-0");
   EXPECT_LT(got_token.value().expiration, kFutureExpiration);
   EXPECT_EQ(got_token.value().geo_hint, kMountainViewGeo);
@@ -623,36 +600,35 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, TokenExpirationFuzzed) {
 
 // If the `IpProtectionConfigGetter` is nullptr, no tokens are gotten, but
 // things don't crash.
-TEST_F(IpProtectionTokenCacheManagerImplTest, NullGetter) {
+TEST_F(IpProtectionTokenManagerImplTest, NullGetter) {
   MockIpProtectionConfigCache config_cache;
-  auto ipp_token_cache_manager = IpProtectionTokenCacheManagerImpl(
-      &config_cache, nullptr, ip_protection::ProxyLayer::kProxyA,
+  auto ipp_token_manager = IpProtectionTokenManagerImpl(
+      &config_cache, nullptr, ProxyLayer::kProxyA,
       /* disable_cache_management_for_testing=*/true);
 
-  EXPECT_FALSE(
-      ipp_token_cache_manager.IsAuthTokenAvailable(kMountainViewGeoId));
+  EXPECT_FALSE(ipp_token_manager.IsAuthTokenAvailable(kMountainViewGeoId));
 
-  auto token = ipp_token_cache_manager.GetAuthToken(kMountainViewGeoId);
+  auto token = ipp_token_manager.GetAuthToken(kMountainViewGeoId);
   ASSERT_FALSE(token);
   ExpectHistogramState(
       HistogramState{.success = 0, .failure = 1, .generated = 0});
 }
 
 // Verify that the token spend rate for ProxyA is measured correctly.
-TEST_F(IpProtectionTokenCacheManagerImplTest, ProxyATokenSpendRate) {
-  SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
+TEST_F(IpProtectionTokenManagerImplTest, ProxyATokenSpendRate) {
+  SetUpIpProtectionTokenManager(kEnableTokenCacheByGeo);
   std::vector<BlindSignedAuthToken> tokens;
 
   // Fill the cache with 5 tokens.
   mock_.ExpectTryGetAuthTokensCall(
       expected_batch_size_, TokenBatch(5, kFutureExpiration, kMountainViewGeo));
-  CallTryGetAuthTokensAndWait(ip_protection::ProxyLayer::kProxyA);
+  CallTryGetAuthTokensAndWait(ProxyLayer::kProxyA);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
   // Get four tokens from the batch.
   for (int i = 0; i < 4; i++) {
     auto got_token =
-        ipp_proxy_a_token_cache_manager_->GetAuthToken(kMountainViewGeoId);
+        ipp_proxy_a_token_manager_->GetAuthToken(kMountainViewGeoId);
     EXPECT_EQ(got_token.value().token, base::StringPrintf("token-%d", i));
     EXPECT_EQ(got_token.value().expiration, kFutureExpiration);
   }
@@ -664,8 +640,7 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, ProxyATokenSpendRate) {
   histogram_tester_.ExpectUniqueSample(kProxyATokenSpendRateHistogram, 48, 1);
 
   // Get the remaining token in the batch.
-  auto got_token =
-      ipp_proxy_a_token_cache_manager_->GetAuthToken(kMountainViewGeoId);
+  auto got_token = ipp_proxy_a_token_manager_->GetAuthToken(kMountainViewGeoId);
   EXPECT_EQ(got_token.value().token, "token-4");
   EXPECT_EQ(got_token.value().expiration, kFutureExpiration);
 
@@ -678,21 +653,20 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, ProxyATokenSpendRate) {
 }
 
 // Verify that the token expiration rate for ProxyA is measured correctly.
-TEST_F(IpProtectionTokenCacheManagerImplTest, ProxyATokenExpirationRate) {
+TEST_F(IpProtectionTokenManagerImplTest, ProxyATokenExpirationRate) {
   std::vector<BlindSignedAuthToken> tokens;
-  SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
+  SetUpIpProtectionTokenManager(kEnableTokenCacheByGeo);
 
   // Fill the cache with 1024 expired tokens. An entire batch expiring
   // in one 5-minute interval is a very likely event.
   mock_.ExpectTryGetAuthTokensCall(
       expected_batch_size_,
       TokenBatch(1024, kPastExpiration, kMountainViewGeo));
-  CallTryGetAuthTokensAndWait(ip_protection::ProxyLayer::kProxyA);
+  CallTryGetAuthTokensAndWait(ProxyLayer::kProxyA);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
   // Try to get a token, which will incidentally record the expired tokens.
-  auto got_token =
-      ipp_proxy_a_token_cache_manager_->GetAuthToken(kMountainViewGeoId);
+  auto got_token = ipp_proxy_a_token_manager_->GetAuthToken(kMountainViewGeoId);
   EXPECT_FALSE(got_token);
 
   // Fast-forward to run the measurement timer.
@@ -712,20 +686,20 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, ProxyATokenExpirationRate) {
 }
 
 // Verify that the token spend rate for ProxyB is measured correctly.
-TEST_F(IpProtectionTokenCacheManagerImplTest, ProxyBTokenSpendRate) {
-  SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
+TEST_F(IpProtectionTokenManagerImplTest, ProxyBTokenSpendRate) {
+  SetUpIpProtectionTokenManager(kEnableTokenCacheByGeo);
   std::vector<BlindSignedAuthToken> tokens;
 
   // Fill the cache with 5 tokens.
   mock_.ExpectTryGetAuthTokensCall(
       expected_batch_size_, TokenBatch(5, kFutureExpiration, kMountainViewGeo));
-  CallTryGetAuthTokensAndWait(ip_protection::ProxyLayer::kProxyB);
+  CallTryGetAuthTokensAndWait(ProxyLayer::kProxyB);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
   // Get four tokens from the batch.
   for (int i = 0; i < 4; i++) {
     auto got_token =
-        ipp_proxy_b_token_cache_manager_->GetAuthToken(kMountainViewGeoId);
+        ipp_proxy_b_token_manager_->GetAuthToken(kMountainViewGeoId);
     EXPECT_EQ(got_token.value().token, base::StringPrintf("token-%d", i));
     EXPECT_EQ(got_token.value().expiration, kFutureExpiration);
   }
@@ -737,8 +711,7 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, ProxyBTokenSpendRate) {
   histogram_tester_.ExpectUniqueSample(kProxyBTokenSpendRateHistogram, 48, 1);
 
   // Get the remaining token in the batch.
-  auto got_token =
-      ipp_proxy_b_token_cache_manager_->GetAuthToken(kMountainViewGeoId);
+  auto got_token = ipp_proxy_b_token_manager_->GetAuthToken(kMountainViewGeoId);
   EXPECT_EQ(got_token.value().token, "token-4");
   EXPECT_EQ(got_token.value().expiration, kFutureExpiration);
 
@@ -751,8 +724,8 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, ProxyBTokenSpendRate) {
 }
 
 // Verify that the token expiration rate for ProxyB is measured correctly.
-TEST_F(IpProtectionTokenCacheManagerImplTest, ProxyBTokenExpirationRate) {
-  SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
+TEST_F(IpProtectionTokenManagerImplTest, ProxyBTokenExpirationRate) {
+  SetUpIpProtectionTokenManager(kEnableTokenCacheByGeo);
   std::vector<BlindSignedAuthToken> tokens;
 
   // Fill the cache with 1024 expired tokens. An entire batch expiring
@@ -760,12 +733,11 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, ProxyBTokenExpirationRate) {
   mock_.ExpectTryGetAuthTokensCall(
       expected_batch_size_,
       TokenBatch(1024, kPastExpiration, kMountainViewGeo));
-  CallTryGetAuthTokensAndWait(ip_protection::ProxyLayer::kProxyB);
+  CallTryGetAuthTokensAndWait(ProxyLayer::kProxyB);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
   // Try to get a token, which will incidentally record the expired tokens.
-  auto got_token =
-      ipp_proxy_b_token_cache_manager_->GetAuthToken(kMountainViewGeoId);
+  auto got_token = ipp_proxy_b_token_manager_->GetAuthToken(kMountainViewGeoId);
   EXPECT_FALSE(got_token);
 
   // Fast-forward to run the measurement timer.
@@ -785,27 +757,27 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, ProxyBTokenExpirationRate) {
 }
 
 // The cache will pre-fill itself with a batch of tokens after a startup delay
-TEST_F(IpProtectionTokenCacheManagerImplTest, Prefill) {
-  SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
+TEST_F(IpProtectionTokenManagerImplTest, Prefill) {
+  SetUpIpProtectionTokenManager(kEnableTokenCacheByGeo);
 
   EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_)).Times(1);
 
   mock_.ExpectTryGetAuthTokensCall(
       expected_batch_size_,
       TokenBatch(expected_batch_size_, kFutureExpiration, kMountainViewGeo));
-  ipp_proxy_a_token_cache_manager_->EnableCacheManagementForTesting();
-  WaitForTryGetAuthTokensCompletion(ip_protection::ProxyLayer::kProxyA);
+  ipp_proxy_a_token_manager_->EnableCacheManagementForTesting();
+  WaitForTryGetAuthTokensCompletion(ProxyLayer::kProxyA);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
-  EXPECT_TRUE(ipp_proxy_a_token_cache_manager_->IsAuthTokenAvailable(
-      kMountainViewGeoId));
+  EXPECT_TRUE(
+      ipp_proxy_a_token_manager_->IsAuthTokenAvailable(kMountainViewGeoId));
 
   // Histogram should have no samples for a prefill.
   histogram_tester_.ExpectTotalCount(kGeoChangeTokenPresence, 0);
 }
 
 // The cache will initiate a refill when it reaches the low-water mark.
-TEST_F(IpProtectionTokenCacheManagerImplTest, RefillLowWaterMark) {
-  SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
+TEST_F(IpProtectionTokenManagerImplTest, RefillLowWaterMark) {
+  SetUpIpProtectionTokenManager(kEnableTokenCacheByGeo);
 
   // A refill with tokens from the same geo should not trigger this function a
   // second time.
@@ -814,16 +786,15 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, RefillLowWaterMark) {
   mock_.ExpectTryGetAuthTokensCall(
       expected_batch_size_,
       TokenBatch(expected_batch_size_, kFutureExpiration, kMountainViewGeo));
-  ipp_proxy_a_token_cache_manager_->EnableCacheManagementForTesting();
-  WaitForTryGetAuthTokensCompletion(ip_protection::ProxyLayer::kProxyA);
+  ipp_proxy_a_token_manager_->EnableCacheManagementForTesting();
+  WaitForTryGetAuthTokensCompletion(ProxyLayer::kProxyA);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
   // Spend tokens down to (but not below) the low-water mark.
   for (int i = expected_batch_size_ - 1; i > cache_low_water_mark_; i--) {
-    ASSERT_TRUE(ipp_proxy_a_token_cache_manager_->IsAuthTokenAvailable(
-        kMountainViewGeoId));
     ASSERT_TRUE(
-        ipp_proxy_a_token_cache_manager_->GetAuthToken(kMountainViewGeoId));
+        ipp_proxy_a_token_manager_->IsAuthTokenAvailable(kMountainViewGeoId));
+    ASSERT_TRUE(ipp_proxy_a_token_manager_->GetAuthToken(kMountainViewGeoId));
     ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   }
 
@@ -832,10 +803,9 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, RefillLowWaterMark) {
       TokenBatch(expected_batch_size_, kFutureExpiration, kMountainViewGeo));
 
   // Next call to `GetAuthToken()` should call `MaybeRefillCache()`.
-  ipp_proxy_a_token_cache_manager_->SetOnTryGetAuthTokensCompletedForTesting(
+  ipp_proxy_a_token_manager_->SetOnTryGetAuthTokensCompletedForTesting(
       task_environment_.QuitClosure());
-  ASSERT_TRUE(
-      ipp_proxy_a_token_cache_manager_->GetAuthToken(kMountainViewGeoId));
+  ASSERT_TRUE(ipp_proxy_a_token_manager_->GetAuthToken(kMountainViewGeoId));
   task_environment_.RunUntilQuit();
 
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
@@ -843,31 +813,31 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, RefillLowWaterMark) {
 
 // If a fill results in a backoff request, the cache will try again after that
 // time.
-TEST_F(IpProtectionTokenCacheManagerImplTest, RefillAfterBackoff) {
-  SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
+TEST_F(IpProtectionTokenManagerImplTest, RefillAfterBackoff) {
+  SetUpIpProtectionTokenManager(kEnableTokenCacheByGeo);
 
   base::Time try_again_at = base::Time::Now() + base::Seconds(20);
   mock_.ExpectTryGetAuthTokensCall(expected_batch_size_, try_again_at);
-  ipp_proxy_a_token_cache_manager_->EnableCacheManagementForTesting();
-  WaitForTryGetAuthTokensCompletion(ip_protection::ProxyLayer::kProxyA);
+  ipp_proxy_a_token_manager_->EnableCacheManagementForTesting();
+  WaitForTryGetAuthTokensCompletion(ProxyLayer::kProxyA);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
   base::Time try_again_at_2 = base::Time::Now() + base::Seconds(20);
   mock_.ExpectTryGetAuthTokensCall(expected_batch_size_, try_again_at_2);
-  WaitForTryGetAuthTokensCompletion(ip_protection::ProxyLayer::kProxyA);
+  WaitForTryGetAuthTokensCompletion(ProxyLayer::kProxyA);
   EXPECT_EQ(base::Time::Now(), try_again_at);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
   base::Time try_again_at_3 = base::Time::Now() + base::Seconds(20);
   mock_.ExpectTryGetAuthTokensCall(expected_batch_size_, try_again_at_3);
-  WaitForTryGetAuthTokensCompletion(ip_protection::ProxyLayer::kProxyA);
+  WaitForTryGetAuthTokensCompletion(ProxyLayer::kProxyA);
   EXPECT_EQ(base::Time::Now(), try_again_at_2);
 }
 
 // When enough tokens expire to bring the cache size below the low water mark,
 // it will automatically refill.
-TEST_F(IpProtectionTokenCacheManagerImplTest, RefillAfterExpiration) {
-  SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
+TEST_F(IpProtectionTokenManagerImplTest, RefillAfterExpiration) {
+  SetUpIpProtectionTokenManager(kEnableTokenCacheByGeo);
 
   // A refill with tokens from the same geo should not trigger this function a
   // second time.
@@ -894,15 +864,15 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, RefillAfterExpiration) {
                                            .geo_hint = kMountainViewGeo});
 
   mock_.ExpectTryGetAuthTokensCall(expected_batch_size_, std::move(tokens));
-  ipp_proxy_a_token_cache_manager_->EnableCacheManagementForTesting();
-  WaitForTryGetAuthTokensCompletion(ip_protection::ProxyLayer::kProxyA);
+  ipp_proxy_a_token_manager_->EnableCacheManagementForTesting();
+  WaitForTryGetAuthTokensCompletion(ProxyLayer::kProxyA);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
   // After the first expiration, tokens should still be available and no
   // refill should have begun (which would have caused an error).
   task_environment_.FastForwardBy(expiration1 - base::Time::Now());
-  ASSERT_TRUE(ipp_proxy_a_token_cache_manager_->IsAuthTokenAvailable(
-      kMountainViewGeoId));
+  ASSERT_TRUE(
+      ipp_proxy_a_token_manager_->IsAuthTokenAvailable(kMountainViewGeoId));
 
   // After the second expiration, tokens should still be available, and
   // a second batch should have been requested.
@@ -910,12 +880,11 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, RefillAfterExpiration) {
       expected_batch_size_,
       TokenBatch(expected_batch_size_, kFutureExpiration, kMountainViewGeo));
   task_environment_.FastForwardBy(expiration2 - base::Time::Now());
-  ASSERT_TRUE(ipp_proxy_a_token_cache_manager_->IsAuthTokenAvailable(
-      kMountainViewGeoId));
+  ASSERT_TRUE(
+      ipp_proxy_a_token_manager_->IsAuthTokenAvailable(kMountainViewGeoId));
 
   // The un-expired token should be returned.
-  auto got_token =
-      ipp_proxy_a_token_cache_manager_->GetAuthToken(kMountainViewGeoId);
+  auto got_token = ipp_proxy_a_token_manager_->GetAuthToken(kMountainViewGeoId);
   EXPECT_EQ(got_token.value().token, "exp3");
 
   // Histogram should have no samples because after the initial fill there was
@@ -925,9 +894,8 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, RefillAfterExpiration) {
 
 // Once a geo changes, the new geo will have a key in the cache map meaning
 // tokens are now available to be retrieved for new geo.
-TEST_F(IpProtectionTokenCacheManagerImplTest,
-       GeoChangeNewGeoAvailableForGetToken) {
-  SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
+TEST_F(IpProtectionTokenManagerImplTest, GeoChangeNewGeoAvailableForGetToken) {
+  SetUpIpProtectionTokenManager(kEnableTokenCacheByGeo);
 
   // We have to re-mock this behavior b/c the default behavior mocks both proxy
   // A and B which would lead to incorrect histogram sampling.
@@ -936,8 +904,8 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
   EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_))
       .Times(2)
       .WillRepeatedly([this](const std::string& geo_id) {
-        if (ipp_proxy_a_token_cache_manager_->CurrentGeo() != geo_id) {
-          ipp_proxy_a_token_cache_manager_->SetCurrentGeo(geo_id);
+        if (ipp_proxy_a_token_manager_->CurrentGeo() != geo_id) {
+          ipp_proxy_a_token_manager_->SetCurrentGeo(geo_id);
         }
       });
 
@@ -945,16 +913,15 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
   mock_.ExpectTryGetAuthTokensCall(
       expected_batch_size_,
       TokenBatch(expected_batch_size_, kFutureExpiration, kMountainViewGeo));
-  ipp_proxy_a_token_cache_manager_->EnableCacheManagementForTesting();
-  WaitForTryGetAuthTokensCompletion(ip_protection::ProxyLayer::kProxyA);
+  ipp_proxy_a_token_manager_->EnableCacheManagementForTesting();
+  WaitForTryGetAuthTokensCompletion(ProxyLayer::kProxyA);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
   // Spend tokens down to (but not below) the low-water mark.
   for (int i = expected_batch_size_ - 1; i > cache_low_water_mark_; i--) {
-    ASSERT_TRUE(ipp_proxy_a_token_cache_manager_->IsAuthTokenAvailable(
-        kMountainViewGeoId));
     ASSERT_TRUE(
-        ipp_proxy_a_token_cache_manager_->GetAuthToken(kMountainViewGeoId));
+        ipp_proxy_a_token_manager_->IsAuthTokenAvailable(kMountainViewGeoId));
+    ASSERT_TRUE(ipp_proxy_a_token_manager_->GetAuthToken(kMountainViewGeoId));
     ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   }
 
@@ -965,15 +932,14 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
       TokenBatch(expected_batch_size_, kFutureExpiration, kSunnyvaleGeo));
 
   // Triggers new token retrieval.
-  ASSERT_TRUE(
-      ipp_proxy_a_token_cache_manager_->GetAuthToken(kMountainViewGeoId));
+  ASSERT_TRUE(ipp_proxy_a_token_manager_->GetAuthToken(kMountainViewGeoId));
 
   // Tokens should contain the new geo.
-  CallTryGetAuthTokensAndWait(ip_protection::ProxyLayer::kProxyA);
+  CallTryGetAuthTokensAndWait(ProxyLayer::kProxyA);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
   // New geo should return a valid token.
-  ASSERT_TRUE(ipp_proxy_a_token_cache_manager_->GetAuthToken(kSunnyvaleGeoId));
+  ASSERT_TRUE(ipp_proxy_a_token_manager_->GetAuthToken(kSunnyvaleGeoId));
 
   // There was a single geo change, but the new geo did not have any preexisting
   // tokens in the cache.
@@ -982,9 +948,8 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
 
 // Once a geo changes, the map will contain multiple geo's. Tokens from a
 // prior geo are still valid to use as long as they are not expired.
-TEST_F(IpProtectionTokenCacheManagerImplTest,
-       GeoChangeOldGeoTokensStillUsable) {
-  SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
+TEST_F(IpProtectionTokenManagerImplTest, GeoChangeOldGeoTokensStillUsable) {
+  SetUpIpProtectionTokenManager(kEnableTokenCacheByGeo);
 
   // A geo change means this is called twice: once for prefill and once for
   // second batch.
@@ -994,16 +959,15 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
   mock_.ExpectTryGetAuthTokensCall(
       expected_batch_size_,
       TokenBatch(expected_batch_size_, kFutureExpiration, kMountainViewGeo));
-  ipp_proxy_a_token_cache_manager_->EnableCacheManagementForTesting();
-  WaitForTryGetAuthTokensCompletion(ip_protection::ProxyLayer::kProxyA);
+  ipp_proxy_a_token_manager_->EnableCacheManagementForTesting();
+  WaitForTryGetAuthTokensCompletion(ProxyLayer::kProxyA);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
   // Spend tokens down to (but not below) the low-water mark.
   for (int i = expected_batch_size_ - 1; i > cache_low_water_mark_; i--) {
-    ASSERT_TRUE(ipp_proxy_a_token_cache_manager_->IsAuthTokenAvailable(
-        kMountainViewGeoId));
     ASSERT_TRUE(
-        ipp_proxy_a_token_cache_manager_->GetAuthToken(kMountainViewGeoId));
+        ipp_proxy_a_token_manager_->IsAuthTokenAvailable(kMountainViewGeoId));
+    ASSERT_TRUE(ipp_proxy_a_token_manager_->GetAuthToken(kMountainViewGeoId));
     ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   }
 
@@ -1013,30 +977,28 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
       TokenBatch(expected_batch_size_, kFutureExpiration, kSunnyvaleGeo));
 
   // Triggers token refill.
-  ASSERT_TRUE(
-      ipp_proxy_a_token_cache_manager_->GetAuthToken(kMountainViewGeoId));
+  ASSERT_TRUE(ipp_proxy_a_token_manager_->GetAuthToken(kMountainViewGeoId));
 
   // New tokens should contain new geo.
-  CallTryGetAuthTokensAndWait(ip_protection::ProxyLayer::kProxyA);
+  CallTryGetAuthTokensAndWait(ProxyLayer::kProxyA);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
   // Old Geo can still be used if tokens are available.
-  ASSERT_TRUE(
-      ipp_proxy_a_token_cache_manager_->GetAuthToken(kMountainViewGeoId));
+  ASSERT_TRUE(ipp_proxy_a_token_manager_->GetAuthToken(kMountainViewGeoId));
 
   // Metric should only be counted when the geo requested is not the current
   // geo.
   histogram_tester_.ExpectBucketCount(
       kGetAuthTokenResultForGeoHistogram,
-      ip_protection::AuthTokenResultForGeo::kAvailableForOtherCachedGeo, 1);
+      AuthTokenResultForGeo::kAvailableForOtherCachedGeo, 1);
 }
 
 // Existing state with valid non-expired tokens. `SetCurrentGeo` is called
 // with geo not in current cache. cache should attempt to refill and will
 // contain tokens from the new geo.
-TEST_F(IpProtectionTokenCacheManagerImplTest,
+TEST_F(IpProtectionTokenManagerImplTest,
        SetCurrentGeoDifferentGeoRetrievesNewTokens) {
-  SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
+  SetUpIpProtectionTokenManager(kEnableTokenCacheByGeo);
 
   // We have to re-mock this behavior b/c the default behavior mocks both proxy
   // A and B which would lead to incorrect histogram sampling.
@@ -1046,8 +1008,8 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
   EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_))
       .Times(1)
       .WillRepeatedly([this](const std::string& geo_id) {
-        if (ipp_proxy_a_token_cache_manager_->CurrentGeo() != geo_id) {
-          ipp_proxy_a_token_cache_manager_->SetCurrentGeo(geo_id);
+        if (ipp_proxy_a_token_manager_->CurrentGeo() != geo_id) {
+          ipp_proxy_a_token_manager_->SetCurrentGeo(geo_id);
         }
       });
 
@@ -1055,13 +1017,12 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
   mock_.ExpectTryGetAuthTokensCall(
       expected_batch_size_,
       TokenBatch(expected_batch_size_, kFutureExpiration, kMountainViewGeo));
-  ipp_proxy_a_token_cache_manager_->EnableCacheManagementForTesting();
-  WaitForTryGetAuthTokensCompletion(ip_protection::ProxyLayer::kProxyA);
+  ipp_proxy_a_token_manager_->EnableCacheManagementForTesting();
+  WaitForTryGetAuthTokensCompletion(ProxyLayer::kProxyA);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
   // Contains Valid Tokens.
-  ASSERT_TRUE(
-      ipp_proxy_a_token_cache_manager_->GetAuthToken(kMountainViewGeoId));
+  ASSERT_TRUE(ipp_proxy_a_token_manager_->GetAuthToken(kMountainViewGeoId));
 
   // New geo introduced by `SetCurrentGeo` (Sunnyvale).
   mock_.ExpectTryGetAuthTokensCall(
@@ -1069,12 +1030,12 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
       TokenBatch(expected_batch_size_, kFutureExpiration, kSunnyvaleGeo));
 
   // Trigger refill.
-  ipp_proxy_a_token_cache_manager_->SetCurrentGeo(kSunnyvaleGeoId);
+  ipp_proxy_a_token_manager_->SetCurrentGeo(kSunnyvaleGeoId);
 
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
   // New geo should return a valid token.
-  ASSERT_TRUE(ipp_proxy_a_token_cache_manager_->GetAuthToken(kSunnyvaleGeoId));
+  ASSERT_TRUE(ipp_proxy_a_token_manager_->GetAuthToken(kSunnyvaleGeoId));
 
   // There was a single geo change, but the new geo did not have any preexisting
   // tokens in the cache.
@@ -1084,9 +1045,8 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
 // If setting new geo causes overflow of tokens in cache for certain geo,
 // an extended backoff timer should stop more refills until the system can
 // stabilize.
-TEST_F(IpProtectionTokenCacheManagerImplTest,
-       SetCurrentGeoNewTokensHaveSameGeo) {
-  SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
+TEST_F(IpProtectionTokenManagerImplTest, SetCurrentGeoNewTokensHaveSameGeo) {
+  SetUpIpProtectionTokenManager(kEnableTokenCacheByGeo);
 
   // Expected 2 times:
   // 1. Original geo observed when first batch of tokens are filled ("" ->
@@ -1100,8 +1060,8 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
   mock_.ExpectTryGetAuthTokensCall(
       expected_batch_size_,
       TokenBatch(expected_batch_size_, kFutureExpiration, kMountainViewGeo));
-  ipp_proxy_a_token_cache_manager_->EnableCacheManagementForTesting();
-  WaitForTryGetAuthTokensCompletion(ip_protection::ProxyLayer::kProxyA);
+  ipp_proxy_a_token_manager_->EnableCacheManagementForTesting();
+  WaitForTryGetAuthTokensCompletion(ProxyLayer::kProxyA);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
   // Cache should have valid tokens now. New Sunnyvale geo will be set to
@@ -1110,7 +1070,7 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
   mock_.ExpectTryGetAuthTokensCall(
       expected_batch_size_,
       TokenBatch(expected_batch_size_, kFutureExpiration, kMountainViewGeo));
-  ipp_proxy_a_token_cache_manager_->SetCurrentGeo(kSunnyvaleGeoId);
+  ipp_proxy_a_token_manager_->SetCurrentGeo(kSunnyvaleGeoId);
 
   // New tokens will still contain the old geo.
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
@@ -1121,34 +1081,34 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
   mock_.ExpectTryGetAuthTokensCall(
       expected_batch_size_,
       TokenBatch(expected_batch_size_, kFutureExpiration, kMountainViewGeo));
-  ipp_proxy_a_token_cache_manager_->SetCurrentGeo(kSunnyvaleGeoId);
+  ipp_proxy_a_token_manager_->SetCurrentGeo(kSunnyvaleGeoId);
 
   // Due to the repeated triggers to refill tokens, the token limit exceeded
   // delay would have prevented an additional call to get more tokens. Thus,
   // this should return false.
   ASSERT_FALSE(mock_.GotAllExpectedMockCalls());
-  ASSERT_TRUE(ipp_proxy_a_token_cache_manager_
-                      ->try_get_auth_tokens_after_for_testing() -
-                  base::Time::Now() ==
-              kTokenLimitExceededDelay);
+  ASSERT_TRUE(
+      ipp_proxy_a_token_manager_->try_get_auth_tokens_after_for_testing() -
+          base::Time::Now() ==
+      kTokenLimitExceededDelay);
 }
 
 // When the feature for geo caching is disabled, setting the current geo does
 // not change the underlying current geo.
-TEST_F(IpProtectionTokenCacheManagerImplTest,
+TEST_F(IpProtectionTokenManagerImplTest,
        GeoCachingFeatureDisabledSetCurrentGeoShortCircuits) {
-  SetUpIpProtectionTokenCacheManager(kDisableTokenCacheByGeo);
+  SetUpIpProtectionTokenManager(kDisableTokenCacheByGeo);
 
-  ipp_proxy_a_token_cache_manager_->SetCurrentGeo(kMountainViewGeoId);
-  ASSERT_NE(ipp_proxy_a_token_cache_manager_->CurrentGeo(), kMountainViewGeoId);
+  ipp_proxy_a_token_manager_->SetCurrentGeo(kMountainViewGeoId);
+  ASSERT_NE(ipp_proxy_a_token_manager_->CurrentGeo(), kMountainViewGeoId);
 }
 
 // Testing the existence of tokens in the cache when a new geo matches a
 // previous geo that was cached. This test mimics a geo change introduced from
 // a token refill from within the class.
-TEST_F(IpProtectionTokenCacheManagerImplTest,
+TEST_F(IpProtectionTokenManagerImplTest,
        GeoChangeFromWithinTokenManagerNewGeoAlreadyHasTokensPresent) {
-  SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
+  SetUpIpProtectionTokenManager(kEnableTokenCacheByGeo);
 
   // We have to re-mock this behavior b/c the default behavior mocks both proxy
   // A and B which would lead to incorrect histogram sampling.
@@ -1157,8 +1117,8 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
   EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_))
       .Times(3)
       .WillRepeatedly([this](const std::string& geo_id) {
-        if (ipp_proxy_a_token_cache_manager_->CurrentGeo() != geo_id) {
-          ipp_proxy_a_token_cache_manager_->SetCurrentGeo(geo_id);
+        if (ipp_proxy_a_token_manager_->CurrentGeo() != geo_id) {
+          ipp_proxy_a_token_manager_->SetCurrentGeo(geo_id);
         }
       });
 
@@ -1166,14 +1126,13 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
   mock_.ExpectTryGetAuthTokensCall(
       expected_batch_size_,
       TokenBatch(expected_batch_size_, kFutureExpiration, kMountainViewGeo));
-  ipp_proxy_a_token_cache_manager_->EnableCacheManagementForTesting();
-  WaitForTryGetAuthTokensCompletion(ip_protection::ProxyLayer::kProxyA);
+  ipp_proxy_a_token_manager_->EnableCacheManagementForTesting();
+  WaitForTryGetAuthTokensCompletion(ProxyLayer::kProxyA);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
   // Spend tokens down to (but not below) the low-water mark.
   for (int i = expected_batch_size_ - 1; i > cache_low_water_mark_; i--) {
-    ASSERT_TRUE(
-        ipp_proxy_a_token_cache_manager_->GetAuthToken(kMountainViewGeoId));
+    ASSERT_TRUE(ipp_proxy_a_token_manager_->GetAuthToken(kMountainViewGeoId));
     ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   }
 
@@ -1183,16 +1142,14 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
       expected_batch_size_,
       TokenBatch(expected_batch_size_, kFutureExpiration, kSunnyvaleGeo));
   // Triggers new token retrieval.
-  ASSERT_TRUE(
-      ipp_proxy_a_token_cache_manager_->GetAuthToken(kMountainViewGeoId));
+  ASSERT_TRUE(ipp_proxy_a_token_manager_->GetAuthToken(kMountainViewGeoId));
   // Tokens should contain the new geo.
-  CallTryGetAuthTokensAndWait(ip_protection::ProxyLayer::kProxyA);
+  CallTryGetAuthTokensAndWait(ProxyLayer::kProxyA);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
   // Spend tokens down to (but not below) the low-water mark.
   for (int i = expected_batch_size_ - 1; i > cache_low_water_mark_; i--) {
-    ASSERT_TRUE(
-        ipp_proxy_a_token_cache_manager_->GetAuthToken(kSunnyvaleGeoId));
+    ASSERT_TRUE(ipp_proxy_a_token_manager_->GetAuthToken(kSunnyvaleGeoId));
     ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   }
 
@@ -1202,9 +1159,9 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
       expected_batch_size_,
       TokenBatch(expected_batch_size_, kFutureExpiration, kMountainViewGeo));
   // Triggers new token retrieval.
-  ASSERT_TRUE(ipp_proxy_a_token_cache_manager_->GetAuthToken(kSunnyvaleGeoId));
+  ASSERT_TRUE(ipp_proxy_a_token_manager_->GetAuthToken(kSunnyvaleGeoId));
   // Tokens should contain the new geo.
-  CallTryGetAuthTokensAndWait(ip_protection::ProxyLayer::kProxyA);
+  CallTryGetAuthTokensAndWait(ProxyLayer::kProxyA);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
   // There was a two geo changes not counting the prefill: Mountain View ->
@@ -1218,9 +1175,9 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
 // Testing the existence of tokens in the cache when a new geo matches a
 // previous geo that was cached. This test mimics a geo change introduced from
 // outside of this class.
-TEST_F(IpProtectionTokenCacheManagerImplTest,
+TEST_F(IpProtectionTokenManagerImplTest,
        GeoChangeFromOutsideTokenManagerNewGeoAlreadyHasTokensPresent) {
-  SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
+  SetUpIpProtectionTokenManager(kEnableTokenCacheByGeo);
 
   // We have to re-mock this behavior b/c the default behavior mocks both proxy
   // A and B which would lead to incorrect histogram sampling.
@@ -1230,8 +1187,8 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
   EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_))
       .Times(1)
       .WillRepeatedly([this](const std::string& geo_id) {
-        if (ipp_proxy_a_token_cache_manager_->CurrentGeo() != geo_id) {
-          ipp_proxy_a_token_cache_manager_->SetCurrentGeo(geo_id);
+        if (ipp_proxy_a_token_manager_->CurrentGeo() != geo_id) {
+          ipp_proxy_a_token_manager_->SetCurrentGeo(geo_id);
         }
       });
 
@@ -1239,13 +1196,12 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
   mock_.ExpectTryGetAuthTokensCall(
       expected_batch_size_,
       TokenBatch(expected_batch_size_, kFutureExpiration, kMountainViewGeo));
-  ipp_proxy_a_token_cache_manager_->EnableCacheManagementForTesting();
-  WaitForTryGetAuthTokensCompletion(ip_protection::ProxyLayer::kProxyA);
+  ipp_proxy_a_token_manager_->EnableCacheManagementForTesting();
+  WaitForTryGetAuthTokensCompletion(ProxyLayer::kProxyA);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
   // Contains Valid Tokens.
-  ASSERT_TRUE(
-      ipp_proxy_a_token_cache_manager_->GetAuthToken(kMountainViewGeoId));
+  ASSERT_TRUE(ipp_proxy_a_token_manager_->GetAuthToken(kMountainViewGeoId));
 
   // New geo introduced by `SetCurrentGeo` (Sunnyvale).
   mock_.ExpectTryGetAuthTokensCall(
@@ -1253,12 +1209,12 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
       TokenBatch(expected_batch_size_, kFutureExpiration, kSunnyvaleGeo));
 
   // Trigger refill.
-  ipp_proxy_a_token_cache_manager_->SetCurrentGeo(kSunnyvaleGeoId);
+  ipp_proxy_a_token_manager_->SetCurrentGeo(kSunnyvaleGeoId);
 
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
   // New geo should return a valid token.
-  ASSERT_TRUE(ipp_proxy_a_token_cache_manager_->GetAuthToken(kSunnyvaleGeoId));
+  ASSERT_TRUE(ipp_proxy_a_token_manager_->GetAuthToken(kSunnyvaleGeoId));
 
   // Another new geo introduced by `SetCurrentGeo` but this time, the geo was
   // previously stored in our cache (Mountain View).
@@ -1267,11 +1223,10 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
       TokenBatch(expected_batch_size_, kFutureExpiration, kMountainViewGeo));
 
   // Trigger refill.
-  ipp_proxy_a_token_cache_manager_->SetCurrentGeo(kMountainViewGeoId);
+  ipp_proxy_a_token_manager_->SetCurrentGeo(kMountainViewGeoId);
 
   // New geo should return a valid token.
-  ASSERT_TRUE(
-      ipp_proxy_a_token_cache_manager_->GetAuthToken(kMountainViewGeoId));
+  ASSERT_TRUE(ipp_proxy_a_token_manager_->GetAuthToken(kMountainViewGeoId));
 
   // There was a two geo changes not counting the prefill: Mountain View ->
   // Sunnyvale and Sunnyvale -> Mountain View. When the geo changed to Sunnyvale
@@ -1281,4 +1236,4 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
   histogram_tester_.ExpectBucketCount(kGeoChangeTokenPresence, false, 1);
 }
 }  // namespace
-}  // namespace network
+}  // namespace ip_protection

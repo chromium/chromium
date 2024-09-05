@@ -16,8 +16,11 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/ip_protection/common/ip_protection_config_cache_impl.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
+#include "components/ip_protection/common/ip_protection_token_manager.h"
 #include "components/ip_protection/common/masked_domain_list_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -30,9 +33,6 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
-#include "services/network/ip_protection/ip_protection_config_cache_impl.h"
-#include "services/network/ip_protection/ip_protection_proxy_list_manager.h"
-#include "services/network/ip_protection/ip_protection_token_cache_manager.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -59,7 +59,8 @@ constexpr char kIsProxyListAvailableHistogram[] =
 constexpr char kAvailabilityHistogram[] =
     "NetworkService.IpProtection.ProtectionIsAvailableForRequest";
 
-class MockIpProtectionConfigCache : public IpProtectionConfigCache {
+class MockIpProtectionConfigCache
+    : public ip_protection::IpProtectionConfigCache {
  public:
   bool AreAuthTokensAvailable() override { return auth_token_.has_value(); }
   void InvalidateTryAgainAfterTime() override {
@@ -79,26 +80,27 @@ class MockIpProtectionConfigCache : public IpProtectionConfigCache {
     auth_token_ = std::move(auth_token);
   }
 
-  void SetIpProtectionProxyListManagerForTesting(
-      std::unique_ptr<IpProtectionProxyListManager> ipp_proxy_list_manager)
-      override {
+  void SetIpProtectionProxyConfigManagerForTesting(
+      std::unique_ptr<ip_protection::IpProtectionProxyConfigManager>
+          ipp_proxy_config_manager) override {
     NOTREACHED();
   }
 
-  IpProtectionTokenCacheManager* GetIpProtectionTokenCacheManagerForTesting(
+  ip_protection::IpProtectionTokenManager*
+  GetIpProtectionTokenManagerForTesting(
       ip_protection::ProxyLayer proxy_layer) override {
     NOTREACHED();
   }
 
-  void SetIpProtectionTokenCacheManagerForTesting(
+  void SetIpProtectionTokenManagerForTesting(
       ip_protection::ProxyLayer proxy_layer,
-      std::unique_ptr<IpProtectionTokenCacheManager> ipp_token_cache_manager)
-      override {
+      std::unique_ptr<ip_protection::IpProtectionTokenManager>
+          ipp_token_manager) override {
     NOTREACHED();
   }
 
-  IpProtectionProxyListManager* GetIpProtectionProxyListManagerForTesting()
-      override {
+  ip_protection::IpProtectionProxyConfigManager*
+  GetIpProtectionProxyConfigManagerForTesting() override {
     NOTREACHED();
   }
 
@@ -214,7 +216,8 @@ class IpProtectionProxyDelegateTest : public testing::Test {
  protected:
   std::unique_ptr<IpProtectionProxyDelegate> CreateDelegate(
       MaskedDomainListManager* masked_domain_list_manager,
-      std::unique_ptr<IpProtectionConfigCache> ipp_config_cache) {
+      std::unique_ptr<ip_protection::IpProtectionConfigCache>
+          ipp_config_cache) {
     return std::make_unique<IpProtectionProxyDelegate>(
         masked_domain_list_manager, std::move(ipp_config_cache),
         /*is_ip_protection_enabled=*/true);

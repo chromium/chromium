@@ -13,7 +13,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/common/ip_protection_proxy_config_manager_impl.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
+#include "components/ip_protection/common/ip_protection_token_manager_impl.h"
 #include "components/ip_protection/common/masked_domain_list_manager.h"
 #include "net/base/features.h"
 #include "net/base/proxy_chain.h"
@@ -24,8 +26,6 @@
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
-#include "services/network/ip_protection/ip_protection_proxy_list_manager_impl.h"
-#include "services/network/ip_protection/ip_protection_token_cache_manager_impl.h"
 #include "services/network/url_loader.h"
 #include "url/url_constants.h"
 
@@ -39,7 +39,7 @@ using ip_protection::MaskedDomainListManager;
 
 IpProtectionProxyDelegate::IpProtectionProxyDelegate(
     MaskedDomainListManager* masked_domain_list_manager,
-    std::unique_ptr<IpProtectionConfigCache> ipp_config_cache,
+    std::unique_ptr<ip_protection::IpProtectionConfigCache> ipp_config_cache,
     bool is_ip_protection_enabled)
     : masked_domain_list_manager_(masked_domain_list_manager),
       ipp_config_cache_(std::move(ipp_config_cache)),
@@ -307,12 +307,11 @@ void IpProtectionProxyDelegate::SetProxyResolutionService(
 
 void IpProtectionProxyDelegate::VerifyIpProtectionConfigGetterForTesting(
     VerifyIpProtectionConfigGetterForTestingCallback callback) {
-  auto* ipp_token_cache_manager_impl =
-      static_cast<IpProtectionTokenCacheManagerImpl*>(
-          ipp_config_cache_
-              ->GetIpProtectionTokenCacheManagerForTesting(  // IN-TEST
-                  ip_protection::ProxyLayer::kProxyA));
-  CHECK(ipp_token_cache_manager_impl);
+  auto* ipp_token_manager_impl =
+      static_cast<ip_protection::IpProtectionTokenManagerImpl*>(
+          ipp_config_cache_->GetIpProtectionTokenManagerForTesting(  // IN-TEST
+              ip_protection::ProxyLayer::kProxyA));
+  CHECK(ipp_token_manager_impl);
 
   // If active cache management is enabled (the default), disable it and do a
   // one-time reset of the state. Since the browser process will be driving this
@@ -320,8 +319,8 @@ void IpProtectionProxyDelegate::VerifyIpProtectionConfigGetterForTesting(
   // `ipp_config_cache_` (for instance, if the browser process sends less
   // than the requested number of tokens, the network service won't immediately
   // request more).
-  if (ipp_token_cache_manager_impl->IsCacheManagementEnabledForTesting()) {
-    ipp_token_cache_manager_impl->DisableCacheManagementForTesting(  // IN-TEST
+  if (ipp_token_manager_impl->IsCacheManagementEnabledForTesting()) {
+    ipp_token_manager_impl->DisableCacheManagementForTesting(  // IN-TEST
         base::BindOnce(
             [](base::WeakPtr<IpProtectionProxyDelegate> weak_ptr,
                VerifyIpProtectionConfigGetterForTestingCallback callback) {
@@ -350,19 +349,18 @@ void IpProtectionProxyDelegate::VerifyIpProtectionConfigGetterForTesting(
   // If there is a cooldown in effect, then don't send any tokens and instead
   // send back the try again after time.
   base::Time try_auth_tokens_after =
-      ipp_token_cache_manager_impl
+      ipp_token_manager_impl
           ->try_get_auth_tokens_after_for_testing();  // IN-TEST
   if (!try_auth_tokens_after.is_null()) {
     std::move(callback).Run(std::nullopt, try_auth_tokens_after);
     return;
   }
 
-  ipp_token_cache_manager_impl
-      ->SetOnTryGetAuthTokensCompletedForTesting(  // IN-TEST
-          base::BindOnce(&IpProtectionProxyDelegate::
-                             OnIpProtectionConfigAvailableForTesting,
-                         weak_factory_.GetWeakPtr(), std::move(callback)));
-  ipp_token_cache_manager_impl->CallTryGetAuthTokensForTesting();  // IN-TEST
+  ipp_token_manager_impl->SetOnTryGetAuthTokensCompletedForTesting(  // IN-TEST
+      base::BindOnce(
+          &IpProtectionProxyDelegate::OnIpProtectionConfigAvailableForTesting,
+          weak_factory_.GetWeakPtr(), std::move(callback)));
+  ipp_token_manager_impl->CallTryGetAuthTokensForTesting();  // IN-TEST
 }
 
 void IpProtectionProxyDelegate::SetIpProtectionEnabled(bool enabled) {
@@ -389,22 +387,21 @@ void IpProtectionProxyDelegate::IsIpProtectionEnabledForTesting(
 
 void IpProtectionProxyDelegate::OnIpProtectionConfigAvailableForTesting(
     VerifyIpProtectionConfigGetterForTestingCallback callback) {
-  auto* ipp_token_cache_manager_impl =
-      static_cast<IpProtectionTokenCacheManagerImpl*>(
+  auto* ipp_token_manager_impl =
+      static_cast<ip_protection::IpProtectionTokenManagerImpl*>(
+          ipp_config_cache_->GetIpProtectionTokenManagerForTesting(  // IN-TEST
+              ip_protection::ProxyLayer::kProxyA));
+  auto* ipp_proxy_config_manager_impl =
+      static_cast<ip_protection::IpProtectionProxyConfigManagerImpl*>(
           ipp_config_cache_
-              ->GetIpProtectionTokenCacheManagerForTesting(  // IN-TEST
-                  ip_protection::ProxyLayer::kProxyA));
-  auto* ipp_proxy_list_manager_impl =
-      static_cast<IpProtectionProxyListManagerImpl*>(
-          ipp_config_cache_
-              ->GetIpProtectionProxyListManagerForTesting());  // IN-TEST
-  CHECK(ipp_proxy_list_manager_impl);
-  ipp_proxy_list_manager_impl->SetProxyListForTesting(  // IN-TEST
+              ->GetIpProtectionProxyConfigManagerForTesting());  // IN-TEST
+  CHECK(ipp_proxy_config_manager_impl);
+  ipp_proxy_config_manager_impl->SetProxyListForTesting(  // IN-TEST
       std::vector{net::ProxyChain::ForIpProtection(
           std::vector{net::ProxyServer::FromSchemeHostAndPort(
               net::ProxyServer::SCHEME_HTTPS, "proxy-a", std::nullopt)})},
       ip_protection::GetGeoHintFromGeoIdForTesting(
-          ipp_token_cache_manager_impl->CurrentGeo()));
+          ipp_token_manager_impl->CurrentGeo()));
   std::optional<ip_protection::BlindSignedAuthToken> result =
       ipp_config_cache_->GetAuthToken(0);  // kProxyA.
   if (result.has_value()) {
@@ -412,7 +409,7 @@ void IpProtectionProxyDelegate::OnIpProtectionConfigAvailableForTesting(
     return;
   }
   base::Time try_auth_tokens_after =
-      ipp_token_cache_manager_impl
+      ipp_token_manager_impl
           ->try_get_auth_tokens_after_for_testing();  // IN-TEST
   std::move(callback).Run(std::nullopt, try_auth_tokens_after);
 }

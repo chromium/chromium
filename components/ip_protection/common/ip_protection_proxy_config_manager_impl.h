@@ -2,37 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_PROXY_LIST_MANAGER_IMPL_H_
-#define SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_PROXY_LIST_MANAGER_IMPL_H_
+#ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_PROXY_CONFIG_MANAGER_IMPL_H_
+#define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_PROXY_CONFIG_MANAGER_IMPL_H_
 
 #include <memory>
 
-#include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/ip_protection/common/ip_protection_config_cache.h"
+#include "components/ip_protection/common/ip_protection_config_getter.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
 #include "net/base/proxy_chain.h"
-#include "services/network/ip_protection/ip_protection_config_cache.h"
-#include "services/network/ip_protection/ip_protection_config_getter.h"
-#include "services/network/ip_protection/ip_protection_proxy_list_manager.h"
 
-namespace network {
+namespace ip_protection {
 
-// An implementation of IpProtectionProxyListManager that populates itself using
-// a passed in IpProtectionConfigGetter pointer from the cache.
-class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyListManagerImpl
-    : public IpProtectionProxyListManager {
+// An implementation of IpProtectionProxyConfigManager that populates itself
+// using a passed in IpProtectionConfigGetter pointer from the cache.
+class IpProtectionProxyConfigManagerImpl
+    : public IpProtectionProxyConfigManager {
  public:
-  explicit IpProtectionProxyListManagerImpl(
+  explicit IpProtectionProxyConfigManagerImpl(
       IpProtectionConfigCache* config_cache,
       IpProtectionConfigGetter& config_getter,
       bool disable_proxy_refreshing_for_testing = false);
-  ~IpProtectionProxyListManagerImpl() override;
+  ~IpProtectionProxyConfigManagerImpl() override;
 
-  // IpProtectionProxyListManager implementation.
+  // IpProtectionProxyConfigManager implementation.
   bool IsProxyListAvailable() override;
   const std::vector<net::ProxyChain>& ProxyList() override;
   const std::string& CurrentGeo() override;
@@ -60,7 +59,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyListManagerImpl
   void SetProxyListForTesting(
       std::optional<std::vector<net::ProxyChain>> proxy_list,
       std::optional<ip_protection::GeoHint> geo_hint) {
-    current_geo_id_ = ip_protection::GetGeoIdFromGeoHint(geo_hint);
+    current_geo_id_ = GetGeoIdFromGeoHint(geo_hint);
     proxy_list_ = *proxy_list;
     have_fetched_proxy_list_ = true;
   }
@@ -70,7 +69,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyListManagerImpl
   void ScheduleRefreshProxyList(base::TimeDelta delay);
   void OnGotProxyList(base::TimeTicks refresh_start_time_for_metrics,
                       std::optional<std::vector<net::ProxyChain>> proxy_list,
-                      std::optional<ip_protection::GeoHint> geo_hint);
+                      std::optional<GeoHint> geo_hint);
   bool IsProxyListOlderThanMinAge() const;
 
   // Latest fetched proxy list.
@@ -118,10 +117,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyListManagerImpl
   // If true, do not try to automatically refresh the proxy list.
   bool disable_proxy_refreshing_for_testing_ = false;
 
-  base::WeakPtrFactory<IpProtectionProxyListManagerImpl> weak_ptr_factory_{
+  base::WeakPtrFactory<IpProtectionProxyConfigManagerImpl> weak_ptr_factory_{
       this};
 };
 
-}  // namespace network
+}  // namespace ip_protection
 
-#endif  // SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_PROXY_LIST_MANAGER_IMPL_H_
+#endif  // COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_PROXY_CONFIG_MANAGER_IMPL_H_
