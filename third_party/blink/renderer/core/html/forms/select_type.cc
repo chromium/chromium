@@ -139,6 +139,13 @@ class PopoverElementForAppearanceBase : public HTMLDivElement {
       // MenuListSelectType::ManuallyAssignSlots changes behavior based on
       // whether the popover is opened or closed.
       select->GetShadowRoot()->SetNeedsAssignmentRecalc();
+
+      // Focus the select's invoker button when the popover is hidden.
+      if (focus_behavior == HidePopoverFocusBehavior::kFocusPreviousElement) {
+        CHECK(select->DisplayedButton());
+        select->DisplayedButton()->Focus(FocusParams(FocusTrigger::kScript));
+      }
+
       select->PseudoStateChanged(CSSSelector::kPseudoOpen);
       if (AXObjectCache* cache =
               select->GetDocument().ExistingAXObjectCache()) {
