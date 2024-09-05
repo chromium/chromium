@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/promos_manager/model/mock_promos_manager.h"
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_service.h"
+#import "ios/public/provider/chrome/browser/additional_features/additional_features_api.h"
 #import "ios/public/provider/chrome/browser/push_notification/push_notification_api.h"
 #import "ios/public/provider/chrome/browser/signin/signin_identity_api.h"
 #import "ios/public/provider/chrome/browser/signin/signin_sso_api.h"
@@ -298,4 +299,16 @@ os_crypt_async::OSCryptAsync* TestingApplicationContext::GetOSCryptAsync() {
     os_crypt_async_ = os_crypt_async::GetTestOSCryptAsyncForTesting();
   }
   return os_crypt_async_.get();
+}
+
+AdditionalFeaturesController*
+TestingApplicationContext::GetAdditionalFeaturesController() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!additional_features_controller_) {
+    // TODO(crbug.com/355550974): Uncomment the following once the API is
+    // implemented.
+    /*additional_features_controller_ =
+        ios::provider::CreateAdditionalFeaturesController();*/
+  }
+  return additional_features_controller_.get();
 }

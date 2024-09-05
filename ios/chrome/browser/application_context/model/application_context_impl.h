@@ -87,6 +87,7 @@ class ApplicationContextImpl : public ApplicationContext {
   IncognitoSessionTracker* GetIncognitoSessionTracker() override;
   PushNotificationService* GetPushNotificationService() override;
   os_crypt_async::OSCryptAsync* GetOSCryptAsync() override;
+  AdditionalFeaturesController* GetAdditionalFeaturesController() override;
 
  private:
   // Represents the possible application states the app can be in.
@@ -162,6 +163,8 @@ class ApplicationContextImpl : public ApplicationContext {
   std::unique_ptr<PushNotificationService> push_notification_service_;
 
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
+
+  std::unique_ptr<AdditionalFeaturesController> additional_features_controller_;
 };
 
 #endif  // IOS_CHROME_BROWSER_APPLICATION_CONTEXT_MODEL_APPLICATION_CONTEXT_IMPL_H_

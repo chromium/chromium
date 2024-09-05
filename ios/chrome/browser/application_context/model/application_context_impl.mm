@@ -67,6 +67,8 @@
 #import "ios/chrome/browser/update_client/model/ios_chrome_update_query_params_delegate.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_service_impl.h"
+#import "ios/public/provider/chrome/browser/additional_features/additional_features_api.h"
+#import "ios/public/provider/chrome/browser/additional_features/additional_features_controller.h"
 #import "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #import "ios/public/provider/chrome/browser/push_notification/push_notification_api.h"
 #import "ios/public/provider/chrome/browser/signin/signin_identity_api.h"
@@ -534,6 +536,18 @@ PushNotificationService* ApplicationContextImpl::GetPushNotificationService() {
   }
 
   return push_notification_service_.get();
+}
+
+AdditionalFeaturesController*
+ApplicationContextImpl::GetAdditionalFeaturesController() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!additional_features_controller_) {
+    // TODO(crbug.com/355550974): Uncomment the following once the API is
+    // implemented.
+    /*additional_features_controller_ =
+        ios::provider::CreateAdditionalFeaturesController();*/
+  }
+  return additional_features_controller_.get();
 }
 
 os_crypt_async::OSCryptAsync* ApplicationContextImpl::GetOSCryptAsync() {

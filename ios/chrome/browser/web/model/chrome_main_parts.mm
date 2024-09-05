@@ -76,6 +76,7 @@
 #import "ios/chrome/browser/web/model/ios_thread_profiler.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_service.h"
+#import "ios/public/provider/chrome/browser/additional_features/additional_features_controller.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "net/base/network_change_notifier.h"
@@ -454,12 +455,22 @@ void IOSChromeMainParts::SetUpFieldTrials(
   std::vector<std::string> variation_ids =
       RegisterAllFeatureVariationParameters(&flags_storage, feature_list.get());
 
+  // TODO(crbug.com/355550974): Uncomment the following once the API is
+  // implemented.
+  /*
+  // Register additional features to the feature list.
+  AdditionalFeaturesController* additional_features_controller =
+      application_context_->GetAdditionalFeaturesController();
+  additional_features_controller->RegisterFeatureList(feature_list.get());
+  */
+
 #if !BUILDFLAG(USE_BLINK)
   // TODO(crbug.com/40261735) Move variations to PostEarlyInitialization.
   application_context_->GetVariationsService()->SetUpFieldTrials(
       variation_ids, command_line_variation_ids,
       std::vector<base::FeatureList::FeatureOverrideInfo>(),
       std::move(feature_list), &ios_field_trials_);
+  // additional_features_controller->FeatureListDidCompleteSetup();
 #endif
 }
 

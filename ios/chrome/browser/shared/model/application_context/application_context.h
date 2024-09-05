@@ -64,6 +64,7 @@ namespace variations {
 class VariationsService;
 }
 
+class AdditionalFeaturesController;
 class AccountProfileMapper;
 class ApplicationContext;
 class BrowserPolicyConnectorIOS;
@@ -192,6 +193,10 @@ class ApplicationContext {
   // Returns the application's OSCryptAsync instance which can be used to create
   // instances of Encryptor for data encryption.
   virtual os_crypt_async::OSCryptAsync* GetOSCryptAsync() = 0;
+
+  // Returns the application's AdditionalFeaturesController that manages some
+  // features not declared by `BASE_DECLARE_FEATURE()`.
+  virtual AdditionalFeaturesController* GetAdditionalFeaturesController() = 0;
 
  protected:
   // Sets the global ApplicationContext instance.

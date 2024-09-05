@@ -90,6 +90,7 @@ class TestingApplicationContext : public ApplicationContext {
   IncognitoSessionTracker* GetIncognitoSessionTracker() override;
   PushNotificationService* GetPushNotificationService() override;
   os_crypt_async::OSCryptAsync* GetOSCryptAsync() override;
+  AdditionalFeaturesController* GetAdditionalFeaturesController() override;
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
@@ -117,6 +118,7 @@ class TestingApplicationContext : public ApplicationContext {
   std::unique_ptr<PushNotificationService> push_notification_service_;
   raw_ptr<variations::VariationsService> variations_service_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
+  std::unique_ptr<AdditionalFeaturesController> additional_features_controller_;
   raw_ptr<IOSChromeIOThread> ios_chrome_io_thread_;
 };
 
