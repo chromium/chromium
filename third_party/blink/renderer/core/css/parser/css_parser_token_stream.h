@@ -5,6 +5,35 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_PARSER_TOKEN_STREAM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_PARSER_TOKEN_STREAM_H_
 
+// CSSParserTokenStream is the main interface to everything related to CSS
+// streaming. It provides an interface to the token with a one-token lookahead,
+// i.e., you can not only call Consume() and get a token back, but also Peek()
+// to see what the next Consume() would be without actually consuming it. Nearly
+// all of our parsers are standard recursive-descent parsers, where you first
+// Peek() to see what type of situation you are dealing with, choose your path
+// and then Consume().
+//
+// Most of CSS is written so that one-token lookahead is sufficient to parse;
+// however, there are many exceptions. If one-token lookahead is not enough for
+// you, you will need to set a savepoint (using Save()), so that you can rewind
+// if you have consumed multiple tokens and then figured afterwards that you are
+// in the wrong sub-grammar. Restarting will cause duplicated tokenization work
+// and thus reduced performance, so it should generally be avoided when
+// possible.
+//
+// Blocks (parens, brackets, braces and functions) are dealt with specially.
+// Generally the pattern is to first establish that you are about to enter a
+// block (using Peek()), and then set up a BlockGuard (see below). At this
+// point, the stream essentially becomes a sub-parser of itself just with the
+// same name, and descends into the block. (Calling Consume() on a block-start
+// or block-end token is disallowed and will CHECK-fail, which is why you should
+// never call Consume() without knowing what kind of token you are about to
+// consume.) Once the BlockGuard goes out of scope, the stream fast-forwards to
+// the end of the block and past the block-end token. Abstractly, the stream
+// ends at either EOF or the beginning/end of a block. Internally, the stream
+// keeps a “block stack” to know which end-of-block tokens actually correspond
+// to blocks we have descended into.
+
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -28,11 +57,6 @@ bool IsTokenTypeOneOf(CSSParserTokenType t) {
 
 }  // namespace detail
 
-// A streaming interface to CSSTokenizer that tokenizes on demand.
-// Abstractly, the stream ends at either EOF or the beginning/end of a block.
-// To consume a block, a BlockGuard must be created first to ensure that
-// we finish consuming a block even if there was an error.
-//
 // Methods prefixed with "Unchecked" can only be called after calls to Peek(),
 // EnsureLookAhead(), or AtEnd() with no subsequent modifications to the stream
 // such as a consume.
