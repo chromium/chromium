@@ -43,7 +43,6 @@ class CONTENT_EXPORT UtilitySandboxedProcessLauncherDelegate
   bool InitializeConfig(sandbox::TargetConfig* config) override;
   bool ShouldUnsandboxedRunInJob() override;
   bool CetCompatible() override;
-  bool AllowWindowsFontsDir() override;
   bool PreSpawnTarget(sandbox::TargetPolicy* policy) override;
   // Set preload libraries to transfer as part of the sandbox delegate data,
   // which will used in utility_main to preload these libraries before lockdown.

@@ -4784,11 +4784,6 @@ extern const char kPdfInk2Name[];
 extern const char kPdfInk2Description[];
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
-#if BUILDFLAG(IS_WIN)
-extern const char kWinPdfUseFontProxyName[];
-extern const char kWinPdfUseFontProxyDescription[];
-#endif  // BUILDFLAG(IS_WIN)
-
 extern const char kPdfOopifName[];
 extern const char kPdfOopifDescription[];
 

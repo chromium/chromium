@@ -529,8 +529,7 @@ void InitializeSDK(bool enable_v8,
 #endif
 
 #if BUILDFLAG(IS_WIN)
-  if (font_mapping_mode == FontMappingMode::kBlink &&
-      base::FeatureList::IsEnabled(features::kWinPdfUseFontProxy)) {
+  if (font_mapping_mode == FontMappingMode::kBlink) {
     g_font_mapping_mode = font_mapping_mode;
     InitializeWindowsFontMapper();
   }

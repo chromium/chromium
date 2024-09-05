@@ -8220,12 +8220,6 @@ const char kPdfInk2Description[] =
     "Enables the ability to annotate PDFs using a new ink library.";
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
-#if BUILDFLAG(IS_WIN)
-const char kWinPdfUseFontProxyName[] = "PDF Font Proxy";
-const char kWinPdfUseFontProxyDescription[] =
-    "Use Skia/IPC to lookup fallback fonts on Windows.";
-#endif  // BUILDFLAG(IS_WIN)
-
 const char kPdfOopifName[] = "OOPIF for PDF Viewer";
 const char kPdfOopifDescription[] =
     "Use an OOPIF for the PDF Viewer, instead of a GuestView.";

@@ -48,15 +48,6 @@ BASE_FEATURE(kPdfXfaSupport,
 BASE_FEATURE(kPdfInk2, "PdfInk2", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_WIN)
-// On Windows - if enabled uses Skia to load system fonts, otherwise uses direct
-// file system access that must be brokered by the sandbox.
-// TODO(crbug.com/344643689) remove after M129.
-BASE_FEATURE(kWinPdfUseFontProxy,
-             "WinPdfUseFontProxy",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 void SetIsOopifPdfPolicyEnabled(bool is_oopif_pdf_policy_enabled) {
   g_is_oopif_pdf_policy_enabled = is_oopif_pdf_policy_enabled;
 }

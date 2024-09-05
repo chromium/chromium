@@ -26628,21 +26628,6 @@
             ]
         }
     ],
-    "WinPdfUseFontProxy": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WinPdfUseFontProxy"
-                    ]
-                }
-            ]
-        }
-    ],
     "WinSboxACProfileWithoutFirewall": [
         {
             "platforms": [
