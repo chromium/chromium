@@ -899,14 +899,16 @@
     [handler showSettingsFromViewController:self.baseViewController];
   } else if (isSignedIn) {
     if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
-      _accountMenuCoordinator = [[AccountMenuCoordinator alloc]
-          initWithBaseViewController:self.baseViewController
-                             browser:self.browser];
-      _accountMenuCoordinator.delegate = self;
-      _accountMenuCoordinator.anchorView = identityDisc;
-      // TODO(crbug.com/336719423): Record signin metrics based on the selected
-      // action from the account switcher.
-      [_accountMenuCoordinator start];
+      if (!_accountMenuCoordinator) {
+        _accountMenuCoordinator = [[AccountMenuCoordinator alloc]
+            initWithBaseViewController:self.baseViewController
+                               browser:self.browser];
+        _accountMenuCoordinator.delegate = self;
+        _accountMenuCoordinator.anchorView = identityDisc;
+        // TODO(crbug.com/336719423): Record signin metrics based on the
+        // selected action from the account switcher.
+        [_accountMenuCoordinator start];
+      }
     } else {
       [handler showSettingsFromViewController:self.baseViewController];
     }
