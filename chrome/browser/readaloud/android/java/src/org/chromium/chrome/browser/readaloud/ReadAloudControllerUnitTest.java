@@ -51,6 +51,7 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.task.test.ShadowPostTask.TestImpl;
@@ -66,6 +67,9 @@ import org.chromium.chrome.browser.device.ShadowDeviceConditions;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
@@ -164,6 +168,8 @@ public class ReadAloudControllerUnitTest {
     @Captor ArgumentCaptor<ReadAloudPlaybackHooks.CreatePlaybackCallback> mPlaybackCallbackCaptor;
     @Captor ArgumentCaptor<PlaybackArgs> mPlaybackArgsCaptor;
     @Captor ArgumentCaptor<PlaybackListener> mPlaybackListenerCaptor;
+    @Captor ArgumentCaptor<LayoutStateObserver> mLayoutStateObserver;
+
     @Mock private Playback mPlayback;
     @Mock private Playback.Metadata mMetadata;
     @Mock private WebContents mWebContents;
@@ -172,10 +178,13 @@ public class ReadAloudControllerUnitTest {
     @Mock private SelectionClient mSelectionClient;
     @Mock private SelectionPopupController mSelectionPopupController;
     @Mock private NativePage mNativePage;
+    @Mock private LayoutStateProvider mLayoutStateProvider;
     private GlobalRenderFrameHostId mGlobalRenderFrameHostId = new GlobalRenderFrameHostId(1, 1);
     public UserActionTester mUserActionTester;
     private HistogramWatcher mHighlightingEnabledOnStartupHistogram;
     private Promise<Long> mExtractorPromise;
+    OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
+            new OneshotSupplierImpl<>();
 
     private FakeClock mClock;
 
@@ -208,6 +217,7 @@ public class ReadAloudControllerUnitTest {
                         task.run();
                     }
                 });
+        mLayoutStateProviderSupplier.set(mLayoutStateProvider);
         mProfileSupplier = new ObservableSupplierImpl<>();
         mProfileSupplier.set(mMockProfile);
         doReturn(true).when(mMockProfile).isNativeInitialized();
@@ -274,7 +284,7 @@ public class ReadAloudControllerUnitTest {
         TapToSeekSelectionManager.setSelectionPopupController(mSelectionPopupController);
 
         mController = createController();
-
+        verify(mLayoutStateProvider).addObserver(mLayoutStateObserver.capture());
         when(mMetadata.languageCode()).thenReturn("en");
         when(mPlayback.getMetadata()).thenReturn(mMetadata);
         when(mWebContents.getMainFrame()).thenReturn(mRenderFrameHost);
@@ -314,7 +324,8 @@ public class ReadAloudControllerUnitTest {
                         mBottomControlsStacker,
                         mLayoutManagerSupplier,
                         mActivityWindowAndroid,
-                        mActivityLifecycleDispatcher);
+                        mActivityLifecycleDispatcher,
+                        mLayoutStateProviderSupplier);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         return controller;
     }
@@ -324,8 +335,39 @@ public class ReadAloudControllerUnitTest {
         mUserActionTester.tearDown();
         ReadAloudFeatures.shutdown();
         mController.destroy();
-        if (mController2 != null) mController2.destroy();
+        if (mController2 != null) {
+            mController2.destroy();
+        }
         ReadAloudController.resetReadabilityCacheForTesting();
+    }
+
+    @Test
+    public void testHideShowPlayer_tabSwitcher() {
+        requestAndStartPlayback();
+        mLayoutStateObserver.getValue().onStartedShowing(LayoutType.TAB_SWITCHER);
+        verify(mPlayerCoordinator).hidePlayers();
+
+        mLayoutStateObserver.getValue().onFinishedHiding(LayoutType.TAB_SWITCHER);
+        verify(mPlayerCoordinator).restorePlayers();
+    }
+
+    @Test
+    public void testDontHidePlayerWithNoPlayback_tabSwitcherUI() {
+        mLayoutStateObserver.getValue().onStartedShowing(LayoutType.TAB_SWITCHER);
+        verify(mPlayerCoordinator, never()).hidePlayers();
+
+        mLayoutStateObserver.getValue().onFinishedHiding(LayoutType.TAB_SWITCHER);
+        verify(mPlayerCoordinator, never()).restorePlayers();
+    }
+
+    @Test
+    public void testDontHidePlayer_nonTabSwitcherUI() {
+        requestAndStartPlayback();
+        mLayoutStateObserver.getValue().onStartedShowing(LayoutType.START_SURFACE);
+        verify(mPlayerCoordinator, never()).hidePlayers();
+
+        mLayoutStateObserver.getValue().onFinishedHiding(LayoutType.START_SURFACE);
+        verify(mPlayerCoordinator, never()).restorePlayers();
     }
 
     @Test

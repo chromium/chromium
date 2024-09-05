@@ -25,6 +25,7 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
@@ -34,12 +35,16 @@ import org.chromium.base.UserData;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.OnUserLeaveHintObserver;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -100,6 +105,9 @@ public class ReadAloudController
 
     private final Activity mActivity;
     private final ObservableSupplier<Profile> mProfileSupplier;
+    private final OneshotSupplier<LayoutStateProvider> mLayoutStateProviderSupplier;
+    private LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
+
     private final ObserverList<Runnable> mReadabilityUpdateObserverList = new ObserverList<>();
     // Delay added to readability check that should run it after largest contentful paint for >85%
     // of users http://uma/p/chrome/timeline_v2?sid=c975abf9022aac7b36bf28285f068dd6
@@ -150,6 +158,7 @@ public class ReadAloudController
     private boolean mIsDestroyed;
     private boolean mIsScreenOnAndUnlocked = true;
     private boolean mKeepScreenOnFlagIsSet;
+    private CallbackController mCallbackController;
 
     /**
      * ReadAloud entrypoint defined in readaloud/enums.xml.
@@ -479,8 +488,10 @@ public class ReadAloudController
             BottomControlsStacker bottomControlsStacker,
             ObservableSupplier<LayoutManager> layoutManagerSupplier,
             ActivityWindowAndroid activityWindowAndroid,
-            ActivityLifecycleDispatcher activityLifecycleDispatcher) {
+            ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier) {
         sInstances.add(this);
+        mCallbackController = new CallbackController();
         ReadAloudFeatures.init();
         mActivity = activity;
         mProfileSupplier = profileSupplier;
@@ -509,6 +520,30 @@ public class ReadAloudController
         if (NetworkChangeNotifier.isInitialized()) {
             NetworkChangeNotifier.addConnectionTypeObserver(this);
         }
+        mLayoutStateProviderSupplier = layoutStateProviderSupplier;
+        mLayoutStateProviderSupplier.onAvailable(
+                mCallbackController.makeCancelable(this::addLayoutStateObserver));
+    }
+
+    private void addLayoutStateObserver(LayoutStateProvider layoutStateProvider) {
+        mLayoutStateObserver =
+                new LayoutStateObserver() {
+
+                    @Override
+                    public void onStartedShowing(@LayoutType int layoutType) {
+                        if (layoutType == LayoutType.TAB_SWITCHER) {
+                            maybeHidePlayer();
+                        }
+                    }
+
+                    @Override
+                    public void onFinishedHiding(@LayoutType int layoutType) {
+                        if (layoutType == LayoutType.TAB_SWITCHER) {
+                            maybeShowPlayer();
+                        }
+                    }
+                };
+        layoutStateProvider.addObserver(mLayoutStateObserver);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
@@ -1033,6 +1068,11 @@ public class ReadAloudController
 
     /** Cleanup: unregister listeners. */
     public void destroy() {
+        // This check is only needed for tests in which destroy can be called twice
+        if (mCallbackController != null) {
+            mCallbackController.destroy();
+            mCallbackController = null;
+        }
         sInstances.remove(this);
         mIsDestroyed = true;
         if (mVoicePreviewPlayback != null) {
@@ -1048,6 +1088,9 @@ public class ReadAloudController
             mTabObserver.destroy();
         }
 
+        if (mLayoutStateProviderSupplier.get() != null) {
+            mLayoutStateProviderSupplier.get().removeObserver(mLayoutStateObserver);
+        }
         removeTranslationObservers(null);
 
         mHighlightingEnabled.removeObserver(mHighlightingEnabledObserver);
