@@ -340,6 +340,11 @@ def _OptimizeWithR8(options, config_paths, libraries, dynamic_config_data):
         # Allow ServiceLoaderUtil.maybeCreate() to work with types that are
         # -kept (e.g. due to containing JNI).
         '-Dcom.android.tools.r8.allowServiceLoaderRewritingPinnedTypes=1',
+        # Allow R8 to inline kept methods by default.
+        # See: b/364267880#2
+        '-Dcom.android.tools.r8.allowCodeReplacement=false',
+        # Required to use "-keep,allowcodereplacement"
+        '-Dcom.android.tools.r8.allowTestProguardOptions=true',
     ]
     if options.sdk_extension_jars:
       # Enable API modelling for OS extensions. https://b/326252366
