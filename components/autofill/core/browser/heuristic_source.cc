@@ -41,16 +41,12 @@ DenseSet<HeuristicSource> GetNonActiveHeuristicSources() {
     // On non Chrome-branded builds, no alternative `PatternSource`s exist.
     case HeuristicSource::kLegacy:
       break;
-    // If ML is active, compare against the `PatternSource`-based predictions
-    // that would otherwise be active.
+    // If ML is active in a build with internal patterns, compare against the
+    // default predictions.
     case HeuristicSource::kMachineLearning:
-      non_active_sources.insert(
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-          HeuristicSource::kDefault
-#else
-          HeuristicSource::kLegacy
+      non_active_sources.insert(HeuristicSource::kDefault);
 #endif
-      );
       break;
   }
   // If ML is enabled but inactive, compute shadow predictions for it.

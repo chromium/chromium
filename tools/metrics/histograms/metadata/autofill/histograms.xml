@@ -262,9 +262,6 @@ chromium-metrics-reviews@google.com.
       summary="the default server, the machine learning model prediction"/>
   <variant name="ExperimentalToDefault"
       summary="the heuristics being rolled out, the default heuristics"/>
-  <variant name="LegacyPatternSourceToMLModel"
-      summary="the legacy pattern source, the machine learning model
-               prediction"/>
 </variants>
 
 <variants name="Autofill.Snackbar.Type">
