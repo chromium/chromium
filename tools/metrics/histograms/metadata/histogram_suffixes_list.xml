@@ -4233,7 +4233,6 @@ chromium-metrics-reviews@google.com.
   <suffix base="true" name="GPU" label="ThreadPool for the gpu process."/>
   <suffix base="true" name="Renderer"
       label="ThreadPools for renderer processes."/>
-  <affected-histogram name="ThreadPool.NumTasksBeforeDetach"/>
   <affected-histogram name="ThreadPool.UnnecessaryWakeup"/>
 </histogram_suffixes>
 
@@ -4242,9 +4241,6 @@ chromium-metrics-reviews@google.com.
       label="Applies to the Background priority worker group."/>
   <suffix name="Foreground"
       label="Applies to the Foreground priority worker group."/>
-  <affected-histogram name="ThreadPool.NumTasksBeforeDetach.Browser"/>
-  <affected-histogram name="ThreadPool.NumTasksBeforeDetach.ContentChild"/>
-  <affected-histogram name="ThreadPool.NumTasksBeforeDetach.Renderer"/>
   <affected-histogram name="ThreadPool.UnnecessaryWakeup.Browser"/>
   <affected-histogram name="ThreadPool.UnnecessaryWakeup.ContentChild"/>
   <affected-histogram name="ThreadPool.UnnecessaryWakeup.GPU"/>

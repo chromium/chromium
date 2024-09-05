@@ -377,17 +377,6 @@ chromium-metrics-reviews@google.com.
   <token key="NamedThread" variants="NamedThread"/>
 </histogram>
 
-<histogram base="true" name="ThreadPool.NumTasksBeforeDetach" units="tasks"
-    expires_after="M85">
-  <owner>fdoray@chromium.org</owner>
-  <owner>gab@chromium.org</owner>
-  <owner>robliao@chromium.org</owner>
-  <summary>
-    Number of tasks executed by a SchedulerWorker before it detached. Recorded
-    when a SchedulerWorker detaches.
-  </summary>
-</histogram>
-
 <histogram base="true" name="ThreadPool.UnnecessaryWakeup" enum="BooleanHit"
     expires_after="2025-01-05">
   <owner>spvw@chromium.org</owner>
