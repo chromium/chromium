@@ -18,7 +18,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/expected.h"
 #include "base/values.h"
-#include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
@@ -161,20 +160,8 @@ void ParseSessionConfig(base::Value::Dict* session_dict,
                         ::boca::Session* session) {
   if (session_dict->FindDict(kStudentGroupsConfig)) {
     auto* student_groups = session->mutable_student_group_configs();
-
-    base::Value::Dict* config;
-    if (ash::boca_util::IsProducer()) {
-      config = session_dict->FindDict(kStudentGroupsConfig)
-                   ->FindDict(kMainStudentGroupName);
-    } else {
-      // For consumer, the group name will be masked, also fetch the first item.
-      config = std::move(!session_dict->FindDict(kStudentGroupsConfig)->empty()
-                             ? session_dict->FindDict(kStudentGroupsConfig)
-                                   ->begin()
-                                   ->second.GetIfDict()
-                             : nullptr);
-    }
-
+    auto* config = session_dict->FindDict(kStudentGroupsConfig)
+                       ->FindDict(kMainStudentGroupName);
     if (config) {
       ::boca::SessionConfig session_config;
 

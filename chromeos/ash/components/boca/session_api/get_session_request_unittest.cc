@@ -44,7 +44,7 @@ const char kTestUserAgent[] = "test-user-agent";
 
 class MockRequestHandler {
  public:
-  static std::unique_ptr<HttpResponse> CreateFullProducerResponse() {
+  static std::unique_ptr<HttpResponse> CreateFullResponse() {
     auto response = std::make_unique<BasicHttpResponse>();
     response->set_code(net::HTTP_OK);
     response->set_content(
@@ -162,56 +162,6 @@ class MockRequestHandler {
     return response;
   }
 
-  static std::unique_ptr<HttpResponse> CreateConsumerResponse() {
-    auto response = std::make_unique<BasicHttpResponse>();
-    response->set_code(net::HTTP_OK);
-    response->set_content(
-        R"(
-  {
-  "startTime":{
-    "seconds": 1723773909
-  },
-  "sessionId": "111",
-  "duration": {
-    "seconds": 120
-  },
-  "sessionState": "ACTIVE",
-  "studentGroupConfigs": {
-    "encodedstring": {
-      "captionsConfig": {
-        "captionsEnabled": true,
-        "translationsEnabled": true
-      },
-      "onTaskConfig": {
-        "activeBundle": {
-          "contentConfigs": [
-            {
-              "faviconUrl": "data:image/123",
-              "lockedNavigationOptions": {
-                "navigationType": "OPEN_NAVIGATION"
-              },
-              "title": "google",
-              "url": "https://google.com"
-            }
-          ],
-          "locked": true
-        }
-      }
-    }
-  },
-  "teacher":
-  {
-          "email": "teacher@gmail.com",
-          "fullName": "teacher",
-          "gaiaId": "1",
-          "photoUrl": "data:image/123"
-        }
-}
-       )");
-    response->set_content_type("application/json");
-    return response;
-  }
-
   static std::unique_ptr<HttpResponse> CreateEmptyResponse() {
     auto response = std::make_unique<BasicHttpResponse>();
     response->set_code(net::HTTP_OK);
@@ -273,14 +223,13 @@ class GetSessionRequestTest : public testing::Test {
       test_shared_loader_factory_;
 };
 
-TEST_F(GetSessionRequestTest, GetSessionWithFullProducerInputAndSucceed) {
+TEST_F(GetSessionRequestTest, GetSessionWithFullInputAndSucceed) {
   EXPECT_CALL(request_handler(),
               HandleRequest(
                   AllOf(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
                         Field(&HttpRequest::relative_url,
                               Eq("/v1/users/123/sessions:getActive")))))
-      .WillOnce(
-          Return(ByMove(MockRequestHandler::CreateFullProducerResponse())));
+      .WillOnce(Return(ByMove(MockRequestHandler::CreateFullResponse())));
 
   base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
                                         google_apis::ApiErrorCode>>
@@ -363,70 +312,6 @@ TEST_F(GetSessionRequestTest, GetSessionWithFullProducerInputAndSucceed) {
   EXPECT_EQ("https://youtube.com", content_config[1].url());
   EXPECT_EQ(::boca::LockedNavigationOptions::BLOCK_NAVIGATION,
             content_config[1].locked_navigation_options().navigation_type());
-
-  EXPECT_EQ("teacher@gmail.com", session->teacher().email());
-  EXPECT_EQ("teacher", session->teacher().full_name());
-  EXPECT_EQ("1", session->teacher().gaia_id());
-  EXPECT_EQ("data:image/123", session->teacher().photo_url());
-}
-
-TEST_F(GetSessionRequestTest, GetSessionWithFullConsumerInputAndSucceed) {
-  EXPECT_CALL(request_handler(),
-              HandleRequest(
-                  AllOf(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
-                        Field(&HttpRequest::relative_url,
-                              Eq("/v1/users/123/sessions:getActive")))))
-      .WillOnce(Return(ByMove(MockRequestHandler::CreateConsumerResponse())));
-
-  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
-                                        google_apis::ApiErrorCode>>
-      future;
-
-  const std::string gaia_id = "123";
-  std::unique_ptr<GetSessionRequest> request =
-      std::make_unique<GetSessionRequest>(request_sender(), gaia_id,
-                                          future.GetCallback());
-  request->OverrideURLForTesting(test_server_.base_url().spec());
-  request_sender()->StartRequestWithAuthRetry(std::move(request));
-
-  auto result = future.Take();
-  ASSERT_TRUE(result.has_value());
-
-  std::unique_ptr<::boca::Session> session = std::move(result.value());
-  EXPECT_EQ(1723773909, session->start_time().seconds());
-  EXPECT_EQ("111", session->session_id());
-  EXPECT_EQ(120, session->duration().seconds());
-
-  EXPECT_EQ(::boca::Session::ACTIVE, session->session_state());
-
-  ASSERT_EQ(1u, session->student_group_configs().size());
-  EXPECT_TRUE(session->student_group_configs()
-                  .at(kMainStudentGroupName)
-                  .captions_config()
-                  .captions_enabled());
-  EXPECT_TRUE(session->student_group_configs()
-                  .at(kMainStudentGroupName)
-                  .captions_config()
-                  .translations_enabled());
-
-  EXPECT_TRUE(session->student_group_configs()
-                  .at(kMainStudentGroupName)
-                  .on_task_config()
-                  .active_bundle()
-                  .locked());
-
-  auto content_config = std::move(session->student_group_configs()
-                                      .at(kMainStudentGroupName)
-                                      .on_task_config()
-                                      .active_bundle()
-                                      .content_configs());
-  ASSERT_EQ(1, content_config.size());
-
-  EXPECT_EQ("data:image/123", content_config[0].favicon_url());
-  EXPECT_EQ("google", content_config[0].title());
-  EXPECT_EQ("https://google.com", content_config[0].url());
-  EXPECT_EQ(::boca::LockedNavigationOptions::OPEN_NAVIGATION,
-            content_config[0].locked_navigation_options().navigation_type());
 
   EXPECT_EQ("teacher@gmail.com", session->teacher().email());
   EXPECT_EQ("teacher", session->teacher().full_name());
@@ -539,5 +424,6 @@ TEST_F(GetSessionRequestTest, CreateSessionWithFailedResponse) {
   auto result = future.Take();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), google_apis::HTTP_INTERNAL_SERVER_ERROR);
+  // Verify default value
 }
 }  // namespace ash::boca
