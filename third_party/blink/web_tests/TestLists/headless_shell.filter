@@ -7,8 +7,10 @@
 # https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/run_web_platform_tests.md
 
 external/wpt/longtask-timing/*
+external/wpt/webauthn/*
 
 virtual/gpu/external/wpt/*
 virtual/longtask-from-loaf/external/wpt/*
 virtual/single-renderer-process/external/wpt/*
+virtual/webauthn-remote-desktop-client-override/*
 
