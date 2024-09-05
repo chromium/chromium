@@ -26,15 +26,10 @@
 #include <libxml/xmlerror.h>
 #include <libxml/tree.h>
 #include <libxml/hash.h>
-#endif /* LIBXML_XPATH_ENABLED */
 
-#if defined(LIBXML_XPATH_ENABLED) || defined(LIBXML_SCHEMAS_ENABLED)
 #ifdef __cplusplus
 extern "C" {
 #endif
-#endif /* LIBXML_XPATH_ENABLED or LIBXML_SCHEMAS_ENABLED */
-
-#ifdef LIBXML_XPATH_ENABLED
 
 typedef struct _xmlXPathContext xmlXPathContext;
 typedef xmlXPathContext *xmlXPathContextPtr;
@@ -554,8 +549,7 @@ XMLPUBFUN int
 						 xmlXPathContextPtr ctxt);
 XMLPUBFUN void
 		    xmlXPathFreeCompExpr	(xmlXPathCompExprPtr comp);
-#endif /* LIBXML_XPATH_ENABLED */
-#if defined(LIBXML_XPATH_ENABLED) || defined(LIBXML_SCHEMAS_ENABLED)
+
 XML_DEPRECATED
 XMLPUBFUN void
 		    xmlXPathInit		(void);
@@ -568,5 +562,5 @@ XMLPUBFUN int
 }
 #endif
 
-#endif /* LIBXML_XPATH_ENABLED or LIBXML_SCHEMAS_ENABLED*/
+#endif /* LIBXML_XPATH_ENABLED */
 #endif /* ! __XML_XPATH_H__ */

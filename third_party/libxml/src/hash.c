@@ -427,7 +427,7 @@ xmlHashUpdateInternal(xmlHashTablePtr hash, const xmlChar *key,
                       void *payload, xmlHashDeallocator dealloc, int update) {
     xmlChar *copy, *copy2, *copy3;
     xmlHashEntry *entry = NULL;
-    size_t lengths[3];
+    size_t lengths[3] = {0, 0, 0};
     unsigned hashValue;
     int found = 0;
 

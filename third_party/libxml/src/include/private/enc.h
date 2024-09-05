@@ -11,7 +11,7 @@ XML_HIDDEN int
 xmlEncInputChunk(xmlCharEncodingHandler *handler, unsigned char *out,
                  int *outlen, const unsigned char *in, int *inlen);
 XML_HIDDEN int
-xmlCharEncInput(xmlParserInputBufferPtr input);
+xmlCharEncInput(xmlParserInputBufferPtr input, size_t *sizeOut);
 XML_HIDDEN int
 xmlCharEncOutput(xmlOutputBufferPtr output, int init);
 

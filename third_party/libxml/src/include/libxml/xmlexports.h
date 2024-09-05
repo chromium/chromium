@@ -41,12 +41,6 @@
  * Attributes
  */
 
-#if __GNUC__ * 100 + __GNUC_MINOR__ >= 207
-  #define ATTRIBUTE_UNUSED __attribute__((unused))
-#else
-  #define ATTRIBUTE_UNUSED
-#endif
-
 #if !defined(__clang__) && (__GNUC__ * 100 + __GNUC_MINOR__ >= 403)
   #define LIBXML_ATTR_ALLOC_SIZE(x) __attribute__((alloc_size(x)))
 #else
@@ -70,6 +64,16 @@
     #define XML_DEPRECATED __declspec(deprecated)
   #else
     #define XML_DEPRECATED
+  #endif
+#endif
+
+#ifndef XML_DEPRECATED_MEMBER
+  #if defined(IN_LIBXML)
+    #define XML_DEPRECATED_MEMBER
+  #elif __GNUC__ * 100 + __GNUC_MINOR__ >= 301
+    #define XML_DEPRECATED_MEMBER __attribute__((deprecated))
+  #else
+    #define XML_DEPRECATED_MEMBER
   #endif
 #endif
 

@@ -285,7 +285,10 @@ static_library("libxml") {
 
   if (is_win) {
     sources += [
-      "src/include/win32config.h",
+      # TODO(crbug.com/364568421): Consider removing win32config.h after
+      # migrating to cmake:
+      # https://gitlab.gnome.org/GNOME/libxml2/-/commit/4b6e68282b654df389016c47c80adc66ee0163c2
+      "src/win32/win32config.h",
       "src/include/wsockcompat.h",
       "win32/config.h",
       "win32/include/libxml/xmlversion.h",
