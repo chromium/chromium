@@ -92,7 +92,6 @@ class AboutThisSiteTabHelperTest : public PlatformTest {
     browser_state_ = std::move(builder).Build();
     optimization_guide_service_ =
         OptimizationGuideServiceFactory::GetForProfile(browser_state_.get());
-    optimization_guide_service_->DoFinalInit();
     web_state_.SetBrowserState(browser_state_.get());
 
     AboutThisSiteTabHelper::CreateForWebState(&web_state_,
@@ -111,7 +110,6 @@ class AboutThisSiteTabHelperTest : public PlatformTest {
                 OptimizationGuideServiceFactory::GetDefaultFactory()}});
     optimization_guide_service_otr_ =
         OptimizationGuideServiceFactory::GetForProfile(otr_browser_state);
-    optimization_guide_service_otr_->DoFinalInit();
     web_state_otr_.SetBrowserState(otr_browser_state);
 
     AboutThisSiteTabHelper::CreateForWebState(&web_state_otr_,

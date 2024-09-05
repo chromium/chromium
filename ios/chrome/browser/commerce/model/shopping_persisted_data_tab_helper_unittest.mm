@@ -107,10 +107,6 @@ class ShoppingPersistedDataTabHelperTest : public PlatformTest {
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
-    if (optimization_guide::features::IsOptimizationHintsEnabled()) {
-      OptimizationGuideServiceFactory::GetForProfile(browser_state_.get())
-          ->DoFinalInit();
-    }
     browser_state_->GetPrefs()->SetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
     fake_identity_ = [FakeSystemIdentity fakeIdentity1];

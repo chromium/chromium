@@ -55,15 +55,20 @@ std::unique_ptr<KeyedService> BuildOptimizationGuideService(
     hint_store = original_ogs->GetHintsManager()->hint_store();
   }
 
-  return std::make_unique<OptimizationGuideService>(
+  auto service = std::make_unique<OptimizationGuideService>(
       proto_db_provider, profile_path, profile->IsOffTheRecord(),
       GetApplicationContext()->GetApplicationLocale(), hint_store,
       profile->GetPrefs(), BrowserListFactory::GetForBrowserState(profile),
       profile->GetSharedURLLoaderFactory(),
       base::BindOnce(&GetBackgroundDownloadService, profile->AsWeakPtr()),
       IdentityManagerFactory::GetForBrowserState(profile));
+
+  service->DoFinalInit(
+      BackgroundDownloadServiceFactory::GetForBrowserState(profile));
+  return service;
 }
-}
+
+}  // namespace
 
 // static
 OptimizationGuideService* OptimizationGuideServiceFactory::GetForProfile(

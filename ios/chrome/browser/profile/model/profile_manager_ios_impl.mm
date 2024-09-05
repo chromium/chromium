@@ -17,11 +17,8 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
-#import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
-#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
-#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/profile/model/constants.h"
 #import "ios/chrome/browser/profile/model/off_the_record_profile_ios_impl.h"
 #import "ios/chrome/browser/profile/model/profile_ios_impl.h"
@@ -485,14 +482,6 @@ void ProfileManagerIOSImpl::DoFinalInitForServices(ProfileIOS* profile) {
   ios::AccountConsistencyServiceFactory::GetForBrowserState(profile);
   IdentityManagerFactory::GetForBrowserState(profile)->OnNetworkInitialized();
   ios::AccountReconcilorFactory::GetForBrowserState(profile);
-
-  // Initialization needs to happen after the profile is available because
-  // IOSChromeMetricsServiceAccessor requires profile to be registered in the
-  // ProfileManagerIOS.
-  if (optimization_guide::features::IsOptimizationHintsEnabled()) {
-    OptimizationGuideServiceFactory::GetForProfile(profile)->DoFinalInit(
-        BackgroundDownloadServiceFactory::GetForBrowserState(profile));
-  }
 
   // Those services needs to be explicitly initialized and can't simply be
   // marked as created with the profile as 1. they depend on initialisation

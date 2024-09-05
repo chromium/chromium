@@ -24,16 +24,10 @@ class OptimizationGuideServiceFactoryTest : public PlatformTest {
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
     profile_ = std::move(builder).Build();
-    OptimizationGuideServiceFactory::GetForProfile(profile_.get())
-        ->DoFinalInit(BackgroundDownloadServiceFactory::GetForBrowserState(
-            profile_.get()));
-
-    ProfileIOS* otr_profile =
-        profile_->CreateOffTheRecordBrowserStateWithTestingFactories(
-            {TestProfileIOS::TestingFactory{
-                OptimizationGuideServiceFactory::GetInstance(),
-                OptimizationGuideServiceFactory::GetDefaultFactory()}});
-    OptimizationGuideServiceFactory::GetForProfile(otr_profile)->DoFinalInit();
+    profile_->CreateOffTheRecordBrowserStateWithTestingFactories(
+        {TestProfileIOS::TestingFactory{
+            OptimizationGuideServiceFactory::GetInstance(),
+            OptimizationGuideServiceFactory::GetDefaultFactory()}});
   }
 
  protected:
