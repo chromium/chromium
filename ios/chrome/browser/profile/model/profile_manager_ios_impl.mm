@@ -27,7 +27,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
-#import "ios/chrome/browser/signin/model/account_reconcilor_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/supervised_user/model/child_account_service_factory.h"
 #import "ios/chrome/browser/supervised_user/model/list_family_members_service_factory.h"
@@ -481,7 +480,6 @@ void ProfileManagerIOSImpl::DoFinalInitForServices(ProfileIOS* profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ios::AccountConsistencyServiceFactory::GetForBrowserState(profile);
   IdentityManagerFactory::GetForBrowserState(profile)->OnNetworkInitialized();
-  ios::AccountReconcilorFactory::GetForProfile(profile);
 
   // Those services needs to be explicitly initialized and can't simply be
   // marked as created with the profile as 1. they depend on initialisation
