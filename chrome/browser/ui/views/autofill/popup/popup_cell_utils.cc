@@ -378,20 +378,15 @@ void AddSpacerWithSize(views::BoxLayoutView& view,
                       /*use_min_size=*/true);
 }
 
-// Creates the table in which all  the Autofill suggestion content apart from
-// leading and trailing icons is contained and adds it to `content_view`.
-// It registers `main_text_label`, `minor_text_label`, and `description_label`
-// with `content_view` for tracking, but assumes that the labels inside of of
-// `subtext_views` have already been registered for tracking with
-// `content_view`.
-void AddSuggestionContentTableToView(
+// Creates the table in which all the Autofill suggestion content apart from
+// leading and trailing icons is contained.
+std::unique_ptr<views::TableLayoutView> CreateSuggestionContentTable(
     std::unique_ptr<views::Label> main_text_label,
     std::unique_ptr<views::Label> minor_text_label,
     std::unique_ptr<views::Label> description_label,
-    std::vector<std::unique_ptr<views::View>> subtext_views,
-    PopupRowContentView& content_view) {
+    std::vector<std::unique_ptr<views::View>> subtext_views) {
   const bool kHasTwoColumns = !!description_label;
-  auto content_table =
+  auto table =
       views::Builder<views::TableLayoutView>()
           .AddColumn(views::LayoutAlignment::kStart,
                      views::LayoutAlignment::kStretch,
@@ -401,16 +396,15 @@ void AddSuggestionContentTableToView(
   if (kHasTwoColumns) {
     const int kDividerSpacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
         DISTANCE_RELATED_LABEL_HORIZONTAL_LIST);
-    content_table->AddPaddingColumn(views::TableLayout::kFixedSize,
-                                    kDividerSpacing);
-    content_table->AddColumn(
-        views::LayoutAlignment::kStart, views::LayoutAlignment::kStretch,
-        views::TableLayout::kFixedSize,
-        views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
+    table->AddPaddingColumn(views::TableLayout::kFixedSize, kDividerSpacing);
+    table->AddColumn(views::LayoutAlignment::kStart,
+                     views::LayoutAlignment::kStretch,
+                     views::TableLayout::kFixedSize,
+                     views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
   }
 
   // Major and minor text go into the first row, first column.
-  content_table->AddRows(1, 0);
+  table->AddRows(1, 0);
   if (minor_text_label) {
     auto first_line_container = std::make_unique<views::View>();
     first_line_container
@@ -428,28 +422,26 @@ void AddSuggestionContentTableToView(
     first_line_container->AddChildView(std::move(main_text_label));
 
     first_line_container->AddChildView(std::move(minor_text_label));
-    content_table->AddChildView(std::move(first_line_container));
+    table->AddChildView(std::move(first_line_container));
   } else {
-    content_table->AddChildView(std::move(main_text_label));
+    table->AddChildView(std::move(main_text_label));
   }
 
   // The description goes into the first row, second column.
   if (kHasTwoColumns) {
-    content_table->AddChildView(description_label
-                                    ? std::move(description_label)
-                                    : std::make_unique<views::View>());
+    table->AddChildView(description_label ? std::move(description_label)
+                                          : std::make_unique<views::View>());
   }
 
   // Every subtext label goes into an additional row.
   for (std::unique_ptr<views::View>& subtext_view : subtext_views) {
-    content_table->AddPaddingRow(0, kAdjacentLabelsVerticalSpacing)
-        .AddRows(1, 0);
-    content_table->AddChildView(std::move(subtext_view));
+    table->AddPaddingRow(0, kAdjacentLabelsVerticalSpacing).AddRows(1, 0);
+    table->AddChildView(std::move(subtext_view));
     if (kHasTwoColumns) {
-      content_table->AddChildView(std::make_unique<views::View>());
+      table->AddChildView(std::make_unique<views::View>());
     }
   }
-  content_view.AddChildView(std::move(content_table));
+  return table;
 }
 
 void AddSuggestionContentToView(
@@ -489,9 +481,11 @@ void AddSuggestionContentToView(
   }
 
   // The actual content table.
-  AddSuggestionContentTableToView(
-      std::move(main_text_label), std::move(minor_text_label),
-      std::move(description_label), std::move(subtext_views), content_view);
+  content_view.SetFlexForView(
+      content_view.AddChildView(CreateSuggestionContentTable(
+          std::move(main_text_label), std::move(minor_text_label),
+          std::move(description_label), std::move(subtext_views))),
+      1);
 
   // The trailing icon.
   if (std::unique_ptr<views::ImageView> trailing_icon =

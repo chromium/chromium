@@ -537,13 +537,6 @@ std::unique_ptr<PopupRowWithButtonView> CreateAutocompleteRowWithDeleteButton(
       CreateSubtextViews(*view, kSuggestion, FillingProduct::kAutocomplete),
       popup_cell_utils::GetIconImageView(kSuggestion), *view);
 
-  // Setup a layout of the delete button for Autocomplete entries.
-  views::BoxLayout* layout =
-      static_cast<views::BoxLayout*>(view->GetLayoutManager());
-  for (views::View* child : view->children()) {
-    layout->SetFlexForView(child, 1);
-  }
-
   // The closure that actually attempts to delete an entry and record metrics
   // for it.
   base::RepeatingClosure deletion_action = base::BindRepeating(
@@ -558,9 +551,9 @@ std::unique_ptr<PopupRowWithButtonView> CreateAutocompleteRowWithDeleteButton(
   // We are making sure that the vertical distance from the delete button edges
   // to the cell border is the same as the horizontal distance.
   // 1. Take the current horizontal distance.
-  int horizontal_margin = layout->inside_border_insets().right();
+  int horizontal_margin = view->GetInsideBorderInsets().right();
   // 2. Take the height of the cell.
-  int cell_height = layout->minimum_cross_axis_size();
+  int cell_height = view->GetMinimumCrossAxisSize();
   // 3. The diameter needs to be the height - 2 * the desired margin.
   int radius = (cell_height - horizontal_margin * 2) / 2;
   views::InstallFixedSizeCircleHighlightPathGenerator(button.get(), radius);

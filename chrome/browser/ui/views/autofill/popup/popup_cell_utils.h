@@ -48,19 +48,6 @@ void AddSpacerWithSize(views::BoxLayoutView& view,
                        int spacer_width,
                        bool resize);
 
-// Creates the table in which all the Autofill suggestion content apart from
-// leading and trailing icons is contained and adds it to `content_view`.
-// It registers `main_text_label`, `minor_text_label`, and `description_label`
-// with `content_view` for tracking, but assumes that the labels inside of of
-// `subtext_views` have already been registered for tracking with
-// `content_view`.
-void AddSuggestionContentTableToView(
-    std::unique_ptr<views::Label> main_text_label,
-    std::unique_ptr<views::Label> minor_text_label,
-    std::unique_ptr<views::Label> description_label,
-    std::vector<std::unique_ptr<views::View>> subtext_views,
-    PopupRowContentView& content_view);
-
 // Creates the content structure shared by autocomplete, address, credit card,
 // and password suggestions.
 // - `main/minor_text_label`, `description_label`, `subtext_views` and
