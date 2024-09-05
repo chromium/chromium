@@ -18,6 +18,7 @@ testonly = true
 #   apk_name: Desired apk name.
 template("base_webview_instrumentation_apk") {
   android_apk(target_name) {
+    target_sdk_version = 34
     apk_name = invoker.apk_name
     deps = [
              "//android_webview:android_webview_java",
