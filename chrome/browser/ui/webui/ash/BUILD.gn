@@ -6,11 +6,11 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
+# Gather unit tests from subdirectories.
 group("unit_tests") {
   testonly = true
 
   deps = [
-    # Gather unit tests from subdirectories:
     "//chrome/browser/ui/webui/ash/add_supervision:unit_tests",
     "//chrome/browser/ui/webui/ash/cloud_upload:unit_tests",
     "//chrome/browser/ui/webui/ash/diagnostics_dialog:unit_tests",
@@ -49,36 +49,15 @@ group("unit_tests") {
   ]
 }
 
-source_set("browser_tests") {
+# Gather browser tests from subdirectories.
+group("browser_tests") {
   testonly = true
 
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-  sources = [ "cros_components_browsertest.cc" ]
-
   deps = [
-    "//ash:test_support",
-    "//base",
-    "//chrome/browser/ash/login:test_support",
-    "//chrome/browser/ash/login/test:test_support",
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
-    "//chrome/browser/ui/zoom",
-    "//chrome/common",
-    "//chrome/common:constants",
-    "//chrome/test:test_support_ui",
-    "//components/account_id",
-    "//components/prefs",
-    "//content/public/browser",
-    "//content/test:test_support",
-    "//third_party/blink/public/common:headers",
-    "//ui/aura",
-    "//url",
-
-    # Gather browser tests from subdirectories:
     "//chrome/browser/ui/webui/ash/add_supervision:browser_tests",
     "//chrome/browser/ui/webui/ash/app_install:browser_tests",
     "//chrome/browser/ui/webui/ash/cloud_upload:browser_tests",
+    "//chrome/browser/ui/webui/ash/cros_components:browser_tests",
     "//chrome/browser/ui/webui/ash/crostini_upgrader:browser_tests",
     "//chrome/browser/ui/webui/ash/edu_coexistence:browser_tests",
     "//chrome/browser/ui/webui/ash/kerberos:browser_tests",
