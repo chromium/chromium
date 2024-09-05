@@ -329,11 +329,6 @@ def BuildLibXml2():
           '-GNinja',
           '-DCMAKE_BUILD_TYPE=Release',
           '-DCMAKE_INSTALL_PREFIX=install',
-          # The mac_arm bot builds a clang arm binary, but currently on an intel
-          # host. If we ever move it to run on an arm mac, this can go. We
-          # could pass this only if args.build_mac_arm, but libxml is small, so
-          # might as well build it universal always for a few years.
-          '-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64',
           '-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded',  # /MT to match LLVM.
           '-DBUILD_SHARED_LIBS=OFF',
           '-DLIBXML2_WITH_C14N=OFF',
@@ -441,11 +436,6 @@ def BuildZStd():
           '-GNinja',
           '-DCMAKE_BUILD_TYPE=Release',
           '-DCMAKE_INSTALL_PREFIX=install',
-          # The mac_arm bot builds a clang arm binary, but currently on an intel
-          # host. If we ever move it to run on an arm mac, this can go. We
-          # could pass this only if args.build_mac_arm, but zstd is small, so
-          # might as well build it universal always for a few years.
-          '-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64',
           '-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded',  # /MT to match LLVM.
           '-DZSTD_BUILD_SHARED=OFF',
           '../build/cmake',
@@ -605,10 +595,9 @@ def gn_arg(v):
 
 def main():
   parser = argparse.ArgumentParser(description='Build Clang.')
-  parser.add_argument('--bootstrap', action='store_true',
+  parser.add_argument('--bootstrap',
+                      action='store_true',
                       help='first build clang with CC, then with itself.')
-  parser.add_argument('--build-mac-arm', action='store_true',
-                      help='Build arm binaries. Only valid on macOS.')
   parser.add_argument('--disable-asserts', action='store_true',
                       help='build with asserts disabled')
   parser.add_argument('--host-cc',
@@ -708,12 +697,6 @@ def main():
     print('for general Fuchsia build instructions.')
     return 1
 
-  if args.build_mac_arm and sys.platform != 'darwin':
-    print('--build-mac-arm only valid on macOS')
-    return 1
-  if args.build_mac_arm and platform.machine() == 'arm64':
-    print('--build-mac-arm only valid on intel to cross-build arm')
-    return 1
   if args.with_ml_inliner_model and not sys.platform.startswith('linux'):
     print('--with-ml-inliner-model only supports linux hosts')
     return 1
@@ -1135,17 +1118,11 @@ def main():
   if sys.platform == 'win32':
     cmake_args.append('-DLLVM_ENABLE_ZLIB=FORCE_ON')
 
-  if args.build_mac_arm:
-    assert platform.machine() != 'arm64', 'build_mac_arm for cross build only'
-    cmake_args += [
-        '-DCMAKE_OSX_ARCHITECTURES=arm64', '-DCMAKE_SYSTEM_NAME=Darwin'
-    ]
-
   # The default LLVM_DEFAULT_TARGET_TRIPLE depends on the host machine.
   # Set it explicitly to make the build of clang more hermetic, and also to
   # set it to arm64 when cross-building clang for mac/arm.
   if sys.platform == 'darwin':
-    if args.build_mac_arm or platform.machine() == 'arm64':
+    if platform.machine() == 'arm64':
       cmake_args.append('-DLLVM_DEFAULT_TARGET_TRIPLE=arm64-apple-darwin')
     else:
       cmake_args.append('-DLLVM_DEFAULT_TARGET_TRIPLE=x86_64-apple-darwin')
@@ -1331,9 +1308,7 @@ def main():
       # Build the Fuchsia profile and asan runtimes.  This is done after the rt
       # builtins have been created because the CMake build runs link checks that
       # require that the builtins already exist to succeed.
-      # TODO(thakis): Figure out why this doesn't build with the stage0
-      # compiler in arm cross builds.
-      build_profile = target_arch == 'x86_64' and not args.build_mac_arm
+      build_profile = target_arch == 'x86_64'
       # Build the asan runtime only on non-Mac platforms.  Macs are excluded
       # because the asan install changes library RPATHs which CMake only
       # supports on ELF platforms and MacOS uses Mach-O instead of ELF.
@@ -1486,18 +1461,16 @@ def main():
     RunCommand(['touch', '-r', 'bin/clang', 'bin/clang-bolt.opt'])
     RunCommand(['mv', 'bin/clang-bolt.opt', 'bin/clang'])
 
-  if not args.build_mac_arm:
-    VerifyVersionOfBuiltClangMatchesVERSION()
-    VerifyZlibSupport()
+  VerifyVersionOfBuiltClangMatchesVERSION()
+  VerifyZlibSupport()
   if args.with_zstd:
     VerifyZStdSupport()
 
   # Run tests.
-  if (chrome_tools and not args.build_mac_arm and
-      (args.run_tests or args.llvm_force_head_revision)):
+  if (chrome_tools and (args.run_tests or args.llvm_force_head_revision)):
     RunCommand(['ninja', '-C', LLVM_BUILD_DIR, 'cr-check-all'], setenv=True)
 
-  if not args.build_mac_arm and args.run_tests:
+  if args.run_tests:
     RunCommand(['ninja', '-C', LLVM_BUILD_DIR, 'check-all'],
                env=test_env,
                setenv=True)
