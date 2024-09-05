@@ -1656,16 +1656,9 @@ TEST_F(InterestGroupAuctionReporterTest, InvalidPrivateAggregationRequests) {
   EXPECT_EQ("Private Aggregation request using disabled features",
             TakeBadMessage());
 
-  // The invalid PA stuff got discarded.
-  EXPECT_THAT(
-      private_aggregation_manager_.TakePrivateAggregationRequests(),
-      testing::UnorderedElementsAre(
-          testing::Pair(
-              kSellerOrigin,
-              ElementsAreRequests(kReportResultPrivateAggregationRequest)),
-          testing::Pair(
-              kWinningBidderOrigin,
-              ElementsAreRequests(kReportWinPrivateAggregationRequest))));
+  // Due to the invalid messages, incoming PA stuff got discarded.
+  EXPECT_THAT(private_aggregation_manager_.TakePrivateAggregationRequests(),
+              testing::UnorderedElementsAre());
 
   WaitForCompletion();
 }
@@ -1702,15 +1695,8 @@ TEST_F(InterestGroupAuctionReporterTest, InvalidPrivateAggregationRequests2) {
             TakeBadMessage());
 
   // The invalid PA stuff got discarded.
-  EXPECT_THAT(
-      private_aggregation_manager_.TakePrivateAggregationRequests(),
-      testing::UnorderedElementsAre(
-          testing::Pair(
-              kSellerOrigin,
-              ElementsAreRequests(kReportResultPrivateAggregationRequest)),
-          testing::Pair(
-              kWinningBidderOrigin,
-              ElementsAreRequests(kReportWinPrivateAggregationRequest))));
+  EXPECT_THAT(private_aggregation_manager_.TakePrivateAggregationRequests(),
+              testing::UnorderedElementsAre());
 
   WaitForCompletion();
 }

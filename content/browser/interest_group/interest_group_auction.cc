@@ -72,7 +72,6 @@
 #include "content/public/browser/auction_result.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/services/auction_worklet/public/cpp/private_aggregation_reporting.h"
 #include "content/services/auction_worklet/public/cpp/real_time_reporting.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
@@ -895,28 +894,11 @@ template <typename MojoReceiver>
 bool ValidatePrivateAggregationRequests(
     MojoReceiver& receiver,
     const PrivateAggregationRequests& pa_requests) {
-  // The mojom API declaration should ensure none of these are null.
-  CHECK(base::ranges::none_of(
-      pa_requests,
-      [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
-             request_ptr) { return request_ptr.is_null(); }));
-
-  if (!base::ranges::all_of(pa_requests, HasValidFilteringId)) {
-    receiver.ReportBadMessage("Private Aggregation filtering ID invalid");
+  std::optional<std::string> error =
+      content::ValidatePrivateAggregationRequests(pa_requests);
+  if (error.has_value()) {
+    receiver.ReportBadMessage(*error);
     return false;
-  }
-
-  bool additional_extensions_allowed = base::FeatureList::IsEnabled(
-      blink::features::
-          kPrivateAggregationApiProtectedAudienceAdditionalExtensions);
-  for (const auto& request : pa_requests) {
-    if (!auction_worklet::
-            IsValidPrivateAggregationRequestForAdditionalExtensions(
-                *request, additional_extensions_allowed)) {
-      receiver.ReportBadMessage(
-          "Private Aggregation request using disabled features");
-      return false;
-    }
   }
   return true;
 }

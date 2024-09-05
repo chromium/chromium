@@ -156,26 +156,23 @@ void SetReportWinReportingIds(
   interest_group_name_reporting_id = interest_group_name;
 }
 
-// If they report is wrong, calls ReportBadMessage and returns false.
-bool ValidateReportingPrivateAggregationRequest(
-    const auction_worklet::mojom::PrivateAggregationRequestPtr& request,
-    bool additional_extensions_allowed) {
-  if (!HasValidFilteringId(request)) {
-    mojo::ReportBadMessage("Private Aggregation filtering ID invalid");
+// If any of private aggregation request is wrong, calls ReportBadMessage and
+// returns false.
+bool ValidateReportingPrivateAggregationRequests(
+    const PrivateAggregationRequests& pa_requests) {
+  std::optional<std::string> error =
+      content::ValidatePrivateAggregationRequests(pa_requests);
+  if (error.has_value()) {
+    mojo::ReportBadMessage(*error);
     return false;
   }
 
-  if (!auction_worklet::IsValidPrivateAggregationRequestForAdditionalExtensions(
-          *request, additional_extensions_allowed)) {
-    mojo::ReportBadMessage(
-        "Private Aggregation request using disabled features");
-    return false;
-  }
-
-  if (IsPrivateAggregationRequestReservedOnce(*request)) {
-    mojo::ReportBadMessage(
-        "Reporting Private Aggregation request using reserved.once");
-    return false;
+  for (const auto& request : pa_requests) {
+    if (IsPrivateAggregationRequestReservedOnce(*request)) {
+      mojo::ReportBadMessage(
+          "Reporting Private Aggregation request using reserved.once");
+      return false;
+    }
   }
 
   return true;
@@ -646,28 +643,16 @@ void InterestGroupAuctionReporter::OnSellerReportResultComplete(
                                   seller_info->trace_id);
   seller_worklet_handle_.reset();
 
-  // The mojom API declaration should ensure none of these are null.
-  DCHECK(base::ranges::none_of(
-      pa_requests,
-      [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
-             request_ptr) { return request_ptr.is_null(); }));
-
   log_private_aggregation_requests_callback_.Run(pa_requests);
 
   PrivateAggregationTimings timings;
   timings.script_run_time = reporting_latency;
 
-  bool additional_extensions_allowed = base::FeatureList::IsEnabled(
-      blink::features::
-          kPrivateAggregationApiProtectedAudienceAdditionalExtensions);
-
+  if (!ValidateReportingPrivateAggregationRequests(pa_requests)) {
+    pa_requests.clear();
+  }
   for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
        pa_requests) {
-    if (!ValidateReportingPrivateAggregationRequest(
-            request, additional_extensions_allowed)) {
-      continue;
-    }
-
     // reportResult() only gets executed for seller when there was an auction
     // winner so we consider is_winner to be true, which results in
     // "reserved.loss" reports not being reported. Bid reject reason is not
@@ -968,12 +953,6 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
 
   bidder_worklet_handle_.reset();
 
-  // The mojom API declaration should ensure none of these are null.
-  DCHECK(base::ranges::none_of(
-      pa_requests,
-      [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
-             request_ptr) { return request_ptr.is_null(); }));
-
   log_private_aggregation_requests_callback_.Run(pa_requests);
 
   PrivateAggregationKey agg_key = {
@@ -983,16 +962,11 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
   PrivateAggregationTimings timings;
   timings.script_run_time = reporting_latency;
 
-  bool additional_extensions_allowed = base::FeatureList::IsEnabled(
-      blink::features::
-          kPrivateAggregationApiProtectedAudienceAdditionalExtensions);
+  if (!ValidateReportingPrivateAggregationRequests(pa_requests)) {
+    pa_requests.clear();
+  }
   for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
        pa_requests) {
-    if (!ValidateReportingPrivateAggregationRequest(
-            request, additional_extensions_allowed)) {
-      continue;
-    }
-
     // Only winner's reportWin() gets executed, so is_winner is true, which
     // results in "reserved.loss" reports not being reported. Bid reject reason
     // is not meaningful thus not supported in reportWin(), so it is set to

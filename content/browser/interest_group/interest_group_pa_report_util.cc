@@ -24,6 +24,7 @@
 #include "content/browser/private_aggregation/private_aggregation_host.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/common/content_export.h"
+#include "content/services/auction_worklet/public/cpp/private_aggregation_reporting.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -471,6 +472,29 @@ bool IsValidFilteringId(std::optional<uint64_t> filtering_id) {
   }
 
   return filtering_id.value_or(0) <= 255;
+}
+
+std::optional<std::string> ValidatePrivateAggregationRequests(
+    const std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>&
+        pa_requests) {
+  bool additional_extensions_allowed = base::FeatureList::IsEnabled(
+      blink::features::
+          kPrivateAggregationApiProtectedAudienceAdditionalExtensions);
+  for (const auto& request : pa_requests) {
+    // The mojom API declaration should ensure none of these are null.
+    CHECK(!request.is_null());
+
+    if (!HasValidFilteringId(request)) {
+      return "Private Aggregation filtering ID invalid";
+    }
+
+    if (!auction_worklet::
+            IsValidPrivateAggregationRequestForAdditionalExtensions(
+                *request, additional_extensions_allowed)) {
+      return "Private Aggregation request using disabled features";
+    }
+  }
+  return std::nullopt;
 }
 
 }  // namespace content
