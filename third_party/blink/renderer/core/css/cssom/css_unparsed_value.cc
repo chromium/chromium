@@ -125,11 +125,9 @@ IndexedPropertySetterResult CSSUnparsedValue::AnonymousIndexedSetter(
 }
 
 const CSSValue* CSSUnparsedValue::ToCSSValue() const {
-  CSSTokenizer tokenizer(ToUnparsedString());
-  const auto tokens = tokenizer.TokenizeToEOF();
-  CSSParserTokenRange range(tokens);
+  CSSParserTokenStream stream(ToUnparsedString());
 
-  if (range.AtEnd()) {
+  if (stream.AtEnd()) {
     return MakeGarbageCollected<CSSUnparsedDeclarationValue>(
         MakeGarbageCollected<CSSVariableData>());
   }
@@ -144,12 +142,21 @@ const CSSValue* CSSUnparsedValue::ToCSSValue() const {
   // spec:
   // https://github.com/w3c/css-houdini-drafts/issues/1021
   //
-  // Thus, we use the regular Serialize() on the token range here, which will
-  // insert empty comments but only when needed to avoid changing the meaning.
-  // If this CSSUnparsedValue came from serializing a string,
+  // Thus, we insert empty comments but only when needed to avoid changing
+  // the meaning. If this CSSUnparsedValue came from serializing a string,
   // the original contents of any comments will be lost, but Typed OM does
   // not have anywhere to store that kind of data, so it is expected.
-  String original_text = range.Serialize();
+  StringBuilder builder;
+  CSSParserToken token = stream.ConsumeRaw();
+  token.Serialize(builder);
+  while (!stream.Peek().IsEOF()) {
+    if (NeedsInsertedComment(token, stream.Peek())) {
+      builder.Append("/**/");
+    }
+    token = stream.ConsumeRaw();
+    token.Serialize(builder);
+  }
+  String original_text = builder.ReleaseString();
 
   // TODO(crbug.com/985028): We should probably propagate the CSSParserContext
   // to here.
