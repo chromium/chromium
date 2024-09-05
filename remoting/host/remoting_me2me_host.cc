@@ -796,12 +796,18 @@ void HostProcess::CreateAuthenticatorFactory() {
 
   auto auth_config = std::make_unique<protocol::HostAuthenticationConfig>(
       local_certificate, key_pair_);
-  if (is_corp_user_ &&
-      (require_session_authorization_ || !allow_pin_auth_.value_or(false))) {
+  if (require_session_authorization_ ||
+      (is_corp_user_ && !allow_pin_auth_.value_or(false))) {
+    if (!is_corp_user_) {
+      // TODO: joedow - Implement SessionAuthz for Cloud hosts.
+      NOTREACHED() << "SessionAuthz not yet supported for non-Corp hosts";
+    }
+
     auth_config->AddSessionAuthzAuth(
         base::MakeRefCounted<CorpSessionAuthzServiceClientFactory>(
             context_->url_loader_factory(), service_account_email_,
             oauth_refresh_token_));
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     if (!cert_watcher_) {
       cert_watcher_ = std::make_unique<CertificateWatcher>(
@@ -812,9 +818,7 @@ void HostProcess::CreateAuthenticatorFactory() {
     }
     cert_watcher_->SetMonitor(host_->status_monitor());
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  }
-  if (!is_corp_user_ ||
-      (!require_session_authorization_ && allow_pin_auth_.value_or(false))) {
+  } else {
     scoped_refptr<PairingRegistry> pairing_registry;
     if (allow_pairing_) {
       // On Windows |pairing_registry_| is initialized in
