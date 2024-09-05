@@ -674,7 +674,7 @@ void DragDropTabStripTabCellInTabStripView(NSString* src_cell_identifier,
   [[EarlGrey selectElementWithMatcher:TabStripTabCellMatcher(aboutTabTitle)]
       assertWithMatcher:grey_nil()];
 
-  // Check that the snackbar is not dislpayed.
+  // Check that the snackbar is not displayed.
   [[EarlGrey selectElementWithMatcher:TabGroupSnackBar(1)]
       assertWithMatcher:grey_nil()];
 }
@@ -709,7 +709,7 @@ void DragDropTabStripTabCellInTabStripView(NSString* src_cell_identifier,
   [[EarlGrey selectElementWithMatcher:TabStripTabCellMatcher(aboutTabTitle)]
       assertWithMatcher:grey_nil()];
 
-  // Check that the snackbar is dislpayed.
+  // Check that the snackbar is displayed.
   [[EarlGrey selectElementWithMatcher:TabGroupSnackBar(1)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
@@ -750,7 +750,7 @@ void DragDropTabStripTabCellInTabStripView(NSString* src_cell_identifier,
   [[EarlGrey selectElementWithMatcher:TabStripTabCellMatcher(versionTabTitle)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Check that the snackbar is dislpayed.
+  // Check that the snackbar is displayed.
   [[EarlGrey selectElementWithMatcher:TabGroupSnackBar(1)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
@@ -790,7 +790,7 @@ void DragDropTabStripTabCellInTabStripView(NSString* src_cell_identifier,
   [[EarlGrey selectElementWithMatcher:TabStripGroupCellMatcher(kGroupTitle1)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Check that the snackbar is not dislpayed.
+  // Check that the snackbar is not displayed.
   [[EarlGrey selectElementWithMatcher:TabGroupSnackBar(1)]
       assertWithMatcher:grey_nil()];
 }
