@@ -78,7 +78,7 @@ void GpuArcVideoEncodeAccelerator::BitstreamBufferReady(
   DVLOGF(2) << "id=" << bitstream_buffer_id;
   DCHECK(client_);
   auto iter = use_bitstream_cbs_.find(bitstream_buffer_id);
-  DCHECK(iter != use_bitstream_cbs_.end());
+  CHECK(iter != use_bitstream_cbs_.end());
   std::move(iter->second)
       .Run(metadata.payload_size_bytes, metadata.key_frame,
            metadata.timestamp.InMicroseconds());
