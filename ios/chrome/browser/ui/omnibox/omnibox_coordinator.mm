@@ -224,7 +224,7 @@
 }
 
 - (void)focusOmnibox {
-  if (!self.keyboardAccessoryView) {
+  if (!self.keyboardAccessoryView && !self.isSearchOnlyUI) {
     TemplateURLService* templateURLService =
         ios::TemplateURLServiceFactory::GetForBrowserState(
             self.browser->GetBrowserState());
