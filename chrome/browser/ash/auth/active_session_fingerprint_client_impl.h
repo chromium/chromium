@@ -11,9 +11,12 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/auth/active_session_auth_controller.h"
 #include "ash/public/cpp/auth/active_session_fingerprint_client.h"
+#include "ash/shell.h"
+#include "ash/shell_observer.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
@@ -27,6 +30,7 @@ namespace ash {
 
 class ActiveSessionFingerprintClientImpl
     : public ActiveSessionFingerprintClient,
+      public ash::ShellObserver,
       public UserDataAuthClient::FingerprintAuthObserver {
  public:
   ActiveSessionFingerprintClientImpl();
@@ -47,6 +51,9 @@ class ActiveSessionFingerprintClientImpl
   void TerminateFingerprintAuth(std::unique_ptr<UserContext> user_context,
                                 AuthOperationCallback callback) override;
 
+  // ash::ShellObserver:
+  void OnShellDestroying() override;
+
   // ash::UserDataAuthClient::FingerprintAuthObserver:
   void OnFingerprintScan(
       const ::user_data_auth::FingerprintScanResult& result) override;
@@ -63,6 +70,9 @@ class ActiveSessionFingerprintClientImpl
   ActiveSessionFingerprintScanCallback on_scan_callback_;
 
   AuthPerformer auth_performer_;
+
+  base::ScopedObservation<ash::Shell, ash::ShellObserver> shell_observation_{
+      this};
 
   base::WeakPtrFactory<ActiveSessionFingerprintClientImpl> weak_factory_{this};
 };

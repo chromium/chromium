@@ -46,6 +46,7 @@ ActiveSessionFingerprintClientImpl::ActiveSessionFingerprintClientImpl()
     : auth_performer_(UserDataAuthClient::Get()) {
   if (Shell::HasInstance()) {
     Shell::Get()->active_session_auth_controller()->SetFingerprintClient(this);
+    shell_observation_.Observe(ash::Shell::Get());
   } else {
     CHECK_IS_TEST();
   }
@@ -55,9 +56,12 @@ ActiveSessionFingerprintClientImpl::~ActiveSessionFingerprintClientImpl() {
   if (Shell::HasInstance()) {
     Shell::Get()->active_session_auth_controller()->SetFingerprintClient(
         nullptr);
-  } else {
-    CHECK_IS_TEST();
   }
+}
+
+void ActiveSessionFingerprintClientImpl::OnShellDestroying() {
+  Shell::Get()->active_session_auth_controller()->SetFingerprintClient(nullptr);
+  shell_observation_.Reset();
 }
 
 bool ActiveSessionFingerprintClientImpl::IsFingerprintAvailable(
