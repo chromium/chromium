@@ -224,11 +224,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
      * @param fragmentClass The Class of the fragment to show.
      * @param args Arguments to pass to Fragment.instantiate(), or null.
      */
-    public void startFragment(String fragmentClass, Bundle args) {
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.setClass(this, getClass());
-        intent.putExtra(EXTRA_SHOW_FRAGMENT, fragmentClass);
-        intent.putExtra(EXTRA_SHOW_FRAGMENT_ARGUMENTS, args);
+    public void startFragment(@Nullable String fragmentClass, @Nullable Bundle args) {
+        Intent intent = SettingsIntentUtil.createIntent(this, fragmentClass, args);
         startActivity(intent);
     }
 
