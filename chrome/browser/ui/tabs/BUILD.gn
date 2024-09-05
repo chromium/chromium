@@ -23,3 +23,33 @@ source_set("tabs") {
 source_set("tab_enums") {
   sources = [ "tab_enums.h" ]
 }
+
+# This is pulled out in a standalone target as its include is spread
+# all around //chrome/browser and it was part of //chrome/browser/ui:ui.
+# As a result, it created quite a few of circular dependencies when
+# directories in //c/b and //c/b/ui began to be modularized.
+# TODO(crbug.com/364501603): modularize all the rest.
+if (!is_android) {
+  source_set("tab_strip_model_observer") {
+    sources = [
+      "tab_change_type.h",
+      "tab_strip_model_observer.h",
+    ]
+    public_deps = [
+      "//base",
+      "//components/sessions:session_id",
+      "//components/tab_groups",
+      "//ui/base",
+    ]
+  }
+
+  source_set("tab_strip_model_observer_impl") {
+    sources = [ "tab_strip_model_observer.cc" ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+    deps = [
+      ":tab_strip_model_observer",
+      "//base",
+      "//content/public/browser",
+    ]
+  }
+}

@@ -1479,7 +1479,6 @@ static_library("ui") {
       "tabs/saved_tab_groups/tab_group_sync_service_proxy.cc",
       "tabs/saved_tab_groups/tab_group_sync_service_proxy.h",
       "tabs/supports_handles.h",
-      "tabs/tab_change_type.h",
       "tabs/tab_collection.h",
       "tabs/tab_collection_storage.cc",
       "tabs/tab_collection_storage.h",
@@ -1513,8 +1512,6 @@ static_library("ui") {
       "tabs/tab_strip_model.h",
       "tabs/tab_strip_model_delegate.cc",
       "tabs/tab_strip_model_delegate.h",
-      "tabs/tab_strip_model_observer.cc",
-      "tabs/tab_strip_model_observer.h",
       "tabs/tab_strip_model_stats_recorder.cc",
       "tabs/tab_strip_model_stats_recorder.h",
       "tabs/tab_strip_prefs.cc",
@@ -2000,6 +1997,8 @@ static_library("ui") {
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/permission_bubble",
       "//chrome/browser/ui/tabs",
+      "//chrome/browser/ui/tabs:tab_strip_model_observer",
+      "//chrome/browser/ui/tabs:tab_strip_model_observer_impl",
       "//chrome/browser/ui/toasts:impl",
       "//chrome/browser/ui/toasts:toasts",
       "//chrome/browser/ui/toasts/api:toasts",
@@ -2128,6 +2127,11 @@ static_library("ui") {
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/webui/searchbox",
       "//chrome/browser/ui/webui/top_chrome:impl",
+
+      # TODO(crbug.com/364501603): remove this as it depends on
+      # //c/b/ui/tabs/tab_strip_model.h, which is still part of
+      # //c/b/ui.
+      "//chrome/browser/ui/tabs:tab_strip_model_observer_impl",
     ]
 
     if (is_mac) {

@@ -79,7 +79,10 @@ static_library("shelf") {
     "standalone_browser_extension_app_shelf_item_controller.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
+  ]
 
   deps = [
     "//ash",

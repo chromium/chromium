@@ -754,6 +754,7 @@ source_set("extensions") {
     "//chrome/browser/media/webrtc",
     "//chrome/browser/resource_coordinator:tab_lifecycle_observer",
     "//chrome/browser/task_manager",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chrome/common",
     "//chrome/common/extensions/api",
     "//components/omnibox/browser",

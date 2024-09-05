@@ -7683,6 +7683,7 @@ static_library("browser") {
       "//chrome/browser/extensions",
       "//chrome/browser/extensions:keyed_service_factories",
       "//chrome/browser/extensions/api",
+      "//chrome/browser/ui/tabs:tab_strip_model_observer",
     ]
 
     # Any circular includes must depend on the target

@@ -189,7 +189,10 @@ source_set("webrtc") {
       "tab_desktop_media_list.cc",
       "tab_desktop_media_list.h",
     ]
-    public_deps += [ "//extensions/buildflags" ]
+    public_deps += [
+      "//chrome/browser/ui/tabs:tab_strip_model_observer",
+      "//extensions/buildflags",
+    ]
     deps += [
       "//extensions/browser",
       "//extensions/browser/kiosk",

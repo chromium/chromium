@@ -46,6 +46,7 @@ source_set("app_service") {
   public_deps = [
     ":constants",
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
   ]
 
   deps = [
