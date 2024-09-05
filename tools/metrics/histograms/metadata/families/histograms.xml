@@ -1080,35 +1080,6 @@ chromium-metrics-reviews@google.com.
   <token key="RequestType" variants="ProtoFetcherRequestType"/>
 </histogram>
 
-<histogram name="{RequestType}.{AuthErrorState}.AccessTokenLatency" units="ms"
-    expires_after="2023-11-01">
-  <owner>tju@google.com</owner>
-  <owner>chrome-kids-eng@google.com</owner>
-  <summary>
-    Latency of the access token fetching before calls to {RequestType}.
-    Currently only successful authentication is counted.
-  </summary>
-  <token key="RequestType" variants="ProtoFetcherRequestType"/>
-  <token key="AuthErrorState">
-    <variant name="NONE"/>
-  </token>
-</histogram>
-
-<histogram name="{RequestType}.{HttpStatusOrNetError}.ApiLatency" units="ms"
-    expires_after="2023-11-01">
-  <owner>tju@google.com</owner>
-  <owner>chrome-kids-eng@google.com</owner>
-  <summary>
-    Latency of the calls to {RequestType} that resulted in
-    &quot;{HttpStatusOrNetError}&quot; status. Currently only succesful
-    communication is recorded.
-  </summary>
-  <token key="RequestType" variants="ProtoFetcherRequestType"/>
-  <token key="HttpStatusOrNetError">
-    <variant name="HTTP_OK"/>
-  </token>
-</histogram>
-
 <histogram name="{RequestType}.{Status}.Latency" units="ms"
     expires_after="2025-02-09">
   <owner>tju@google.com</owner>

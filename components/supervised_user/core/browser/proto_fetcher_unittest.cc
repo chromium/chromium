@@ -484,13 +484,6 @@ TEST_P(ProtoFetcherTest, RecordsMetrics) {
         base::StrCat({*GetConfig().histogram_basename, ".Latency"}),
         /*expected_count(grew by)*/ 1);
     histogram_tester.ExpectTotalCount(
-        base::StrCat(
-            {*GetConfig().histogram_basename, ".NONE.AccessTokenLatency"}),
-        /*expected_count(grew by)*/ 1);
-    histogram_tester.ExpectTotalCount(
-        base::StrCat({*GetConfig().histogram_basename, ".HTTP_OK.ApiLatency"}),
-        /*expected_count(grew by)*/ 1);
-    histogram_tester.ExpectTotalCount(
         base::StrCat({*GetConfig().histogram_basename, ".NoError.Latency"}),
         /*expected_count(grew by)*/ 1);
 
@@ -574,16 +567,6 @@ TEST_P(ProtoFetcherTest, RetryingFetcherTerminatesOnOkStatusAndRecordsMetrics) {
         base::StrCat({*GetConfig().histogram_basename, ".NoError.Latency"}),
         /*expected_count(grew by)*/ 1);
 
-    // System made it through access token phase three times.
-    histogram_tester.ExpectTotalCount(
-        base::StrCat(
-            {*GetConfig().histogram_basename, ".NONE.AccessTokenLatency"}),
-        /*expected_count(grew by)*/ 3);
-    // Only one successful api call.
-    histogram_tester.ExpectTotalCount(
-        base::StrCat({*GetConfig().histogram_basename, ".HTTP_OK.ApiLatency"}),
-        /*expected_count(grew by)*/ 1);
-
     histogram_tester.ExpectTotalCount(
         base::StrCat(
             {*GetConfig().histogram_basename, ".HttpStatusOrNetError.Latency"}),
@@ -665,16 +648,6 @@ TEST_P(ProtoFetcherTest,
         base::StrCat({*GetConfig().histogram_basename, ".ParseError.Latency"}),
         /*expected_count(grew by)*/ 1);
 
-    // System made it through access token phase two times.
-    histogram_tester.ExpectTotalCount(
-        base::StrCat(
-            {*GetConfig().histogram_basename, ".NONE.AccessTokenLatency"}),
-        /*expected_count(grew by)*/ 2);
-    // Only one successful api call (parse error is a successful api call).
-    histogram_tester.ExpectTotalCount(
-        base::StrCat({*GetConfig().histogram_basename, ".HTTP_OK.ApiLatency"}),
-        /*expected_count(grew by)*/ 1);
-
     histogram_tester.ExpectTotalCount(
         base::StrCat(
             {*GetConfig().histogram_basename, ".HttpStatusOrNetError.Latency"}),
@@ -744,16 +717,6 @@ TEST_P(ProtoFetcherTest, RetryingFetcherContinuesOnTransientError) {
         base::StrCat(
             {*GetConfig().histogram_basename, ".HttpStatusOrNetError.Latency"}),
         /*expected_count(grew by)*/ 2);
-
-    // System made it through access token phase two times.
-    histogram_tester.ExpectTotalCount(
-        base::StrCat(
-            {*GetConfig().histogram_basename, ".NONE.AccessTokenLatency"}),
-        /*expected_count(grew by)*/ 3);
-    // Server only responds with error.
-    histogram_tester.ExpectTotalCount(
-        base::StrCat({*GetConfig().histogram_basename, ".HTTP_OK.ApiLatency"}),
-        /*expected_count(grew by)*/ 0);
 
     EXPECT_THAT(
         histogram_tester.GetAllSamples(

@@ -64,22 +64,6 @@ namespace supervised_user {
 //
 // The static configuration should be placed in the fetcher_config.h module.
 
-// A stopwatch with two functions:
-// * measure total elapsed time,
-// * measure lap time (with automatic resetting after each lap).
-// The stopwatch is created started.
-class Stopwatch {
- public:
-  // Time since start of last lap. Resets the lap timer.
-  base::TimeDelta Lap();
-  // Time since start of last lap.
-  base::TimeDelta Elapsed() const;
-
- private:
-  base::ElapsedTimer elapsed_timer_;
-  base::ElapsedTimer lap_timer_;
-};
-
 // Encapsulates metric functionalities.
 class Metrics {
  public:
@@ -88,8 +72,6 @@ class Metrics {
     kLatency,
     kHttpStatusOrNetError,
     kRetryCount,
-    kAccessTokenLatency,
-    kApiLatency,
     kAuthError,
   };
 
@@ -142,7 +124,7 @@ class Metrics {
   static std::string ToMetricEnumLabel(const ProtoFetcherStatus& status);
 
   std::string_view basename_;
-  Stopwatch stopwatch_;
+  base::ElapsedTimer elapsed_timer_;
 };
 
 // Metrics for retrying fetchers, which are aggregating individual

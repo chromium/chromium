@@ -145,15 +145,6 @@ std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
 
 }  // namespace
 
-base::TimeDelta Stopwatch::Lap() {
-  base::TimeDelta lap = lap_timer_.Elapsed();
-  lap_timer_ = base::ElapsedTimer();
-  return lap;
-}
-base::TimeDelta Stopwatch::Elapsed() const {
-  return elapsed_timer_.Elapsed();
-}
-
 Metrics::Metrics(std::string_view basename) : basename_(basename) {}
 /* static */ std::optional<Metrics> Metrics::FromConfig(
     const FetcherConfig& config) {
@@ -170,26 +161,12 @@ void Metrics::RecordStatus(const ProtoFetcherStatus& status) const {
 
 void Metrics::RecordLatency() const {
   base::UmaHistogramTimes(GetFullHistogramName(MetricType::kLatency),
-                          stopwatch_.Elapsed());
-}
-
-void Metrics::RecordAccessTokenLatency(
-    GoogleServiceAuthError::State auth_error_state) {
-  base::UmaHistogramTimes(
-      GetFullHistogramName(MetricType::kAccessTokenLatency, auth_error_state),
-      stopwatch_.Lap());
-}
-
-void Metrics::RecordApiLatency(
-    ProtoFetcherStatus::HttpStatusOrNetErrorType http_status_or_net_error) {
-  base::UmaHistogramTimes(
-      GetFullHistogramName(MetricType::kApiLatency, http_status_or_net_error),
-      stopwatch_.Lap());
+                          elapsed_timer_.Elapsed());
 }
 
 void Metrics::RecordStatusLatency(const ProtoFetcherStatus& status) const {
   base::UmaHistogramTimes(GetFullHistogramName(MetricType::kLatency, status),
-                          stopwatch_.Elapsed());
+                          elapsed_timer_.Elapsed());
 }
 
 void Metrics::RecordAuthError(const GoogleServiceAuthError& auth_error) const {
@@ -214,10 +191,6 @@ std::string Metrics::GetMetricKey(MetricType metric_type) const {
       return "Latency";
     case MetricType::kHttpStatusOrNetError:
       return "HttpStatusOrNetError";
-    case MetricType::kAccessTokenLatency:
-      return "AccessTokenLatency";
-    case MetricType::kApiLatency:
-      return "ApiLatency";
     case MetricType::kAuthError:
       return "AuthError";
     case MetricType::kRetryCount:
@@ -365,10 +338,6 @@ void AbstractProtoFetcher::OnAccessTokenFetchComplete(
     }
   }
 
-  if (IsMetricsRecordingEnabled()) {
-    metrics_->RecordAccessTokenLatency(GoogleServiceAuthError::State::NONE);
-  }
-
   simple_url_loader_ =
       InitializeSimpleUrlLoader(base::OptionalFromExpected(access_token),
                                 config_, args_, channel_, GetRequestPayload());
@@ -389,10 +358,6 @@ void AbstractProtoFetcher::OnSimpleUrlLoaderComplete(
     return;
   }
 
-  if (IsMetricsRecordingEnabled()) {
-    metrics_->RecordApiLatency(
-        ProtoFetcherStatus::HttpStatusOrNetErrorType(net::HTTP_OK));
-  }
   OnResponse(std::move(response_body));
 }
 
