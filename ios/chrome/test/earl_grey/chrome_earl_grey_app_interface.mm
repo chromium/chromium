@@ -1386,7 +1386,7 @@ NSString* SerializedValue(const base::Value* value) {
 #pragma mark - Unified Consent utilities
 
 + (void)setURLKeyedAnonymizedDataCollectionEnabled:(BOOL)enabled {
-  UnifiedConsentServiceFactory::GetForBrowserState(
+  UnifiedConsentServiceFactory::GetForProfile(
       chrome_test_util::GetOriginalBrowserState())
       ->SetUrlKeyedAnonymizedDataCollectionEnabled(enabled);
 }

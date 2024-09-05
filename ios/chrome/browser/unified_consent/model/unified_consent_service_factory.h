@@ -6,26 +6,22 @@
 #define IOS_CHROME_BROWSER_UNIFIED_CONSENT_MODEL_UNIFIED_CONSENT_SERVICE_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace unified_consent {
 class UnifiedConsentService;
 }
 
-class UnifiedConsentServiceFactory : public BrowserStateKeyedServiceFactory {
+class UnifiedConsentServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  static unified_consent::UnifiedConsentService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  static unified_consent::UnifiedConsentService* GetForProfile(
+      ProfileIOS* profile);
 
-  static unified_consent::UnifiedConsentService* GetForBrowserStateIfExists(
-      ChromeBrowserState* browser_state);
+  static unified_consent::UnifiedConsentService* GetForProfileIfExists(
+      ProfileIOS* profile);
 
   static UnifiedConsentServiceFactory* GetInstance();
-
-  UnifiedConsentServiceFactory(const UnifiedConsentServiceFactory&) = delete;
-  UnifiedConsentServiceFactory& operator=(const UnifiedConsentServiceFactory&) =
-      delete;
 
  private:
   friend class base::NoDestructor<UnifiedConsentServiceFactory>;

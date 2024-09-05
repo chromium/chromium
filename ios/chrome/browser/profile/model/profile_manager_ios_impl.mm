@@ -488,7 +488,7 @@ void ProfileManagerIOSImpl::DoFinalInitForServices(ProfileIOS* profile) {
   ios::AccountReconcilorFactory::GetForBrowserState(profile);
   // Initialization needs to happen after the browser context is available
   // because UnifiedConsentService's dependencies needs the URL context getter.
-  UnifiedConsentServiceFactory::GetForBrowserState(profile);
+  UnifiedConsentServiceFactory::GetForProfile(profile);
 
   // Initialization needs to happen after the profile is available because
   // IOSChromeMetricsServiceAccessor requires profile to be registered in the
