@@ -58,15 +58,15 @@ source_set("push_notification_service") {
     "push_notification_delegate.h",
     "push_notification_delegate.mm",
     "push_notification_service.mm",
-    "push_notification_settings_util.h",
     "push_notification_settings_util.mm",
     "push_notification_util.h",
     "push_notification_util.mm",
   ]
   deps = [
     ":constants",
-    ":push_notification_client",
+    ":push_notification_client_id",
     ":push_notification_service_header",
+    ":push_notification_settings_util_header",
     "//base",
     "//components/commerce/core:pref_names",
     "//components/optimization_guide/core:features",
@@ -100,17 +100,21 @@ source_set("push_notification_service") {
   ]
 }
 
+source_set("push_notification_settings_util_header") {
+  sources = [ "push_notification_settings_util.h" ]
+}
+
 source_set("push_notification_client") {
   sources = [
     "push_notification_client.h",
     "push_notification_client.mm",
-    "push_notification_client_id.h",
   ]
   public_deps = [
     "//base",
     "//url:url",
   ]
   deps = [
+    ":push_notification_client_id",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
@@ -120,6 +124,10 @@ source_set("push_notification_client") {
     "//ios/chrome/browser/url_loading/model",
     "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
   ]
+}
+
+source_set("push_notification_client_id") {
+  sources = [ "push_notification_client_id.h" ]
 }
 
 source_set("constants") {
@@ -141,8 +149,10 @@ source_set("unit_tests") {
   ]
   deps = [
     ":push_notification_client",
+    ":push_notification_client_id",
     ":push_notification_service",
     ":push_notification_service_header",
+    ":push_notification_settings_util_header",
     ":test_support",
     "//base",
     "//base/test:test_support",
@@ -171,6 +181,7 @@ source_set("test_support") {
 
   deps = [
     ":push_notification_client",
+    ":push_notification_client_id",
     ":push_notification_service",
     "//base",
   ]

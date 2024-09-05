@@ -26,7 +26,7 @@ source_set("price_notifications") {
     "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/price_insights/coordinator:delegates",
     "//ios/chrome/browser/price_insights/ui:price_insights_ui",
-    "//ios/chrome/browser/push_notification/model:push_notification_client",
+    "//ios/chrome/browser/push_notification/model:push_notification_client_id",
     "//ios/chrome/browser/push_notification/model:push_notification_service",
     "//ios/chrome/browser/push_notification/model:push_notification_service_header",
     "//ios/chrome/browser/shared/coordinator/alert",

@@ -10,7 +10,6 @@
 
 #import "base/functional/callback_forward.h"
 #import "components/optimization_guide/proto/push_notification.pb.h"
-#import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 
 class CommercePushNotificationClientTest;
