@@ -68,8 +68,10 @@ class GPU_EXPORT ClientImage : public base::RefCounted<ClientImage> {
  public:
   explicit ClientImage(scoped_refptr<ClientSharedImage> shared_image);
 
-  // Gets the ref on the underlying shared image.
-  scoped_refptr<ClientSharedImage> GetSharedImage() const;
+  // Returns the reference on the underlying shared image. Note that clients
+  // using it should ensure that the returned reference does not outlive the
+  // ClientImage.
+  const scoped_refptr<ClientSharedImage>& GetSharedImage() const;
 
   // Returns a sync token which should be waited upon before using this image.
   const SyncToken& GetSyncToken() const;

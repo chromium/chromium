@@ -32,7 +32,7 @@ ClientImage::~ClientImage() {
   shared_image_->UpdateDestructionSyncToken(std::move(sync_token_));
 }
 
-scoped_refptr<ClientSharedImage> ClientImage::GetSharedImage() const {
+const scoped_refptr<ClientSharedImage>& ClientImage::GetSharedImage() const {
   return shared_image_;
 }
 
