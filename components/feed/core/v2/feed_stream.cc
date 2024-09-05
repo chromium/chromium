@@ -1805,12 +1805,13 @@ void FeedStream::CheckDuplicatedContentsOnRefresh() {
       if (pos < 10 &&
           most_recent_content_hashes.contains(hash_list.hashes(0))) {
         duplicate_count_for_top_10++;
-        if (pos == 0)
+        if (pos == 0) {
           is_duplicated_at_pos_1 = true;
-        else if (pos == 1)
+        } else if (pos == 1) {
           is_duplicated_at_pos_2 = true;
-        else if (pos == 2)
+        } else if (pos == 2) {
           is_duplicated_at_pos_3 = true;
+        }
       }
 
       for (uint32_t hash : hash_list.hashes()) {

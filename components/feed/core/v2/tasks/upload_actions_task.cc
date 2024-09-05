@@ -354,10 +354,11 @@ void UploadActionsTask::OnUploadFinished(
 }
 
 void UploadActionsTask::OnUploadedActionsRemoved(bool remove_ok) {
-  if (remove_ok)
+  if (remove_ok) {
     BatchComplete(UploadActionsBatchStatus::kSuccessfullyUploadedBatch);
-  else
+  } else {
     BatchComplete(UploadActionsBatchStatus::kFailedToRemoveUploadedActions);
+  }
 }
 
 void UploadActionsTask::BatchComplete(UploadActionsBatchStatus status) {
