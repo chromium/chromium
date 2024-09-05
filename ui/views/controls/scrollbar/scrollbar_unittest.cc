@@ -83,9 +83,8 @@ class ScrollBarViewsTest : public ViewsTestBase {
     controller_ = std::make_unique<TestScrollBarController>();
 
     widget_ = std::make_unique<Widget>();
-    Widget::InitParams params =
-        CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
-                     Widget::InitParams::TYPE_POPUP);
+    Widget::InitParams params = CreateParams(
+        Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
     params.bounds = gfx::Rect(0, 0, 100, 300);
     widget_->Init(std::move(params));
     widget_->Show();

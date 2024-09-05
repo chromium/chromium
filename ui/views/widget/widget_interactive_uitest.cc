@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -45,7 +46,6 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/touchui/touch_selection_controller_impl.h"
 #include "ui/views/widget/root_view.h"
-#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_interactive_uitest_utils.h"
 #include "ui/views/widget/widget_utils.h"
@@ -66,25 +66,6 @@
 namespace views::test {
 
 namespace {
-
-template <class T>
-class UniqueWidgetPtrT : public views::UniqueWidgetPtr {
- public:
-  UniqueWidgetPtrT() = default;
-  UniqueWidgetPtrT(std::unique_ptr<T> widget)  // NOLINT
-      : views::UniqueWidgetPtr(std::move(widget)) {}
-  UniqueWidgetPtrT(UniqueWidgetPtrT&&) = default;
-  UniqueWidgetPtrT& operator=(UniqueWidgetPtrT&&) = default;
-  ~UniqueWidgetPtrT() = default;
-
-  T& operator*() const {
-    return static_cast<T&>(views::UniqueWidgetPtr::operator*());
-  }
-  T* operator->() const {
-    return static_cast<T*>(views::UniqueWidgetPtr::operator->());
-  }
-  T* get() const { return static_cast<T*>(views::UniqueWidgetPtr::get()); }
-};
 
 // A View that closes the Widget and exits the current message-loop when it
 // receives a mouse-release event.
@@ -193,9 +174,9 @@ class NestedLoopCaptureView : public View {
   METADATA_HEADER(NestedLoopCaptureView, View)
 
  public:
-  explicit NestedLoopCaptureView(Widget* widget)
+  explicit NestedLoopCaptureView(std::unique_ptr<Widget> widget)
       : run_loop_(base::RunLoop::Type::kNestableTasksAllowed),
-        widget_(widget) {}
+        widget_(std::move(widget)) {}
 
   NestedLoopCaptureView(const NestedLoopCaptureView&) = delete;
   NestedLoopCaptureView& operator=(const NestedLoopCaptureView&) = delete;
@@ -218,7 +199,7 @@ class NestedLoopCaptureView : public View {
 
   base::RunLoop run_loop_;
 
-  raw_ptr<Widget> widget_;
+  std::unique_ptr<Widget> widget_;
 };
 
 BEGIN_METADATA(NestedLoopCaptureView)
@@ -451,7 +432,8 @@ TEST_F(DesktopWidgetTestInteractive,
   // Create widget 1 and expect the active window to be its window.
   View* focusable_view1 = new View;
   focusable_view1->SetFocusBehavior(View::FocusBehavior::ALWAYS);
-  WidgetAutoclosePtr widget1(CreateTopLevelNativeWidget());
+  std::unique_ptr<Widget> widget1 = base::WrapUnique(
+      CreateTopLevelNativeWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
   widget1->GetContentsView()->AddChildView(focusable_view1);
   widget1->Show();
   aura::Window* root_window1 = GetRootWindow(widget1.get());
@@ -465,7 +447,8 @@ TEST_F(DesktopWidgetTestInteractive,
 
   // Create widget 2 and expect the active window to be its window.
   View* focusable_view2 = new View;
-  WidgetAutoclosePtr widget2(CreateTopLevelNativeWidget());
+  std::unique_ptr<Widget> widget2 = base::WrapUnique(
+      CreateTopLevelNativeWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
   widget1->GetContentsView()->AddChildView(focusable_view2);
   widget2->Show();
   aura::Window* root_window2 = GetRootWindow(widget2.get());
@@ -490,7 +473,8 @@ TEST_F(DesktopWidgetTestInteractive,
 
 // Verifies bubbles result in a focus lost when shown.
 TEST_F(DesktopWidgetTestInteractive, FocusChangesOnBubble) {
-  WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
+  std::unique_ptr<Widget> widget = base::WrapUnique(
+      CreateTopLevelNativeWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
   View* focusable_view =
       widget->GetContentsView()->AddChildView(std::make_unique<View>());
   focusable_view->SetFocusBehavior(View::FocusBehavior::ALWAYS);
@@ -570,7 +554,8 @@ class TouchEventHandler : public ui::EventHandler {
 TEST_F(DesktopWidgetTestInteractive, DISABLED_TouchNoActivateWindow) {
   View* focusable_view = new View;
   focusable_view->SetFocusBehavior(View::FocusBehavior::ALWAYS);
-  WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
+  std::unique_ptr<Widget> widget = base::WrapUnique(
+      CreateTopLevelNativeWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
   widget->GetContentsView()->AddChildView(focusable_view);
   widget->Show();
 
@@ -587,7 +572,9 @@ TEST_F(DesktopWidgetTestInteractive, DISABLED_TouchNoActivateWindow) {
 // Tests mouse move outside of the window into the "resize controller" and back
 // will still generate an OnMouseEntered and OnMouseExited event..
 TEST_F(WidgetTestInteractive, CheckResizeControllerEvents) {
-  WidgetAutoclosePtr toplevel(CreateTopLevelFramelessPlatformWidget());
+  std::unique_ptr<Widget> toplevel =
+      base::WrapUnique(CreateTopLevelFramelessPlatformWidget(
+          Widget::InitParams::CLIENT_OWNS_WIDGET));
 
   toplevel->SetBounds(gfx::Rect(0, 0, 100, 100));
 
@@ -633,12 +620,14 @@ TEST_F(WidgetTestInteractive, CheckResizeControllerEvents) {
 
 // Test view focus restoration when a widget is deactivated and re-activated.
 TEST_F(WidgetTestInteractive, ViewFocusOnWidgetActivationChanges) {
-  WidgetAutoclosePtr widget1(CreateTopLevelPlatformWidget());
+  std::unique_ptr<Widget> widget1 = base::WrapUnique(
+      CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
   View* view1 =
       widget1->GetContentsView()->AddChildView(std::make_unique<View>());
   view1->SetFocusBehavior(View::FocusBehavior::ALWAYS);
 
-  WidgetAutoclosePtr widget2(CreateTopLevelPlatformWidget());
+  std::unique_ptr<Widget> widget2 = base::WrapUnique(
+      CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
   View* view2a = new View;
   View* view2b = new View;
   view2a->SetFocusBehavior(View::FocusBehavior::ALWAYS);
@@ -674,9 +663,12 @@ TEST_F(WidgetTestInteractive, ViewFocusOnWidgetActivationChanges) {
 }
 
 TEST_F(WidgetTestInteractive, ZOrderCheckBetweenTopWindows) {
-  WidgetAutoclosePtr w1(CreateTopLevelPlatformWidget());
-  WidgetAutoclosePtr w2(CreateTopLevelPlatformWidget());
-  WidgetAutoclosePtr w3(CreateTopLevelPlatformWidget());
+  std::unique_ptr<Widget> w1 = base::WrapUnique(
+      CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
+  std::unique_ptr<Widget> w2 = base::WrapUnique(
+      CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
+  std::unique_ptr<Widget> w3 = base::WrapUnique(
+      CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
 
   ShowSync(w1.get());
   ShowSync(w2.get());
@@ -905,17 +897,19 @@ class WidgetActivationTest : public Widget {
 // Tests whether the widget only becomes active when the underlying window
 // is really active.
 TEST_F(WidgetTestInteractive, WidgetNotActivatedOnFakeActivationMessages) {
-  UniqueWidgetPtrT widget1 = std::make_unique<WidgetActivationTest>();
+  auto widget1 = std::make_unique<WidgetActivationTest>();
   Widget::InitParams init_params =
-      CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+      CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   init_params.native_widget = new DesktopNativeWidgetAura(widget1.get());
   init_params.bounds = gfx::Rect(0, 0, 200, 200);
   widget1->Init(std::move(init_params));
   widget1->Show();
   EXPECT_EQ(true, widget1->active());
 
-  UniqueWidgetPtrT widget2 = std::make_unique<WidgetActivationTest>();
-  init_params = CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  auto widget2 = std::make_unique<WidgetActivationTest>();
+  init_params = CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                             Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   init_params.native_widget = new DesktopNativeWidgetAura(widget2.get());
   widget2->Init(std::move(init_params));
   widget2->Show();
@@ -939,8 +933,9 @@ TEST_F(WidgetTestInteractive, WidgetNotActivatedOnFakeActivationMessages) {
 // this we reduce the bounds of a fullscreen window by 1px when it loses
 // activation. This test verifies the same.
 TEST_F(WidgetTestInteractive, FullscreenBoundsReducedOnActivationLoss) {
-  UniqueWidgetPtr widget1 = std::make_unique<Widget>();
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  auto widget1 = std::make_unique<Widget>();
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   params.native_widget = new DesktopNativeWidgetAura(widget1.get());
   widget1->Init(std::move(params));
   widget1->SetBounds(gfx::Rect(0, 0, 200, 200));
@@ -960,8 +955,9 @@ TEST_F(WidgetTestInteractive, FullscreenBoundsReducedOnActivationLoss) {
             widget1->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
   gfx::Rect fullscreen_bounds = widget1->GetWindowBoundsInScreen();
 
-  UniqueWidgetPtr widget2 = std::make_unique<Widget>();
-  params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  auto widget2 = std::make_unique<Widget>();
+  params = CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                        Widget::InitParams::TYPE_WINDOW);
   params.native_widget = new DesktopNativeWidgetAura(widget2.get());
   widget2->Init(std::move(params));
   widget2->SetBounds(gfx::Rect(0, 0, 200, 200));
@@ -996,8 +992,9 @@ TEST_F(WidgetTestInteractive, FullscreenBoundsReducedOnActivationLoss) {
 // Ensure the window rect and client rects are correct with a window that was
 // maximized.
 TEST_F(WidgetTestInteractive, FullscreenMaximizedWindowBounds) {
-  UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   params.native_widget = new DesktopNativeWidgetAura(widget.get());
   widget->set_frame_type(Widget::FrameType::kForceCustom);
   widget->Init(std::move(params));
@@ -1051,9 +1048,9 @@ TEST_F(DesktopWidgetTestInteractive, WindowModalWindowDestroyedActivationTest) {
       focus_listener.focus_changes();
 
   // Create a top level widget.
-  UniqueWidgetPtr top_level_widget = std::make_unique<Widget>();
-  Widget::InitParams init_params =
-      CreateParams(Widget::InitParams::TYPE_WINDOW);
+  auto top_level_widget = std::make_unique<Widget>();
+  Widget::InitParams init_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   init_params.show_state = ui::SHOW_STATE_NORMAL;
   gfx::Rect initial_bounds(0, 0, 500, 500);
   init_params.bounds = initial_bounds;
@@ -1103,9 +1100,9 @@ TEST_F(DesktopWidgetTestInteractive, WindowModalWindowDestroyedActivationTest) {
 #endif
 
 TEST_F(DesktopWidgetTestInteractive, CanActivateFlagIsHonored) {
-  UniqueWidgetPtr widget = std::make_unique<Widget>();
-  Widget::InitParams init_params =
-      CreateParams(Widget::InitParams::TYPE_WINDOW);
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams init_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   init_params.bounds = gfx::Rect(0, 0, 200, 200);
   init_params.activatable = Widget::InitParams::Activatable::kNo;
   widget->Init(std::move(init_params));
@@ -1154,8 +1151,9 @@ TEST_F(WidgetTestInteractive, DisableViewDoesNotActivateWidget) {
 #endif  // !BUILDFLAG(IS_WIN)
 
   // Create first widget and view, activate the widget, and focus the view.
-  UniqueWidgetPtr widget1 = std::make_unique<Widget>();
-  Widget::InitParams params1 = CreateParams(Widget::InitParams::TYPE_POPUP);
+  auto widget1 = std::make_unique<Widget>();
+  Widget::InitParams params1 = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
   params1.activatable = Widget::InitParams::Activatable::kYes;
   widget1->Init(std::move(params1));
 
@@ -1171,8 +1169,9 @@ TEST_F(WidgetTestInteractive, DisableViewDoesNotActivateWidget) {
   EXPECT_EQ(view1, focus_manager1->GetFocusedView());
 
   // Create second widget and view, activate the widget, and focus the view.
-  UniqueWidgetPtr widget2 = std::make_unique<Widget>();
-  Widget::InitParams params2 = CreateParams(Widget::InitParams::TYPE_POPUP);
+  auto widget2 = std::make_unique<Widget>();
+  Widget::InitParams params2 = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
   params2.activatable = Widget::InitParams::Activatable::kYes;
   widget2->Init(std::move(params2));
 
@@ -1198,7 +1197,8 @@ TEST_F(WidgetTestInteractive, DisableViewDoesNotActivateWidget) {
 }
 
 TEST_F(WidgetTestInteractive, ShowCreatesActiveWindow) {
-  WidgetAutoclosePtr widget(CreateTopLevelPlatformWidget());
+  std::unique_ptr<Widget> widget = base::WrapUnique(
+      CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
 
   ShowSync(widget.get());
   EXPECT_EQ(GetWidgetShowState(widget.get()), ui::SHOW_STATE_NORMAL);
@@ -1206,14 +1206,16 @@ TEST_F(WidgetTestInteractive, ShowCreatesActiveWindow) {
 
 TEST_F(WidgetTestInteractive, ShowInactive) {
   WidgetTest::WaitForSystemAppActivation();
-  WidgetAutoclosePtr widget(CreateTopLevelPlatformWidget());
+  std::unique_ptr<Widget> widget = base::WrapUnique(
+      CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
 
   ShowInactiveSync(widget.get());
   EXPECT_EQ(GetWidgetShowState(widget.get()), ui::SHOW_STATE_INACTIVE);
 }
 
 TEST_F(WidgetTestInteractive, InactiveBeforeShow) {
-  WidgetAutoclosePtr widget(CreateTopLevelPlatformWidget());
+  std::unique_ptr<Widget> widget = base::WrapUnique(
+      CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
 
   EXPECT_FALSE(widget->IsActive());
   EXPECT_FALSE(widget->IsVisible());
@@ -1226,8 +1228,10 @@ TEST_F(WidgetTestInteractive, InactiveBeforeShow) {
 
 TEST_F(WidgetTestInteractive, ShowInactiveAfterShow) {
   // Create 2 widgets to ensure window layering does not change.
-  WidgetAutoclosePtr widget(CreateTopLevelPlatformWidget());
-  WidgetAutoclosePtr widget2(CreateTopLevelPlatformWidget());
+  std::unique_ptr<Widget> widget = base::WrapUnique(
+      CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
+  std::unique_ptr<Widget> widget2 = base::WrapUnique(
+      CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
 
   ShowSync(widget2.get());
   EXPECT_FALSE(widget->IsActive());
@@ -1256,7 +1260,8 @@ TEST_F(WidgetTestInteractive, ShowAfterShowInactive) {
 TEST_F(WidgetTestInteractive, WidgetShouldBeActiveWhenShow) {
   // TODO(crbug.com/40185137): This test fails if put under
   // NativeWidgetAuraTest.
-  WidgetAutoclosePtr anchor_widget(CreateTopLevelNativeWidget());
+  std::unique_ptr<Widget> anchor_widget = base::WrapUnique(
+      CreateTopLevelNativeWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
 
   anchor_widget->Show();
   test::WaitForWidgetActive(anchor_widget.get(), true);
@@ -1268,12 +1273,14 @@ TEST_F(WidgetTestInteractive, WidgetShouldBeActiveWhenShow) {
 
 #if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)
 TEST_F(WidgetTestInteractive, InactiveWidgetDoesNotGrabActivation) {
-  UniqueWidgetPtr widget = base::WrapUnique(CreateTopLevelPlatformWidget());
+  std::unique_ptr<Widget> widget = base::WrapUnique(
+      CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
   ShowSync(widget.get());
   EXPECT_EQ(GetWidgetShowState(widget.get()), ui::SHOW_STATE_NORMAL);
 
-  UniqueWidgetPtr widget2 = std::make_unique<Widget>();
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
+  auto widget2 = std::make_unique<Widget>();
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
   widget2->Init(std::move(params));
   widget2->Show();
   RunPendingMessagesForActiveStatusChange();
@@ -1295,7 +1302,8 @@ TEST_F(WidgetTestInteractive, InactiveWidgetDoesNotGrabActivation) {
 
 // Test that window state is not changed after getting out of full screen.
 TEST_F(WidgetTestInteractive, MAYBE_ExitFullscreenRestoreState) {
-  WidgetAutoclosePtr toplevel(CreateTopLevelPlatformWidget());
+  std::unique_ptr<Widget> toplevel = base::WrapUnique(
+      CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
 
   toplevel->Show();
   RunPendingMessages();
@@ -1329,12 +1337,13 @@ TEST_F(WidgetTestInteractive, MAYBE_ExitFullscreenRestoreState) {
 TEST_F(WidgetTestInteractive, InitialFocus) {
   // By default, there is no initially focused view (even if there is a
   // focusable subview).
-  Widget* toplevel(CreateTopLevelPlatformWidget());
+  std::unique_ptr<Widget> toplevel = base::WrapUnique(
+      CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
   View* view = new View;
   view->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   toplevel->GetContentsView()->AddChildView(view);
 
-  ShowSync(toplevel);
+  ShowSync(toplevel.get());
   toplevel->Show();
   EXPECT_FALSE(view->HasFocus());
   EXPECT_FALSE(toplevel->GetFocusManager()->GetStoredFocusView());
@@ -1351,7 +1360,8 @@ TEST_F(WidgetTestInteractive, InitialFocus) {
 }
 
 TEST_F(DesktopWidgetTestInteractive, RestoreAfterMinimize) {
-  WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
+  std::unique_ptr<Widget> widget = base::WrapUnique(
+      CreateTopLevelNativeWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
   ShowSync(widget.get());
   ASSERT_FALSE(widget->IsMinimized());
 
@@ -1372,7 +1382,8 @@ TEST_F(DesktopWidgetTestInteractive, RestoreAfterMinimize) {
 #if !BUILDFLAG(IS_MAC)
 // Widget::Show/ShowInactive should not restore a maximized window
 TEST_F(DesktopWidgetTestInteractive, ShowAfterMaximize) {
-  WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
+  std::unique_ptr<Widget> widget = base::WrapUnique(
+      CreateTopLevelNativeWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
   ShowSync(widget.get());
   ASSERT_FALSE(widget->IsMaximized());
 
@@ -1396,7 +1407,8 @@ TEST_F(DesktopWidgetTestInteractive, ShowAfterMaximize) {
 // Tests that root window visibility toggles correctly when the desktop widget
 // is minimized and maximized on Windows, and the Widget remains visible.
 TEST_F(DesktopWidgetTestInteractive, RestoreAndMinimizeVisibility) {
-  WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
+  std::unique_ptr<Widget> widget = base::WrapUnique(
+      CreateTopLevelNativeWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
   aura::Window* root_window = GetRootWindow(widget.get());
   ShowSync(widget.get());
   ASSERT_FALSE(widget->IsMinimized());
@@ -1422,7 +1434,8 @@ TEST_F(DesktopWidgetTestInteractive, RestoreAndMinimizeVisibility) {
 // Test that focus is restored to the widget after a minimized window
 // is activated.
 TEST_F(DesktopWidgetTestInteractive, MinimizeAndActivateFocus) {
-  WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
+  std::unique_ptr<Widget> widget = base::WrapUnique(
+      CreateTopLevelNativeWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
   aura::Window* root_window = GetRootWindow(widget.get());
   auto* widget_window = widget->GetNativeWindow();
   ShowSync(widget.get());
@@ -1486,7 +1499,9 @@ TEST_F(DesktopWidgetTestInteractive,
        // TODO(crbug.com/335767870): Re-enable this test
        DISABLED_DoNotSynthesizeMouseMoveOnVisibilityChangeIfOccluded) {
   // Create a top-level widget.
-  WidgetAutoclosePtr widget_below(CreateTopLevelPlatformDesktopWidget());
+  std::unique_ptr<Widget> widget_below =
+      base::WrapUnique(CreateTopLevelPlatformDesktopWidget(
+          Widget::InitParams::CLIENT_OWNS_WIDGET));
   widget_below->SetBounds(gfx::Rect(300, 300));
   widget_below->Show();
 
@@ -1496,9 +1511,9 @@ TEST_F(DesktopWidgetTestInteractive,
   run_loop.Run();
 
   // Create a child widget.
-  UniqueWidgetPtr child = std::make_unique<Widget>();
-  Widget::InitParams child_params =
-      CreateParams(Widget::InitParams::TYPE_WINDOW);
+  auto child = std::make_unique<Widget>();
+  Widget::InitParams child_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   child_params.parent = widget_below->GetNativeView();
   child_params.context = widget_below->GetNativeWindow();
   child->Init(std::move(child_params));
@@ -1516,7 +1531,9 @@ TEST_F(DesktopWidgetTestInteractive,
   EXPECT_EQ(1, counter_below.num_synthetic_mouse_moves());
 
   // Occlude the existing widget with a new top-level widget.
-  WidgetAutoclosePtr widget_above(CreateTopLevelPlatformDesktopWidget());
+  std::unique_ptr<Widget> widget_above =
+      base::WrapUnique(CreateTopLevelPlatformDesktopWidget(
+          Widget::InitParams::CLIENT_OWNS_WIDGET));
   widget_above->SetBounds(gfx::Rect(300, 300));
   widget_above->Show();
   base::RunLoop().RunUntilIdle();
@@ -1537,7 +1554,8 @@ TEST_F(DesktopWidgetTestInteractive,
 // Tests that minimizing a widget causes the gesture_handler
 // to be cleared when the widget is minimized.
 TEST_F(DesktopWidgetTestInteractive, EventHandlersClearedOnWidgetMinimize) {
-  WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
+  std::unique_ptr<Widget> widget = base::WrapUnique(
+      CreateTopLevelNativeWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
   ShowSync(widget.get());
   ASSERT_FALSE(widget->IsMinimized());
   View mouse_handler_view;
@@ -1671,12 +1689,12 @@ class WidgetCaptureTest : public DesktopWidgetTestInteractive {
   // Verifies Widget::SetCapture() results in updating native capture along with
   // invoking the right Widget function.
   void TestCapture(bool use_desktop_native_widget) {
-    UniqueWidgetPtrT widget1 =
+    std::unique_ptr<Widget> widget1 =
         std::make_unique<CaptureLostTrackingWidget>(capture_state1_.get());
     InitPlatformWidget(widget1.get(), use_desktop_native_widget);
     widget1->Show();
 
-    UniqueWidgetPtrT widget2 =
+    std::unique_ptr<Widget> widget2 =
         std::make_unique<CaptureLostTrackingWidget>(capture_state2_.get());
     InitPlatformWidget(widget2.get(), use_desktop_native_widget);
     widget2->Show();
@@ -1705,7 +1723,8 @@ class WidgetCaptureTest : public DesktopWidgetTestInteractive {
 
   void InitPlatformWidget(Widget* widget, bool use_desktop_native_widget) {
     Widget::InitParams params =
-        CreateParams(views::Widget::InitParams::TYPE_WINDOW);
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                     Widget::InitParams::TYPE_WINDOW);
     // The test class by default returns DesktopNativeWidgetAura.
     params.native_widget =
         use_desktop_native_widget
@@ -1742,9 +1761,9 @@ TEST_F(WidgetCaptureTest, CaptureDesktopNativeWidget) {
 // it is destroyed. Test for crbug.com/622201.
 TEST_F(WidgetCaptureTest, DestroyWithCapture_CloseNow) {
   CaptureLostState capture_state;
-  CaptureLostTrackingWidget* widget =
-      new CaptureLostTrackingWidget(&capture_state);
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  auto widget = std::make_unique<CaptureLostTrackingWidget>(&capture_state);
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   widget->Init(std::move(params));
   widget->Show();
 
@@ -1758,9 +1777,9 @@ TEST_F(WidgetCaptureTest, DestroyWithCapture_CloseNow) {
 
 TEST_F(WidgetCaptureTest, DestroyWithCapture_Close) {
   CaptureLostState capture_state;
-  CaptureLostTrackingWidget* widget =
-      new CaptureLostTrackingWidget(&capture_state);
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  auto widget = std::make_unique<CaptureLostTrackingWidget>(&capture_state);
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   widget->Init(std::move(params));
   widget->Show();
 
@@ -1771,11 +1790,11 @@ TEST_F(WidgetCaptureTest, DestroyWithCapture_Close) {
   EXPECT_TRUE(capture_state.GetAndClearGotCaptureLost());
 }
 
-// TODO(kylixrd): Remove this test once Widget ownership is normalized.
-TEST_F(WidgetCaptureTest, DestroyWithCapture_WidgetOwnsNativeWidget) {
+// TODO(kylixrd): Rename this test once Widget ownership is normalized.
+TEST_F(WidgetCaptureTest, DestroyWithCapture_ClientOwnsWidget) {
   Widget widget;
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
-  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   widget.Init(std::move(params));
   widget.Show();
 
@@ -1785,9 +1804,10 @@ TEST_F(WidgetCaptureTest, DestroyWithCapture_WidgetOwnsNativeWidget) {
 
 // Test that no state is set if capture fails.
 TEST_F(WidgetCaptureTest, FailedCaptureRequestIsNoop) {
-  UniqueWidgetPtr widget = std::make_unique<Widget>();
+  auto widget = std::make_unique<Widget>();
   Widget::InitParams params =
-      CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+      CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.bounds = gfx::Rect(400, 400);
   widget->Init(std::move(params));
 
@@ -1817,7 +1837,9 @@ TEST_F(WidgetCaptureTest, FailedCaptureRequestIsNoop) {
 }
 
 TEST_F(WidgetCaptureTest, CaptureAutoReset) {
-  WidgetAutoclosePtr toplevel(CreateTopLevelFramelessPlatformWidget());
+  std::unique_ptr<Widget> toplevel =
+      base::WrapUnique(CreateTopLevelFramelessPlatformWidget(
+          Widget::InitParams::CLIENT_OWNS_WIDGET));
   toplevel->SetContentsView(std::make_unique<View>());
 
   EXPECT_FALSE(toplevel->HasCapture());
@@ -1843,7 +1865,9 @@ TEST_F(WidgetCaptureTest, CaptureAutoReset) {
 }
 
 TEST_F(WidgetCaptureTest, ResetCaptureOnGestureEnd) {
-  WidgetAutoclosePtr toplevel(CreateTopLevelFramelessPlatformWidget());
+  std::unique_ptr<Widget> toplevel =
+      base::WrapUnique(CreateTopLevelFramelessPlatformWidget(
+          Widget::InitParams::CLIENT_OWNS_WIDGET));
   View* container = toplevel->SetContentsView(std::make_unique<View>());
 
   View* gesture = new GestureCaptureView;
@@ -1904,13 +1928,18 @@ TEST_F(WidgetCaptureTest, DisableCaptureWidgetFromMousePress) {
   // release event to |second|, to make sure that the release event is
   // dispatched after the nested loop starts.
 
-  WidgetAutoclosePtr first(CreateTopLevelFramelessPlatformWidget());
-  Widget* second = CreateTopLevelFramelessPlatformWidget();
+  std::unique_ptr<Widget> first =
+      base::WrapUnique(CreateTopLevelFramelessPlatformWidget(
+          Widget::InitParams::CLIENT_OWNS_WIDGET));
+  std::unique_ptr<Widget> second =
+      base::WrapUnique(CreateTopLevelFramelessPlatformWidget(
+          Widget::InitParams::CLIENT_OWNS_WIDGET));
+  Widget* second_ptr = second.get();
 
-  NestedLoopCaptureView* container =
-      first->SetContentsView(std::make_unique<NestedLoopCaptureView>(second));
+  NestedLoopCaptureView* container = first->SetContentsView(
+      std::make_unique<NestedLoopCaptureView>(std::move(second)));
 
-  second->SetContentsView(
+  second_ptr->SetContentsView(
       std::make_unique<ExitLoopOnRelease>(container->GetQuitClosure()));
 
   first->SetSize(gfx::Size(100, 100));
@@ -1919,7 +1948,7 @@ TEST_F(WidgetCaptureTest, DisableCaptureWidgetFromMousePress) {
   gfx::Point location(20, 20);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(&Widget::OnMouseEvent, base::Unretained(second),
+      base::BindOnce(&Widget::OnMouseEvent, base::Unretained(second_ptr),
                      base::Owned(new ui::MouseEvent(
                          ui::EventType::kMouseReleased, location, location,
                          ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
@@ -1934,19 +1963,21 @@ TEST_F(WidgetCaptureTest, DisableCaptureWidgetFromMousePress) {
 // Tests some grab/ungrab events. Only one Widget can have capture at any given
 // time.
 TEST_F(WidgetCaptureTest, GrabUngrab) {
-  auto top_level =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  std::unique_ptr<Widget> top_level =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   top_level->SetContentsView(std::make_unique<MouseView>());
 
-  Widget* child1 = new Widget;
-  Widget::InitParams params1 = CreateParams(Widget::InitParams::TYPE_CONTROL);
+  auto child1 = std::make_unique<Widget>();
+  Widget::InitParams params1 = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_CONTROL);
   params1.parent = top_level->GetNativeView();
   params1.bounds = gfx::Rect(10, 10, 100, 100);
   child1->Init(std::move(params1));
   child1->SetContentsView(std::make_unique<MouseView>());
 
-  Widget* child2 = new Widget;
-  Widget::InitParams params2 = CreateParams(Widget::InitParams::TYPE_CONTROL);
+  auto child2 = std::make_unique<Widget>();
+  Widget::InitParams params2 = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_CONTROL);
   params2.parent = top_level->GetNativeView();
   params2.bounds = gfx::Rect(110, 10, 100, 100);
   child2->Init(std::move(params2));
@@ -2023,9 +2054,9 @@ TEST_F(WidgetCaptureTest, MAYBE_SystemModalWindowReleasesCapture) {
   WidgetFocusManager::GetInstance()->AddFocusChangeListener(&focus_listener);
 
   // Create a top level widget.
-  UniqueWidgetPtr top_level_widget = std::make_unique<Widget>();
-  Widget::InitParams init_params =
-      CreateParams(Widget::InitParams::TYPE_WINDOW);
+  auto top_level_widget = std::make_unique<Widget>();
+  Widget::InitParams init_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   init_params.show_state = ui::SHOW_STATE_NORMAL;
   gfx::Rect initial_bounds(0, 0, 500, 500);
   init_params.bounds = initial_bounds;
@@ -2066,18 +2097,20 @@ TEST_F(WidgetCaptureTest, MAYBE_SystemModalWindowReleasesCapture) {
 // mouse events when a different widget grabs capture. Except for Windows,
 // which does not send a synthetic mouse exit.
 TEST_F(WidgetCaptureTest, MAYBE_MouseExitOnCaptureGrab) {
-  UniqueWidgetPtr widget1 = std::make_unique<Widget>();
+  auto widget1 = std::make_unique<Widget>();
   Widget::InitParams params1 =
-      CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+      CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   widget1->Init(std::move(params1));
   MouseView* mouse_view1 =
       widget1->SetContentsView(std::make_unique<MouseView>());
   widget1->Show();
   widget1->SetBounds(gfx::Rect(300, 300));
 
-  UniqueWidgetPtr widget2 = std::make_unique<Widget>();
+  auto widget2 = std::make_unique<Widget>();
   Widget::InitParams params2 =
-      CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+      CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   widget2->Init(std::move(params2));
   widget2->Show();
   widget2->SetBounds(gfx::Rect(400, 0, 300, 300));
@@ -2134,15 +2167,17 @@ class CaptureOnActivationObserver : public WidgetObserver {
 // Test that setting capture on widget activation of a non-toplevel widget
 // (e.g. a bubble on Linux) succeeds.
 TEST_F(WidgetCaptureTest, SetCaptureToNonToplevel) {
-  UniqueWidgetPtr toplevel = std::make_unique<Widget>();
+  auto toplevel = std::make_unique<Widget>();
   Widget::InitParams toplevel_params =
-      CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+      CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   toplevel->Init(std::move(toplevel_params));
   toplevel->Show();
 
-  UniqueWidgetPtr child = std::make_unique<Widget>();
+  auto child = std::make_unique<Widget>();
   Widget::InitParams child_params =
-      CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+      CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   child_params.parent = toplevel->GetNativeView();
   child_params.context = toplevel->GetNativeWindow();
   child->Init(std::move(child_params));
@@ -2200,9 +2235,9 @@ class MouseEventTrackingWidget : public Widget {
 // on Windows that it is correctly processed by the widget that doesn't have
 // capture. This behavior is not desired on OSes other than Windows.
 TEST_F(WidgetCaptureTest, MouseEventDispatchedToRightWindow) {
-  UniqueWidgetPtrT widget1 = std::make_unique<MouseEventTrackingWidget>();
-  Widget::InitParams params1 =
-      CreateParams(views::Widget::InitParams::TYPE_WINDOW);
+  auto widget1 = std::make_unique<MouseEventTrackingWidget>();
+  Widget::InitParams params1 = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   // Not setting bounds on Win64 Arm results in a 0 height window, which
   // won't get mouse events. See https://crbug.com/1418180.
   params1.bounds = gfx::Rect(0, 0, 200, 200);
@@ -2210,9 +2245,9 @@ TEST_F(WidgetCaptureTest, MouseEventDispatchedToRightWindow) {
   widget1->Init(std::move(params1));
   widget1->Show();
 
-  UniqueWidgetPtrT widget2 = std::make_unique<MouseEventTrackingWidget>();
-  Widget::InitParams params2 =
-      CreateParams(views::Widget::InitParams::TYPE_WINDOW);
+  auto widget2 = std::make_unique<MouseEventTrackingWidget>();
+  Widget::InitParams params2 = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   params2.bounds = gfx::Rect(0, 0, 200, 200);
   params2.native_widget = new DesktopNativeWidgetAura(widget2.get());
   widget2->Init(std::move(params2));
@@ -2255,19 +2290,20 @@ class WidgetInputMethodInteractiveTest : public DesktopWidgetTestInteractive {
     // On Windows, Widget::Deactivate() works by activating the next topmost
     // window on the z-order stack. This only works if there is at least one
     // other window, so make sure that is the case.
-    deactivate_widget_ = CreateTopLevelNativeWidget();
+    deactivate_widget_ = base::WrapUnique(
+        CreateTopLevelNativeWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
     deactivate_widget_->Show();
 #endif
   }
 
   void TearDown() override {
     if (deactivate_widget_)
-      deactivate_widget_.ExtractAsDangling()->CloseNow();
+      deactivate_widget_->CloseNow();
     DesktopWidgetTestInteractive::TearDown();
   }
 
  private:
-  raw_ptr<Widget> deactivate_widget_ = nullptr;
+  std::unique_ptr<Widget> deactivate_widget_;
 };
 
 #if BUILDFLAG(IS_MAC)
@@ -2277,7 +2313,8 @@ class WidgetInputMethodInteractiveTest : public DesktopWidgetTestInteractive {
 #endif
 // Test input method focus changes affected by top window activaction.
 TEST_F(WidgetInputMethodInteractiveTest, MAYBE_Activation) {
-  WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
+  std::unique_ptr<Widget> widget = base::WrapUnique(
+      CreateTopLevelNativeWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
   std::unique_ptr<Textfield> textfield = CreateTextfield();
   auto* const textfield_ptr = textfield.get();
   widget->GetRootView()->AddChildView(std::move(textfield));
@@ -2296,22 +2333,21 @@ TEST_F(WidgetInputMethodInteractiveTest, MAYBE_Activation) {
 
 // Test input method focus changes affected by focus changes within 1 window.
 TEST_F(WidgetInputMethodInteractiveTest, OneWindow) {
-  WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
-  std::unique_ptr<Textfield> textfield1 = CreateTextfield();
-  auto* const textfield1_ptr = textfield1.get();
-  std::unique_ptr<Textfield> textfield2 = CreateTextfield();
-  auto* const textfield2_ptr = textfield2.get();
-  textfield2_ptr->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
-  widget->GetRootView()->AddChildView(std::move(textfield1));
-  widget->GetRootView()->AddChildView(std::move(textfield2));
+  std::unique_ptr<Widget> widget = base::WrapUnique(
+      CreateTopLevelNativeWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
+  Textfield* const textfield1 =
+      widget->GetRootView()->AddChildView(CreateTextfield());
+  Textfield* const textfield2 =
+      widget->GetRootView()->AddChildView(CreateTextfield());
+  textfield2->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
 
   ShowSync(widget.get());
 
-  textfield1_ptr->RequestFocus();
+  textfield1->RequestFocus();
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT,
             widget->GetInputMethod()->GetTextInputType());
 
-  textfield2_ptr->RequestFocus();
+  textfield2->RequestFocus();
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_PASSWORD,
             widget->GetInputMethod()->GetTextInputType());
 
@@ -2328,7 +2364,7 @@ TEST_F(WidgetInputMethodInteractiveTest, OneWindow) {
             widget->GetInputMethod()->GetTextInputType());
 
   DeactivateSync(widget.get());
-  textfield1_ptr->RequestFocus();
+  textfield1->RequestFocus();
   ActivateSync(widget.get());
   EXPECT_TRUE(widget->IsActive());
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT,
@@ -2339,29 +2375,30 @@ TEST_F(WidgetInputMethodInteractiveTest, OneWindow) {
 // Test input method focus changes affected by focus changes cross 2 windows
 // which shares the same top window.
 TEST_F(WidgetInputMethodInteractiveTest, TwoWindows) {
-  WidgetAutoclosePtr parent(CreateTopLevelNativeWidget());
+  std::unique_ptr<Widget> parent = base::WrapUnique(
+      CreateTopLevelNativeWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
   parent->SetBounds(gfx::Rect(100, 100, 100, 100));
 
-  Widget* child = CreateChildNativeWidgetWithParent(parent.get());
+  std::unique_ptr<Widget> child =
+      base::WrapUnique(CreateChildNativeWidgetWithParent(
+          parent.get(), Widget::InitParams::CLIENT_OWNS_WIDGET));
   child->SetBounds(gfx::Rect(0, 0, 50, 50));
   child->Show();
 
-  std::unique_ptr<Textfield> textfield_parent = CreateTextfield();
-  auto* const textfield_parent_ptr = textfield_parent.get();
-  std::unique_ptr<Textfield> textfield_child = CreateTextfield();
-  auto* const textfield_child_ptr = textfield_child.get();
+  Textfield* const textfield_parent =
+      parent->GetRootView()->AddChildView(CreateTextfield());
+  Textfield* const textfield_child =
+      child->GetRootView()->AddChildView(CreateTextfield());
   textfield_parent->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
-  parent->GetRootView()->AddChildView(std::move(textfield_parent));
-  child->GetRootView()->AddChildView(std::move(textfield_child));
   ShowSync(parent.get());
 
   EXPECT_EQ(parent->GetInputMethod(), child->GetInputMethod());
 
-  textfield_parent_ptr->RequestFocus();
+  textfield_parent->RequestFocus();
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_PASSWORD,
             parent->GetInputMethod()->GetTextInputType());
 
-  textfield_child_ptr->RequestFocus();
+  textfield_child->RequestFocus();
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT,
             parent->GetInputMethod()->GetTextInputType());
 
@@ -2377,7 +2414,7 @@ TEST_F(WidgetInputMethodInteractiveTest, TwoWindows) {
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT,
             parent->GetInputMethod()->GetTextInputType());
 
-  textfield_parent_ptr->RequestFocus();
+  textfield_parent->RequestFocus();
   DeactivateSync(parent.get());
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE,
             parent->GetInputMethod()->GetTextInputType());
@@ -2390,51 +2427,51 @@ TEST_F(WidgetInputMethodInteractiveTest, TwoWindows) {
 
 // Test input method focus changes affected by textfield's state changes.
 TEST_F(WidgetInputMethodInteractiveTest, TextField) {
-  WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
-  std::unique_ptr<Textfield> textfield = CreateTextfield();
-  auto* const textfield_ptr = textfield.get();
-  widget->GetRootView()->AddChildView(std::move(textfield));
+  std::unique_ptr<Widget> widget = base::WrapUnique(
+      CreateTopLevelNativeWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
+  Textfield* const textfield =
+      widget->GetRootView()->AddChildView(CreateTextfield());
   ShowSync(widget.get());
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE,
             widget->GetInputMethod()->GetTextInputType());
 
-  textfield_ptr->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
+  textfield->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE,
             widget->GetInputMethod()->GetTextInputType());
 
-  textfield_ptr->RequestFocus();
+  textfield->RequestFocus();
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_PASSWORD,
             widget->GetInputMethod()->GetTextInputType());
 
-  textfield_ptr->SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT);
+  textfield->SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT);
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT,
             widget->GetInputMethod()->GetTextInputType());
 
-  textfield_ptr->SetReadOnly(true);
+  textfield->SetReadOnly(true);
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE,
             widget->GetInputMethod()->GetTextInputType());
 }
 
 // Test input method should not work for accelerator.
 TEST_F(WidgetInputMethodInteractiveTest, AcceleratorInTextfield) {
-  WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
-  std::unique_ptr<Textfield> textfield = CreateTextfield();
-  auto* const textfield_ptr = textfield.get();
-  widget->GetRootView()->AddChildView(std::move(textfield));
+  std::unique_ptr<Widget> widget = base::WrapUnique(
+      CreateTopLevelNativeWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
+  Textfield* const textfield =
+      widget->GetRootView()->AddChildView(CreateTextfield());
   ShowSync(widget.get());
-  textfield_ptr->SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT);
-  textfield_ptr->RequestFocus();
+  textfield->SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT);
+  textfield->RequestFocus();
 
   ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_F,
                          ui::EF_ALT_DOWN);
   ui::Accelerator accelerator(key_event);
   widget->GetFocusManager()->RegisterAccelerator(
-      accelerator, ui::AcceleratorManager::kNormalPriority, textfield_ptr);
+      accelerator, ui::AcceleratorManager::kNormalPriority, textfield);
 
   widget->OnKeyEvent(&key_event);
   EXPECT_TRUE(key_event.stopped_propagation());
 
-  widget->GetFocusManager()->UnregisterAccelerators(textfield_ptr);
+  widget->GetFocusManager()->UnregisterAccelerators(textfield);
 
   ui::KeyEvent key_event2(key_event);
   widget->OnKeyEvent(&key_event2);

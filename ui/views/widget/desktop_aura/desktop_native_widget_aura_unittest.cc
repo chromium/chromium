@@ -750,15 +750,15 @@ void GenerateMouseEvents(Widget* widget, ui::EventType last_event_type) {
 void RunCloseWidgetDuringDispatchTest(WidgetTest* test,
                                       ui::EventType last_event_type) {
   // |widget| is deleted by CloseWidgetView.
-  Widget* widget = new Widget;
-  Widget::InitParams params =
-      test->CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
-                         Widget::InitParams::TYPE_POPUP);
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams params = test->CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
   params.bounds = gfx::Rect(0, 0, 50, 100);
   widget->Init(std::move(params));
   widget->SetContentsView(std::make_unique<CloseWidgetView>(last_event_type));
   widget->Show();
-  GenerateMouseEvents(widget, last_event_type);
+  GenerateMouseEvents(widget.get(), last_event_type);
+  EXPECT_TRUE(widget->IsClosed());
 }
 
 // Verifies deleting the widget from a mouse pressed event doesn't crash.

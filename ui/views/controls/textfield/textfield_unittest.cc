@@ -4952,7 +4952,7 @@ TEST_F(TextfieldTest, TextfieldBoundsChangeTest) {
 // automatically receive focus and the text cursor is not visible.
 TEST_F(TextfieldTest, TextfieldInitialization) {
   std::unique_ptr<Widget> widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   {
     View* container = widget->SetContentsView(std::make_unique<View>());
     TestTextfield* new_textfield =

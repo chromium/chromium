@@ -140,7 +140,7 @@ class EditableComboboxTest : public ViewsTestBase {
   void OnContentChanged() { ++change_count_; }
 
   // The widget where the control will appear.
-  raw_ptr<Widget> widget_ = nullptr;
+  std::unique_ptr<Widget> widget_;
 
   // |combobox_| and |dummy_focusable_view_| are allocated in
   // |InitEditableCombobox| and then owned by |widget_|.
@@ -176,7 +176,7 @@ void EditableComboboxTest::TearDown() {
     combobox_ = nullptr;
     dummy_focusable_view_ = nullptr;
     parent_of_combobox_ = nullptr;
-    widget_.ExtractAsDangling()->Close();
+    widget_->Close();
   }
   ViewsTestBase::TearDown();
 }
@@ -227,9 +227,9 @@ void EditableComboboxTest::InitEditableCombobox(
 
 // Initializes the widget where the combobox and the dummy control live.
 void EditableComboboxTest::InitWidget() {
-  widget_ = new Widget();
+  widget_ = std::make_unique<Widget>();
   Widget::InitParams params =
-      CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
                    Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.bounds = kWidgetBounds;
   widget_->Init(std::move(params));
@@ -248,7 +248,7 @@ void EditableComboboxTest::InitWidget() {
 #endif
 
   event_generator_ =
-      std::make_unique<ui::test::EventGenerator>(GetRootWindow(widget_));
+      std::make_unique<ui::test::EventGenerator>(GetRootWindow(widget_.get()));
   event_generator_->set_target(ui::test::EventGenerator::Target::WINDOW);
 }
 
@@ -301,7 +301,7 @@ void EditableComboboxTest::SetContextMenuController(
 
 void EditableComboboxTest::ClickTextfield() {
   const gfx::Point textfield(combobox_->x() + 1, combobox_->y() + 1);
-  PerformClick(widget_, textfield);
+  PerformClick(widget_.get(), textfield);
 }
 
 void EditableComboboxTest::DragMouseTo(const gfx::Point& location) {
@@ -391,7 +391,7 @@ TEST_F(EditableComboboxTest,
 
   const gfx::Point outside_point(combobox_->x() + combobox_->width() + 1,
                                  combobox_->y() + 1);
-  PerformClick(widget_, outside_point);
+  PerformClick(widget_.get(), outside_point);
 
   WaitForMenuClosureAnimation();
   EXPECT_FALSE(IsMenuOpen());
@@ -881,14 +881,14 @@ TEST_F(EditableComboboxTest, DragToSelectDoesntOpenTheMenu) {
   gfx::Point start_point(kCursorXStart, kCursorY);
   gfx::Point end_point(kCursorXEnd, kCursorY);
 
-  PerformMouseEvent(widget_, start_point, ui::EventType::kMousePressed);
+  PerformMouseEvent(widget_.get(), start_point, ui::EventType::kMousePressed);
   EXPECT_TRUE(GetSelectedText().empty());
 
   DragMouseTo(end_point);
   ASSERT_EQ(u"abc", GetSelectedText());
   EXPECT_FALSE(IsMenuOpen());
 
-  PerformMouseEvent(widget_, end_point, ui::EventType::kMouseReleased);
+  PerformMouseEvent(widget_.get(), end_point, ui::EventType::kMouseReleased);
   ASSERT_EQ(u"abc", GetSelectedText());
   EXPECT_FALSE(IsMenuOpen());
 }

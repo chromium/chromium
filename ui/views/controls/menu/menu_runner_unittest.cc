@@ -87,9 +87,8 @@ class MenuRunnerTest : public ViewsTestBase {
 #endif
 
     menu_delegate_ = std::make_unique<TestMenuDelegate>();
-    Widget::InitParams params =
-        CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                     Widget::InitParams::TYPE_POPUP);
+    Widget::InitParams params = CreateParams(
+        Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
     owner_ = std::make_unique<Widget>();
     owner_->Init(std::move(params));
     owner_->Show();
@@ -387,7 +386,7 @@ class MenuRunnerWidgetTest : public MenuRunnerTest {
   MenuRunnerWidgetTest(const MenuRunnerWidgetTest&) = delete;
   MenuRunnerWidgetTest& operator=(const MenuRunnerWidgetTest&) = delete;
 
-  Widget* widget() { return widget_; }
+  Widget* widget() { return widget_.get(); }
   EventCountView* event_count_view() {
     return static_cast<EventCountView*>(
         widget()->GetRootView()->GetViewByID(kEventCountViewID));
@@ -408,9 +407,9 @@ class MenuRunnerWidgetTest : public MenuRunnerTest {
   // ViewsTestBase:
   void SetUp() override {
     MenuRunnerTest::SetUp();
-    widget_ = new Widget;
+    widget_ = std::make_unique<Widget>();
     Widget::InitParams params =
-        CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
                      Widget::InitParams::TYPE_WINDOW);
     widget_->Init(std::move(params));
     widget_->Show();
@@ -426,12 +425,12 @@ class MenuRunnerWidgetTest : public MenuRunnerTest {
 
   void TearDown() override {
     consumer_.reset();
-    widget_.ExtractAsDangling()->CloseNow();
+    widget_->CloseNow();
     MenuRunnerTest::TearDown();
   }
 
  private:
-  raw_ptr<Widget> widget_ = nullptr;
+  std::unique_ptr<Widget> widget_;
   std::unique_ptr<MenuLauncherEventHandler> consumer_;
 };
 

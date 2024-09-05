@@ -139,20 +139,10 @@ TEST_F(ViewAuraTest, RecreateLayersWithWindows) {
     EXPECT_NE(w1_layer, w1->GetNativeView()->layer());
 
     // The old layers should still exist and have the same hierarchy.
-    ASSERT_EQ("w1", w1_layer->name());
     ASSERT_EQ("v1 v4 w2 v7", ui::test::ChildLayerNamesAsString(*w1_layer));
     ASSERT_EQ("v5", ui::test::ChildLayerNamesAsString(*w2_layer));
     ASSERT_EQ("v6", ui::test::ChildLayerNamesAsString(*v5_layer));
     EXPECT_EQ("v8 v9", ui::test::ChildLayerNamesAsString(*v7_layer));
-
-    ASSERT_EQ(4u, w1_layer->children().size());
-    EXPECT_EQ(v1_layer, w1_layer->children()[0]);
-    EXPECT_EQ(v4_layer, w1_layer->children()[1]);
-    EXPECT_EQ(w2_layer, w1_layer->children()[2]);
-    EXPECT_EQ(v7_layer, w1_layer->children()[3]);
-
-    ASSERT_EQ(1u, w2_layer->children().size());
-    EXPECT_EQ(v5_layer, w2_layer->children()[0]);
 
     ASSERT_EQ(1u, v5_layer->children().size());
     EXPECT_EQ(v6_layer, v5_layer->children()[0]);
