@@ -597,7 +597,7 @@ class ComputedStyle final : public ComputedStyleBase {
   ContentData* GetContentData() const { return ContentInternal().Get(); }
 
   // Returns the value of `line-clamp` or of `-webkit-line-clamp`, whichever
-  // applies (i.e. `-webkit-line-clamp` doesn't apply without
+  // applies (i.e. `-webkit-line-clamp` doesn't apply without specifying
   // `display: -webkit-box`). To get the raw value of the properties, use
   // `StandardLineClamp()` or `WebkitLineClamp()`.
   int LineClamp() const {
@@ -605,8 +605,15 @@ class ComputedStyle final : public ComputedStyleBase {
       DCHECK(RuntimeEnabledFeatures::CSSLineClampEnabled());
       return StandardLineClamp();
     }
-    if (IsDeprecatedWebkitBox() && BoxOrient() == EBoxOrient::kVertical) {
-      return WebkitLineClamp();
+    if (RuntimeEnabledFeatures::CSSLineClampWebkitBoxBlockificationEnabled()) {
+      if (IsSpecifiedDisplayWebkitBox()) {
+        DCHECK_EQ(BoxOrient(), EBoxOrient::kVertical);
+        return WebkitLineClamp();
+      }
+    } else {
+      if (IsDeprecatedWebkitBox() && BoxOrient() == EBoxOrient::kVertical) {
+        return WebkitLineClamp();
+      }
     }
     return 0;
   }
@@ -943,10 +950,15 @@ class ComputedStyle final : public ComputedStyleBase {
            Display() == EDisplay::kWebkitInlineBox;
   }
   bool IsDeprecatedFlexboxUsingFlexLayout() const {
+    if (RuntimeEnabledFeatures::CSSLineClampWebkitBoxBlockificationEnabled()) {
+      return IsDeprecatedWebkitBox();
+    }
     return IsDeprecatedWebkitBox() &&
            !IsDeprecatedWebkitBoxWithVerticalLineClamp();
   }
   bool IsDeprecatedWebkitBoxWithVerticalLineClamp() const {
+    DCHECK(
+        !RuntimeEnabledFeatures::CSSLineClampWebkitBoxBlockificationEnabled());
     return IsDeprecatedWebkitBox() && BoxOrient() == EBoxOrient::kVertical &&
            HasLineClamp();
   }

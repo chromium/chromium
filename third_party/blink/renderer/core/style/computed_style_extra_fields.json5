@@ -967,6 +967,13 @@
       custom_compare: true,
     },
     {
+      name: "IsSpecifiedDisplayWebkitBox",
+      name_for_methods: "IsSpecifiedDisplayWebkitBox",
+      field_template: "monotonic_flag",
+      default_value: "false",
+      invalidate: ["layout", "paint"],
+    },
+    {
       name: "IsFlexOrGridOrCustomItem",
       field_template: "monotonic_flag",
       default_value: "false",

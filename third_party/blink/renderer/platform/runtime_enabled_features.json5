@@ -1045,6 +1045,11 @@
       status: "experimental",
     },
     {
+      // https://github.com/w3c/csswg-drafts/issues/10435
+      name: "CSSLineClampWebkitBoxBlockification",
+      status: "stable",
+    },
+    {
       name: "CSSLogicalOverflow",
       status: "test",
     },

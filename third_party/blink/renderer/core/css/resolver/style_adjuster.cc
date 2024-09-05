@@ -706,6 +706,20 @@ static void AdjustStyleForDisplay(ComputedStyleBuilder& builder,
   if (IsAtMediaUAShadowBoundary(element)) {
     builder.SetDisplay(EquivalentBlockDisplay(builder.Display()));
   }
+
+  // display: -webkit-box when used with (-webkit)-line-clamp
+  if (RuntimeEnabledFeatures::CSSLineClampWebkitBoxBlockificationEnabled() &&
+      builder.BoxOrient() == EBoxOrient::kVertical &&
+      (builder.WebkitLineClamp() != 0 || builder.StandardLineClamp() != 0 ||
+       builder.HasAutoStandardLineClamp())) {
+    if (builder.Display() == EDisplay::kWebkitBox) {
+      builder.SetDisplay(EDisplay::kFlowRoot);
+      builder.SetIsSpecifiedDisplayWebkitBox();
+    } else if (builder.Display() == EDisplay::kWebkitInlineBox) {
+      builder.SetDisplay(EDisplay::kInlineBlock);
+      builder.SetIsSpecifiedDisplayWebkitBox();
+    }
+  }
 }
 
 bool StyleAdjuster::IsEditableElement(Element* element,

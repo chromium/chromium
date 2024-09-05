@@ -390,7 +390,9 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
       return MakeGarbageCollected<LayoutTableCaption>(element);
     case EDisplay::kWebkitBox:
     case EDisplay::kWebkitInlineBox:
-      if (style.IsDeprecatedWebkitBoxWithVerticalLineClamp()) {
+      if (!RuntimeEnabledFeatures::
+              CSSLineClampWebkitBoxBlockificationEnabled() &&
+          style.IsDeprecatedWebkitBoxWithVerticalLineClamp()) {
         return MakeGarbageCollected<LayoutBlockFlow>(element);
       }
       UseCounter::Count(element->GetDocument(),
