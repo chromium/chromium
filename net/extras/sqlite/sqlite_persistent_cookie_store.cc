@@ -1031,6 +1031,8 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
     std::string domain = statement.ColumnString(1);
     std::string value = statement.ColumnString(4);
     std::string encrypted_value = statement.ColumnString(13);
+    UMA_HISTOGRAM_BOOLEAN("Cookie.EncryptedAndPlaintextValues",
+                          !value.empty() && !encrypted_value.empty());
     if (!encrypted_value.empty()) {
       if (!crypto_) {
         RecordCookieLoadProblem(CookieLoadProblem::kNoCrypto);
@@ -1378,12 +1380,12 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
 
       select_smt.Assign(db()->GetCachedStatement(
           SQL_FROM_HERE,
-          "SELECT rowid, host_key, encrypted_value FROM cookies"));
+          "SELECT rowid, host_key, encrypted_value, value FROM cookies"));
 
-      update_smt.Assign(
-          db()->GetCachedStatement(SQL_FROM_HERE,
-                                   "UPDATE cookies SET encrypted_value=? WHERE "
-                                   "rowid=?"));
+      update_smt.Assign(db()->GetCachedStatement(
+          SQL_FROM_HERE,
+          "UPDATE cookies SET encrypted_value=?, value=? WHERE "
+          "rowid=?"));
 
       if (!select_smt.is_valid() || !update_smt.is_valid()) {
         return std::nullopt;
@@ -1395,10 +1397,21 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
         int64_t rowid = select_smt.ColumnInt64(0);
         std::string domain = select_smt.ColumnString(1);
         std::string encrypted_value = select_smt.ColumnString(2);
+        std::string value = select_smt.ColumnString(3);
+        // If encrypted value is empty but value is non-empty it means that in a
+        // previous version of the database, there was no crypto and the value
+        // was stored unencrypted. In this case, since we have crypto now, we
+        // should encrypt the value.
+        // In the case that both plaintext and encrypted values exist, the
+        // encrypted value always takes precedence.
         std::string decrypted_value;
-        if (!crypto_->DecryptString(encrypted_value, &decrypted_value)) {
-          RecordCookieLoadProblem(CookieLoadProblem::kDecryptFailed);
-          continue;
+        if (encrypted_value.empty() && !value.empty()) {
+          decrypted_value = value;
+        } else {
+          if (!crypto_->DecryptString(encrypted_value, &decrypted_value)) {
+            RecordCookieLoadProblem(CookieLoadProblem::kDecryptFailed);
+            continue;
+          }
         }
         std::string new_encrypted_value;
 
@@ -1414,8 +1427,10 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
 
       for (const auto& entry : encrypted_values) {
         update_smt.Reset(true);
-        update_smt.BindString(0, entry.second);
-        update_smt.BindInt64(1, entry.first);
+        update_smt.BindString(/*encrypted_value*/ 0, entry.second);
+        // Clear the value, since it is now encrypted.
+        update_smt.BindString(/*value*/ 1, {});
+        update_smt.BindInt64(/*rowid*/ 2, entry.first);
         if (!update_smt.Run()) {
           return std::nullopt;
         }

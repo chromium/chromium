@@ -311,6 +311,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cookie.EncryptedAndPlaintextValues" enum="Boolean"
+    expires_after="2025-01-12">
+  <owner>bingler@chromium.org</owner>
+  <owner>wfh@chromium.org</owner>
+  <summary>
+    Records whether or not an entry in the cookie database has both encrypted
+    and plaintext values, which should not happen.
+
+    This metric is recorded every time a cookie is parsed from the cookie
+    database during load.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.ErrorInitializeDB" enum="SqliteLoggedResultCode"
     expires_after="2025-02-10">
   <owner>wfh@chromium.org</owner>
