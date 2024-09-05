@@ -39,15 +39,23 @@ BASE_DECLARE_FEATURE(kSafetyCheckMagicStack);
 // Stack if no issues are found.
 BASE_DECLARE_FEATURE(kSafetyCheckModuleHiddenIfNoIssuesKillswitch);
 
+// Feature to enable Safety Check Push Notifications.
+BASE_DECLARE_FEATURE(kSafetyCheckNotifications);
+
+// A parameter defining the duration of user inactivity required before
+// displaying Safety Check push notifications.
+extern const char kSafetyCheckNotificationsUserInactiveThreshold[];
+
+// Returns the time duration of user inactivity that must elapse before Safety
+// Check notifications are displayed.
+const base::TimeDelta InactiveThresholdForSafetyCheckNotifications();
+
 // A parameter representing how many hours must elapse before the Safety Check
 // is automatically run in the Magic Stack.
 extern const char kSafetyCheckMagicStackAutorunHoursThreshold[];
 
 // How many hours between each autorun of the Safety Check in the Magic Stack.
 const base::TimeDelta TimeDelayForSafetyCheckAutorun();
-
-// Feature to enable Safety Check Push Notifications.
-BASE_DECLARE_FEATURE(kSafetyCheckNotifications);
 
 // Feature to enable the refactored implementation of the `OmahaService`, using
 // new `OmahaServiceObserver`(s) for Omaha clients. Acts as a killswitch.

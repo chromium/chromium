@@ -9,6 +9,7 @@
 #import "components/country_codes/country_codes.h"
 #import "components/version_info/channel.h"
 #import "ios/chrome/app/background_mode_buildflags.h"
+#import "ios/chrome/browser/safety_check_notifications/utils/constants.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ui/base/device_form_factor.h"
 
@@ -57,6 +58,16 @@ const char kSafetyCheckNotificationsExperimentType[] =
 
 const char kSafetyCheckMagicStackAutorunHoursThreshold[] =
     "SafetyCheckMagicStackAutorunHoursThreshold";
+
+const char kSafetyCheckNotificationsUserInactiveThreshold[] =
+    "SafetyCheckNotificationsUserInactiveThreshold";
+
+const base::TimeDelta InactiveThresholdForSafetyCheckNotifications() {
+  return base::GetFieldTrialParamByFeatureAsTimeDelta(
+      kSafetyCheckNotifications, kSafetyCheckNotificationsUserInactiveThreshold,
+      /*default_value=*/
+      kSafetyCheckNotificationDefaultDelay);
+}
 
 // How many hours between each autorun of the Safety Check in the Magic Stack.
 const base::TimeDelta TimeDelayForSafetyCheckAutorun() {

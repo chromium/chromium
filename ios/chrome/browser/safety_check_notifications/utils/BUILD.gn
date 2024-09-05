@@ -23,6 +23,7 @@ source_set("utils") {
   deps = [
     ":constants",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/features",
     "//ui/base",
   ]
   frameworks = [
