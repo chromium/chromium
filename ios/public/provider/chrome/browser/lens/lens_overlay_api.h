@@ -47,12 +47,6 @@
 // Removes the current selection and optionally clears the query text.
 - (void)removeSelectionWithClearText:(BOOL)clearText;
 
-// Updates the occluder insets. If there is a current selection, the scrollview
-// may update to satisfy the new insets (optionally animated).
-- (void)setOcclusionInsets:(UIEdgeInsets)occlusionInsets
-                reposition:(BOOL)reposition
-                  animated:(BOOL)animated;
-
 @end
 
 namespace ios {

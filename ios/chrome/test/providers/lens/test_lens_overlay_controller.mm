@@ -29,10 +29,4 @@
   // NO-OP
 }
 
-- (void)setOcclusionInsets:(UIEdgeInsets)occlusionInsets
-                reposition:(BOOL)reposition
-                  animated:(BOOL)animated {
-  // NO-OP
-}
-
 @end
