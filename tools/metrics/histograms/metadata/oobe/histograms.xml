@@ -443,7 +443,8 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="PerksID">
-  <variant name="G1"/>
+  <variant name="Gamgee"/>
+  <variant name="StandardGamgee"/>
 </variants>
 
 <variants name="PersonalizedAppsType">
