@@ -24,6 +24,7 @@ import {z, type ZodType} from 'zod';
 import type * as Protocol from '../protocol/protocol.js';
 import {InvalidArgumentException} from '../protocol/protocol.js';
 
+import * as WebDriverBidiBluetooth from './generated/webdriver-bidi-bluetooth.js';
 import * as WebDriverBidiPermissions from './generated/webdriver-bidi-permissions.js';
 import * as WebDriverBidi from './generated/webdriver-bidi.js';
 
@@ -386,5 +387,16 @@ export namespace Permissions {
         WebDriverBidiPermissions.Permissions.SetPermissionParametersSchema
       ) as Protocol.Permissions.SetPermissionParameters),
     };
+  }
+}
+
+export namespace Bluetooth {
+  export function parseHandleRequestDevicePromptParams(
+    params: unknown
+  ): Protocol.Bluetooth.HandleRequestDevicePromptParameters {
+    return parseObject(
+      params,
+      WebDriverBidiBluetooth.Bluetooth.HandleRequestDevicePromptParametersSchema
+    ) as Protocol.Bluetooth.HandleRequestDevicePromptParameters;
   }
 }

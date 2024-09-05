@@ -146,7 +146,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       // keep-sorted start block=yes
       case 'bluetooth.handleRequestDevicePrompt':
         return await this.#bluetoothProcessor.handleRequestDevicePrompt(
-          command.params
+          this.#parser.parseHandleRequestDevicePromptParams(command.params)
         );
       // keep-sorted end
 

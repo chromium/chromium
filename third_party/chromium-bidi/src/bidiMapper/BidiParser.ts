@@ -16,6 +16,7 @@
  */
 
 import type {
+  Bluetooth,
   Browser,
   BrowsingContext,
   Cdp,
@@ -28,6 +29,13 @@ import type {
 } from '../protocol/protocol.js';
 
 export interface BidiCommandParameterParser {
+  // Bluetooth domain
+  // keep-sorted start block=yes
+  parseHandleRequestDevicePromptParams(
+    params: unknown
+  ): Bluetooth.HandleRequestDevicePromptParameters;
+  // keep-sorted end
+
   // Browser domain
   // keep-sorted start block=yes
   parseRemoveUserContextParams(

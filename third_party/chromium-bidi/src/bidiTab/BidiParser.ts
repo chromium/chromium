@@ -16,6 +16,7 @@
  */
 import type {BidiCommandParameterParser} from '../bidiMapper/BidiMapper.js';
 import type {
+  Bluetooth,
   Browser,
   BrowsingContext,
   Cdp,
@@ -29,6 +30,15 @@ import type {
 import * as Parser from '../protocol-parser/protocol-parser.js';
 
 export class BidiParser implements BidiCommandParameterParser {
+  // Bluetooth domain
+  // keep-sorted start block=yes
+  parseHandleRequestDevicePromptParams(
+    params: unknown
+  ): Bluetooth.HandleRequestDevicePromptParameters {
+    return Parser.Bluetooth.parseHandleRequestDevicePromptParams(params);
+  }
+  // keep-sorted end
+
   // Browser domain
   // keep-sorted start block=yes
   parseRemoveUserContextParams(
