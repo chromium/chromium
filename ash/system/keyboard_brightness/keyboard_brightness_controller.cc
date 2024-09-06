@@ -409,8 +409,8 @@ void KeyboardBrightnessController::RestoreKeyboardBrightnessSettings(
       // If the keyboard ambient light sensor is disabled, restore the user's
       // preferred keyboard brightness level.
       const std::optional<double> keyboard_brightness_for_account =
-          known_user.FindPath(account_id, prefs::kKeyboardBrightnessPercent)
-              ->GetIfDouble();
+          known_user.FindDoublePath(account_id,
+                                    prefs::kKeyboardBrightnessPercent);
       if (keyboard_brightness_for_account.has_value()) {
         HandleSetKeyboardBrightness(
             keyboard_brightness_for_account.value(),

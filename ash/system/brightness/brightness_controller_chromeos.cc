@@ -319,10 +319,8 @@ void BrightnessControllerChromeos::RestoreBrightnessSettings(
       // If the ambient light sensor is disabled, restore the user's preferred
       // brightness level.
       const std::optional<double> brightness_for_account =
-          known_user
-              .FindPath(account_id,
-                        prefs::kInternalDisplayScreenBrightnessPercent)
-              ->GetIfDouble();
+          known_user.FindDoublePath(
+              account_id, prefs::kInternalDisplayScreenBrightnessPercent);
       if (brightness_for_account.has_value()) {
         SetBrightnessPercent(brightness_for_account.value(), /*gradual=*/true,
                              BrightnessControlDelegate::BrightnessChangeSource::
