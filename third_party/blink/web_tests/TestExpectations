@@ -5507,6 +5507,8 @@ crbug.com/1511354 virtual/select-parser-relaxation/external/wpt/html/semantics/f
 crbug.com/1511354 virtual/stylable-select-disabled/external/wpt/html/semantics/forms/the-select-element/stylable-select/border-rendering.tentative.html [ Failure ]
 
 crbug.com/360357720 wpt_internal/html/semantics/forms/the-select-element/stylable-select/select-icon-color.tentative.html [ Failure ]
+crbug.com/1511354 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/stylable-select/switch-picker-appearance.tentative.html [ Failure ]
+crbug.com/1511354 virtual/stylable-select-disabled/external/wpt/html/semantics/forms/the-select-element/stylable-select/switch-picker-appearance.tentative.html [ Failure ]
 
 # Position-try-fallbacks UA stylesheet parsing problem:
 # WPT reference image infra problem:
@@ -5532,6 +5534,13 @@ crbug.com/343631044 virtual/stylable-select-disabled/accessibility/role-attribut
 crbug.com/343631044 virtual/select-parser-relaxation/accessibility/aria-hidden-select.html [ Pass ]
 crbug.com/343631044 virtual/select-parser-relaxation/accessibility/native-select-activedescendant.html [ Pass ]
 crbug.com/343631044 virtual/select-parser-relaxation/accessibility/role-attribute.html [ Pass ]
+
+# Customizable-<select>. This test has multiple bugs filed against it, and likely remaining bugs
+# once those have been fixed. Currently, this test hits two crashes (crbug.com/364924715 and
+# crbug.com/364924718). I anticipate that once the crashes are fixed, the behavior will still be
+# wrong, particularly in the case that `appearance` is changed on the picker once it's open. If
+# so, please file a bug for that case with details.
+crbug.com/364924715 external/wpt/html/semantics/forms/the-select-element/stylable-select/switch-picker-appearance.tentative.html [ Crash ]
 
 # Sheriff 2022-04-21
 crbug.com/1318318 external/wpt/fetch/private-network-access/service-worker-background-fetch.tentative.https.window.html [ Failure Pass Timeout ]
