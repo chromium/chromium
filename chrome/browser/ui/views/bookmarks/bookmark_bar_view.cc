@@ -2081,6 +2081,13 @@ void BookmarkBarView::OnAppsPageShortcutVisibilityPrefChanged() {
 }
 
 void BookmarkBarView::OnTabGroupsVisibilityPrefChanged() {
+  // Incognito browsers also get triggered if the associated regular profile
+  // browser is triggered. Early return because incognito has no
+  // `saved_tab_group_bar_`.
+  if (!chrome::IsSavedTabGroupsEnabled(browser_->profile())) {
+    return;
+  }
+
   DCHECK(saved_tab_group_bar_);
   // Only perform layout if required.
   bool visible = chrome::ShouldShowTabGroupsInBookmarkBar(browser_->profile());
