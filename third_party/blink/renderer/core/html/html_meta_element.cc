@@ -554,7 +554,7 @@ void HTMLMetaElement::NameRemoved(const AtomicString& name_value) {
       GetDocument().GetFrame()) {
     GetDocument().GetFrame()->DidChangeThemeColor(
         /*update_theme_color_cache=*/true);
-  } else if (EqualIgnoringASCIICase(name_value, "color-scheme")) {
+  } else if (EqualIgnoringASCIICase(name_value, keywords::kColorScheme)) {
     GetDocument().ColorSchemeMetaChanged();
   } else if (EqualIgnoringASCIICase(name_value, "supports-reduced-motion")) {
     GetDocument().SupportsReducedMotionMetaChanged();
@@ -681,7 +681,7 @@ void HTMLMetaElement::ProcessContent() {
         /*update_theme_color_cache=*/true);
     return;
   }
-  if (EqualIgnoringASCIICase(name_value, "color-scheme")) {
+  if (EqualIgnoringASCIICase(name_value, keywords::kColorScheme)) {
     GetDocument().ColorSchemeMetaChanged();
     return;
   }

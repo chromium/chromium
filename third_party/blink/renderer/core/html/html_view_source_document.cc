@@ -94,7 +94,7 @@ void HTMLViewSourceDocument::CreateContainingTable() {
   auto* head = MakeGarbageCollected<HTMLHeadElement>(*this);
   auto* meta =
       MakeGarbageCollected<HTMLMetaElement>(*this, CreateElementFlags());
-  meta->setAttribute(html_names::kNameAttr, AtomicString("color-scheme"));
+  meta->setAttribute(html_names::kNameAttr, keywords::kColorScheme);
   meta->setAttribute(html_names::kContentAttr, AtomicString("light dark"));
   head->ParserAppendChild(meta);
   html->ParserAppendChild(head);

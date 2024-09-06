@@ -86,7 +86,7 @@ class JSONDocumentParser : public HTMLDocumentParser {
     auto* head = MakeGarbageCollected<HTMLHeadElement>(*GetDocument());
     auto* meta = MakeGarbageCollected<HTMLMetaElement>(*GetDocument(),
                                                        CreateElementFlags());
-    meta->setAttribute(html_names::kNameAttr, AtomicString("color-scheme"));
+    meta->setAttribute(html_names::kNameAttr, keywords::kColorScheme);
     meta->setAttribute(html_names::kContentAttr, AtomicString("light dark"));
     auto* meta_charset = MakeGarbageCollected<HTMLMetaElement>(
         *GetDocument(), CreateElementFlags());
