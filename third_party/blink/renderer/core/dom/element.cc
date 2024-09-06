@@ -10523,7 +10523,6 @@ Element* Element::ImplicitAnchorElement() const {
 
 void Element::setHTMLUnsafe(const String& html,
                             ExceptionState& exception_state) {
-  CHECK(RuntimeEnabledFeatures::HTMLUnsafeMethodsEnabled());
   SetInnerHTMLInternal(html, ParseDeclarativeShadowRoots::kParse,
                        ForceHtml::kForce, exception_state);
 }

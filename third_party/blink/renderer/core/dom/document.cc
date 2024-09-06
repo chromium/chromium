@@ -9347,7 +9347,6 @@ void Document::ScheduleSelectionchangeEvent() {
 // static
 Document* Document::parseHTMLUnsafe(ExecutionContext* context,
                                     const String& html) {
-  CHECK(RuntimeEnabledFeatures::HTMLUnsafeMethodsEnabled());
   Document* doc = DocumentInit::Create()
                       .WithTypeFrom(kTextHtml)
                       .WithExecutionContext(context)
