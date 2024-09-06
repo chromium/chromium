@@ -36,16 +36,6 @@ class TestUrlCheckInterceptor : public safe_browsing::UrlCheckInterceptor {
   ~TestUrlCheckInterceptor() override = default;
 
   // Checks the threat type of |url| previously set by
-  // |SetSafetyNetThreatTypeForUrl|. It crashes if the threat type of |url| is
-  // not set in advance.
-  void CheckBySafetyNet(SafeBrowsingApiHandlerBridge::ResponseCallback callback,
-                        const GURL& gurl) override {
-    std::string url = gurl.spec();
-    DCHECK(base::Contains(urls_safetynet_threat_type_, url));
-    std::move(callback).Run(urls_safetynet_threat_type_[url], ThreatMetadata());
-  }
-
-  // Checks the threat type of |url| previously set by
   // |SetSafeBrowsingThreatTypeForUrl|. It crashes if the threat type of |url|
   // is not set in advance.
   void CheckBySafeBrowsing(
@@ -57,17 +47,12 @@ class TestUrlCheckInterceptor : public safe_browsing::UrlCheckInterceptor {
                             ThreatMetadata());
   }
 
-  void SetSafetyNetThreatTypeForUrl(const GURL& url, SBThreatType threat_type) {
-    urls_safetynet_threat_type_[url.spec()] = threat_type;
-  }
-
   void SetSafeBrowsingThreatTypeForUrl(const GURL& url,
                                        SBThreatType threat_type) {
     urls_safebrowsing_threat_type_[url.spec()] = threat_type;
   }
 
  private:
-  base::flat_map<std::string, SBThreatType> urls_safetynet_threat_type_;
   base::flat_map<std::string, SBThreatType> urls_safebrowsing_threat_type_;
 };
 

@@ -8082,25 +8082,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="SB2.RemoteCall.CheckDelta" units="microseconds"
-    expires_after="2024-12-08">
-  <owner>vakh@chromium.org</owner>
-  <owner>csharrison@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    The microseconds between sending the Safe Browsing API call and receiving
-    the response. Logged in java code and does not include any thread hops or
-    extra work. Note that this does include task queue time to respond to the
-    IPC (and that queue time is often non-trivial).
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
 <histogram name="SB2.RemoteCall.Elapsed" units="ms" expires_after="2025-01-05">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -8126,18 +8107,6 @@ Safe Browsing lookups, which is critical for security. -->
     on each URL check that hits the internal error condition. The total number
     of these should add up to the INTERNAL_ERROR reports under
     SB2.RemoteCall.Result.
-  </summary>
-</histogram>
-
-<histogram name="SB2.RemoteCall.Result" enum="SB2RemoteCallResult"
-    expires_after="2025-01-05">
-  <owner>vakh@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Result of URL-classification API calls from Chrome via
-    RemoteSafetyNetApiHandler. Logged after each URL is judged safe/not-safe, or
-    hits a deadline. The INTERNAL_ERROR cases are further classified under
-    SB2.RemoteCall.InternalErrorStatusCode.
   </summary>
 </histogram>
 

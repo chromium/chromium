@@ -11,36 +11,34 @@ package org.chromium.components.safe_browsing;
 public interface SafetyNetApiHandler {
     /** Observer to be notified when the SafetyNetApiHandler determines the verdict for a url. */
     interface Observer {
-        // TODO(crbug.com/40935425): Remove this function.
+        // TODO(crbug.com/40935425): Remove this function once internal reference is removed.
         // Note: |checkDelta| is the time the remote call took in microseconds.
-        void onUrlCheckDone(
+        default void onUrlCheckDone(
                 long callbackId,
                 @SafeBrowsingResult int resultStatus,
                 String metadata,
-                long checkDelta);
+                long checkDelta) {}
 
         void onVerifyAppsEnabledDone(long callbackId, @VerifyAppsResult int result);
     }
 
     /**
-     * TODO(crbug.com/40935425): Remove this function.
+     * Verifies that SafetyNetApiHandler can operate and initializes if feasible. Should be called
+     * on the same sequence as |startAllowlistLookup| and |isVerifyAppsEnabled|.
      *
-     * <p>Verifies that SafetyNetApiHandler can operate and initializes if feasible. Should be
-     * called on the same sequence as |startUriLookup|.
-     *
-     * @param observer The object on which to call the callback functions when URL checking is
-     *     complete.
+     * @param observer The object on which to call the callback functions when app verification
+     *     checking is complete.
      * @return whether Safe Browsing is supported for this installation.
      */
     boolean init(Observer observer);
 
     /**
-     * TODO(crbug.com/40935425): Remove this function.
+     * TODO(crbug.com/40935425): Remove this function once internal reference is removed.
      *
      * <p>Start a URI-lookup to determine if it matches one of the specified threats. This is called
      * on every URL resource Chrome loads, on the same sequence as |init|.
      */
-    void startUriLookup(long callbackId, String uri, int[] threatsOfInterest);
+    default void startUriLookup(long callbackId, String uri, int[] threatsOfInterest) {}
 
     /**
      * Start a check to determine if a uri is in an allowlist. If true, password protection service

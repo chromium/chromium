@@ -18,12 +18,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
-
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Tracks the first navigation and first contentful paint events for a tab within an activity during
@@ -82,26 +79,12 @@ public class LegacyTabStartupMetricsTracker {
     // foreground. Used for investigating crbug.com/1273097.
     private boolean mRegisteredFirstPaintPreForeground;
 
-    // The time it took for SafetyNet API to return a Safe Browsing response for the first time. The
-    // SB request is on the critical path to navigation commit, and the response may be severely
-    // delayed by GmsCore (see http://crbug.com/1296097). The value is recorded only when the
-    // navigation commits successfully and the URL of first navigation is checked by SafetyNet API.
-    // Updating the value atomically from another thread to provide a simpler guarantee that the
-    // value is not lost after posting a few tasks.
-    private final AtomicLong mFirstSafetyNetResponseTimeMicros = new AtomicLong();
-
     public LegacyTabStartupMetricsTracker(
             long activityId, ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         mActivityId = activityId;
         mActivityStartTimeMs = SystemClock.uptimeMillis();
         TraceEvent.startupActivityStart(mActivityId, mActivityStartTimeMs);
         tabModelSelectorSupplier.addObserver(this::registerObservers);
-        SafeBrowsingApiBridge.setOneTimeSafetyNetApiUrlCheckObserver(
-                this::updateSafetyNetCheckTime);
-    }
-
-    private void updateSafetyNetCheckTime(long urlCheckTimeDeltaMicros) {
-        mFirstSafetyNetResponseTimeMicros.compareAndSet(0, urlCheckTimeDeltaMicros);
     }
 
     /**
@@ -257,7 +240,6 @@ public class LegacyTabStartupMetricsTracker {
                     mFirstCommitTimeMs);
             if (mHistogramSuffix == ActivityType.TABBED) {
                 recordFirstVisibleContent(mFirstCommitTimeMs);
-                recordFirstSafeBrowsingResponseTime();
             }
         }
 
@@ -277,15 +259,6 @@ public class LegacyTabStartupMetricsTracker {
         if (type == ActivityType.TABBED) return ".Tabbed";
         assert type == ActivityType.WEB_APK;
         return ".WebApk";
-    }
-
-    private void recordFirstSafeBrowsingResponseTime() {
-        long safetyNetDeltaMicros = mFirstSafetyNetResponseTimeMicros.getAndSet(0);
-        if (safetyNetDeltaMicros != 0) {
-            RecordHistogram.recordMediumTimesHistogram(
-                    "Startup.Android.Cold.FirstSafeBrowsingResponseTime.Tabbed",
-                    safetyNetDeltaMicros / 1000);
-        }
     }
 
     /**
