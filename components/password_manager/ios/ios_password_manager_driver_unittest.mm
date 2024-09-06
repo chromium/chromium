@@ -5,7 +5,6 @@
 #import "components/password_manager/ios/ios_password_manager_driver.h"
 
 #import "base/memory/raw_ptr.h"
-#import "base/memory/scoped_refptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/password_manager/core/browser/password_manager.h"
@@ -20,7 +19,6 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
-#import "third_party/ocmock/gtest_support.h"
 
 using autofill::AutofillJavaScriptFeature;
 using base::SysNSStringToUTF8;
@@ -128,8 +126,7 @@ TEST_F(IOSPasswordManagerDriverTest, SetPasswordFillData) {
                           forSecurityOrigin:driver_->security_origin()])
       .andCompareStringAtIndex(driver_->web_frame_id(), 1);
   driver_->SetPasswordFillData(form_data);
-
-  EXPECT_OCMOCK_VERIFY(password_controller_);
+  [password_controller_ verify];
 }
 
 // Tests the InformNoSavedCredentials method.
@@ -139,145 +136,33 @@ TEST_F(IOSPasswordManagerDriverTest, InformNoSavedCredentials) {
                 onNoSavedCredentialsWithFrameId:""])
       .andCompareStringAtIndex(main_frame_id, 0);
   driver_->InformNoSavedCredentials(true);
-
-  EXPECT_OCMOCK_VERIFY(password_controller_);
+  [password_controller_ verify];
 }
 
-// Tests the driver when forms eligible for password generation are found.
-// Verifies that the proactive generation can only be used once that it is known
-// that there are no passwords for the site.
+// Tests the FormEligibleForGenerationFound method.
 TEST_F(IOSPasswordManagerDriverTest, FormEligibleForGenerationFound) {
-  // Set objects needed to handle 3 forms eligible for password generation.
+  autofill::PasswordFormGenerationData form;
 
-  // Set store for the client that is able to save passwords.
-  auto store =
-      base::MakeRefCounted<password_manager::MockPasswordStoreInterface>();
+  scoped_refptr<password_manager::MockPasswordStoreInterface> store(
+      new password_manager::MockPasswordStoreInterface);
   EXPECT_CALL(password_manager_client_, GetProfilePasswordStore)
       .WillRepeatedly(testing::Return(store.get()));
-  EXPECT_CALL(*store, IsAbleToSavePasswords)
-      .Times(3)
-      .WillRepeatedly(Return(true));
 
-  // Enable password saving and generation in the client.
+  EXPECT_CALL(*store, IsAbleToSavePasswords).WillOnce(Return(true));
   EXPECT_CALL(password_manager_client_, IsSavingAndFillingEnabled(GURL()))
-      .Times(3)
-      .WillRepeatedly(Return(true));
+      .WillOnce(Return(true));
   EXPECT_CALL(*password_manager_client_.GetPasswordFeatureManager(),
               IsGenerationEnabled())
-      .Times(3)
-      .WillRepeatedly(Return(true));
+      .WillOnce(Return(true));
 
-  // Set a last commited URL eligible for generation.
   URLGetter* url_getter = [URLGetter alloc];
-  for (int i = 0; i < 3; ++i) {
-    OCMStub([password_controller_ lastCommittedURL])
-        .andCall(url_getter, @selector(lastCommittedURL));
-  }
+  OCMStub([password_controller_ lastCommittedURL])
+      .andCall(url_getter, @selector(lastCommittedURL));
 
-  // Set other expected calls on the controller when an eligible form for
-  // generation is found.
-  autofill::PasswordFormGenerationData form;
-  for (int i = 0; i < 3; ++i) {
-    OCMExpect([password_controller_ formEligibleForGenerationFound:form]);
-  }
-
-  // Inform the driver that 2 forms eligible for generation were found. The
-  // driver doesn't know yet at this point whether proactive generation can also
-  // be used.
-  driver_->FormEligibleForGenerationFound(form);
-  driver_->FormEligibleForGenerationFound(form);
-
-  // Inform that there are no saved credentials for the site so proactive
-  // generation is set up on the forms eligible for generation.
-  // Verify that the listeners for proactive generation are attached for the
-  // 2 forms.
-  OCMExpect([[password_controller_ ignoringNonObjectArgs]
-      attachListenersForPasswordGenerationFields:form
-                                      forFrameId:""]);
-  OCMExpect([[password_controller_ ignoringNonObjectArgs]
-      attachListenersForPasswordGenerationFields:form
-                                      forFrameId:""]);
-  OCMExpect([[password_controller_ ignoringNonObjectArgs]
-      onNoSavedCredentialsWithFrameId:""]);
-  driver_->InformNoSavedCredentials(false);
-
-  // Inform the driver again that an eligible form for generation was found.
-  // Verify that the listeners for proactive generation are immediately attached
-  // since it is already known that there are no saved credentials for the site.
+  OCMExpect([password_controller_ formEligibleForGenerationFound:form]);
   OCMExpect([[password_controller_ ignoringNonObjectArgs]
       attachListenersForPasswordGenerationFields:form
                                       forFrameId:""]);
   driver_->FormEligibleForGenerationFound(form);
-
-  EXPECT_OCMOCK_VERIFY(password_controller_);
-}
-
-// Tests that the queue of pending forms for proactive generation
-// doesn't grow more than its max capacity.
-TEST_F(IOSPasswordManagerDriverTest,
-       FormEligibleForGenerationFound_MaxProactiveQueueCapacity) {
-  // Set objects needed to handle 3 forms eligible for password generation.
-
-  // Set store for the client that is able to save passwords.
-  auto store =
-      base::MakeRefCounted<password_manager::MockPasswordStoreInterface>();
-  EXPECT_CALL(password_manager_client_, GetProfilePasswordStore)
-      .WillRepeatedly(testing::Return(store.get()));
-  EXPECT_CALL(*store, IsAbleToSavePasswords)
-      .Times(21)
-      .WillRepeatedly(Return(true));
-
-  // Enable password saving and generation in the client.
-  EXPECT_CALL(password_manager_client_, IsSavingAndFillingEnabled(GURL()))
-      .Times(21)
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(*password_manager_client_.GetPasswordFeatureManager(),
-              IsGenerationEnabled())
-      .Times(21)
-      .WillRepeatedly(Return(true));
-
-  // Set a last commited URL eligible for generation.
-  URLGetter* url_getter = [URLGetter alloc];
-  for (int i = 0; i < 21; ++i) {
-    OCMStub([password_controller_ lastCommittedURL])
-        .andCall(url_getter, @selector(lastCommittedURL));
-  }
-  // Set other expected calls on the controller when an eligible form for
-  // generation is found.
-  autofill::PasswordFormGenerationData form;
-  for (int i = 0; i < 21; ++i) {
-    OCMExpect([password_controller_ formEligibleForGenerationFound:form]);
-  }
-
-  // Inform the driver that 20 forms eligible for generation were found. The
-  // driver doesn't know yet at this point whether proactive generation can also
-  // be used.
-  for (int i = 0; i < 20; ++i) {
-    driver_->FormEligibleForGenerationFound(form);
-  }
-
-  // Inform that there are no saved credentials for the site so proactive
-  // generation is set up on the forms eligible for generation.
-  // Verify that the listeners for proactive generation are only attached for
-  // the first 10 forms which corresponds to the max capacity of the queue.
-  for (int i = 0; i < 10; ++i) {
-    OCMExpect([[password_controller_ ignoringNonObjectArgs]
-        attachListenersForPasswordGenerationFields:form
-                                        forFrameId:""]);
-  }
-  OCMExpect([[password_controller_ ignoringNonObjectArgs]
-      onNoSavedCredentialsWithFrameId:""]);
-  driver_->InformNoSavedCredentials(false);
-
-  // Inform the driver again that an eligible form for generation was found.
-  // Since the queue is now cleared, verify that the listeners for proactive
-  // generation are immediately attached since it is already known that there
-  // are no saved credentials for the site.
-  OCMExpect([[password_controller_ ignoringNonObjectArgs]
-      attachListenersForPasswordGenerationFields:form
-                                      forFrameId:""]);
-
-  driver_->FormEligibleForGenerationFound(form);
-
-  EXPECT_OCMOCK_VERIFY(password_controller_);
+  [password_controller_ verify];
 }
