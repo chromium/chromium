@@ -3324,6 +3324,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.LCPP.PrewarmHttpDiskCacheURL.Count.SameSiteRatio"
+    units="%" expires_after="2025-02-10">
+  <owner>yoichio@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Ratio of the same site subresource URLs in the all reported subresource URLs
+    in prewarming HttpDiskCache.
+
+    This is recorded on each navigation.
+  </summary>
+</histogram>
+
+<histogram name="Blink.LCPP.PrewarmHttpDiskCacheURL.Count.{Site}" units="count"
+    expires_after="2025-02-10">
+  <owner>yoichio@chromium.org</owner>
+  <owner>
+    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
+  </owner>
+  <summary>
+    Counts the number of {Site} subresource URLs in prewarming HttpDiskCache
+    learnt to local LCP database.
+
+    This is recorded on each navigation.
+  </summary>
+  <token key="Site">
+    <variant name="CrossSite" summary="cross-site subresources"/>
+    <variant name="SameSite" summary="same-site subresources"/>
+  </token>
+</histogram>
+
 <histogram name="Blink.LCPP.RecordedFontCount" units="count"
     expires_after="2025-01-26">
   <owner>yyanagisawa@chromium.org</owner>

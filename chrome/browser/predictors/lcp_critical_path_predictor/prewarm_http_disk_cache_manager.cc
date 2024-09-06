@@ -16,6 +16,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/common/features.h"
@@ -54,6 +55,12 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       policy_exception_justification: "This is not a network request."
   })");
 
+bool IsSameSite(const GURL& url1, const GURL& url2) {
+  return url1.SchemeIs(url2.scheme()) &&
+         net::registry_controlled_domains::SameDomainOrHost(
+             url1, url2,
+             net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+}
 }  // namespace
 
 PrewarmHttpDiskCacheManager::PrewarmHttpDiskCacheManager(
@@ -113,6 +120,27 @@ void PrewarmHttpDiskCacheManager::MaybePrewarmResources(
 
   base::UmaHistogramCounts100("Blink.LCPP.PrewarmHttpDiskCacheURL.Count",
                               top_frame_subresource_urls.size());
+  if (!top_frame_subresource_urls.empty()) {
+    size_t subresource_urls_same_site = 0;
+    size_t subresource_urls_cross_site = 0;
+    for (const GURL& url : top_frame_subresource_urls) {
+      if (IsSameSite(url, top_frame_main_resource_url)) {
+        ++subresource_urls_same_site;
+      } else {
+        ++subresource_urls_cross_site;
+      }
+    }
+    base::UmaHistogramCounts10000(
+        "Blink.LCPP.PrewarmHttpDiskCacheURL.Count.SameSite",
+        base::checked_cast<int>(subresource_urls_same_site));
+    base::UmaHistogramCounts10000(
+        "Blink.LCPP.PrewarmHttpDiskCacheURL.Count.CrossSite",
+        base::checked_cast<int>(subresource_urls_cross_site));
+    base::UmaHistogramPercentage(
+        "Blink.LCPP.PrewarmHttpDiskCacheURL.Count.SameSiteRatio",
+        base::checked_cast<int>(100 * subresource_urls_same_site /
+                                top_frame_subresource_urls.size()));
+  }
 }
 
 void PrewarmHttpDiskCacheManager::MaybeAddPrewarmJob(
