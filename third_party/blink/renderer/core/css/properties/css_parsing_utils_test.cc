@@ -75,19 +75,7 @@ TEST(CSSParsingUtilsTest, ConsumeAngles) {
   EXPECT_EQ(100, ConsumeAngleValue("calc(3.40282e+38deg)", -100, 100));
 }
 
-TEST(CSSParsingUtilsTest, AtIdent_Range) {
-  String text = "foo,bar,10px";
-  auto tokens = CSSTokenizer(text).TokenizeToEOF();
-  CSSParserTokenRange range(tokens);
-  EXPECT_FALSE(AtIdent(range.Consume(), "bar"));  // foo
-  EXPECT_FALSE(AtIdent(range.Consume(), "bar"));  // ,
-  EXPECT_TRUE(AtIdent(range.Consume(), "bar"));   // bar
-  EXPECT_FALSE(AtIdent(range.Consume(), "bar"));  // ,
-  EXPECT_FALSE(AtIdent(range.Consume(), "bar"));  // 10px
-  EXPECT_FALSE(AtIdent(range.Consume(), "bar"));  // EOF
-}
-
-TEST(CSSParsingUtilsTest, AtIdent_Stream) {
+TEST(CSSParsingUtilsTest, AtIdent) {
   String text = "foo,bar,10px";
   CSSParserTokenStream stream(text);
   EXPECT_FALSE(AtIdent(stream.Consume(), "bar"));  // foo
@@ -172,9 +160,8 @@ TEST(CSSParsingUtilsTest, DashedIdent) {
       {"body", false},   {"0", false},     {"#FFAA00", false},
   };
   for (auto& expectation : expectations) {
-    auto tokens = CSSTokenizer(expectation.css_text).TokenizeToEOF();
-    CSSParserTokenRange range(tokens);
-    EXPECT_EQ(css_parsing_utils::IsDashedIdent(range.Peek()),
+    CSSParserTokenStream stream(expectation.css_text);
+    EXPECT_EQ(css_parsing_utils::IsDashedIdent(stream.Peek()),
               expectation.is_dashed_indent);
   }
 }
@@ -262,7 +249,7 @@ TEST(CSSParsingUtilsTest, InternalColorsOnlyAllowedInUaMode) {
   }
 }
 
-// Verify that the state of CSSParserTokenRange is preserved
+// Verify that the state of CSSParserTokenStream is preserved
 // for failing <color> values.
 TEST(CSSParsingUtilsTest, ConsumeColorRangePreservation) {
   const char* tests[] = {

@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/core/css/css_repeat_style_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
@@ -83,9 +82,7 @@ constexpr size_t kMaxNumAnimationLonghands = 12;
 void Complete4Sides(CSSValue* side[4]);
 
 // TODO(timloh): These should probably just be consumeComma and consumeSlash.
-bool ConsumeCommaIncludingWhitespace(CSSParserTokenRange&);
 bool ConsumeCommaIncludingWhitespace(CSSParserTokenStream&);
-bool ConsumeSlashIncludingWhitespace(CSSParserTokenRange&);
 bool ConsumeSlashIncludingWhitespace(CSSParserTokenStream&);
 
 // https://drafts.csswg.org/css-syntax/#typedef-any-value
@@ -155,29 +152,19 @@ CSSPrimitiveValue* ConsumeTime(CSSParserTokenStream&,
 CSSPrimitiveValue* ConsumeResolution(CSSParserTokenStream&,
                                      const CSSParserContext&);
 CSSValue* ConsumeRatio(CSSParserTokenStream&, const CSSParserContext&);
-CSSIdentifierValue* ConsumeIdent(CSSParserTokenRange&);
 CSSIdentifierValue* ConsumeIdent(CSSParserTokenStream&);
-CSSIdentifierValue* ConsumeIdentRange(CSSParserTokenRange&,
-                                      CSSValueID lower,
-                                      CSSValueID upper);
 CSSIdentifierValue* ConsumeIdentRange(CSSParserTokenStream&,
                                       CSSValueID lower,
                                       CSSValueID upper);
 template <CSSValueID, CSSValueID...>
 inline bool IdentMatches(CSSValueID id);
 template <CSSValueID... allowedIdents>
-CSSIdentifierValue* ConsumeIdent(CSSParserTokenRange&);
-template <CSSValueID... allowedIdents>
 CSSIdentifierValue* ConsumeIdent(CSSParserTokenStream&);
 
-CSSCustomIdentValue* ConsumeCustomIdent(CSSParserTokenRange&,
-                                        const CSSParserContext&);
 CSSCustomIdentValue* ConsumeCustomIdent(CSSParserTokenStream&,
                                         const CSSParserContext&);
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSCustomIdentValue* ConsumeDashedIdent(T&, const CSSParserContext&);
+CSSCustomIdentValue* ConsumeDashedIdent(CSSParserTokenStream&,
+                                        const CSSParserContext&);
 CSSStringValue* ConsumeString(CSSParserTokenStream&);
 cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenStream&,
                                   const CSSParserContext&);
@@ -344,7 +331,6 @@ CSSValue* ConsumeAnimationDuration(CSSParserTokenStream&,
                                    const CSSParserContext&);
 // https://drafts.csswg.org/scroll-animations-1/#typedef-timeline-range-name
 CSSValue* ConsumeTimelineRangeName(CSSParserTokenStream&);
-CSSValue* ConsumeTimelineRangeName(CSSParserTokenRange&);
 CSSValue* ConsumeTimelineRangeNameAndPercent(CSSParserTokenStream&,
                                              const CSSParserContext&);
 CSSValue* ConsumeAnimationDelay(CSSParserTokenStream&, const CSSParserContext&);
@@ -579,10 +565,8 @@ CSSValue* ConsumeBorderWidth(CSSParserTokenStream&,
 CSSValue* ConsumeSVGPaint(CSSParserTokenStream&, const CSSParserContext&);
 CSSValue* ParseSpacing(CSSParserTokenStream&, const CSSParserContext&);
 
-template <typename T>
-  requires std::is_same_v<T, CSSParserTokenStream> ||
-           std::is_same_v<T, CSSParserTokenRange>
-CSSValue* ConsumeSingleContainerName(T&, const CSSParserContext&);
+CSSValue* ConsumeSingleContainerName(CSSParserTokenStream&,
+                                     const CSSParserContext&);
 CSSValue* ConsumeContainerName(CSSParserTokenStream&, const CSSParserContext&);
 CSSValue* ConsumeContainerType(CSSParserTokenStream&);
 
@@ -628,15 +612,6 @@ bool IsCustomIdent(CSSValueID id) {
 template <CSSValueID head, CSSValueID... tail>
 bool IsCustomIdent(CSSValueID id) {
   return id != head && IsCustomIdent<tail...>(id);
-}
-
-template <CSSValueID... names>
-CSSIdentifierValue* ConsumeIdent(CSSParserTokenRange& range) {
-  if (range.Peek().GetType() != kIdentToken ||
-      !IdentMatches<names...>(range.Peek().Id())) {
-    return nullptr;
-  }
-  return CSSIdentifierValue::Create(range.ConsumeIncludingWhitespace().Id());
 }
 
 template <CSSValueID... names>

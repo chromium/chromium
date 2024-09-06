@@ -44,7 +44,6 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_save_point.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 #include "third_party/blink/renderer/core/css/parser/font_variant_alternates_parser.h"
 #include "third_party/blink/renderer/core/css/parser/font_variant_east_asian_parser.h"
@@ -282,8 +281,7 @@ const CSSValue* AnchorName::ParseSingleValue(
     return value;
   }
   return css_parsing_utils::ConsumeCommaSeparatedList(
-      css_parsing_utils::ConsumeDashedIdent<CSSParserTokenStream>, stream,
-      context);
+      css_parsing_utils::ConsumeDashedIdent, stream, context);
 }
 const CSSValue* AnchorName::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
@@ -311,8 +309,7 @@ const CSSValue* AnchorScope::ParseSingleValue(
     return value;
   }
   return css_parsing_utils::ConsumeCommaSeparatedList(
-      css_parsing_utils::ConsumeDashedIdent<CSSParserTokenStream>, stream,
-      context);
+      css_parsing_utils::ConsumeDashedIdent, stream, context);
 }
 
 const CSSValue* AnchorScope::CSSValueFromComputedStyleInternal(

@@ -292,6 +292,8 @@ class CORE_EXPORT CSSParserToken {
 // If this assert fails, check the comment above about bitfields.
 static_assert(sizeof(CSSParserToken) == 24);
 
+bool NeedsInsertedComment(const CSSParserToken& a, const CSSParserToken& b);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_PARSER_TOKEN_H_

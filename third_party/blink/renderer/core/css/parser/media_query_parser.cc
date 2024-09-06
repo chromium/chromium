@@ -176,14 +176,13 @@ bool IsRestrictorOrLogicalOperator(const CSSParserToken& token) {
 }
 
 bool ConsumeUntilCommaInclusive(CSSParserTokenStream& stream) {
-  while (!stream.AtEnd()) {
-    if (stream.Peek().GetType() == kCommaToken) {
-      stream.ConsumeIncludingWhitespace();
-      return true;
-    }
-    stream.ConsumeComponentValue();
+  stream.SkipUntilPeekedTypeIs<kCommaToken>();
+  if (stream.Peek().GetType() == kCommaToken) {
+    stream.ConsumeIncludingWhitespace();
+    return true;
+  } else {
+    return false;
   }
-  return false;
 }
 
 bool IsComparisonDelimiter(UChar c) {
@@ -192,13 +191,21 @@ bool IsComparisonDelimiter(UChar c) {
 
 void SkipUntilComparisonOrColon(CSSParserTokenStream& stream) {
   while (!stream.AtEnd()) {
-    const CSSParserToken& token = stream.Peek();
-    if ((token.GetType() == kDelimiterToken &&
-         IsComparisonDelimiter(token.Delimiter())) ||
-        token.GetType() == kColonToken) {
-      break;
+    stream.SkipUntilPeekedTypeIs<kDelimiterToken, kColonToken>();
+    if (stream.AtEnd()) {
+      return;
     }
-    stream.ConsumeComponentValue();
+    const CSSParserToken& token = stream.Peek();
+    if (token.GetType() == kDelimiterToken) {
+      if (IsComparisonDelimiter(token.Delimiter())) {
+        return;
+      } else {
+        stream.Consume();
+      }
+    } else {
+      DCHECK_EQ(token.GetType(), kColonToken);
+      return;
+    }
   }
 }
 

@@ -37,7 +37,6 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -267,13 +266,12 @@ class CORE_EXPORT CSSParserTokenStream {
   void ConsumeWhitespace();
   CSSParserToken ConsumeIncludingWhitespace();
   CSSParserToken ConsumeIncludingWhitespaceRaw();  // See ConsumeRaw().
-  void UncheckedConsumeComponentValue();
 
   // Either consumes a comment token and returns true, or peeks at the next
   // token and return false.
   bool ConsumeCommentOrNothing();
 
-  // Consume tokens until one of these is true:
+  // Skip tokens until one of these is true:
   //
   //  - EOF is reached.
   //  - The next token would signal a premature end of the current block
@@ -285,55 +283,6 @@ class CORE_EXPORT CSSParserTokenStream {
   // to stop at semicolons, and the rest of the input looks like
   // “.foo { color; } bar ; baz”, we would return “.foo { color; } bar ”
   // and stop there (the semicolon would remain in the lookahead slot).
-  //
-  // Invalidates any ranges created by previous calls to
-  // ConsumeUntilPeekedTypeIs().
-  template <CSSParserTokenType... Types>
-  [[nodiscard]] CSSParserTokenRange ConsumeUntilPeekedTypeIs() {
-    EnsureLookAhead();
-
-    // Check if the existing lookahead token already marks the end;
-    // if so, try to exit as soon as possible. (This is a fairly common
-    // case, because some places call ConsumeUntilPeekedTypeIs() just to
-    // ignore garbage after a declaration, and there usually is no such
-    // garbage.)
-    if (next_.IsEOF() || TokenMarksEnd<Types...>(next_)) {
-      return CSSParserTokenRange(base::span<CSSParserToken>{});
-    }
-
-    buffer_.Shrink(0);
-
-    // Process the lookahead token.
-    buffer_.push_back(next_);
-    unsigned nesting_level = 0;
-    if (next_.GetBlockType() == CSSParserToken::kBlockStart) {
-      nesting_level++;
-    }
-
-    // Add tokens to our return vector until we see either EOF or we meet the
-    // return condition. (The termination condition is within the loop.)
-    while (true) {
-      buffer_.push_back(tokenizer_.TokenizeSingle());
-      if (buffer_.back().IsEOF() ||
-          (nesting_level == 0 && TokenMarksEnd<Types...>(buffer_.back()))) {
-        // Undo the token we just pushed; it goes into the lookahead slot
-        // instead.
-        next_ = buffer_.back();
-        buffer_.pop_back();
-        offset_ = tokenizer_.PreviousOffset();
-        break;
-      } else if (buffer_.back().GetBlockType() == CSSParserToken::kBlockStart) {
-        nesting_level++;
-      } else if (buffer_.back().GetBlockType() == CSSParserToken::kBlockEnd) {
-        nesting_level--;
-      }
-    }
-    return CSSParserTokenRange(buffer_);
-  }
-
-  // Like ConsumeUntilPeekedTypeIs(), but does not return anything, so that it
-  // is faster. (When we get rid of the non-streaming praser,
-  // ConsumeUntilPeekedTypeIs() and buffer_ should go away entirely.)
   template <CSSParserTokenType... Types>
   void SkipUntilPeekedTypeIs() {
     EnsureLookAhead();
@@ -368,21 +317,6 @@ class CORE_EXPORT CSSParserTokenStream {
         nesting_level--;
       }
     }
-  }
-
-  // https://drafts.csswg.org/css-syntax-3/#consume-a-component-value
-  //
-  // This is similar to ConsumeUntilPeekedTypeIs, in that it returns
-  // a range to an internal buffer that's invalidated on the next call
-  // to either ConsumeComponentValue() or ConsumeUntilPeekedTypeIs(),
-  // but instead of consuming until a specified token type, it just consumes
-  // a single component value and returns the corresponding range.
-  CSSParserTokenRange ConsumeComponentValue();
-
-  CSSParserTokenRange ConsumeComponentValueIncludingWhitespace() {
-    CSSParserTokenRange range = ConsumeComponentValue();
-    ConsumeWhitespace();
-    return range;
   }
 
   // Restarts
@@ -709,7 +643,6 @@ class CORE_EXPORT CSSParserTokenStream {
 
   void PopBlockStack() { tokenizer_.block_stack_.pop_back(); }
 
-  Vector<CSSParserToken, kInitialBufferSize> buffer_;
   CSSTokenizer tokenizer_;
   CSSParserToken next_;
   wtf_size_t offset_ = 0;

@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 
@@ -62,27 +61,17 @@ void TestTokens(const String& string,
                 const CSSParserToken& token2 = CSSParserToken(kEOFToken),
                 const CSSParserToken& token3 = CSSParserToken(kEOFToken),
                 bool unicode_ranges_allowed = false) {
-  Vector<CSSParserToken> expected_tokens;
-  expected_tokens.push_back(token1);
-  if (token2.GetType() != kEOFToken) {
-    expected_tokens.push_back(token2);
-    if (token3.GetType() != kEOFToken) {
-      expected_tokens.push_back(token3);
-    }
-  }
-
-  CSSParserTokenRange expected(expected_tokens);
-
   CSSParserTokenStream stream(string);
   CSSParserTokenStream::EnableUnicodeRanges enable(stream,
                                                    unicode_ranges_allowed);
-  CSSParserTokenRange actual = stream.ConsumeUntilPeekedTypeIs();
-
-  // Just check that serialization doesn't hit any asserts
-  actual.Serialize();
-
-  while (!expected.AtEnd() || !actual.AtEnd()) {
-    CompareTokens(expected.Consume(), actual.Consume());
+  CompareTokens(token1, stream.Peek());
+  if (!stream.AtEnd()) {
+    stream.ConsumeRaw();
+    CompareTokens(token2, stream.Peek());
+    if (!stream.AtEnd()) {
+      stream.ConsumeRaw();
+      CompareTokens(token3, stream.Peek());
+    }
   }
 }
 

@@ -556,8 +556,6 @@ blink_core_sources_css = [
   "parser/css_parser_observer.h",
   "parser/css_parser_token.cc",
   "parser/css_parser_token.h",
-  "parser/css_parser_token_range.cc",
-  "parser/css_parser_token_range.h",
   "parser/css_parser_token_stream.cc",
   "parser/css_parser_token_stream.h",
   "parser/css_property_parser.cc",

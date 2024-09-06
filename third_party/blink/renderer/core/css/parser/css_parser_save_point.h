@@ -8,7 +8,6 @@
 #include <type_traits>
 
 #include "base/memory/stack_allocated.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 
 namespace blink {
