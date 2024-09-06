@@ -372,6 +372,10 @@ ci.builder(
     # Can flakily hit the default 3 hour timeout due to inconsistent compile
     # times.
     execution_timeout = 4 * time.hour,
+    # Increase timeout for connecting to dependency scanner
+    reclient_bootstrap_env = {
+        "RBE_depsscan_connect_timeout": "120s",
+    },
 )
 
 ci.thin_tester(
