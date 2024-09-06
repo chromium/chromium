@@ -22,7 +22,7 @@
 
 namespace blink {
 
-typedef HeapVector<LayoutOpportunity, 8> LayoutOpportunityVector;
+typedef HeapVector<LayoutOpportunity, 1> LayoutOpportunityVector;
 
 // This class is an implementation detail. For use of the exclusion space,
 // see ExclusionSpace below. ExclusionSpace was designed to be cheap

@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/mathml/mathml_table_cell_element.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
 
 namespace blink {
 namespace {
@@ -589,7 +590,7 @@ BlockLayoutAlgorithm::HandleNonsuccessfulLayoutResult(
   }
 }
 
-const LayoutResult* BlockLayoutAlgorithm::LayoutInlineChild(
+NOINLINE const LayoutResult* BlockLayoutAlgorithm::LayoutInlineChild(
     const InlineNode& node) {
   const TextWrapStyle wrap = node.Style().GetTextWrapStyle();
   if (wrap == TextWrapStyle::kPretty) [[unlikely]] {
@@ -607,15 +608,9 @@ const LayoutResult* BlockLayoutAlgorithm::LayoutInlineChild(
   } else {
     DCHECK(ShouldWrapLineGreedy(wrap));
   }
-  return LayoutWithSimpleInlineChildLayoutContext(node);
-}
 
-NOINLINE const LayoutResult*
-BlockLayoutAlgorithm::LayoutWithSimpleInlineChildLayoutContext(
-    const InlineNode& child) {
-  SimpleInlineChildLayoutContext context(child, &container_builder_);
-  const LayoutResult* result = Layout(&context);
-  return result;
+  SimpleInlineChildLayoutContext context(node, &container_builder_);
+  return Layout(&context);
 }
 
 template <wtf_size_t capacity>
@@ -1876,6 +1871,7 @@ const LayoutResult* BlockLayoutAlgorithm::LayoutNewFormattingContext(
   LayoutOpportunityVector opportunities =
       GetExclusionSpace().AllLayoutOpportunities(
           origin_offset, ChildAvailableSize().inline_size);
+  ClearCollectionScope scope(&opportunities);
 
   // We should always have at least one opportunity.
   DCHECK_GT(opportunities.size(), 0u);

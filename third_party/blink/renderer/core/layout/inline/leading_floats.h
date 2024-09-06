@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/floats_utils.h"
 #include "third_party/blink/renderer/core/layout/positioned_float.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -20,8 +21,10 @@ struct CORE_EXPORT LeadingFloats {
   STACK_ALLOCATED();
 
  public:
+  ~LeadingFloats() { floats.clear(); }
+
   wtf_size_t handled_index = 0;
-  PositionedFloatVector floats;
+  HeapVector<PositionedFloat> floats;
 };
 
 }  // namespace blink
