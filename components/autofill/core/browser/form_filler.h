@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/field_filling_skip_reason.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/form_autofill_history.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -28,30 +29,6 @@ enum class RefillTriggerReason {
   kFormChanged,
   kSelectOptionsChanged,
   kExpirationDateFormatted,
-};
-
-// Whether and why filling for a field was skipped during autofill.
-enum class FieldFillingSkipReason : uint8_t {
-  // Values are recorded as metrics and must not change or be reused.
-  kUnknown = 0,
-  kNotSkipped = 1,
-  kNotInFilledSection = 2,
-  kNotFocused = 3,
-  kFormChanged = 4,
-  kInvisibleField = 5,
-  kValuePrefilled = 6,
-  kUserFilledFields = 7,
-  kAlreadyAutofilled = 8,
-  kNoFillableGroup = 9,
-  kRefillNotInInitialFill = 10,
-  kExpiredCards = 11,
-  kFillingLimitReachedType = 12,
-  kUnrecognizedAutocompleteAttribute = 13,
-  kFieldDoesNotMatchTargetFieldsSet = 14,
-  kFieldTypeUnrelated = 15,
-  kNoValueToFill = 16,
-  kAutofilledValueDidNotChange = 17,
-  kMaxValue = kAutofilledValueDidNotChange
 };
 
 // Helper class responsible for [re]filling forms and fields.
