@@ -123,7 +123,7 @@ class ImageAnnotationWorker {
   void OnPerformOcr(ImageInfo image_info,
                     screen_ai::mojom::VisualAnnotationPtr visual_annotation);
 
-  void OnImageProcessTimeout();
+  void OnImageProcessTimeout(const base::FilePath& file_path);
 
   std::unique_ptr<base::FilePathWatcher> file_watcher_;
   base::FilePath root_path_;
