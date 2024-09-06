@@ -82,11 +82,11 @@ TEST(NameInfoTest, GetMatchingTypes) {
   test::VerifyFormGroupValues(name, expectation);
 
   FieldTypeSet matching_types;
-  name.GetMatchingTypes(u"Ruiz", "US", &matching_types);
+  name.GetMatchingTypesWithProfileSources(u"Ruiz", "US", &matching_types);
   EXPECT_EQ(matching_types, FieldTypeSet({NAME_LAST_FIRST}));
 
   // The honorific prefix is ignored.
-  name.GetMatchingTypes(u"Mr.", "US", &matching_types);
+  name.GetMatchingTypesWithProfileSources(u"Mr.", "US", &matching_types);
   EXPECT_EQ(matching_types, FieldTypeSet({NAME_LAST_FIRST}));
 }
 

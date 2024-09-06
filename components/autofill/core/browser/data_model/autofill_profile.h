@@ -111,9 +111,10 @@ class AutofillProfile : public AutofillDataModel {
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // FormGroup:
-  void GetMatchingTypes(const std::u16string& text,
-                        const std::string& app_locale,
-                        FieldTypeSet* matching_types) const override;
+  void GetMatchingTypesWithProfileSources(
+      const std::u16string& text,
+      const std::string& app_locale,
+      FieldTypeSet* matching_types) const override;
 
   std::u16string GetRawInfo(FieldType type) const override;
 

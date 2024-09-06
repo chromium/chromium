@@ -14,9 +14,10 @@
 
 namespace autofill {
 
-void FormGroup::GetMatchingTypes(const std::u16string& text,
-                                 const std::string& app_locale,
-                                 FieldTypeSet* matching_types) const {
+void FormGroup::GetMatchingTypesWithProfileSources(
+    const std::u16string& text,
+    const std::string& app_locale,
+    FieldTypeSet* matching_types) const {
   if (text.empty()) {
     matching_types->insert(EMPTY_TYPE);
     return;
