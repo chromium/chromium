@@ -5,7 +5,6 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 #include <algorithm>
-#include <memory>
 #include <set>
 #include <string>
 #include <unordered_set>
@@ -164,11 +163,11 @@ class BubbleDialogFrameView : public BubbleFrameView {
 };
 
 // Create a widget to host the bubble.
-Widget* CreateBubbleWidget(BubbleDialogDelegate* bubble,
-                           Widget::InitParams::Ownership ownership =
-                               Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET) {
-  auto bubble_widget = std::make_unique<BubbleWidget>();
-  Widget::InitParams bubble_params(ownership, Widget::InitParams::TYPE_BUBBLE);
+Widget* CreateBubbleWidget(BubbleDialogDelegate* bubble) {
+  Widget* bubble_widget = new BubbleWidget();
+  Widget::InitParams bubble_params(
+      Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      Widget::InitParams::TYPE_BUBBLE);
   bubble_params.delegate = bubble;
   bubble_params.opacity = Widget::InitParams::WindowOpacity::kTranslucent;
   bubble_params.accept_events = bubble->accept_events();
@@ -197,10 +196,10 @@ Widget* CreateBubbleWidget(BubbleDialogDelegate* bubble,
   bubble_params.activatable = bubble->CanActivate()
                                   ? Widget::InitParams::Activatable::kYes
                                   : Widget::InitParams::Activatable::kNo;
-  bubble->OnBeforeBubbleWidgetInit(&bubble_params, bubble_widget.get());
+  bubble->OnBeforeBubbleWidgetInit(&bubble_params, bubble_widget);
   DCHECK(bubble_params.parent || !bubble->has_parent());
   bubble_widget->Init(std::move(bubble_params));
-  return bubble_widget.release();
+  return bubble_widget;
 }
 
 }  // namespace
@@ -510,8 +509,7 @@ BubbleDialogDelegate::~BubbleDialogDelegate() {
 
 // static
 Widget* BubbleDialogDelegate::CreateBubble(
-    std::unique_ptr<BubbleDialogDelegate> bubble_delegate_unique,
-    Widget::InitParams::Ownership ownership) {
+    std::unique_ptr<BubbleDialogDelegate> bubble_delegate_unique) {
   BubbleDialogDelegate* const bubble_delegate = bubble_delegate_unique.get();
 
   // On Mac, MODAL_TYPE_WINDOW is implemented using sheets, which can't be
@@ -527,7 +525,7 @@ Widget* BubbleDialogDelegate::CreateBubble(
   // Get the latest anchor widget from the anchor view at bubble creation time.
   bubble_delegate->SetAnchorView(bubble_delegate->GetAnchorView());
   Widget* const bubble_widget =
-      CreateBubbleWidget(bubble_delegate_unique.release(), ownership);
+      CreateBubbleWidget(bubble_delegate_unique.release());
 
   bubble_delegate->set_adjust_if_offscreen(
       PlatformStyle::kAdjustBubbleIfOffscreen);
@@ -538,10 +536,8 @@ Widget* BubbleDialogDelegate::CreateBubble(
   return bubble_widget;
 }
 
-Widget* BubbleDialogDelegateView::CreateBubble(
-    BubbleDialogDelegateView* delegate_view,
-    Widget::InitParams::Ownership ownership) {
-  return CreateBubble(base::WrapUnique(delegate_view), ownership);
+Widget* BubbleDialogDelegateView::CreateBubble(BubbleDialogDelegateView* view) {
+  return CreateBubble(base::WrapUnique(view));
 }
 
 BubbleDialogDelegateView::BubbleDialogDelegateView()
