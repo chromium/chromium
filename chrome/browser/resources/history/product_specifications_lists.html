@@ -56,9 +56,6 @@
     text-align: center;
   }
 </style>
-<div id="product-specifications-info-text" class="history-cards">
-  $i18n{compareHistoryInfo}
-</div>
 
 <div class="sync-or-error-message-container"
     id="sync-or-error-message-picture-and-text-container"
@@ -94,6 +91,9 @@
 
 <!-- Product specs history list, including empty state. -->
 <div hidden="[[hideHistoryList_(productSpecificationsFeatureState_.*)]]">
+  <div id="product-specifications-info-text" class="history-cards">
+    $i18n{compareHistoryInfo}
+  </div>
   <div class="centered-message"
       hidden$="[[hasResults_(displayedItems_.length)]]">
     $i18n{compareHistoryEmpty}

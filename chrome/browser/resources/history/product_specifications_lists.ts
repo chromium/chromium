@@ -17,6 +17,7 @@ import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {FocusGrid} from 'chrome://resources/js/focus_grid.js';
+import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -170,6 +171,16 @@ export class ProductSpecificationsListsElement extends PolymerElement {
   }
 
   private showSyncSetupFlow_() {
+    assert(this.productSpecificationsFeatureState_);
+    assert(!this.productSpecificationsFeatureState_.isSyncingTabCompare);
+
+    // If signed in at the account level, then user needs to turn on sync
+    // from settings.
+    if (this.productSpecificationsFeatureState_.isSignedIn) {
+      OpenWindowProxyImpl.getInstance().openUrl(
+          'chrome://settings/syncSetup/advanced');
+      return;
+    }
     this.shoppingApi_.showSyncSetupFlow();
   }
 
