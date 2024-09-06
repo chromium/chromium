@@ -22,11 +22,11 @@ public class HtmlConditions {
     /** Fulfilled when a single DOM Element with the given id exists and has non-zero bounds. */
     public static class DisplayedCondition extends ConditionWithResult<Rect> {
         private final String mHtmlId;
-        private final Supplier<WebContents> mWebContentsCondition;
+        private final Supplier<WebContents> mWebContentsSupplier;
 
         public DisplayedCondition(Supplier<WebContents> webContentsSupplier, String htmlId) {
             super(/* isRunOnUiThread= */ false);
-            mWebContentsCondition = dependOnSupplier(webContentsSupplier, "WebContents");
+            mWebContentsSupplier = dependOnSupplier(webContentsSupplier, "WebContents");
             mHtmlId = htmlId;
         }
 
@@ -34,13 +34,42 @@ public class HtmlConditions {
         protected ConditionStatusWithResult<Rect> resolveWithSuppliers() throws Exception {
             Rect bounds;
             try {
-                bounds = DOMUtils.getNodeBounds(mWebContentsCondition.get(), mHtmlId);
+                bounds = DOMUtils.getNodeBounds(mWebContentsSupplier.get(), mHtmlId);
             } catch (AssertionError e) {
                 // HTML elements might not exist yet, but will be created.
                 return notFulfilled("getNodeBounds() threw assertion").withoutResult();
             }
 
-            return whether(!bounds.isEmpty(), "Bounds: %s", bounds.toShortString())
+            if (bounds.isEmpty()) {
+                return notFulfilled("Bounds: %s", bounds.toShortString()).withoutResult();
+            }
+
+            Rect nodeClientRect;
+            try {
+                nodeClientRect = DOMUtils.getNodeClientRect(mWebContentsSupplier.get(), mHtmlId);
+            } catch (AssertionError e) {
+                return error("getNodeClientRect() threw: " + e).withoutResult();
+            }
+
+            Rect viewport;
+            try {
+                viewport = DOMUtils.getDocumentViewport(mWebContentsSupplier.get());
+            } catch (AssertionError e) {
+                return error("getDocumentViewport() threw: " + e).withoutResult();
+            }
+
+            if (!Rect.intersects(nodeClientRect, viewport)) {
+                return notFulfilled(
+                                "node client rect %s, not displayed in viewport %s",
+                                nodeClientRect.toShortString(), viewport.toShortString())
+                        .withoutResult();
+            }
+
+            return fulfilled(
+                            "Bounds: %s, client rect: %s, viewport: %s",
+                            bounds.toShortString(),
+                            nodeClientRect.toShortString(),
+                            viewport.toShortString())
                     .withResult(bounds);
         }
 
@@ -82,7 +111,35 @@ public class HtmlConditions {
                 return fulfilled("getNodeBounds() threw assertion, object likely gone");
             }
 
-            return whether(bounds.isEmpty(), "Bounds: %s", bounds.toShortString());
+            if (bounds.isEmpty()) {
+                return fulfilled("Bounds: %s", bounds.toShortString());
+            }
+
+            Rect nodeClientRect;
+            try {
+                nodeClientRect = DOMUtils.getNodeClientRect(mWebContentsSupplier.get(), mHtmlId);
+            } catch (AssertionError e) {
+                return fulfilled("getNodeBounds() threw assertion, object likely gone");
+            }
+
+            Rect viewport;
+            try {
+                viewport = DOMUtils.getDocumentViewport(mWebContentsSupplier.get());
+            } catch (AssertionError e) {
+                return fulfilled("getDocumentViewport() threw assertion, object likely gone");
+            }
+
+            if (Rect.intersects(nodeClientRect, viewport)) {
+                return notFulfilled(
+                        "node client rect %s, displayed in viewport %s",
+                        nodeClientRect.toShortString(), viewport.toShortString());
+            }
+
+            return fulfilled(
+                    "Bounds: %s, client rect: %s, viewport: %s",
+                    bounds.toShortString(),
+                    nodeClientRect.toShortString(),
+                    viewport.toShortString());
         }
     }
 }

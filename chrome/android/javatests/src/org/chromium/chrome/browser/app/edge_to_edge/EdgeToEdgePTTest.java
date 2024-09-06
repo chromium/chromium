@@ -74,15 +74,15 @@ public class EdgeToEdgePTTest {
     public void openNewTabInGroupAtPageBottom() {
         ThreadUtils.runOnUiThread(() -> FirstRunStatus.setFirstRunFlowComplete(true));
         WebPageStation blankPage = mInitialStateRule.startOnBlankPage();
-        TopBottomLinksPageStation topBottomLinkPage =
+        var topBottomLinkPageAndTop =
                 TopBottomLinksPageStation.loadPage(sActivityTestRule, blankPage);
+        TopBottomLinksPageStation topBottomLinkPage = topBottomLinkPageAndTop.first;
+        TopBottomLinksPageStation.TopFacility topFacility = topBottomLinkPageAndTop.second;
 
-        var tabGroupUiFacility =
-                topBottomLinkPage
-                        .scrollToBottom()
-                        .openContextMenuOnBottomLink()
-                        .openTabInNewGroup();
+        TopBottomLinksPageStation.BottomFacility bottomFacility = topFacility.scrollToBottom();
+        var tabGroupUiFacility = bottomFacility.openContextMenuOnBottomLink().openTabInNewGroup();
 
-        TransitAsserts.assertFinalDestination(topBottomLinkPage, tabGroupUiFacility);
+        TransitAsserts.assertFinalDestination(
+                topBottomLinkPage, bottomFacility, tabGroupUiFacility);
     }
 }

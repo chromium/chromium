@@ -66,9 +66,12 @@ public class ContextMenuTabPTTest {
     public void openNewTabFromContextMenu() {
         PageStation blankPage = mInitialStateRule.startOnBlankPage();
 
-        TopBottomLinksPageStation contextMenuPage =
+        var topBottomLinkPageAndTop =
                 TopBottomLinksPageStation.loadPage(sActivityTestRule, blankPage);
-        contextMenuPage.openContextMenuOnTopLink().openInNewTab();
+        TopBottomLinksPageStation contextMenuPage = topBottomLinkPageAndTop.first;
+        TopBottomLinksPageStation.TopFacility topFacility = topBottomLinkPageAndTop.second;
+
+        topFacility.openContextMenuOnTopLink().openInNewTab();
         assertFinalDestination(contextMenuPage);
     }
 
@@ -78,10 +81,13 @@ public class ContextMenuTabPTTest {
     public void openNewTabInGroupFromContextMenu() {
         PageStation blankPage = mInitialStateRule.startOnBlankPage();
 
-        TopBottomLinksPageStation contextMenuPage =
+        var topBottomLinkPageAndTop =
                 TopBottomLinksPageStation.loadPage(sActivityTestRule, blankPage);
+        TopBottomLinksPageStation contextMenuPage = topBottomLinkPageAndTop.first;
+        TopBottomLinksPageStation.TopFacility topFacility = topBottomLinkPageAndTop.second;
+
         TabGroupUiFacility<WebPageStation> tabGroupUi =
-                contextMenuPage.openContextMenuOnTopLink().openTabInNewGroup();
+                topFacility.openContextMenuOnTopLink().openTabInNewGroup();
         assertFinalDestination(contextMenuPage, tabGroupUi);
     }
 }

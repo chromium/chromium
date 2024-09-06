@@ -197,7 +197,62 @@ public class DOMUtils {
     }
 
     /**
+     * Returns the rect with the document viewport.
+     *
+     * @param webContents The WebContents in which the node lives.
+     * @return The rect for the viewport, which always has a [0,0] top left.
+     */
+    public static Rect getDocumentViewport(final WebContents webContents) throws TimeoutException {
+        StringBuilder sb = new StringBuilder();
+        sb.append("(function() {");
+        sb.append(
+                "  return [document.documentElement.clientWidth,"
+                        + " document.documentElement.clientHeight];");
+        sb.append("})();");
+
+        String jsonText =
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(webContents, sb.toString());
+        Assert.assertFalse(
+                "Failed to retrieve document viewport", jsonText.trim().equalsIgnoreCase("null"));
+        int[] wh = readJsonIntArray(jsonText, 2);
+        return new Rect(0, 0, wh[0], wh[1]);
+    }
+
+    /**
+     * Returns the client rect for a node by its id.
+     *
+     * @param webContents The WebContents in which the node lives.
+     * @param nodeId The id of the node.
+     * @return The client rect for the node.
+     */
+    public static Rect getNodeClientRect(final WebContents webContents, String nodeId)
+            throws TimeoutException {
+        String elementGetterJs = "document.getElementById('" + nodeId + "')";
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("(function() {");
+        sb.append("  var node = " + elementGetterJs + ";");
+        sb.append("  if (!node) return null;");
+        sb.append("  var r = node.getBoundingClientRect();");
+        sb.append(
+                "  return [Math.round(r.left), Math.round(r.top), Math.round(r.right),"
+                        + " Math.round(r.bottom)];");
+        sb.append("})();");
+
+        String jsonText =
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(webContents, sb.toString());
+
+        Assert.assertFalse(
+                "Failed to retrieve client rect for element: " + elementGetterJs,
+                jsonText.trim().equalsIgnoreCase("null"));
+        int[] r = readJsonIntArray(jsonText, 4);
+
+        return new Rect(r[0], r[1], r[2], r[3]);
+    }
+
+    /**
      * Focus a DOM node by its id.
+     *
      * @param webContents The WebContents in which the node lives.
      * @param nodeId The id of the node.
      */
@@ -692,23 +747,30 @@ public class DOMUtils {
                 "Failed to retrieve bounds for element: " + jsCode,
                 jsonText.trim().equalsIgnoreCase("null"));
 
+        int[] bounds = readJsonIntArray(jsonText, 4);
+        return new Rect(bounds[0], bounds[1], bounds[0] + bounds[2], bounds[1] + bounds[3]);
+    }
+
+    private static int[] readJsonIntArray(String jsonText, int size) {
         JsonReader jsonReader = new JsonReader(new StringReader(jsonText));
-        int[] bounds = new int[4];
+        int[] result = new int[size];
+        int i = 0;
         try {
             jsonReader.beginArray();
-            int i = 0;
             while (jsonReader.hasNext()) {
-                bounds[i++] = jsonReader.nextInt();
+                if (i >= size) {
+                    Assert.fail("Json array was larger than size " + size + ": " + jsonText);
+                }
+                result[i++] = jsonReader.nextInt();
             }
             jsonReader.endArray();
-            Assert.assertEquals("Invalid bounds returned.", 4, i);
+            Assert.assertEquals("Json array was smaller than size " + size, size, i);
 
             jsonReader.close();
         } catch (IOException exception) {
-            Assert.fail("Failed to evaluate JavaScript: " + jsonText + "\n" + exception);
+            Assert.fail("Failed to read json array: " + jsonText + "\n" + exception);
         }
-
-        return new Rect(bounds[0], bounds[1], bounds[0] + bounds[2], bounds[1] + bounds[3]);
+        return result;
     }
 
     private static String createScriptToClickNode(String nodeId) {
