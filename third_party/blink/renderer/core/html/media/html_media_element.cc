@@ -3258,17 +3258,17 @@ void HTMLMediaElement::AddMediaTrack(const media::MediaTrack& track) {
       bool enabled = track.enabled() && videoTracks().selectedIndex() == -1;
       videoTracks().Add(MakeGarbageCollected<VideoTrack>(
           String::FromUTF8(track.track_id().value()),
-          AtomicString::FromUTF8(track.kind().value()),
-          AtomicString::FromUTF8(track.label().value()),
-          AtomicString::FromUTF8(track.language().value()), enabled));
+          WebString::FromUTF8(track.kind().value()),
+          WebString::FromUTF8(track.label().value()),
+          WebString::FromUTF8(track.language().value()), enabled));
       break;
     }
     case media::MediaTrack::Type::kAudio: {
       audioTracks().Add(MakeGarbageCollected<AudioTrack>(
           String::FromUTF8(track.track_id().value()),
-          AtomicString::FromUTF8(track.kind().value()),
-          AtomicString::FromUTF8(track.label().value()),
-          AtomicString::FromUTF8(track.language().value()), track.enabled()));
+          WebString::FromUTF8(track.kind().value()),
+          WebString::FromUTF8(track.label().value()),
+          WebString::FromUTF8(track.language().value()), track.enabled()));
       break;
     }
   }
