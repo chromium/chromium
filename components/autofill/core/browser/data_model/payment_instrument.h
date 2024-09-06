@@ -38,7 +38,8 @@ class PaymentInstrument final {
   PaymentInstrument(int64_t instrument_id,
                     std::u16string nickname,
                     GURL display_icon_url,
-                    DenseSet<PaymentInstrument::PaymentRail> supported_rails);
+                    DenseSet<PaymentInstrument::PaymentRail> supported_rails,
+                    bool is_fido_enrolled = false);
   PaymentInstrument(const PaymentInstrument& other);
   PaymentInstrument& operator=(const PaymentInstrument& other);
   ~PaymentInstrument();
@@ -58,6 +59,8 @@ class PaymentInstrument final {
 
   const GURL& display_icon_url() const { return display_icon_url_; }
 
+  bool is_fido_enrolled() const { return is_fido_enrolled_; }
+
  private:
   // This is the ID assigned by the payments backend to uniquely identify this
   // PaymentInstrument.
@@ -71,6 +74,9 @@ class PaymentInstrument final {
 
   // All the payment rails that are supported by this instrument.
   DenseSet<PaymentRail> supported_rails_;
+
+  // Whether the device is enrolled in FIDO for this instrument.
+  bool is_fido_enrolled_;
 };
 
 }  // namespace autofill

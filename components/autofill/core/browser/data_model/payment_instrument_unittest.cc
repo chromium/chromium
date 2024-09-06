@@ -14,7 +14,8 @@ TEST(PaymentInstrumentTest, VerifyFieldValues) {
       100, u"test_nickname", GURL("http://www.example.com"),
       DenseSet<PaymentInstrument::PaymentRail>(
           {PaymentInstrument::PaymentRail::kPix,
-           PaymentInstrument::PaymentRail::kUnknown}));
+           PaymentInstrument::PaymentRail::kUnknown}),
+      /*is_fido_enrolled=*/true);
 
   EXPECT_EQ(100, payment_instrument.instrument_id());
   EXPECT_EQ(u"test_nickname", payment_instrument.nickname());
@@ -24,6 +25,7 @@ TEST(PaymentInstrumentTest, VerifyFieldValues) {
       payment_instrument.IsSupported(PaymentInstrument::PaymentRail::kPix));
   EXPECT_TRUE(
       payment_instrument.IsSupported(PaymentInstrument::PaymentRail::kUnknown));
+  EXPECT_TRUE(payment_instrument.is_fido_enrolled());
 }
 
 TEST(PaymentInstrumentTest, IsSupported_ReturnsFalseForUnsupportedPaymentRail) {
@@ -33,6 +35,15 @@ TEST(PaymentInstrumentTest, IsSupported_ReturnsFalseForUnsupportedPaymentRail) {
 
   EXPECT_FALSE(
       payment_instrument.IsSupported(PaymentInstrument::PaymentRail::kPix));
+}
+
+TEST(PaymentInstrumentTest, IsFidoEnrolled_ReturnsFalse) {
+  PaymentInstrument payment_instrument(
+      100, u"test_nickname", GURL("http://www.example.com"),
+      DenseSet<PaymentInstrument::PaymentRail>({}),
+      /*is_fido_enrolled=*/false);
+
+  EXPECT_FALSE(payment_instrument.is_fido_enrolled());
 }
 
 }  // namespace autofill
