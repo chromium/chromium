@@ -481,8 +481,6 @@ constexpr base::TimeDelta kBrowsingDataRemoveCompletionDelay = base::Seconds(1);
     return;
   }
 
-  // TODO(crbug.com/342185075): Check if the comma is translated correctly for
-  // right to left languages, e.g. arabic.
   NSString* summary =
       [summaryItems componentsJoinedByString:
                         l10n_util::GetNSString(

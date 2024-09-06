@@ -21,8 +21,6 @@ constexpr CGFloat kChevronLeadingOffset = 5;
 
 }  // namespace
 
-// TODO(crbug.com/335387869): Check if accessibility controls work as expected
-// since we're customizing UIControl.
 @implementation PopUpMenuControl {
   UILabel* _subtitleLabel;
   UILabel* _titleLabel;
