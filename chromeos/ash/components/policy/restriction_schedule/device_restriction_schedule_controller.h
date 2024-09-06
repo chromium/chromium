@@ -39,6 +39,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
 
     // Shows an in-session notification about upcoming forced logout.
     virtual void ShowUpcomingLogoutNotification(base::Time logout_time) = 0;
+
+    // Shows a login-screen notification after the forced logout.
+    virtual void ShowPostLogoutNotification() = 0;
   };
 
   DeviceRestrictionScheduleController(Delegate& delegate,
@@ -58,6 +61,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
   void OnPolicyUpdated();
   void Run();
   void MaybeShowUpcomingLogoutNotification(base::Time logout_time);
+  void MaybeShowPostLogoutNotification();
   std::optional<base::Time> GetNextRunTime(base::Time current_time) const;
   State GetCurrentState(base::Time current_time) const;
   bool UpdateIntervalsIfChanged(const base::Value::List& policy_value);

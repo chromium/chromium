@@ -47,6 +47,7 @@ DeviceRestrictionScheduleController::DeviceRestrictionScheduleController(
       base::BindRepeating(&DeviceRestrictionScheduleController::OnPolicyUpdated,
                           base::Unretained(this)));
 
+  MaybeShowPostLogoutNotification();
   OnPolicyUpdated();
 }
 
@@ -94,6 +95,13 @@ void DeviceRestrictionScheduleController::Run() {
     StartRunTimer(next_run_time.value());
   }
 
+  // Schedule a post-logout notification if necessary.
+  if (state == State::kRestricted && delegate_->IsUserLoggedIn()) {
+    registrar_.prefs()->SetBoolean(
+        chromeos::prefs::kDeviceRestrictionScheduleShowPostLogoutNotification,
+        true);
+  }
+
   // Block or unblock login. This needs to be the last statement since it could
   // cause a restart to the login-screen.
   delegate_->BlockLogin(state == State::kRestricted);
@@ -103,6 +111,17 @@ void DeviceRestrictionScheduleController::MaybeShowUpcomingLogoutNotification(
     base::Time logout_time) {
   if (delegate_->IsUserLoggedIn()) {
     delegate_->ShowUpcomingLogoutNotification(logout_time);
+  }
+}
+
+void DeviceRestrictionScheduleController::MaybeShowPostLogoutNotification() {
+  if (registrar_.prefs()->GetBoolean(
+          chromeos::prefs::
+              kDeviceRestrictionScheduleShowPostLogoutNotification)) {
+    registrar_.prefs()->SetBoolean(
+        chromeos::prefs::kDeviceRestrictionScheduleShowPostLogoutNotification,
+        false);
+    delegate_->ShowPostLogoutNotification();
   }
 }
 
