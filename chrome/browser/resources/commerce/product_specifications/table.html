@@ -161,7 +161,8 @@
         <cr-icon-button class="open-tab-button icon-external"
             hidden$="[[!showOpenTabButton_(columnIndex,
                 draggingColumn, hoveredColumnIndex_)]]"
-            on-click="onOpenTabButtonClick_">
+            on-click="onOpenTabButtonClick_"
+            title="$i18n{openProductPage}">
         </cr-icon-button>
       </div>
       <template is="dom-repeat" items="[[column.productDetails]]" as="detail"

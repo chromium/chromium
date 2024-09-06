@@ -542,6 +542,9 @@
     </if> <!-- is_android -->
 
   <!-- For Compare -->
+  <message name="IDS_COMPARE_ADD_NEW_COLUMN" translateable="false" desc="Label shown on hover for the button for adding a new column in comparison table.">
+    Add similar products you want to compare
+  </message>
   <message name="IDS_COMPARE_CITATION_A11Y_LABEL" desc="The accessibility label for a citation in the compare feature's UI.">
     Citation <ph name="CURRENT_CITATION">$1<ex>1</ex></ph> of <ph name="MAX_CITATIONS">$2<ex>3</ex></ph>, <ph name="PRODUCT_NAME">$3<ex>Laptop</ex></ph>, <ph name="URL">$4<ex>http://example.com</ex></ph>
   </message>
@@ -586,6 +589,9 @@
   </message>
   <message name="IDS_COMPARE_OFFLINE_TOAST_MESSAGE" desc="The message that shows when tab compare is offline.">
     Check your connection and try again
+  </message>
+  <message name="IDS_COMPARE_OPEN_PRODUCT_PAGE_IN_NEW_TAB" translateable="false" desc="Accessibility label for the button for opening product page in a new tab in comparison table.">
+    Open product page in new tab
   </message>
   <message name="IDS_COMPARE_PAGE_ACTION_ADD_DEFAULT" desc="The default text for the Compare page action chip before adding the current page.">
     Add to Comparison?
