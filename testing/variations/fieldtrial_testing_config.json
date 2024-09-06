@@ -16616,139 +16616,21 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithStrongLabel",
-                    "params": {
-                        "PasswordGenerationExperimentSurveyTriggedId": "p4WLf1M6c0ugnJ3q1cK0YsmLdpng",
-                        "probability": "0.25"
-                    },
-                    "enable_features": [
-                        "PasswordGenerationExperiment",
-                        "PasswordStrongLabel"
-                    ]
-                },
-                {
-                    "name": "EnabledWithTrustedAdvice",
-                    "params": {
-                        "PasswordGenerationExperimentSurveyTriggedId": "Vm6DB1ki50ugnJ3q1cK0SpkrheAJ",
-                        "password_generation_variation": "trusted_advice",
-                        "probability": "0.25"
-                    },
-                    "enable_features": [
-                        "PasswordGenerationExperiment"
-                    ],
-                    "disable_features": [
-                        "PasswordStrongLabel"
-                    ]
-                },
-                {
-                    "name": "EnabledWithSafetyFirst",
-                    "params": {
-                        "PasswordGenerationExperimentSurveyTriggedId": "sD7hmDAoo0ugnJ3q1cK0VQ2Y8p6e",
-                        "password_generation_variation": "safety_first",
-                        "probability": "0.25"
-                    },
-                    "enable_features": [
-                        "PasswordGenerationExperiment"
-                    ],
-                    "disable_features": [
-                        "PasswordStrongLabel"
-                    ]
-                },
-                {
-                    "name": "EnabledWithTrySomethingNew",
-                    "params": {
-                        "PasswordGenerationExperimentSurveyTriggedId": "6QssdASS10ugnJ3q1cK0RUK4HnYU",
-                        "password_generation_variation": "try_something_new",
-                        "probability": "0.25"
-                    },
-                    "enable_features": [
-                        "PasswordGenerationExperiment"
-                    ],
-                    "disable_features": [
-                        "PasswordStrongLabel"
-                    ]
-                },
-                {
-                    "name": "EnabledWithConvenience",
-                    "params": {
-                        "PasswordGenerationExperimentSurveyTriggedId": "W23VEAHCT0ugnJ3q1cK0SaPHa9J4",
-                        "password_generation_variation": "convenience",
-                        "probability": "0.25"
-                    },
-                    "enable_features": [
-                        "PasswordGenerationExperiment"
-                    ],
-                    "disable_features": [
-                        "PasswordStrongLabel"
-                    ]
-                },
-                {
-                    "name": "EnabledWithCrossDevice",
-                    "params": {
-                        "PasswordGenerationExperimentSurveyTriggedId": "fRjzkFjzZ0ugnJ3q1cK0RWYBnkGK",
-                        "password_generation_variation": "cross_device",
-                        "probability": "0.25"
-                    },
-                    "enable_features": [
-                        "PasswordGenerationExperiment"
-                    ],
-                    "disable_features": [
-                        "PasswordStrongLabel"
-                    ]
-                },
-                {
                     "name": "EnabledWithChunkPassword",
                     "params": {
-                        "PasswordGenerationExperimentSurveyTriggedId": "gnz68PSiB0ugnJ3q1cK0Y7PcR8ix",
-                        "password_generation_variation": "chunk_password",
-                        "probability": "0.25"
+                        "password_generation_variation": "chunk_password"
                     },
                     "enable_features": [
                         "PasswordGenerationExperiment"
-                    ],
-                    "disable_features": [
-                        "PasswordStrongLabel"
                     ]
                 },
                 {
                     "name": "EnabledWithNudgePassword",
                     "params": {
-                        "PasswordGenerationExperimentSurveyTriggedId": "B8yvCYL9f0ugnJ3q1cK0NXtJvPAJ",
-                        "password_generation_variation": "nudge_password",
-                        "probability": "0.25"
+                        "password_generation_variation": "nudge_password"
                     },
                     "enable_features": [
                         "PasswordGenerationExperiment"
-                    ],
-                    "disable_features": [
-                        "PasswordStrongLabel"
-                    ]
-                },
-                {
-                    "name": "EnabledWithEditPassword",
-                    "params": {
-                        "PasswordGenerationExperimentSurveyTriggedId": "4yPTnSKPN0ugnJ3q1cK0YJ18dkNR",
-                        "password_generation_variation": "edit_password",
-                        "probability": "0.25"
-                    },
-                    "enable_features": [
-                        "PasswordGenerationExperiment"
-                    ],
-                    "disable_features": [
-                        "PasswordStrongLabel"
-                    ]
-                },
-                {
-                    "name": "Baseline",
-                    "params": {
-                        "PasswordGenerationExperimentSurveyTriggedId": "DX4MWyX4R0ugnJ3q1cK0YjEiaErj",
-                        "probability": "0.25"
-                    },
-                    "enable_features": [
-                        "PasswordGenerationExperiment"
-                    ],
-                    "disable_features": [
-                        "PasswordStrongLabel"
                     ]
                 }
             ]
