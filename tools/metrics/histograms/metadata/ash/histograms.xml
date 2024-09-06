@@ -497,7 +497,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Accelerators.Rotation.Usage"
     enum="ScreenRotationAcceleratorAction" expires_after="2023-10-08">
-  <owner>zentaro@chromium.org</owner>
+  <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Captures the result of a user using the rotation accelerator -

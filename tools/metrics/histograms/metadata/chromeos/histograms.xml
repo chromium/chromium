@@ -54,7 +54,6 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   <variant name="DiagnosticsUi" summary="CROS Diagnostics Application">
     <owner>zhangwenyu@google.com</owner>
     <owner>jimmyxgong@chromium.org</owner>
-    <owner>zentaro@chromium.org</owner>
     <owner>cros-peripherals@google.com</owner>
   </variant>
   <variant name="EnterpriseESim" summary="enterprise eSIM">
@@ -1130,7 +1129,6 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     enum="CrosDiagnosticsCrosHealthdProbeError" expires_after="2024-10-20">
   <owner>zhangwenyu@google.com</owner>
   <owner>ashleydp@google.com</owner>
-  <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Records the ProbeError::ErrorType returned on request for
@@ -1149,7 +1147,6 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     enum="CrosDiagnosticsDataError" expires_after="2025-02-23">
   <owner>zhangwenyu@google.com</owner>
   <owner>ashleydp@google.com</owner>
-  <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Records error type such as no data error, not a number error and expectation
@@ -1168,7 +1165,6 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   <owner>zhangwenyu@google.com</owner>
   <owner>ashleydp@google.com</owner>
   <owner>gavinwill@chromium.org</owner>
-  <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Records requested initial screen when opening the Diagnostics App.
@@ -1180,7 +1176,6 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   <owner>zhangwenyu@google.com</owner>
   <owner>dpad@chromium.org</owner>
   <owner>michaelcheco@chromium.org</owner>
-  <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Records the duration that the user spent in the Keyboard Tester. Emitted
@@ -1193,7 +1188,6 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   <owner>zhangwenyu@google.com</owner>
   <owner>ashleydp@google.com</owner>
   <owner>gavinwill@chromium.org</owner>
-  <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Records the duration that the Memory Routine took to complete. Emitted when
@@ -1206,7 +1200,6 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   <owner>zhangwenyu@google.com</owner>
   <owner>ashleydp@google.com</owner>
   <owner>gavinwill@chromium.org</owner>
-  <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Records the duration that the Diagnostics App is open. emitted when the app
@@ -1219,7 +1212,6 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   <owner>zhangwenyu@google.com</owner>
   <owner>ashleydp@google.com</owner>
   <owner>gavinwill@chromium.org</owner>
-  <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Records the number of routines run while the Chrome OS Diagnostics App was
@@ -1233,7 +1225,6 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   <owner>zhangwenyu@google.com</owner>
   <owner>ashleydp@google.com</owner>
   <owner>gavinwill@chromium.org</owner>
-  <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Records the duration that the Diagnostics App is open for a given page view.
@@ -1255,7 +1246,6 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   <owner>zhangwenyu@google.com</owner>
   <owner>ashleydp@google.com</owner>
   <owner>gavinwill@chromium.org</owner>
-  <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>Records the result of the {RoutineType} Routine.</summary>
   <token key="RoutineType">
@@ -1295,7 +1285,6 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     name="ChromeOS.Display.TimeUntilFirstBrightnessChange.{Time}.{BrightnessAction}Brightness.{PowerSource}Power"
     units="ms" expires_after="2025-03-01">
   <owner>cambickel@google.com</owner>
-  <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     When a user {BrightnessAction} the brightness of the internal display for
@@ -1350,7 +1339,6 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     units="ms" expires_after="2025-06-28">
   <owner>cambickel@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     When a firmware install fails while waiting for user action (i.e. a device
@@ -1365,7 +1353,6 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     enum="FirmwareUpdateFwupdStatus" expires_after="2025-06-28">
   <owner>cambickel@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Records the most recent FwupdStatus when a firmware install fails for any
@@ -1377,7 +1364,6 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     enum="FirmwareUpdateDeviceRequestID" expires_after="2025-06-28">
   <owner>cambickel@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Records the ID and {Kind} of request received from fwupd. A request is an
@@ -1397,7 +1383,6 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     units="ms" expires_after="2025-06-28">
   <owner>cambickel@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Records the duration of a successful device request. Requests are considered
@@ -1411,7 +1396,6 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 <histogram name="ChromeOS.FirmwareUpdateUi.{Method}Result"
     enum="FirmwareUpdateMethodResult" expires_after="2025-06-28">
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Records the result of a {Method} call. Recorded once per {Method} and the
@@ -1431,7 +1415,6 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 <histogram name="ChromeOS.FirmwareUpdateUi.{Source}.DeviceCount"
     units="devices" expires_after="2025-06-28">
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Records the total number of devices found. OnStartup is recorded when a user
@@ -1452,7 +1435,6 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 <histogram name="ChromeOS.FirmwareUpdateUi.{Source}.{Severity}UpdateCount"
     units="updates" expires_after="2025-06-28">
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Records the total number of {Severity} firmware updates found for all of the
@@ -2834,7 +2816,6 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   <owner>michaelcheco@google.com</owner>
   <owner>dpad@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Records whether or not RGB keyboard is supported for the current device.
@@ -2850,7 +2831,6 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   <owner>michaelcheco@google.com</owner>
   <owner>dpad@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>Records the source of RGB backlight change for a device.</summary>
 <!-- This must be kept current with RgbKeyboardCapabilityType located in

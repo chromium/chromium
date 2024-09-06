@@ -2586,7 +2586,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="AltBasedKeyRewrite_Delete">
-  <owner>zentaro@chromium.org</owner>
+  <owner>dpad@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <description>
     User pressed Alt+Backspace to produce the Delete key.
@@ -2594,7 +2594,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="AltBasedKeyRewrite_End">
-  <owner>zentaro@chromium.org</owner>
+  <owner>dpad@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <description>
     User pressed Alt+Ctrl+DownArrow to produce the End key.
@@ -2602,7 +2602,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="AltBasedKeyRewrite_Home">
-  <owner>zentaro@chromium.org</owner>
+  <owner>dpad@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <description>
     User pressed Alt+Ctrl+UpArrow to produce the Home key.
@@ -2610,7 +2610,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="AltBasedKeyRewrite_PageDown">
-  <owner>zentaro@chromium.org</owner>
+  <owner>dpad@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <description>
     User pressed Alt+DownArrow to produce the PageDown key.
@@ -2618,13 +2618,14 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="AltBasedKeyRewrite_PageUp">
-  <owner>zentaro@chromium.org</owner>
+  <owner>dpad@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <description>User pressed Alt+UpArrow to produce the PageUp key.</description>
 </action>
 
 <action name="AltClickMappedToRightClick">
-  <owner>zentaro@chromium.org</owner>
+  <owner>dpad@google.com</owner>
+  <owner>jimmyxgong@chromium.org</owner>
   <description>
     User pressed alt click on a touchpad device to generate right click.
   </description>
@@ -6272,7 +6273,7 @@ should be able to be added at any place in this file.
 
 <action name="CapsLock_Toggled">
   <owner>dpad@google.com</owner>
-  <owner>zentaro@google.com</owner>
+  <owner>jimmyxgong@chromium.org</owner>
   <description>
     User toggled capslock via capslock key press or keyboard shortcut (alt +
     search).
@@ -6281,7 +6282,7 @@ should be able to be added at any place in this file.
 
 <action name="CapsLock_Toggled_Using_CapsLockKey">
   <owner>dpad@google.com</owner>
-  <owner>zentaro@google.com</owner>
+  <owner>jimmyxgong@chromium.org</owner>
   <description>User toggled capslock via capslock key press.</description>
 </action>
 
@@ -32995,7 +32996,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SearchBasedKeyRewrite_Delete">
-  <owner>zentaro@chromium.org</owner>
+  <owner>dpad@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <description>
     User pressed Search+Backspace to produce the Delete key.
@@ -33003,7 +33004,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SearchBasedKeyRewrite_End">
-  <owner>zentaro@chromium.org</owner>
+  <owner>dpad@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <description>
     User pressed Search+RightArrow to produce the End key.
@@ -33011,7 +33012,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SearchBasedKeyRewrite_Home">
-  <owner>zentaro@chromium.org</owner>
+  <owner>dpad@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <description>
     User pressed Search+LeftArrow to produce the Home key.
@@ -33019,7 +33020,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SearchBasedKeyRewrite_Insert">
-  <owner>zentaro@chromium.org</owner>
+  <owner>dpad@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <description>
     User pressed Search+Period to produce the Insert key.
@@ -33027,7 +33028,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SearchBasedKeyRewrite_PageDown">
-  <owner>zentaro@chromium.org</owner>
+  <owner>dpad@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <description>
     User pressed Search+DownArrow to produce the PageDown key.
@@ -33035,7 +33036,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SearchBasedKeyRewrite_PageUp">
-  <owner>zentaro@chromium.org</owner>
+  <owner>dpad@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <description>
     User pressed Search+UpArrow to produce the PageUp key.
@@ -33043,7 +33044,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SearchClickMappedToRightClick">
-  <owner>zentaro@chromium.org</owner>
+  <owner>dpad@google.com</owner>
+  <owner>jimmyxgong@chromium.org</owner>
   <description>
     User pressed search click on a touchpad device to generate right click. This
     is measuring the transition of use from the legacy alt click behaviour that
@@ -33128,73 +33130,73 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SearchPlusDigitRewrite_F1">
-  <owner>zentaro@chromium.org</owner>
+  <owner>dpad@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <description>User pressed Search+1 to produce the F1 key.</description>
 </action>
 
 <action name="SearchPlusDigitRewrite_F10">
-  <owner>zentaro@chromium.org</owner>
+  <owner>dpad@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <description>User pressed Search+0 to produce the F10 key.</description>
 </action>
 
 <action name="SearchPlusDigitRewrite_F11">
-  <owner>zentaro@chromium.org</owner>
+  <owner>dpad@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <description>User pressed Search+Minus to produce the F11 key.</description>
 </action>
 
 <action name="SearchPlusDigitRewrite_F12">
-  <owner>zentaro@chromium.org</owner>
+  <owner>dpad@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <description>User pressed Search+Equals to produce the F12 key.</description>
 </action>
 
 <action name="SearchPlusDigitRewrite_F2">
-  <owner>zentaro@chromium.org</owner>
+  <owner>dpad@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <description>User pressed Search+2 to produce the F2 key.</description>
 </action>
 
 <action name="SearchPlusDigitRewrite_F3">
-  <owner>zentaro@chromium.org</owner>
+  <owner>dpad@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <description>User pressed Search+3 to produce the F3 key.</description>
 </action>
 
 <action name="SearchPlusDigitRewrite_F4">
-  <owner>zentaro@chromium.org</owner>
+  <owner>dpad@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <description>User pressed Search+4 to produce the F4 key.</description>
 </action>
 
 <action name="SearchPlusDigitRewrite_F5">
-  <owner>zentaro@chromium.org</owner>
+  <owner>dpad@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <description>User pressed Search+5 to produce the F5 key.</description>
 </action>
 
 <action name="SearchPlusDigitRewrite_F6">
-  <owner>zentaro@chromium.org</owner>
+  <owner>dpad@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <description>User pressed Search+6 to produce the F6 key.</description>
 </action>
 
 <action name="SearchPlusDigitRewrite_F7">
-  <owner>zentaro@chromium.org</owner>
+  <owner>dpad@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <description>User pressed Search+7 to produce the F7 key.</description>
 </action>
 
 <action name="SearchPlusDigitRewrite_F8">
-  <owner>zentaro@chromium.org</owner>
+  <owner>dpad@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <description>User pressed Search+8 to produce the F8 key.</description>
 </action>
 
 <action name="SearchPlusDigitRewrite_F9">
-  <owner>zentaro@chromium.org</owner>
+  <owner>dpad@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <description>User pressed Search+9 to produce the F9 key.</description>
 </action>

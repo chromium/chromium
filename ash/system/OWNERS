@@ -4,9 +4,7 @@ leandre@chromium.org
 newcomer@chromium.org
 tbarzic@chromium.org
 
-per-file caps_lock_notification_controller*=zentaro@chromium.org
 per-file caps_lock_notification_controller*=jimmyxgong@chromium.org
 per-file caps_lock_notification_controller*=dpad@google.com
-per-file *brightness*=zentaro@chromium.org
 per-file *brightness*=jimmyxgong@chromium.org
 per-file *brightness*=dpad@google.com

@@ -263,7 +263,6 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="ChromeOS.Settings.Device.KeyboardFunctionKeys"
     enum="BooleanToggled" expires_after="2024-12-15">
   <owner>jimmyxgong@chromium.org</owner>
-  <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Records when a user changes the kKeyboardFunctionKeys setting on the Device
@@ -308,7 +307,6 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="ChromeOS.Settings.Display.Internal.AutoBrightnessEnabled"
     enum="BooleanToggled" expires_after="2025-03-01">
   <owner>cambickel@google.com</owner>
-  <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Records each time a user toggles the auto-brightness setting via the
@@ -319,7 +317,6 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="ChromeOS.Settings.Display.Internal.BrightnessSliderAdjusted"
     units="%" expires_after="2025-03-01">
   <owner>cambickel@google.com</owner>
-  <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Records each time a user changes the screen brightness for an internal

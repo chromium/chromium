@@ -471,7 +471,7 @@
   {
     "name": "ash-modifier-split",
     "owners": [
-      "dpad@chromium.org",
+      "dpad@google.com",
       "wangdanny@chromium.org",
       "cros-peripherals@google.com"
     ],
@@ -479,7 +479,10 @@
   },
   {
     "name": "ash-modifier-split-feature-key",
-    "owners": [ "dpad@chromium.org", "cros-peripherals@google.com" ],
+    "owners": [
+      "dpad@google.com",
+      "cros-peripherals@google.com"
+    ],
     "expiry_milestone": 140
   },
   {
@@ -518,7 +521,7 @@
   {
     "name": "ash-split-keyboard-refactor",
     "owners": [
-      "dpad@chromium.org",
+      "dpad@google.com",
       "cros-peripherals@google.com"
     ],
     "expiry_milestone": 131
@@ -2007,14 +2010,19 @@
   },
   {
     "name": "deprecate-alt-click",
-    "owners": [ "zentaro@google.com", "jimmyxgong@google.com",
-                "cros-peripherals@google.com"],
+    "owners": [
+      "jimmyxgong@chromium.org",
+      "cros-peripherals@google.com"
+    ],
     "expiry_milestone": 140
   },
   {
     "name": "deprecate-old-keyboard-shortcuts-accelerator",
-    "owners": [ "zentaro@chromium.org", "jimmyxgong@chromium.org", "cambickel@chromium.org",
-                "cros-peripherals@google.com"],
+    "owners": [
+      "jimmyxgong@chromium.org",
+      "cambickel@chromium.org",
+      "cros-peripherals@google.com"
+    ],
     "expiry_milestone": 130
   },
   {
@@ -2601,7 +2609,11 @@
   },
   {
     "name": "enable-brightness-control-in-settings",
-    "owners": [ "cambickel@google.com", "zentaro@chromium.org", "cros-peripherals@google.com" ],
+    "owners": [
+      "cambickel@google.com",
+      "longbowei@google.com",
+      "cros-peripherals@google.com"
+    ],
     "expiry_milestone": 130
   },
   {
@@ -3085,7 +3097,11 @@
   },
   {
     "name": "enable-experimental-rgb-keyboard-patterns",
-    "owners": [ "jimmyxgong@chromium.org", "zentaro@chromium.org", "michaelcheco@chromium.org", "cros-peripherals@google.com"],
+    "owners": [
+      "jimmyxgong@chromium.org",
+      "michaelcheco@chromium.org",
+      "cros-peripherals@google.com"
+    ],
     "expiry_milestone": 140
   },
   {
@@ -3359,7 +3375,10 @@
   },
   {
     "name": "enable-input-device-settings-split",
-    "owners": ["dpad@chromium.org", "zentaro@chromium.org", "cros-peripherals@google.com"],
+    "owners": [
+      "dpad@google.com",
+      "cros-peripherals@google.com"
+    ],
     "expiry_milestone": 140
   },
   {
@@ -3435,7 +3454,11 @@
   },
   {
     "name": "enable-keyboard-backlight-control-in-settings",
-    "owners": [ "dpad@chromium.org", "longbowei@google.com", "cros-peripherals@google.com" ],
+    "owners": [
+      "dpad@google.com",
+      "longbowei@google.com",
+      "cros-peripherals@google.com"
+    ],
     "expiry_milestone": 140
   },
   {
@@ -3691,18 +3714,24 @@
   },
   {
     "name": "enable-peripheral-customization",
-    "owners": ["dpad@chromium.org", "zentaro@chromium.org", "cros-peripherals@google.com"],
+    "owners": [
+      "dpad@google.com",
+      "cros-peripherals@google.com"
+    ],
     "expiry_milestone": 130
   },
   {
     "name": "enable-peripheral-notification",
-    "owners": ["dpad@chromium.org", "zentaro@chromium.org", "cros-peripherals@google.com"],
+    "owners": [
+      "dpad@google.com",
+      "cros-peripherals@google.com"
+    ],
     "expiry_milestone": 130
   },
   {
     "name": "enable-peripherals-logging",
     "owners": [
-      "dpad@chromium.org",
+      "dpad@google.com",
       "jimmyxgong@chromium.org",
       "cros-peripherals@google.com"
     ],
@@ -3903,7 +3932,10 @@
   },
   {
     "name": "enable-shortcut-customization",
-    "owners": [ "jimmyxgong@chromium.org", "zentaro@chromium.org", "cros-peripherals@google.com"],
+    "owners": [
+      "jimmyxgong@chromium.org",
+      "cros-peripherals@google.com"
+    ],
     "expiry_milestone": 130
   },
   {
@@ -3977,7 +4009,7 @@
   {
     "name": "enable-suspend-state-machine",
     "owners": [
-      "dpad@chromium.org",
+      "dpad@google.com",
       "cros-peripherals@google.com"
     ],
     "expiry_milestone": 140
@@ -5194,8 +5226,10 @@
   },
   {
     "name": "improved-keyboard-shortcuts",
-    "owners": [ "zentaro@google.com", "jimmyxgong@google.com",
-                "cros-peripherals@google.com"],
+    "owners": [
+      "jimmyxgong@chromium.org",
+      "cros-peripherals@google.com"
+    ],
     "expiry_milestone": 140
   },
   {
@@ -7704,7 +7738,10 @@
   },
   {
     "name": "reset-shortcut-customizations",
-    "owners": [ "jimmyxgong@chromium.org", "zentaro@chromium.org", "cros-peripherals@google.com"],
+    "owners": [
+      "jimmyxgong@chromium.org",
+      "cros-peripherals@google.com"
+    ],
     "expiry_milestone": 140
   },
   {
@@ -8049,7 +8086,10 @@
   },
   {
     "name": "shimless-rma-os-update",
-    "owners": [ "zentaro@chromium.org", "gavinwill@chromium.org", "cros-peripherals@google.com" ],
+    "owners": [
+      "gavinwill@chromium.org",
+      "cros-peripherals@google.com"
+    ],
     "expiry_milestone": 140
   },
   {
@@ -8997,7 +9037,10 @@
   },
   {
     "name": "use-search-click-for-right-click",
-    "owners": [ "zentaro@chromium.org", "jimmyxgong@chromium.org", "cros-peripherals@google.com" ],
+    "owners": [
+      "jimmyxgong@chromium.org",
+      "cros-peripherals@google.com"
+    ],
     "expiry_milestone": 140
   },
   {
