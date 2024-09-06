@@ -11,7 +11,8 @@ enum class ToastId {
   kMin = kLinkCopied,
   kImageCopied = 1,
   kLinkToHighlightCopied = 2,
-  kMax = kLinkToHighlightCopied
+  kAddedToReadingList = 3,
+  kMax = kAddedToReadingList
 };
 
 #endif  // CHROME_BROWSER_UI_TOASTS_API_TOAST_ID_H_

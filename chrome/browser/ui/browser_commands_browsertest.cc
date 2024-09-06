@@ -14,10 +14,13 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/commerce/product_specifications_disclosure_dialog.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -39,7 +42,13 @@ namespace chrome {
 class BrowserCommandsTest : public InProcessBrowserTest {
  public:
   BrowserCommandsTest() : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    feature_list_.InitWithFeatures({features::kTabOrganization}, {});
+    feature_list_.InitWithFeatures(
+        {
+            features::kTabOrganization,
+            toast_features::kToastFramework,
+            toast_features::kReadingListToast,
+        },
+        {});
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -407,4 +416,12 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
   // No new tab is created.
   ASSERT_EQ(tab_count, browser()->tab_strip_model()->count());
 }
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, AddingToReadingListOpensToast) {
+  GURL main_url(https_server_.GetURL("a.test", "/iframe.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+  chrome::ExecuteCommand(browser(), IDC_READING_LIST_MENU_ADD_TAB);
+  EXPECT_TRUE(browser()->GetFeatures().toast_controller()->IsShowingToast());
+}
+
 }  // namespace chrome

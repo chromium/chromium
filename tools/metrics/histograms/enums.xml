@@ -32052,6 +32052,7 @@ Called by update_net_error_codes.py.-->
   <int value="17" label="Opened from toolbar overflow menu"/>
   <int value="18" label="Opened from an extension"/>
   <int value="19" label="Opened from the New Tab Page"/>
+  <int value="20" label="Opened from the Reading List toast"/>
 </enum>
 
 <enum name="SideSearchAvailabilityChangeType">

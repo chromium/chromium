@@ -6,12 +6,17 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/api/toast_registry.h"
 #include "chrome/browser/ui/toasts/api/toast_specification.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -44,5 +49,19 @@ void ToastService::RegisterToasts(
       ToastId::kLinkToHighlightCopied,
       ToastSpecification::Builder(kLinkChromeRefreshIcon,
                                   IDS_LINK_COPIED_TO_HIGHLIGHT_TOAST_BODY)
+          .Build());
+
+  toast_registry_->RegisterToast(
+      ToastId::kAddedToReadingList,
+      ToastSpecification::Builder(kReadingListIcon, IDS_READING_LIST_TOAST_BODY)
+          .AddActionButton(IDS_READING_LIST_TOAST_BUTTON,
+                           base::BindRepeating(
+                               [](BrowserWindowInterface* window) {
+                                 window->GetFeatures().side_panel_ui()->Show(
+                                     SidePanelEntryId::kReadingList,
+                                     SidePanelOpenTrigger::kReadingListToast);
+                               },
+                               base::Unretained(browser_window_interface)))
+          .AddCloseButton()
           .Build());
 }
