@@ -1166,6 +1166,17 @@ void CompositorFrameSinkSupport::UpdateDisplayRootReference(
 }
 
 void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
+  int64_t trace_id = ComputeTraceId();
+  TRACE_EVENT(
+      "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
+      perfetto::Flow::Global(trace_id), [trace_id](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_chrome_graphics_pipeline();
+        data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
+                           StepName::STEP_ISSUE_BEGIN_FRAME);
+        data->set_display_trace_id(trace_id);
+      });
+
   if (compositor_frame_callback_) {
     callback_received_begin_frame_ = true;
     UpdateNeedsBeginFramesInternal();
@@ -1200,17 +1211,7 @@ void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
     if (!last_activated_surface_id_.is_valid())
       adjusted_args.animate_only = false;
 
-    adjusted_args.trace_id = ComputeTraceId();
-    TRACE_EVENT(
-        "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
-        perfetto::Flow::Global((adjusted_args.trace_id)),
-        [&](perfetto::EventContext ctx) {
-          auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
-          auto* data = event->set_chrome_graphics_pipeline();
-          data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
-                             StepName::STEP_ISSUE_BEGIN_FRAME);
-          data->set_display_trace_id(adjusted_args.trace_id);
-        });
+    adjusted_args.trace_id = trace_id;
     adjusted_args.frames_throttled_since_last = frames_throttled_since_last_;
     frames_throttled_since_last_ = 0;
 
