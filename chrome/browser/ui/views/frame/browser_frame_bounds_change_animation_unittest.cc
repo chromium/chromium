@@ -10,7 +10,7 @@
 namespace {
 
 constexpr gfx::Rect kInitialBounds{50, 50, 300, 300};
-constexpr gfx::Rect kNewBounds{60, 60, 400, 400};
+constexpr gfx::Rect kNewBounds{100, 100, 400, 400};
 
 void ExpectRectBetween(const gfx::Rect& actual_rect,
                        const gfx::Rect& lower_rect,
