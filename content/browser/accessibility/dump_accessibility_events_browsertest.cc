@@ -232,16 +232,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-busy-changed.html"));
 }
 
-// TODO(crbug.com/40118868): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define DISABLED_ON_LINUX_TSAN_MSAN(name) DISABLED_##name
-#else
-#define DISABLED_ON_LINUX_TSAN_MSAN(name) name
-#endif
-IN_PROC_BROWSER_TEST_P(
-    DumpAccessibilityEventsTest,
-    DISABLED_ON_LINUX_TSAN_MSAN(AccessibilityEventsAriaButtonExpand)) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsAriaButtonExpand) {
   RunEventTest(FILE_PATH_LITERAL("aria-button-expand.html"));
 }
 
