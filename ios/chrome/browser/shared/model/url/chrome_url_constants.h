@@ -142,4 +142,7 @@ extern const char kManagementLearnMoreURL[];
 // section.
 extern const char kEnhancedSafeBrowsingLearnMoreURL[];
 
+// "My Activity" URL for managing the user's activity
+extern const char kMyActivityURL[];
+
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_URL_CHROME_URL_CONSTANTS_H_

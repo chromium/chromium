@@ -62,7 +62,8 @@ namespace provider {
 // communication with the downstream Lens controller.
 UIViewController<ChromeLensOverlay>* NewChromeLensOverlay(
     UIImage* snapshot,
-    LensConfiguration* config);
+    LensConfiguration* config,
+    NSArray<UIAction*>* additionalMenuItems);
 
 }  // namespace provider
 }  // namespace ios

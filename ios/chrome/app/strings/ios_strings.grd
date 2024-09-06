@@ -2648,6 +2648,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_MINI_MAP_IPH_SUBTITLE" desc="The text of the iph string displayed on Mini Map screen on first trigger [iOS only].">
         You can manage this in <ph name="BEGIN_LINK">BEGIN_LINK</ph>Content Settings<ph name="END_LINK">END_LINK</ph>.
       </message>
+      <message name="IDS_IOS_MY_ACTIVITY_TITLE" desc="The title for the overflow menu option leading to 'My Activity' page [iOS only].">
+        My Activity
+      </message>
       <message name="IDS_IOS_NAVIGATION_BAR_ADD_BUTTON" desc="Label of the button allowing the user to add a new credit card to the list of their saved credit cards.">
           Add
       </message>

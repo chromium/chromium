@@ -25,26 +25,30 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
+#import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/omnibox/chrome_omnibox_client_ios.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_coordinator.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/web/model/web_state_delegate_browser_agent.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/lens/lens_configuration.h"
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_api.h"
 #import "ios/web/public/web_state.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
-
 namespace {
 
 LensEntrypoint LensEntrypointFromOverlayEntrypoint(
@@ -58,6 +62,10 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
 }
 
 const CGFloat kSelectionOffsetPadding = 50.0f;
+
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+const CGFloat kMenuSymbolSize = 18;
+#endif
 
 }  // namespace
 
@@ -142,8 +150,10 @@ const CGFloat kSelectionOffsetPadding = 50.0f;
   }
   LensConfiguration* config =
       [self createLensConfigurationForEntrypoint:entrypoint];
-  _selectionViewController =
-      ios::provider::NewChromeLensOverlay(snapshot, config);
+  NSArray<UIAction*>* additionalMenuItems = @[ [self openUserActivityAction] ];
+
+  _selectionViewController = ios::provider::NewChromeLensOverlay(
+      snapshot, config, additionalMenuItems);
 }
 
 - (void)createContainerViewController {
@@ -597,6 +607,23 @@ const CGFloat kSelectionOffsetPadding = 50.0f;
   CHECK(tabHelper, kLensOverlayNotFatalUntil);
 
   return tabHelper;
+}
+
+- (UIAction*)openUserActivityAction {
+  BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]
+      initWithBrowser:self.browser
+             scenario:kMenuScenarioHistogramHistoryEntry];
+  UIAction* action =
+      [actionFactory actionToOpenInNewTabWithURL:GURL(kMyActivityURL)
+                                      completion:nil];
+  action.title = l10n_util::GetNSString(IDS_IOS_MY_ACTIVITY_TITLE);
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+  action.image = MakeSymbolMonochrome(
+      CustomSymbolWithPointSize(kGoogleIconSymbol, kMenuSymbolSize));
+#else
+  action.image = nil;
+#endif
+  return action;
 }
 
 // Captures a screenshot of the active web state.
