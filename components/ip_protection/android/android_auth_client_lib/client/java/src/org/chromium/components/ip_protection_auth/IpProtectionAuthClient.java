@@ -77,9 +77,9 @@ public final class IpProtectionAuthClient implements AutoCloseable {
 
     /** This class must be used exclusively from the main thread. */
     private static final class ConnectionSetup implements ServiceConnection {
+        @NonNull private final Context mContext;
         @Nullable private IpProtectionAuthServiceCallback mCallback;
-        private final Context mContext;
-        private IpProtectionAuthClient mIpProtectionClient;
+        @Nullable private IpProtectionAuthClient mIpProtectionClient;
         private boolean mBound;
 
         ConnectionSetup(
@@ -113,8 +113,10 @@ public final class IpProtectionAuthClient implements AutoCloseable {
             try (TraceEvent event =
                     TraceEvent.scoped("IpProtectionAuthClient.Create.OnServiceDisconnected")) {
                 unbindIfBound();
-                mIpProtectionClient.mCallbackTracker.rejectUnresolvedCallbacks(
-                        AuthRequestError.OTHER);
+                if (mIpProtectionClient != null) {
+                    mIpProtectionClient.mCallbackTracker.rejectUnresolvedCallbacks(
+                            AuthRequestError.OTHER);
+                }
             }
         }
 
@@ -123,8 +125,10 @@ public final class IpProtectionAuthClient implements AutoCloseable {
             try (TraceEvent event =
                     TraceEvent.scoped("IpProtectionAuthClient.Create.OnBindingDied")) {
                 unbindIfBound();
-                mIpProtectionClient.mCallbackTracker.rejectUnresolvedCallbacks(
-                        AuthRequestError.OTHER);
+                if (mIpProtectionClient != null) {
+                    mIpProtectionClient.mCallbackTracker.rejectUnresolvedCallbacks(
+                            AuthRequestError.OTHER);
+                }
             }
         }
 
