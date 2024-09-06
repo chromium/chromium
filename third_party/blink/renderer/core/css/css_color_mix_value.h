@@ -52,7 +52,9 @@ class CORE_EXPORT CSSColorMixValue : public CSSValue {
 
   // Mix `color1` with `color2` using the parameters defined by the color-mix()
   // function defined by this CSS value.
-  Color Mix(const Color& color1, const Color& color2) const;
+  Color Mix(const Color& color1,
+            const Color& color2,
+            const CSSLengthResolver& length_resolver) const;
 
   // https://www.w3.org/TR/css-color-5/#color-mix-percent-norm
   static bool NormalizePercentages(const CSSPrimitiveValue* percentage1,
