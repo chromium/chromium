@@ -34,6 +34,3 @@
 
 # crbug.com/356175432
 -org.chromium.chrome.browser.dom_distiller.ReaderModeTest.testReaderModeInTab
-
-# crbug.com/362792693
--org.chromium.chrome.browser.permissions.GeolocationTest.testGeolocationWatchDialog
