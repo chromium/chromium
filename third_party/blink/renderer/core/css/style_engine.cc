@@ -4193,7 +4193,7 @@ void StyleEngine::SetOwnerColorScheme(
   DCHECK(!GetDocument().IsInMainFrame());
   if (owner_preferred_color_scheme_ != preferred_color_scheme) {
     owner_preferred_color_scheme_ = preferred_color_scheme;
-    UpdateColorScheme();
+    GetDocument().ColorSchemeChanged();
   }
   if (owner_color_scheme_ != color_scheme) {
     owner_color_scheme_ = color_scheme;
