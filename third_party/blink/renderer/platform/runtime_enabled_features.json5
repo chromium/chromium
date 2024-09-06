@@ -4048,6 +4048,10 @@
       status: "experimental",
     },
     {
+      name: "StricterCellWidthContentSizeQuirk",
+      status: "stable",
+    },
+    {
       name: "StrictMimeTypesForWorkers",
       status: "experimental",
     },
