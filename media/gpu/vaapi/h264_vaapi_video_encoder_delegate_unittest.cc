@@ -238,7 +238,9 @@ class H264VaapiVideoEncoderDelegateTest
 
   bool InitializeEncoder(uint8_t num_temporal_layers);
   void InitializeEncoderWithSWBitrateController();
-  void EncodeFrame(bool force_keyframe, uint8_t num_temporal_layers);
+  void EncodeFrame(bool force_keyframe,
+                   base::TimeDelta timestamp,
+                   uint8_t num_temporal_layers);
   void UpdateRatesAndEncode(bool force_keyframe,
                             uint32_t bitrate,
                             uint32_t framerate);
@@ -249,7 +251,8 @@ class H264VaapiVideoEncoderDelegateTest
 
  private:
   std::unique_ptr<VaapiVideoEncoderDelegate::EncodeJob> CreateEncodeJob(
-      bool keyframe);
+      bool keyframe,
+      base::TimeDelta timestamp);
 
   scoped_refptr<MockVaapiWrapper> mock_vaapi_wrapper_;
   unsigned int next_surface_id_ = 0;
@@ -258,7 +261,8 @@ class H264VaapiVideoEncoderDelegateTest
 };
 
 std::unique_ptr<VaapiVideoEncoderDelegate::EncodeJob>
-H264VaapiVideoEncoderDelegateTest::CreateEncodeJob(bool keyframe) {
+H264VaapiVideoEncoderDelegateTest::CreateEncodeJob(bool keyframe,
+                                                   base::TimeDelta timestamp) {
   scoped_refptr<H264Picture> picture(
       new VaapiH264Picture(std::make_unique<VASurfaceHandle>(
           next_surface_id_++, base::DoNothing())));
@@ -268,9 +272,6 @@ H264VaapiVideoEncoderDelegateTest::CreateEncodeJob(bool keyframe) {
       kDummyVABufferID, VAEncCodedBufferType,
       DefaultVEAConfig().input_visible_size.GetArea());
 
-  // TODO(b/229358029): Set a valid timestamp and check the timestamp in
-  // metadata.
-  constexpr base::TimeDelta timestamp;
   return std::make_unique<VaapiVideoEncoderDelegate::EncodeJob>(
       keyframe, timestamp, /*spatial_index=*/0u, /*end_of_picture=*/true,
       next_surface_id_++, picture, std::move(scoped_va_buffer));
@@ -321,8 +322,9 @@ void H264VaapiVideoEncoderDelegateTest::
 
 void H264VaapiVideoEncoderDelegateTest::EncodeFrame(
     bool force_keyframe,
+    base::TimeDelta timestamp,
     uint8_t num_temporal_layers) {
-  auto encode_job = CreateEncodeJob(force_keyframe);
+  auto encode_job = CreateEncodeJob(force_keyframe, timestamp);
   ::testing::InSequence seq;
 
   if (mock_rate_ctrl_) {
@@ -414,6 +416,7 @@ void H264VaapiVideoEncoderDelegateTest::EncodeFrame(
   constexpr size_t kDummyPayloadSize = 12345;
   const BitstreamBufferMetadata metadata =
       encoder_->GetMetadata(*encode_job.get(), kDummyPayloadSize);
+  EXPECT_EQ(metadata.timestamp, encode_job->timestamp());
   if (num_temporal_layers > 1u) {
     ASSERT_TRUE(metadata.h264.has_value());
     const uint8_t temporal_idx = metadata.h264->temporal_idx;
@@ -453,7 +456,9 @@ void H264VaapiVideoEncoderDelegateTest::UpdateRatesAndEncode(
   EXPECT_TRUE(encoder_->UpdateRates(bitrate_allocation, framerate));
   EXPECT_EQ(encoder_->curr_params_.bitrate_allocation, bitrate_allocation);
   EXPECT_EQ(encoder_->curr_params_.framerate, framerate);
-  EncodeFrame(force_keyframe, kSupportedNumTemporalLayersByController);
+  base::TimeDelta timestamp = base::Milliseconds(1);
+  EncodeFrame(force_keyframe, timestamp,
+              kSupportedNumTemporalLayersByController);
 }
 
 TEST_F(H264VaapiVideoEncoderDelegateTest, Initialize) {
@@ -509,7 +514,9 @@ TEST_F(H264VaapiVideoEncoderDelegateTest, EncodeWithSWBitrateController) {
   size_t kKeyFrameInterval = 10;
   for (size_t frame_num = 0; frame_num < 30; ++frame_num) {
     const bool force_keyframe = frame_num % kKeyFrameInterval == 0;
-    EncodeFrame(force_keyframe, kSupportedNumTemporalLayersByController);
+    base::TimeDelta timestamp = base::Milliseconds(frame_num);
+    EncodeFrame(force_keyframe, timestamp,
+                kSupportedNumTemporalLayersByController);
   }
 }
 
@@ -547,7 +554,8 @@ TEST_P(H264VaapiVideoEncoderDelegateTest, EncodeTemporalLayerRequest) {
   size_t kKeyFrameInterval = 10;
   for (size_t frame_num = 0; frame_num < 30; ++frame_num) {
     const bool force_keyframe = frame_num % kKeyFrameInterval == 0;
-    EncodeFrame(force_keyframe, num_temporal_layers);
+    base::TimeDelta timestamp = base::Milliseconds(frame_num);
+    EncodeFrame(force_keyframe, timestamp, num_temporal_layers);
   }
 }
 
