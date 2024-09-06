@@ -645,6 +645,17 @@ ParseResult ValidateResponseHeadersForMatching(
   return ParseResult::SUCCESS;
 }
 
+// For each ModifyHeaderInfo in `header_infos`, if its `regex_options` is
+// specified, populate it with default values for any unspecified fields.
+void PopulateHeaderRegexOptions(
+    std::vector<dnr_api::ModifyHeaderInfo>& header_infos) {
+  for (auto& header_info : header_infos) {
+    if (auto& options = header_info.regex_options) {
+      options->match_all = options->match_all.value_or(false);
+    }
+  }
+}
+
 }  // namespace
 
 IndexedRule::IndexedRule() = default;
@@ -901,6 +912,7 @@ ParseResult IndexedRule::CreateIndexedRule(dnr_api::Rule parsed_rule,
 
       indexed_rule->request_headers_to_modify =
           std::move(*parsed_rule.action.request_headers);
+      PopulateHeaderRegexOptions(indexed_rule->request_headers_to_modify);
 
       ParseResult result = ValidateHeadersForModification(
           indexed_rule->request_headers_to_modify,
@@ -913,6 +925,7 @@ ParseResult IndexedRule::CreateIndexedRule(dnr_api::Rule parsed_rule,
     if (parsed_rule.action.response_headers) {
       indexed_rule->response_headers_to_modify =
           std::move(*parsed_rule.action.response_headers);
+      PopulateHeaderRegexOptions(indexed_rule->response_headers_to_modify);
 
       ParseResult result = ValidateHeadersForModification(
           indexed_rule->response_headers_to_modify,

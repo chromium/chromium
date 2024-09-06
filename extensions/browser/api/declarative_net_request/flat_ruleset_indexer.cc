@@ -17,6 +17,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
+#include "extensions/browser/api/declarative_net_request/flat/extension_ruleset_generated.h"
 #include "extensions/browser/api/declarative_net_request/indexed_rule.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 
@@ -230,8 +231,24 @@ FlatVectorOffset<flat::ModifyHeaderInfo> BuildModifyHeaderInfoOffset(
 
     FlatStringOffset header_name =
         builder->CreateSharedString(base::ToLowerASCII(header_info.header));
+    FlatStringOffset header_regex_filter =
+        header_info.regex_filter
+            ? builder->CreateSharedString(*header_info.regex_filter)
+            : FlatStringOffset();
+    FlatStringOffset header_substitution_filter =
+        header_info.regex_substitution
+            ? builder->CreateSharedString(*header_info.regex_substitution)
+            : FlatStringOffset();
+
+    flatbuffers::Offset<flat::RegexFilterOptions> header_regex_options =
+        header_info.regex_options
+            ? flat::CreateRegexFilterOptions(
+                  *builder, *header_info.regex_options->match_all)
+            : flat::CreateRegexFilterOptions(*builder);
+
     flat_modify_header_list.push_back(flat::CreateModifyHeaderInfo(
-        *builder, operation, header_name, header_value));
+        *builder, operation, header_name, header_value, header_regex_filter,
+        header_substitution_filter, header_regex_options));
   }
 
   return builder->CreateVector(flat_modify_header_list);

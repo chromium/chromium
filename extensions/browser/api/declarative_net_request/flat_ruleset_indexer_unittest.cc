@@ -12,6 +12,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -26,6 +27,7 @@
 #include "extensions/browser/api/declarative_net_request/indexed_rule.h"
 #include "extensions/browser/api/declarative_net_request/test_utils.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
+#include "extensions/common/api/declarative_net_request.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions::declarative_net_request {
@@ -91,6 +93,23 @@ std::vector<dnr_api::ModifyHeaderInfo> ToVector(
     const flatbuffers::String* flat_header = flat_header_info->header();
     DCHECK(flat_header);
     header_info.header = ToString(flat_header);
+
+    const flatbuffers::String* flat_regex_filter =
+        flat_header_info->regex_filter();
+    if (flat_regex_filter) {
+      header_info.regex_filter = ToString(flat_regex_filter);
+    }
+
+    const flatbuffers::String* flat_regex_substitution =
+        flat_header_info->regex_substitution();
+    if (flat_regex_substitution) {
+      header_info.regex_substitution = ToString(flat_regex_substitution);
+    }
+
+    DCHECK(flat_header_info->regex_options());
+    header_info.regex_options = dnr_api::HeaderRegexOptions();
+    header_info.regex_options->match_all =
+        flat_header_info->regex_options()->match_all();
 
     result.push_back(std::move(header_info));
   }
@@ -555,6 +574,23 @@ TEST_F(FlatRulesetIndexerTest, MultipleRules) {
   std::vector<dnr_api::ModifyHeaderInfo> request_headers_2;
   request_headers_2.push_back(CreateModifyHeaderInfo(
       dnr_api::HeaderOperation::kRemove, "referer", std::nullopt));
+
+  request_headers_2.push_back(
+      CreateModifyHeaderInfo(dnr_api::HeaderOperation::kRemove, "cookie",
+                             std::nullopt, "bad-cookie", std::nullopt));
+
+  {
+    std::optional<dnr_api::HeaderRegexOptions> regex_options =
+        std::make_optional(dnr_api::HeaderRegexOptions());
+    regex_options->match_all = true;
+
+    // TODO(crbug.com/352093575): Make the header operation null when feature
+    // launches to avoid the documentation labelling it as optional when all
+    // current ModifyHeader actions require an operation to be specified.
+    request_headers_2.push_back(CreateModifyHeaderInfo(
+        dnr_api::HeaderOperation::kRemove, "cookie", std::nullopt,
+        "worst-cookie", "best-cookie=phew", std::move(regex_options)));
+  }
 
   rules_to_index.push_back(CreateIndexedRule(
       24, kMinValidPriority, flat_rule::OptionFlag_IS_CASE_INSENSITIVE,

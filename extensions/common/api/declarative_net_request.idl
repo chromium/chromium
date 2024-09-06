@@ -376,6 +376,7 @@ namespace declarativeNetRequest {
     // Whether the regex should match all groups for the value. This is only
     // relevant if a regex substitution is present and would thus need to be
     // applied onto all matching groups. Equivalent to the "g" flag.
+    // Defaults to false.
     boolean? matchAll;
   };
 
