@@ -2086,7 +2086,7 @@
     },
     {
       name: "FontVariantEmoji",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "FontVariationSequences",
@@ -4110,7 +4110,7 @@
       // is shipped with Chrome or when system emoji fonts will have
       // cmap format 14 subtable.
       name: "SystemFallbackEmojiVSSupport",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "SystemWakeLock",
