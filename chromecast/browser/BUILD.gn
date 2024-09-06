@@ -503,6 +503,7 @@ cast_source_set("test_support") {
   deps = [
     "//base",
     "//chromecast/base",
+    "//chromecast/cast_core:cast_core_switches",
     "//components/prefs:test_support",
     "//content/public/browser",
     "//content/public/common",

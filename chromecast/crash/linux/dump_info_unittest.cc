@@ -166,9 +166,9 @@ TEST(DumpInfoTest, SomeOptionalFieldsIsValid) {
                      "\"logfile\": \"logfile.log\","
                      "\"suffix\": \"suffix\","
                      "\"prev_app_name\": \"previous_app\","
-                     "\"comments\": \"comments\","
-                     "\"js_engine\": \"js_engine\","
-                     "\"js_build_label\": \"js_build_label\""
+                     "\"comments\": \"my comments\","
+                     "\"js_engine\": \"js_engine version\","
+                     "\"js_build_label\": \"js_build_label debug\""
                      "}"));
   static constexpr base::Time::Exploded kTime = {.year = 2001,
                                                  .month = 11,
@@ -188,9 +188,9 @@ TEST(DumpInfoTest, SomeOptionalFieldsIsValid) {
   ASSERT_EQ("suffix", info->params().suffix);
   ASSERT_EQ("previous_app", info->params().previous_app_name);
 
-  ASSERT_EQ("comments", info->params().comments);
-  ASSERT_EQ("js_engine", info->params().js_engine);
-  ASSERT_EQ("js_build_label", info->params().js_engine);
+  ASSERT_EQ("my comments", info->params().comments);
+  ASSERT_EQ("js_engine version", info->params().js_engine);
+  ASSERT_EQ("js_build_label debug", info->params().js_build_label);
 }
 
 TEST(DumpInfoTest, ExtraFieldsIsNotValid) {

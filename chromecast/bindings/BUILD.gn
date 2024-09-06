@@ -88,6 +88,7 @@ if (is_linux || is_chromeos || is_android) {
       "//chromecast/browser:browser",
       "//chromecast/browser:client",
       "//chromecast/browser:public",
+      "//chromecast/browser:test_support",
       "//components/cast/message_port:test_message_port_receiver",
       "//components/cast/named_message_port_connector:resources",
       "//content/public/browser",

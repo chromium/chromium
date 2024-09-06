@@ -26,14 +26,6 @@ using TestParams = std::tuple<::media::ChannelLayout /* input layout */,
                               ::media::ChannelLayout /* output layout */>;
 
 class InterleavedChannelMixerTest : public testing::TestWithParam<TestParams> {
- public:
-  InterleavedChannelMixerTest() = default;
-
-  InterleavedChannelMixerTest(const InterleavedChannelMixerTest&) = delete;
-  InterleavedChannelMixerTest& operator=(const InterleavedChannelMixerTest&) =
-      delete;
-
-  ~InterleavedChannelMixerTest() override = default;
 };
 
 TEST_P(InterleavedChannelMixerTest, Transform) {

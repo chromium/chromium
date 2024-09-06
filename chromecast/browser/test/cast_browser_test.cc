@@ -7,12 +7,14 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/uuid.h"
 #include "chromecast/base/chromecast_switches.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/browser/cast_browser_context.h"
 #include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/browser/cast_content_window.h"
 #include "chromecast/browser/cast_web_service.h"
+#include "chromecast/cast_core/cast_core_switches.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -36,6 +38,13 @@ void CastBrowserTest::SetUp() {
 
 void CastBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
   command_line->AppendSwitchASCII(switches::kTestType, "browser");
+  command_line->AppendSwitchASCII(
+      cast::core::kCastCoreRuntimeIdSwitch,
+      base::Uuid::GenerateRandomV4().AsLowercaseString());
+  command_line->AppendSwitchASCII(
+      cast::core::kRuntimeServicePathSwitch,
+      "unix:/tmp/runtime-service.sock." +
+          base::Uuid::GenerateRandomV4().AsLowercaseString());
 }
 
 void CastBrowserTest::PreRunTestOnMainThread() {
