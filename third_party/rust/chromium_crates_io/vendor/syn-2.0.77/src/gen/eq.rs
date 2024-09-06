@@ -311,7 +311,6 @@ impl PartialEq for crate::Expr {
             (crate::Expr::TryBlock(self0), crate::Expr::TryBlock(other0)) => {
                 self0 == other0
             }
-            #[cfg(feature = "full")]
             (crate::Expr::Tuple(self0), crate::Expr::Tuple(other0)) => self0 == other0,
             (crate::Expr::Unary(self0), crate::Expr::Unary(other0)) => self0 == other0,
             #[cfg(feature = "full")]
@@ -674,10 +673,10 @@ impl PartialEq for crate::ExprTryBlock {
         self.attrs == other.attrs && self.block == other.block
     }
 }
-#[cfg(feature = "full")]
+#[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(docsrs, doc(cfg(feature = "extra-traits")))]
 impl Eq for crate::ExprTuple {}
-#[cfg(feature = "full")]
+#[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(docsrs, doc(cfg(feature = "extra-traits")))]
 impl PartialEq for crate::ExprTuple {
     fn eq(&self, other: &Self) -> bool {

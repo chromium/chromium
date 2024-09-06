@@ -295,8 +295,8 @@ pub trait VisitMut {
     fn visit_expr_try_block_mut(&mut self, i: &mut crate::ExprTryBlock) {
         visit_expr_try_block_mut(self, i);
     }
-    #[cfg(feature = "full")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
+    #[cfg(any(feature = "derive", feature = "full"))]
+    #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
     fn visit_expr_tuple_mut(&mut self, i: &mut crate::ExprTuple) {
         visit_expr_tuple_mut(self, i);
     }
@@ -1375,7 +1375,7 @@ where
             full!(v.visit_expr_try_block_mut(_binding_0));
         }
         crate::Expr::Tuple(_binding_0) => {
-            full!(v.visit_expr_tuple_mut(_binding_0));
+            v.visit_expr_tuple_mut(_binding_0);
         }
         crate::Expr::Unary(_binding_0) => {
             v.visit_expr_unary_mut(_binding_0);
@@ -1875,8 +1875,8 @@ where
     skip!(node.try_token);
     v.visit_block_mut(&mut node.block);
 }
-#[cfg(feature = "full")]
-#[cfg_attr(docsrs, doc(cfg(feature = "full")))]
+#[cfg(any(feature = "derive", feature = "full"))]
+#[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
 pub fn visit_expr_tuple_mut<V>(v: &mut V, node: &mut crate::ExprTuple)
 where
     V: VisitMut + ?Sized,

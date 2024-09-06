@@ -294,8 +294,8 @@ pub trait Visit<'ast> {
     fn visit_expr_try_block(&mut self, i: &'ast crate::ExprTryBlock) {
         visit_expr_try_block(self, i);
     }
-    #[cfg(feature = "full")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
+    #[cfg(any(feature = "derive", feature = "full"))]
+    #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
     fn visit_expr_tuple(&mut self, i: &'ast crate::ExprTuple) {
         visit_expr_tuple(self, i);
     }
@@ -1374,7 +1374,7 @@ where
             full!(v.visit_expr_try_block(_binding_0));
         }
         crate::Expr::Tuple(_binding_0) => {
-            full!(v.visit_expr_tuple(_binding_0));
+            v.visit_expr_tuple(_binding_0);
         }
         crate::Expr::Unary(_binding_0) => {
             v.visit_expr_unary(_binding_0);
@@ -1874,8 +1874,8 @@ where
     skip!(node.try_token);
     v.visit_block(&node.block);
 }
-#[cfg(feature = "full")]
-#[cfg_attr(docsrs, doc(cfg(feature = "full")))]
+#[cfg(any(feature = "derive", feature = "full"))]
+#[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
 pub fn visit_expr_tuple<'ast, V>(v: &mut V, node: &'ast crate::ExprTuple)
 where
     V: Visit<'ast> + ?Sized,

@@ -484,7 +484,6 @@ impl Hash for crate::Expr {
                 state.write_u8(32u8);
                 v0.hash(state);
             }
-            #[cfg(feature = "full")]
             crate::Expr::Tuple(v0) => {
                 state.write_u8(33u8);
                 v0.hash(state);
@@ -916,7 +915,7 @@ impl Hash for crate::ExprTryBlock {
         self.block.hash(state);
     }
 }
-#[cfg(feature = "full")]
+#[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(docsrs, doc(cfg(feature = "extra-traits")))]
 impl Hash for crate::ExprTuple {
     fn hash<H>(&self, state: &mut H)

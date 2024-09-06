@@ -647,7 +647,7 @@ ast_struct! {
 ast_struct! {
     /// A tuple expression: `(a, b, c, d)`.
     #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
-    pub struct ExprTuple #full {
+    pub struct ExprTuple {
         pub attrs: Vec<Attribute>,
         pub paren_token: token::Paren,
         pub elems: Punctuated<Expr, Token![,]>,
@@ -1111,13 +1111,13 @@ pub(crate) mod parsing {
     use crate::expr::{
         Arm, ExprArray, ExprAssign, ExprAsync, ExprAwait, ExprBlock, ExprBreak, ExprClosure,
         ExprConst, ExprContinue, ExprForLoop, ExprIf, ExprInfer, ExprLet, ExprLoop, ExprMatch,
-        ExprRange, ExprRepeat, ExprReturn, ExprTry, ExprTryBlock, ExprTuple, ExprUnsafe, ExprWhile,
-        ExprYield, Label, RangeLimits,
+        ExprRange, ExprRepeat, ExprReturn, ExprTry, ExprTryBlock, ExprUnsafe, ExprWhile, ExprYield,
+        Label, RangeLimits,
     };
     use crate::expr::{
         Expr, ExprBinary, ExprCall, ExprCast, ExprField, ExprGroup, ExprIndex, ExprLit, ExprMacro,
-        ExprMethodCall, ExprParen, ExprPath, ExprReference, ExprStruct, ExprUnary, FieldValue,
-        Index, Member,
+        ExprMethodCall, ExprParen, ExprPath, ExprReference, ExprStruct, ExprTuple, ExprUnary,
+        FieldValue, Index, Member,
     };
     #[cfg(feature = "full")]
     use crate::ext::IdentExt as _;
@@ -1807,7 +1807,7 @@ pub(crate) mod parsing {
         } else if input.peek(Lit) {
             input.parse().map(Expr::Lit)
         } else if input.peek(token::Paren) {
-            input.call(expr_paren).map(Expr::Paren)
+            paren_or_tuple(input)
         } else if input.peek(Ident)
             || input.peek(Token![::])
             || input.peek(Token![<])
@@ -1911,7 +1911,6 @@ pub(crate) mod parsing {
         }
     }
 
-    #[cfg(feature = "full")]
     fn paren_or_tuple(input: ParseStream) -> Result<Expr> {
         let content;
         let paren_token = parenthesized!(content in input);
@@ -2103,17 +2102,13 @@ pub(crate) mod parsing {
     #[cfg_attr(docsrs, doc(cfg(feature = "parsing")))]
     impl Parse for ExprParen {
         fn parse(input: ParseStream) -> Result<Self> {
-            expr_paren(input)
+            let content;
+            Ok(ExprParen {
+                attrs: Vec::new(),
+                paren_token: parenthesized!(content in input),
+                expr: content.parse()?,
+            })
         }
-    }
-
-    fn expr_paren(input: ParseStream) -> Result<ExprParen> {
-        let content;
-        Ok(ExprParen {
-            attrs: Vec::new(),
-            paren_token: parenthesized!(content in input),
-            expr: content.parse()?,
-        })
     }
 
     #[cfg(feature = "full")]
@@ -3000,13 +2995,13 @@ pub(crate) mod printing {
     use crate::expr::{
         Arm, ExprArray, ExprAssign, ExprAsync, ExprAwait, ExprBlock, ExprBreak, ExprClosure,
         ExprConst, ExprContinue, ExprForLoop, ExprIf, ExprInfer, ExprLet, ExprLoop, ExprMatch,
-        ExprRange, ExprRepeat, ExprReturn, ExprTry, ExprTryBlock, ExprTuple, ExprUnsafe, ExprWhile,
-        ExprYield, Label, RangeLimits,
+        ExprRange, ExprRepeat, ExprReturn, ExprTry, ExprTryBlock, ExprUnsafe, ExprWhile, ExprYield,
+        Label, RangeLimits,
     };
     use crate::expr::{
         Expr, ExprBinary, ExprCall, ExprCast, ExprField, ExprGroup, ExprIndex, ExprLit, ExprMacro,
-        ExprMethodCall, ExprParen, ExprPath, ExprReference, ExprStruct, ExprUnary, FieldValue,
-        Index, Member,
+        ExprMethodCall, ExprParen, ExprPath, ExprReference, ExprStruct, ExprTuple, ExprUnary,
+        FieldValue, Index, Member,
     };
     use crate::fixup::FixupContext;
     use crate::op::BinOp;
@@ -3781,7 +3776,6 @@ pub(crate) mod printing {
         }
     }
 
-    #[cfg(feature = "full")]
     #[cfg_attr(docsrs, doc(cfg(feature = "printing")))]
     impl ToTokens for ExprTuple {
         fn to_tokens(&self, tokens: &mut TokenStream) {

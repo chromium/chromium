@@ -280,7 +280,6 @@ impl Clone for crate::Expr {
             crate::Expr::Try(v0) => crate::Expr::Try(v0.clone()),
             #[cfg(feature = "full")]
             crate::Expr::TryBlock(v0) => crate::Expr::TryBlock(v0.clone()),
-            #[cfg(feature = "full")]
             crate::Expr::Tuple(v0) => crate::Expr::Tuple(v0.clone()),
             crate::Expr::Unary(v0) => crate::Expr::Unary(v0.clone()),
             #[cfg(feature = "full")]
@@ -695,7 +694,7 @@ impl Clone for crate::ExprTryBlock {
         }
     }
 }
-#[cfg(feature = "full")]
+#[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(docsrs, doc(cfg(feature = "clone-impls")))]
 impl Clone for crate::ExprTuple {
     fn clone(&self) -> Self {

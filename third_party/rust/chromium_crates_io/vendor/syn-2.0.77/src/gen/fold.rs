@@ -299,8 +299,8 @@ pub trait Fold {
     fn fold_expr_try_block(&mut self, i: crate::ExprTryBlock) -> crate::ExprTryBlock {
         fold_expr_try_block(self, i)
     }
-    #[cfg(feature = "full")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
+    #[cfg(any(feature = "derive", feature = "full"))]
+    #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
     fn fold_expr_tuple(&mut self, i: crate::ExprTuple) -> crate::ExprTuple {
         fold_expr_tuple(self, i)
     }
@@ -1358,7 +1358,7 @@ where
             crate::Expr::TryBlock(full!(f.fold_expr_try_block(_binding_0)))
         }
         crate::Expr::Tuple(_binding_0) => {
-            crate::Expr::Tuple(full!(f.fold_expr_tuple(_binding_0)))
+            crate::Expr::Tuple(f.fold_expr_tuple(_binding_0))
         }
         crate::Expr::Unary(_binding_0) => {
             crate::Expr::Unary(f.fold_expr_unary(_binding_0))
@@ -1819,8 +1819,8 @@ where
         block: f.fold_block(node.block),
     }
 }
-#[cfg(feature = "full")]
-#[cfg_attr(docsrs, doc(cfg(feature = "full")))]
+#[cfg(any(feature = "derive", feature = "full"))]
+#[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
 pub fn fold_expr_tuple<F>(f: &mut F, node: crate::ExprTuple) -> crate::ExprTuple
 where
     F: Fold + ?Sized,

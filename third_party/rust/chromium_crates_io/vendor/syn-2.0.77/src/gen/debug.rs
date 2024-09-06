@@ -451,7 +451,6 @@ impl Debug for crate::Expr {
             crate::Expr::Try(v0) => v0.debug(formatter, "Try"),
             #[cfg(feature = "full")]
             crate::Expr::TryBlock(v0) => v0.debug(formatter, "TryBlock"),
-            #[cfg(feature = "full")]
             crate::Expr::Tuple(v0) => v0.debug(formatter, "Tuple"),
             crate::Expr::Unary(v0) => v0.debug(formatter, "Unary"),
             #[cfg(feature = "full")]
@@ -1068,14 +1067,14 @@ impl crate::ExprTryBlock {
         formatter.finish()
     }
 }
-#[cfg(feature = "full")]
+#[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(docsrs, doc(cfg(feature = "extra-traits")))]
 impl Debug for crate::ExprTuple {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         self.debug(formatter, "ExprTuple")
     }
 }
-#[cfg(feature = "full")]
+#[cfg(any(feature = "derive", feature = "full"))]
 impl crate::ExprTuple {
     fn debug(&self, formatter: &mut fmt::Formatter, name: &str) -> fmt::Result {
         let mut formatter = formatter.debug_struct(name);
