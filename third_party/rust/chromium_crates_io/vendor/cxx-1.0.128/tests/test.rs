@@ -11,11 +11,12 @@
     clippy::unseparated_literal_suffix
 )]
 
-use cxx::SharedPtr;
+use cxx::{SharedPtr, UniquePtr};
 use cxx_test_suite::module::ffi2;
 use cxx_test_suite::{cast, ffi, R};
 use std::cell::Cell;
 use std::ffi::CStr;
+use std::panic::{self, RefUnwindSafe, UnwindSafe};
 
 thread_local! {
     static CORRECT: Cell<bool> = const { Cell::new(false) };
@@ -379,4 +380,18 @@ fn test_raw_ptr() {
     let c3 = ffi::c_return_const_ptr(2025);
     assert_eq!(2025, unsafe { ffi::c_take_const_ptr(c3) });
     assert_eq!(2025, unsafe { ffi::c_take_mut_ptr(c3 as *mut ffi::C) }); // deletes c3
+}
+
+#[test]
+#[allow(clippy::items_after_statements, clippy::no_effect_underscore_binding)]
+fn test_unwind_safe() {
+    fn inspect(_c: &ffi::C) {}
+    let _unwind_safe = |c: UniquePtr<ffi::C>| panic::catch_unwind(|| drop(c));
+    let _ref_unwind_safe = |c: &ffi::C| panic::catch_unwind(|| inspect(c));
+
+    fn require_unwind_safe<T: UnwindSafe>() {}
+    require_unwind_safe::<ffi::C>();
+
+    fn require_ref_unwind_safe<T: RefUnwindSafe>() {}
+    require_ref_unwind_safe::<ffi::C>();
 }

@@ -3,6 +3,10 @@ use crate::fmt::display;
 use crate::kind::Trivial;
 use crate::string::CxxString;
 use crate::ExternType;
+#[cfg(feature = "std")]
+use alloc::string::String;
+#[cfg(feature = "std")]
+use alloc::vec::Vec;
 use core::ffi::c_void;
 use core::fmt::{self, Debug, Display};
 use core::marker::PhantomData;
@@ -198,12 +202,12 @@ where
     }
 
     #[inline]
-    fn read_to_end(&mut self, buf: &mut std::vec::Vec<u8>) -> io::Result<usize> {
+    fn read_to_end(&mut self, buf: &mut Vec<u8>) -> io::Result<usize> {
         self.pin_mut().read_to_end(buf)
     }
 
     #[inline]
-    fn read_to_string(&mut self, buf: &mut std::string::String) -> io::Result<usize> {
+    fn read_to_string(&mut self, buf: &mut String) -> io::Result<usize> {
         self.pin_mut().read_to_string(buf)
     }
 

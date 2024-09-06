@@ -788,6 +788,11 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "1.0.124 -> 1.0.126"
 notes = "No changes in this delta"
 
+[[audits.cxxbridge-flags]]
+who = "danakj <danakj@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.0.126 -> 1.0.128"
+
 [[audits.cxxbridge-macro]]
 who = "danakj <danakj@chromium.org>"
 criteria = "does-not-implement-crypto"

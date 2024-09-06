@@ -59,8 +59,8 @@ criteria = [{{#each criteria}}{{#if @first}}{{else}}, {{/if}}"{{this}}"{{/each}}
 {{/each}}
 
 [[exemptions.cxx]]
-version = "1.0.126"
-criteria = ["safe-to-deploy", "ub-risk-2"]
+version = "1.0.128"
+criteria = ["safe-to-deploy", "ub-risk-2", "crypto-safe"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
 
@@ -73,11 +73,12 @@ Exemption updated to 1.0.122 in May 2024.
 Exemption updated to 1.0.123 in June 2024.
 Exemption updated to 1.0.124 in June 2024.
 Exemption updated to 1.0.126 in August 2024.
+Exemption updated to 1.0.128 in September 2024.
 """
 
 [[exemptions.cxxbridge-macro]]
-version = "1.0.126"
-criteria = ["safe-to-deploy", "ub-risk-2"]
+version = "1.0.128"
+criteria = ["safe-to-deploy", "ub-risk-2", "crypto-safe"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
 
@@ -90,6 +91,7 @@ Exemption updated to 1.0.122 in May 2024.
 Exemption updated to 1.0.123 in June 2024.
 Exemption updated to 1.0.124 in June 2024.
 Exemption updated to 1.0.126 in August 2024.
+Exemption updated to 1.0.128 in September 2024.
 """
 
 [[exemptions.memchr]]
