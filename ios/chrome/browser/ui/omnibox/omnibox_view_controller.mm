@@ -270,6 +270,9 @@ using base::UserMetricsAction;
     // already deconstructed on shutdown.
     return YES;
   }
+
+  // Any change in the content of the omnibox should deselect thumbnail button.
+  self.view.thumbnailButton.selected = NO;
   self.processingUserEvent = _textChangeDelegate->OnWillChange(range, newText);
   return self.processingUserEvent;
 }
@@ -532,6 +535,8 @@ using base::UserMetricsAction;
 
 - (void)setThumbnailImage:(UIImage*)image {
   [self.view setThumbnailImage:image];
+  // Cancel any pending image removal if a new selection is made.
+  self.view.thumbnailButton.selected = NO;
   self.textField.allowsReturnKeyWithEmptyText = !!image;
   self.textField.placeholder = [self placeholderText];
 }
@@ -768,6 +773,10 @@ using base::UserMetricsAction;
   } else {
     if (_textChangeDelegate) {
       _textChangeDelegate->RemoveThumbnail();
+      // Clear the selection once it's no longer needed. This prevents it from
+      // reappearing unexpectedly as the user navigates back through previous
+      // results.
+      self.view.thumbnailButton.selected = NO;
     }
   }
 }
