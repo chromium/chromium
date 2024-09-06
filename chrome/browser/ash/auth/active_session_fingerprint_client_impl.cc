@@ -89,10 +89,19 @@ bool ActiveSessionFingerprintClientImpl::IsFingerprintAvailable(
   }
 
   switch (reason) {
-    case AuthRequest::Reason::kPasswordManager:
-      return false;
     case AuthRequest::Reason::kSettings:
       return false;
+    case AuthRequest::Reason::kPasswordManager: {
+      if (ash::features::IsBiometricsInPasswordManagerEnabled()){
+        const base::Value::List& factors =
+            pref_service->GetList(prefs::kQuickUnlockModeAllowlist);
+        if (base::Contains(factors, base::Value(kFactorsOptionAll)) ||
+            base::Contains(factors, base::Value(kFactorsOptionFingerprint))) {
+          return true;
+        }
+      }
+      return false;
+    }
     case AuthRequest::Reason::kWebAuthN: {
       const base::Value::List& factors =
           pref_service->GetList(prefs::kWebAuthnFactors);
