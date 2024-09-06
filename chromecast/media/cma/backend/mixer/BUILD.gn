@@ -177,6 +177,7 @@ cast_source_set("unittests") {
     "//chromecast/media/audio/mixer_service:loopback_connection",
     "//chromecast/media/audio/mixer_service:redirected_audio_connection",
     "//chromecast/media/cma/backend/mixer/post_processors:unittests",
+    "//chromecast/media/cma/base",
     "//chromecast/public",
     "//chromecast/public/media",
     "//media",

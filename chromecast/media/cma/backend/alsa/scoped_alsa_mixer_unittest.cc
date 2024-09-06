@@ -77,8 +77,8 @@ class ScopedAlsaMixerEventTest : public ::testing::Test {
 
   void WriteByte() {
     constexpr char kByte = '!';
-    ASSERT_TRUE(
-        base::WriteFileDescriptor(pipe_fds_[1], byte_span_from_ref(kByte)));
+    ASSERT_TRUE(base::WriteFileDescriptor(pipe_fds_[1],
+                                          base::byte_span_from_ref(kByte)));
   }
 
   base::test::TaskEnvironment task_environment_;

@@ -97,6 +97,7 @@ test("cast_media_unittests") {
     "//chromecast/media/common:test_media_resource_tracker",
     "//chromecast/public",
     "//content/test:test_support",
+    "//media:media_buildflags",
     "//media:test_support",
     "//media/mojo:test_support",
     "//mojo/core/embedder",
