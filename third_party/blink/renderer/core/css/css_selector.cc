@@ -1623,6 +1623,8 @@ bool CSSSelector::IsAllowedAfterPart() const {
       return true;
 
     case kPseudoActive:
+    case kPseudoActiveViewTransition:
+    case kPseudoActiveViewTransitionType:
     case kPseudoAnyLink:
     case kPseudoChecked:
     case kPseudoDefault:
@@ -1734,12 +1736,6 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoOnlyChild:
     case kPseudoOnlyOfType:
     case kPseudoRoot:
-      return false;
-
-    // These specifically match only the root element, which makes them
-    // structural or matching based on tree information.
-    case kPseudoActiveViewTransition:
-    case kPseudoActiveViewTransitionType:
       return false;
 
     // These are other pseudo-classes that match based on tree information
