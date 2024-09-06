@@ -21,6 +21,7 @@
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -327,6 +328,15 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigAfterOOBE) {
     EXPECT_EQ(EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE,
               config.auth_mechanism);
   }
+}
+
+TEST_F(EnrollmentConfigTest, GetDemoModeEnrollmentConfig) {
+  const auto config = EnrollmentConfig::GetDemoModeEnrollmentConfig();
+
+  EXPECT_EQ(EnrollmentConfig::MODE_ATTESTATION, config.mode);
+  EXPECT_EQ(policy::kDemoModeDomain, config.management_domain);
+  EXPECT_EQ(EnrollmentConfig::AUTH_MECHANISM_ATTESTATION,
+            config.auth_mechanism);
 }
 
 }  // namespace policy

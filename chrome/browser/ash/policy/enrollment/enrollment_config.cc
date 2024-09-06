@@ -26,6 +26,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/pref_service.h"
 
 namespace policy {
@@ -407,6 +408,16 @@ EnrollmentConfig EnrollmentConfig::GetPrescribedEnrollmentConfig(
       PrescribedConfig::GetPrescribedConfig(local_state, statistics_provider,
                                             device_state, oobe_configuration),
       PrescribedLicense::GetPrescribedLicense(device_state));
+}
+
+// static
+EnrollmentConfig EnrollmentConfig::GetDemoModeEnrollmentConfig() {
+  policy::EnrollmentConfig config;
+  config.mode = policy::EnrollmentConfig::MODE_ATTESTATION;
+  config.auth_mechanism = AUTH_MECHANISM_ATTESTATION;
+  config.management_domain = policy::kDemoModeDomain;
+  config.license_type = policy::LicenseType::kEnterprise;
+  return config;
 }
 
 // static

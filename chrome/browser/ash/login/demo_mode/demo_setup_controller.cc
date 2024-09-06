@@ -37,7 +37,6 @@
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -642,10 +641,8 @@ void DemoSetupController::OnDemoComponentsLoaded() {
       policy::EnrollmentRequisitionManager::kDemoRequisition);
   policy::EnrollmentRequisitionManager::SetSubOrganization(
       GetSubOrganizationEmail());
-  policy::EnrollmentConfig config;
-  config.mode = policy::EnrollmentConfig::MODE_ATTESTATION;
-  config.management_domain = policy::kDemoModeDomain;
-  config.license_type = policy::LicenseType::kEnterprise;
+  policy::EnrollmentConfig config =
+      policy::EnrollmentConfig::GetDemoModeEnrollmentConfig();
 
   enrollment_launcher_ =
       EnrollmentLauncher::Create(this, config, policy::kDemoModeDomain);

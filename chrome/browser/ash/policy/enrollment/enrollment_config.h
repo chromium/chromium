@@ -159,6 +159,8 @@ struct EnrollmentConfig {
       ash::system::StatisticsProvider* statistics_provider,
       const ash::OobeConfiguration* oobe_configuration);
 
+  static EnrollmentConfig GetDemoModeEnrollmentConfig();
+
   // Returns the respective manual fallback enrollment mode when given an
   // attestation mode.
   static Mode GetManualFallbackMode(Mode attestation_mode);
