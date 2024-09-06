@@ -46,6 +46,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "base/win/elevation_util.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/updater/app/app_install_progress.h"
@@ -918,7 +919,8 @@ DWORD AppInstallControllerImpl::GetUIThreadID() const {
 bool AppInstallControllerImpl::DoLaunchBrowser(const std::string& url) {
   CHECK_EQ(GetUIThreadID(), GetCurrentThreadId());
 
-  return SUCCEEDED(RunDeElevatedNoWait(base::SysUTF8ToWide(url), {}));
+  return SUCCEEDED(
+      base::win::RunDeElevatedNoWait(base::SysUTF8ToWide(url), {}));
 }
 
 bool AppInstallControllerImpl::DoRestartBrowser(bool restart_all_browsers,

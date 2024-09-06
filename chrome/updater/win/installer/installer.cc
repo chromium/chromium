@@ -32,6 +32,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/types/expected_macros.h"
+#include "base/win/elevation_util.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_localalloc.h"
 #include "base/win/windows_version.h"
@@ -318,16 +319,17 @@ ProcessExitResult HandleRunDeElevated(const base::CommandLine& command_line) {
   CHECK(com_initializer.Succeeded());
 
   // De-elevate the metainstaller.
-  ASSIGN_OR_RETURN(
-      DWORD result, RunDeElevated([&] {
-        base::CommandLine de_elevate_command_line = command_line;
-        de_elevate_command_line.AppendSwitch(kCmdLineExpectDeElevated);
-        return de_elevate_command_line;
-      }()),
-      [](HRESULT error) {
-        return ProcessExitResult(FAILED_TO_DE_ELEVATE_METAINSTALLER, error);
-      });
-  return ProcessExitResult(UPDATER_EXIT_CODE, result);
+  const base::Process process = base::win::RunDeElevated([&] {
+    base::CommandLine de_elevate_command_line = command_line;
+    de_elevate_command_line.AppendSwitch(kCmdLineExpectDeElevated);
+    return de_elevate_command_line;
+  }());
+
+  int result = 0;
+  return process.IsValid() && process.WaitForExit(&result)
+             ? ProcessExitResult(UPDATER_EXIT_CODE, result)
+             : ProcessExitResult(FAILED_TO_DE_ELEVATE_METAINSTALLER,
+                                 HRESULTFromLastError());
 }
 
 ProcessExitResult InstallerMain(HMODULE module) {
