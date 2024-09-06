@@ -14,7 +14,6 @@ class SharedURLLoaderFactory;
 }  // namespace network
 
 namespace policy {
-class BrowserDMTokenStorage;
 class DeviceManagementService;
 }  // namespace policy
 
@@ -33,7 +32,6 @@ class KeyRotationCommandFactory {
   // key rotation for mojo support.
   virtual std::unique_ptr<KeyRotationCommand> CreateCommand(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      policy::BrowserDMTokenStorage* dm_token_storage,
       policy::DeviceManagementService* device_management_service);
 
  protected:

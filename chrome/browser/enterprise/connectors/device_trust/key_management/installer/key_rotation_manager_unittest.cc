@@ -12,12 +12,9 @@
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/key_network_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mock_key_network_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
@@ -25,8 +22,6 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_types.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/metrics_util.h"
-#include "components/enterprise/client_certificates/core/cloud_management_delegate.h"
-#include "components/enterprise/client_certificates/core/mock_cloud_management_delegate.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "crypto/unexportable_key.h"
@@ -35,7 +30,6 @@
 #include "url/gurl.h"
 
 using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
-using base::test::RunOnceCallback;
 using testing::_;
 using testing::ByMove;
 using testing::ElementsAre;
@@ -101,36 +95,21 @@ constexpr std::array<
 
 }  // namespace
 
-class KeyRotationManagerTest : public testing::Test,
-                               public testing::WithParamInterface<bool> {
+class KeyRotationManagerTest : public testing::Test {
  protected:
   KeyRotationManagerTest()
       : key_provider_(crypto::GetUnexportableKeyProvider(/*config=*/{})) {
-    feature_list_.InitWithFeatureState(
-        enterprise_connectors::kDTCKeyRotationUploadedBySharedAPIEnabled,
-        is_key_uploaded_by_shared_api());
-
     ResetHistograms();
+    auto mock_network_delegate =
+        std::make_unique<StrictMock<MockKeyNetworkDelegate>>();
+    mock_network_delegate_ = mock_network_delegate.get();
+
     auto mock_persistence_delegate =
         std::make_unique<StrictMock<MockKeyPersistenceDelegate>>();
     mock_persistence_delegate_ = mock_persistence_delegate.get();
 
-    if (is_key_uploaded_by_shared_api()) {
-      auto mock_cloud_delegate = std::make_unique<
-          StrictMock<enterprise_attestation::MockCloudManagementDelegate>>();
-      mock_cloud_delegate_ = mock_cloud_delegate.get();
-
-      key_rotation_manager_ = KeyRotationManager::CreateForTesting(
-          std::move(mock_cloud_delegate), std::move(mock_persistence_delegate));
-    } else {
-      auto mock_network_delegate =
-          std::make_unique<StrictMock<MockKeyNetworkDelegate>>();
-      mock_network_delegate_ = mock_network_delegate.get();
-
-      key_rotation_manager_ = KeyRotationManager::CreateForTesting(
-          std::move(mock_network_delegate),
-          std::move(mock_persistence_delegate));
-    }
+    key_rotation_manager_ = KeyRotationManager::CreateForTesting(
+        std::move(mock_network_delegate), std::move(mock_persistence_delegate));
   }
 
   std::unique_ptr<crypto::UnexportableSigningKey> CreateHardwareKey() {
@@ -139,30 +118,15 @@ class KeyRotationManagerTest : public testing::Test,
   }
 
   void SetUploadCode(HttpResponseCode response_code) {
-    if (is_key_uploaded_by_shared_api()) {
-      policy::DMServerJobResult result;
-      result.response_code = response_code;
-
-      EXPECT_CALL(*mock_cloud_delegate_, UploadBrowserPublicKey(_, _))
-          .WillOnce(Invoke(
-              [&, result](
-                  const enterprise_management::DeviceManagementRequest& request,
-                  base::OnceCallback<void(policy::DMServerJobResult)>
-                      callback) {
-                std::move(callback).Run(result);
-                captured_request_ = request;
-              }));
-    } else {
-      EXPECT_CALL(*mock_network_delegate_,
-                  SendPublicKeyToDmServer(GURL(kDmServerUrl), kDmToken, _, _))
-          .WillOnce(Invoke(
-              [&, response_code](const GURL& url, const std::string& dm_token,
-                                 const std::string& body,
-                                 base::OnceCallback<void(int)> callback) {
-                captured_upload_body_ = body;
-                std::move(callback).Run(response_code);
-              }));
-    }
+    EXPECT_CALL(*mock_network_delegate_,
+                SendPublicKeyToDmServer(GURL(kDmServerUrl), kDmToken, _, _))
+        .WillOnce(Invoke(
+            [&, response_code](const GURL& url, const std::string& dm_token,
+                               const std::string& body,
+                               base::OnceCallback<void(int)> callback) {
+              captured_upload_body_ = body;
+              std::move(callback).Run(response_code);
+            }));
   }
 
   void SetUpOldKey(bool exists = true) {
@@ -183,13 +147,6 @@ class KeyRotationManagerTest : public testing::Test,
   void SetRotationPermissions(bool success = true) {
     EXPECT_CALL(*mock_persistence_delegate_, CheckRotationPermissions())
         .WillOnce(Return(success));
-  }
-
-  void SetUpDmToken(std::string dm_token = kDmToken) {
-    if (is_key_uploaded_by_shared_api()) {
-      EXPECT_CALL(*mock_cloud_delegate_, GetDMToken())
-          .WillRepeatedly(Return(dm_token));
-    }
   }
 
   void SetUpNewKeyCreation(bool success = true) {
@@ -245,17 +202,6 @@ class KeyRotationManagerTest : public testing::Test,
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
-  bool is_key_uploaded_by_shared_api() {
-#if BUILDFLAG(IS_MAC)
-    // Currently this feature is only implemented for MAC.
-    // Specifying the platform is only needed for tests.
-    return GetParam();
-#else
-    return false;
-#endif  //  BUILDFLAG(IS_MAC)
-  }
-
-  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   crypto::ScopedMockUnexportableKeyProvider scoped_key_provider_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
@@ -263,30 +209,21 @@ class KeyRotationManagerTest : public testing::Test,
 
   raw_ptr<StrictMock<MockKeyNetworkDelegate>, DanglingUntriaged>
       mock_network_delegate_;
-  raw_ptr<StrictMock<enterprise_attestation::MockCloudManagementDelegate>,
-          DanglingUntriaged>
-      mock_cloud_delegate_;
   raw_ptr<StrictMock<MockKeyPersistenceDelegate>, DanglingUntriaged>
       mock_persistence_delegate_;
 
   scoped_refptr<SigningKeyPair> old_key_pair_;
   scoped_refptr<SigningKeyPair> new_key_pair_;
-  // For the deprecated path.
   std::optional<std::string> captured_upload_body_;
-  // For when the feature is enabled.
-  enterprise_management::DeviceManagementRequest captured_request_;
+
   std::unique_ptr<KeyRotationManager> key_rotation_manager_;
 };
 
-TEST_P(KeyRotationManagerTest, Rotate_InvalidDMServerURL) {
-  if (is_key_uploaded_by_shared_api()) {
-    // This test is only relevant for when the feature is disabled.
-    return;
-  }
+TEST_F(KeyRotationManagerTest, Rotate_InvalidDMServerURL) {
   SetUpOldKey(/*exists=*/true);
 
   base::test::TestFuture<KeyRotationResult> future;
-  key_rotation_manager_->Rotate(/* invalid url */ GURL(), kDmToken, kFakeNonce,
+  key_rotation_manager_->Rotate(GURL(), kDmToken, kFakeNonce,
                                 future.GetCallback());
   EXPECT_EQ(KeyRotationResult::kFailed, future.Get());
 
@@ -298,29 +235,11 @@ TEST_P(KeyRotationManagerTest, Rotate_InvalidDMServerURL) {
               ElementsAre(Pair(kRotateStatusWithNonceHistogram, 1)));
 }
 
-TEST_P(KeyRotationManagerTest, Rotate_EmptyDmToken) {
-  SetUpDmToken("");
+TEST_F(KeyRotationManagerTest, Rotate_InvalidDmToken) {
   SetUpOldKey(/*exists=*/true);
 
-  base::test::TestFuture<KeyRotationResult> future;
-  key_rotation_manager_->Rotate(GURL(kDmServerUrl), "", kFakeNonce,
-                                future.GetCallback());
-  EXPECT_EQ(KeyRotationResult::kFailed, future.Get());
-
-  histogram_tester_->ExpectUniqueSample(kRotateStatusWithNonceHistogram,
-                                        RotationStatus::FAILURE_INVALID_DMTOKEN,
-                                        1);
-
-  EXPECT_THAT(histogram_tester_->GetTotalCountsForPrefix(kHistogramPrefix),
-              ElementsAre(Pair(kRotateStatusWithNonceHistogram, 1)));
-}
-
-TEST_P(KeyRotationManagerTest, Rotate_LongDmToken) {
-  // A long dm token, is an invalid one.
+  // Create a DM token that has 5000 characters.
   std::string long_dm_token(5000, 'a');
-  SetUpDmToken(long_dm_token);
-
-  SetUpOldKey(/*exists=*/true);
 
   base::test::TestFuture<KeyRotationResult> future;
   key_rotation_manager_->Rotate(GURL(kDmServerUrl), long_dm_token, kFakeNonce,
@@ -335,7 +254,7 @@ TEST_P(KeyRotationManagerTest, Rotate_LongDmToken) {
               ElementsAre(Pair(kRotateStatusWithNonceHistogram, 1)));
 }
 
-TEST_P(KeyRotationManagerTest, Rotate_MissingNonce) {
+TEST_F(KeyRotationManagerTest, Rotate_MissingNonce) {
   SetUpOldKey(/*exists=*/true);
 
   RunRotate(KeyRotationResult::kFailed, /*with_nonce=*/false);
@@ -348,8 +267,7 @@ TEST_P(KeyRotationManagerTest, Rotate_MissingNonce) {
               ElementsAre(Pair(kRotateStatusWithNonceHistogram, 1)));
 }
 
-TEST_P(KeyRotationManagerTest, CreateKey_InvalidPermissions) {
-  SetUpDmToken();
+TEST_F(KeyRotationManagerTest, CreateKey_InvalidPermissions) {
   SetUpOldKey(/*exists=*/false);
   SetRotationPermissions(false);
 
@@ -363,8 +281,7 @@ TEST_P(KeyRotationManagerTest, CreateKey_InvalidPermissions) {
               ElementsAre(Pair(kRotateStatusNoNonceHistogram, 1)));
 }
 
-TEST_P(KeyRotationManagerTest, CreateKey_CreationFailure) {
-  SetUpDmToken();
+TEST_F(KeyRotationManagerTest, CreateKey_CreationFailure) {
   SetUpOldKey(/*exists=*/false);
   SetRotationPermissions();
   SetUpNewKeyCreation(/*success=*/false);
@@ -379,8 +296,7 @@ TEST_P(KeyRotationManagerTest, CreateKey_CreationFailure) {
               ElementsAre(Pair(kRotateStatusNoNonceHistogram, 1)));
 }
 
-TEST_P(KeyRotationManagerTest, CreateKey_StoreFailed) {
-  SetUpDmToken();
+TEST_F(KeyRotationManagerTest, CreateKey_StoreFailed) {
   SetUpOldKey(/*exists=*/false);
   SetRotationPermissions();
   SetUpNewKeyCreation();
@@ -396,8 +312,7 @@ TEST_P(KeyRotationManagerTest, CreateKey_StoreFailed) {
               ElementsAre(Pair(kRotateStatusNoNonceHistogram, 1)));
 }
 
-TEST_P(KeyRotationManagerTest, CreateKey_Success) {
-  SetUpDmToken();
+TEST_F(KeyRotationManagerTest, CreateKey_Success) {
   SetUpOldKey(/*exists=*/false);
   SetRotationPermissions();
   SetUpNewKeyCreation();
@@ -409,13 +324,9 @@ TEST_P(KeyRotationManagerTest, CreateKey_Success) {
 
   // Validate body.
   // TODO(b:254072094): Improve body content validation logic.
+  ASSERT_TRUE(captured_upload_body_);
   enterprise_management::DeviceManagementRequest request;
-  if (is_key_uploaded_by_shared_api()) {
-    request = captured_request_;
-  } else {
-    ASSERT_TRUE(captured_upload_body_);
-    ASSERT_TRUE(request.ParseFromString(captured_upload_body_.value()));
-  }
+  ASSERT_TRUE(request.ParseFromString(captured_upload_body_.value()));
   auto upload_key_request = request.browser_public_key_upload_request();
   EXPECT_EQ(BPKUR::EC_KEY, upload_key_request.key_type());
   EXPECT_EQ(BPKUR::CHROME_BROWSER_HW_KEY, upload_key_request.key_trust_level());
@@ -434,8 +345,7 @@ TEST_P(KeyRotationManagerTest, CreateKey_Success) {
                           Pair(kUploadCodeNoNonceHistogram, 1)));
 }
 
-TEST_P(KeyRotationManagerTest, RotateKey_Success) {
-  SetUpDmToken();
+TEST_F(KeyRotationManagerTest, RotateKey_Success) {
   SetUpOldKey();
   SetRotationPermissions();
   SetUpNewKeyCreation();
@@ -447,13 +357,9 @@ TEST_P(KeyRotationManagerTest, RotateKey_Success) {
 
   // Validate body.
   // TODO(b:254072094): Improve body content validation logic.
+  ASSERT_TRUE(captured_upload_body_);
   enterprise_management::DeviceManagementRequest request;
-  if (is_key_uploaded_by_shared_api()) {
-    request = captured_request_;
-  } else {
-    ASSERT_TRUE(captured_upload_body_);
-    ASSERT_TRUE(request.ParseFromString(captured_upload_body_.value()));
-  }
+  ASSERT_TRUE(request.ParseFromString(captured_upload_body_.value()));
   auto upload_key_request = request.browser_public_key_upload_request();
   EXPECT_EQ(BPKUR::EC_KEY, upload_key_request.key_type());
   EXPECT_EQ(BPKUR::CHROME_BROWSER_HW_KEY, upload_key_request.key_trust_level());
@@ -472,7 +378,7 @@ TEST_P(KeyRotationManagerTest, RotateKey_Success) {
                           Pair(kUploadCodeWithNonceHistogram, 1)));
 }
 
-TEST_P(KeyRotationManagerTest, CreateKey_UploadFailed) {
+TEST_F(KeyRotationManagerTest, CreateKey_UploadFailed) {
   for (const auto& test_case : kUploadFailureTestCases) {
     auto http_code = std::get<0>(test_case);
     auto rotation_status = std::get<1>(test_case);
@@ -482,7 +388,6 @@ TEST_P(KeyRotationManagerTest, CreateKey_UploadFailed) {
     InSequence s;
 
     SetUpOldKey(/*exists=*/false);
-    SetUpDmToken();
     SetRotationPermissions();
     SetUpNewKeyCreation();
     SetUpStoreKey(/*expect_new_key=*/true, /*success=*/true);
@@ -505,7 +410,7 @@ TEST_P(KeyRotationManagerTest, CreateKey_UploadFailed) {
   }
 }
 
-TEST_P(KeyRotationManagerTest, RotateKey_UploadFailed) {
+TEST_F(KeyRotationManagerTest, RotateKey_UploadFailed) {
   for (const auto& test_case : kUploadFailureTestCases) {
     auto http_code = std::get<0>(test_case);
     auto rotation_status = std::get<1>(test_case);
@@ -515,7 +420,6 @@ TEST_P(KeyRotationManagerTest, RotateKey_UploadFailed) {
     InSequence s;
 
     SetUpOldKey(/*exists=*/true);
-    SetUpDmToken();
     SetRotationPermissions();
     SetUpNewKeyCreation();
     SetUpStoreKey(/*expect_new_key=*/true, /*success=*/true);
@@ -537,7 +441,5 @@ TEST_P(KeyRotationManagerTest, RotateKey_UploadFailed) {
     ResetHistograms();
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(, KeyRotationManagerTest, testing::Bool());
 
 }  // namespace enterprise_connectors

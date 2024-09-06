@@ -13,7 +13,6 @@
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 
 namespace policy {
-class BrowserDMTokenStorage;
 class DeviceManagementService;
 }  // namespace policy
 
@@ -28,7 +27,6 @@ class DeviceTrustTestEnvironmentWin : public DeviceTrustTestEnvironment,
   // KeyRotationCommandFactory:
   std::unique_ptr<KeyRotationCommand> CreateCommand(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      policy::BrowserDMTokenStorage* dm_token_storage,
       policy::DeviceManagementService* device_management_service) override;
 
   // DeviceTrustTestEnvironment:
