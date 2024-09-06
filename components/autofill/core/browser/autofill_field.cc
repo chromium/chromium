@@ -294,6 +294,23 @@ void AutofillField::SetHtmlType(HtmlFieldType type, HtmlFieldMode mode) {
   overall_type_ = AutofillType(NO_SERVER_DATA);
 }
 
+void AutofillField::AddPossibleProfileValueSource(std::string identifier,
+                                                  FieldType type) {
+  if (!IsAddressType(type)) {
+    return;
+  }
+  possible_profile_value_sources_.emplace_back(std::move(identifier), type);
+}
+
+void AutofillField::ClearPossibleProfileValueSources() {
+  possible_profile_value_sources_.clear();
+}
+
+const AutofillField::PossibleProfileValueSources&
+AutofillField::GetPossibleProfileValueSources() const {
+  return possible_profile_value_sources_;
+}
+
 void AutofillField::SetTypeTo(const AutofillType& type) {
   DCHECK(type.GetStorableType() != NO_SERVER_DATA);
   overall_type_ = type;

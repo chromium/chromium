@@ -42,6 +42,22 @@ enum class IsMostRecentSingleUsernameCandidate {
 
 class AutofillField : public FormFieldData {
  public:
+  // Stores the (possible) source of address profile values found in a field at
+  // submission time.
+  struct ProfileValueSource {
+    // The comparison operator will allow to easily remove duplicates.
+    friend bool operator==(const AutofillField::ProfileValueSource&,
+                           const AutofillField::ProfileValueSource&) = default;
+    // An identifier (GUID) of an address profile.
+    std::string identifier;
+    // The type of the value found in the Autofill entry.
+    FieldType value_type;
+  };
+
+  // A vector of `ProfileValueSource` that is used to store all possible value
+  // sources.
+  using PossibleProfileValueSources = std::vector<ProfileValueSource>;
+
   using FieldLogEventType = absl::variant<absl::monostate,
                                           AskForValuesToFillFieldLogEvent,
                                           TriggerFillFieldLogEvent,
@@ -107,6 +123,12 @@ class AutofillField : public FormFieldData {
   void set_possible_types(const FieldTypeSet& possible_types) {
     possible_types_ = possible_types;
   }
+
+  // Adds a profile `identifier` for `type` as a possible profile value source.
+  // If `type` is not an address type the call will be a noop.
+  void AddPossibleProfileValueSource(std::string identifier, FieldType type);
+  const PossibleProfileValueSources& GetPossibleProfileValueSources() const;
+  void ClearPossibleProfileValueSources();
 
   void SetHtmlType(HtmlFieldType type, HtmlFieldMode mode);
 
@@ -383,8 +405,18 @@ class AutofillField : public FormFieldData {
   // Currently this is used to distinguish between billing and shipping fields.
   HtmlFieldMode html_mode_ = HtmlFieldMode::kNone;
 
-  // The set of possible types for this field.
+  // The set of possible types for this field. It is normally only populated on
+  // submission time together with the `possible_profile_value_sources_`.
   FieldTypeSet possible_types_;
+
+  // An Autofill profile is a source for a filled value when the field's value
+  // is contained in the profile stored as a specific type. It does not mean
+  // that the value was actually filled from this Autofill profile. It is
+  // normally only populated on submission time along with the
+  // `possible_types_`. It contains the address related information that is
+  // contained in `possible_types_` with the additional information in which
+  // profile the matching type was detected.
+  PossibleProfileValueSources possible_profile_value_sources_;
 
   // A low-entropy hash of the field's initial value before user-interactions or
   // automatic fillings. This field is used to detect static placeholders.
@@ -460,6 +492,7 @@ class AutofillField : public FormFieldData {
   // Note: `is_autofilled` is true for autocompleted fields. So `is_autofilled`
   // is not a sufficient condition for `autofill_source_profile_guid_` to have a
   // value. This is not tracked for fields filled with field by field filling.
+  // TODO(crbug.com/364937539): Use AutofillField::ProfileValueSource instead.
   std::optional<std::string> autofill_source_profile_guid_;
 
   // Denotes the type that was used to fill the field in its last autofill
@@ -467,6 +500,7 @@ class AutofillField : public FormFieldData {
   // Autofill might fallback to filling a classified field with a different type
   // than the classified one, based on country-specific rules.
   // This is not tracked for fields filled with field by field filling.
+  // TODO(crbug.com/364937539): Use AutofillField::ProfileValueSource instead.
   std::optional<FieldType> autofilled_type_;
 
   // Denotes the product last responsible for filling the field. If the field is
