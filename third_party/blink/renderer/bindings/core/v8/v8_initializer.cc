@@ -266,20 +266,6 @@ static void PromiseRejectHandler(v8::PromiseRejectMessage data,
   ExecutionContext* context = ExecutionContext::From(script_state);
 
   v8::Local<v8::Value> exception = data.GetValue();
-  if (V8PerIsolateData::From(isolate)->HasInstance(
-          DOMException::GetStaticWrapperTypeInfo(), exception)) {
-    // Try to get the stack & location from a wrapped DOMException object.
-    CHECK(exception->IsObject());
-    auto private_error = V8PrivateProperty::GetSymbol(
-        isolate, kPrivatePropertyDOMExceptionError);
-    v8::Local<v8::Value> error;
-    if (private_error.GetOrUndefined(exception.As<v8::Object>())
-            .ToLocal(&error) &&
-        !error->IsUndefined()) {
-      exception = error;
-    }
-  }
-
   String error_message;
   SanitizeScriptErrors sanitize_script_errors = SanitizeScriptErrors::kSanitize;
   std::unique_ptr<SourceLocation> location;

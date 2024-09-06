@@ -1334,7 +1334,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, AddModule_ScriptNotFound) {
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
   std::string expected_error = base::StrCat(
-      {"a JavaScript error: \"Error: Failed to load ",
+      {"a JavaScript error: \"OperationError: Failed to load ",
        https_server()
            ->GetURL("a.test", "/shared_storage/nonexistent_module.js")
            .spec(),
@@ -1364,7 +1364,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, AddModule_RedirectNotAllowed) {
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
   std::string expected_error = base::StrCat(
-      {"a JavaScript error: \"Error: Unexpected redirect on ",
+      {"a JavaScript error: \"OperationError: Unexpected redirect on ",
        https_server()
            ->GetURL("a.test",
                     "/server-redirect?shared_storage/simple_module.js")
@@ -7033,7 +7033,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
 
   // `selectURL()` fails when map is full.
   std::string expected_error = base::StrCat(
-      {"a JavaScript error: \"Error: ",
+      {"a JavaScript error: \"OperationError: ",
        "sharedStorage.selectURL() failed because number of urn::uuid to url ",
        "mappings has reached the limit.\"\n"});
   EXPECT_EQ(expected_error, extra_result.error);

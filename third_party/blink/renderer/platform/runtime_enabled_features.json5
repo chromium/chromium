@@ -1567,6 +1567,12 @@
     {
       name: "DocumentWrite",
     },
+    // When this flag is enabled, a workaround for https://crbug.com/356158097
+    // is removed.
+    {
+      name: "DOMExceptionV8CaptureStackTraceDisableWorkaround",
+      status: "experimental"
+    },
     // Controls whether DOMParser.parseFromString() attempts to use the
     // html fast path parser. This flag is to be used as a killswitch in case
     // of any issues.
