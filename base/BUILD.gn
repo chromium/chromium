@@ -2002,6 +2002,7 @@ component("base") {
       "memory/platform_shared_memory_region_apple.cc",
       "message_loop/message_pump_apple.h",
       "message_loop/message_pump_apple.mm",
+      "native_library_apple.mm",
       "process/process_metrics_apple.cc",
       "profiler/module_cache_apple.cc",
       "strings/sys_string_conversions_apple.mm",
@@ -2058,7 +2059,6 @@ component("base") {
       "mac/scoped_sending_event.mm",
       "message_loop/message_pump_kqueue.cc",
       "message_loop/message_pump_kqueue.h",
-      "native_library_mac.mm",
       "power_monitor/battery_level_provider_mac.mm",
       "power_monitor/battery_state_sampler_mac.cc",
       "power_monitor/iopm_power_source_sampling_event_source.cc",
@@ -2114,7 +2114,6 @@ component("base") {
       "ios/ns_error_util.h",
       "ios/ns_error_util.mm",
       "ios/ns_range.h",
-      "native_library_ios.mm",
       "power_monitor/power_monitor_device_source_ios.mm",
       "process/process_metrics_ios.cc",
       "process/process_metrics_posix.cc",
@@ -3594,6 +3593,9 @@ test("base_unittests") {
     "//base/test:test_shared_library",
     "//testing/buildbot/filters:base_unittests_filters",
   ]
+  if (is_ios) {
+    deps += [ "//base/test:test_shared_library_ios+bundle" ]
+  }
 
   if (is_android && enable_chrome_android_internal) {
     data_deps += [ "//clank/build/bot/filters:base_unittests_filters" ]

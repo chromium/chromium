@@ -449,6 +449,18 @@ shared_library("test_shared_library") {
   deps = [ ":native_library_test_utils" ]
 }
 
+if (is_ios) {
+  ios_framework_bundle("test_shared_library_ios") {
+    testonly = true
+    output_name = "test_shared_library_ios"
+    info_plist = "ios/native-library-Info.plist"
+
+    sources = [ "test_shared_library.cc" ]
+
+    deps = [ ":native_library_test_utils" ]
+  }
+}
+
 if (is_fuchsia || is_linux || is_chromeos) {
   shared_library("malloc_wrapper") {
     testonly = true
