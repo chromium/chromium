@@ -4,6 +4,8 @@
 
 #include "components/enterprise/connectors/core/connectors_service_base.h"
 
+#include "base/json/json_reader.h"
+#include "components/enterprise/connectors/core/connectors_manager_base.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -13,6 +15,14 @@ namespace {
 
 constexpr char kMachineDMToken[] = "machine_dm_token";
 constexpr char kProfileDMToken[] = "profile_dm_token";
+
+constexpr char kEmptySettingsPref[] = "[]";
+
+constexpr char kNormalReportingSettingsPref[] = R"([
+  {
+    "service_provider": "google"
+  }
+])";
 
 class TestConnectorsService : public ConnectorsServiceBase {
  public:
@@ -30,6 +40,11 @@ class TestConnectorsService : public ConnectorsServiceBase {
 
   void set_connectors_enabled(bool enabled) { connectors_enabled_ = enabled; }
 
+  void set_connectors_manager_base() {
+    connectors_manager_base_ = std::make_unique<ConnectorsManagerBase>(
+        &prefs_, GetServiceProviderConfig());
+  }
+
   std::optional<DmToken> GetDmToken(const char* scope_pref) const override {
     switch (prefs_.GetInteger(kEnterpriseRealTimeUrlCheckScope)) {
       case policy::POLICY_SCOPE_MACHINE:
@@ -43,6 +58,17 @@ class TestConnectorsService : public ConnectorsServiceBase {
 
   bool ConnectorsEnabled() const override { return connectors_enabled_; }
 
+  bool IsConnectorEnabled(AnalysisConnector connector) const override {
+    return false;
+  }
+
+  ConnectorsManagerBase* GetConnectorsManagerBase() override {
+    return connectors_manager_base_.get();
+  }
+  const ConnectorsManagerBase* GetConnectorsManagerBase() const override {
+    return connectors_manager_base_.get();
+  }
+
   PrefService* GetPrefs() override { return &prefs_; }
   const PrefService* GetPrefs() const override { return &prefs_; }
 
@@ -51,6 +77,7 @@ class TestConnectorsService : public ConnectorsServiceBase {
   std::optional<DmToken> machine_dm_token_;
   std::optional<DmToken> profile_dm_token_;
   TestingPrefServiceSimple prefs_;
+  std::unique_ptr<ConnectorsManagerBase> connectors_manager_base_;
 };
 
 }  // namespace
@@ -138,5 +165,66 @@ TEST(ConnectorsServiceBaseTest, RealTimeUrlCheck_ValidMachinePolicy) {
   ASSERT_EQ(service.GetAppliedRealTimeUrlCheck(),
             REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
 }
+
+class ConnectorsServiceBaseReportingSettingsTest
+    : public TestConnectorsService,
+      public testing::Test,
+      public testing::WithParamInterface<
+          std::tuple<ReportingConnector, const char*>> {
+ public:
+  ReportingConnector connector() const { return std::get<0>(GetParam()); }
+  const char* pref_value() const { return std::get<1>(GetParam()); }
+
+  const char* pref() const { return ConnectorPref(connector()); }
+
+  const char* scope_pref() const { return ConnectorScopePref(connector()); }
+
+  bool reporting_enabled() const {
+    return pref_value() == kNormalReportingSettingsPref;
+  }
+
+  void ValidateSettings(const ReportingSettings& settings) {
+    // For now, the URL is the same for both legacy and new policies, so
+    // checking the specific URL here.  When service providers become
+    // configurable this will change.
+    ASSERT_EQ(GURL("https://chromereporting-pa.googleapis.com/v1/events"),
+              settings.reporting_url);
+  }
+};
+
+TEST_P(ConnectorsServiceBaseReportingSettingsTest, Test) {
+  TestConnectorsService service;
+  // TODO(b/344593927): Re-enable this test for Android.
+#if BUILDFLAG(IS_ANDROID)
+  ASSERT_FALSE(service.GetPrefs()->FindPreference(
+      "enterprise_connectors.on_security_event"));
+#else
+  service.set_connectors_manager_base();
+  if (pref_value()) {
+    service.GetPrefs()->Set(pref(), *base::JSONReader::Read(pref_value()));
+    service.GetPrefs()->SetInteger(scope_pref(), policy::POLICY_SCOPE_MACHINE);
+  }
+
+  auto settings =
+      service.GetConnectorsManagerBase()->GetReportingSettings(connector());
+  EXPECT_EQ(reporting_enabled(), settings.has_value());
+  if (settings.has_value()) {
+    ValidateSettings(settings.value());
+  }
+
+  EXPECT_EQ(pref_value() == kNormalReportingSettingsPref,
+            !service.GetConnectorsManagerBase()
+                 ->GetReportingConnectorsSettingsForTesting()
+                 .empty());
+#endif
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ConnectorsServiceBaseReportingSettingsTest,
+    testing::Combine(testing::Values(ReportingConnector::SECURITY_EVENT),
+                     testing::Values(nullptr,
+                                     kNormalReportingSettingsPref,
+                                     kEmptySettingsPref)));
 
 }  // namespace enterprise_connectors

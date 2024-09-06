@@ -31,6 +31,7 @@
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/connectors_manager_base.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/enterprise/connectors/core/service_provider_config.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -205,15 +206,16 @@ std::unique_ptr<ClientMetadata> ConnectorsService::GetBasicClientMetadata(
 
 std::optional<ReportingSettings> ConnectorsService::GetReportingSettings(
     ReportingConnector connector) {
-  if (!ConnectorsEnabled())
+#if BUILDFLAG(IS_CHROMEOS)
+  if (!ConnectorsEnabled()) {
     return std::nullopt;
+  }
 
   std::optional<ReportingSettings> settings =
       connectors_manager_->GetReportingSettings(connector);
   if (!settings.has_value())
     return std::nullopt;
 
-#if BUILDFLAG(IS_CHROMEOS)
   Profile* profile = Profile::FromBrowserContext(context_);
   if (IncludeDeviceInfo(profile, /*per_profile=*/false)) {
     // The device dm token includes additional information like a device id,
@@ -227,15 +229,8 @@ std::optional<ReportingSettings> ConnectorsService::GetReportingSettings(
     }
   }
 #endif
-  std::optional<DmToken> dm_token = GetDmToken(ConnectorScopePref(connector));
-  if (!dm_token.has_value())
-    return std::nullopt;
 
-  settings.value().dm_token = dm_token.value().value;
-  settings.value().per_profile =
-      dm_token.value().scope == policy::POLICY_SCOPE_USER;
-
-  return settings;
+  return ConnectorsServiceBase::GetReportingSettings(connector);
 }
 
 std::optional<AnalysisSettings> ConnectorsService::GetAnalysisSettings(
@@ -312,24 +307,6 @@ bool ConnectorsService::IsConnectorEnabled(AnalysisConnector connector) const {
     return false;
 
   return connectors_manager_->IsAnalysisConnectorEnabled(connector);
-}
-
-bool ConnectorsService::IsConnectorEnabled(ReportingConnector connector) const {
-  if (!ConnectorsEnabled())
-    return false;
-
-  return connectors_manager_->IsReportingConnectorEnabled(connector);
-}
-
-std::vector<std::string> ConnectorsService::GetReportingServiceProviderNames(
-    ReportingConnector connector) {
-  if (!ConnectorsEnabled())
-    return {};
-
-  if (!GetDmToken(ConnectorScopePref(connector)).has_value())
-    return {};
-
-  return connectors_manager_->GetReportingServiceProviderNames(connector);
 }
 
 std::vector<const AnalysisConfig*> ConnectorsService::GetAnalysisServiceConfigs(
@@ -573,6 +550,15 @@ PrefService* ConnectorsService::GetPrefs() {
 
 const PrefService* ConnectorsService::GetPrefs() const {
   return Profile::FromBrowserContext(context_)->GetPrefs();
+}
+
+ConnectorsManagerBase* ConnectorsService::GetConnectorsManagerBase() {
+  return connectors_manager_.get();
+}
+
+const ConnectorsManagerBase* ConnectorsService::GetConnectorsManagerBase()
+    const {
+  return connectors_manager_.get();
 }
 
 std::unique_ptr<ClientMetadata> ConnectorsService::BuildClientMetadata(
