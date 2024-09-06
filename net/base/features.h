@@ -159,28 +159,28 @@ NET_EXPORT BASE_DECLARE_FEATURE(kSplitCacheByIncludeCredentials);
 NET_EXPORT BASE_DECLARE_FEATURE(kSplitCacheByNetworkIsolationKey);
 
 // The following flags are used as part of an experiment to modify the HTTP
-// cache key scheme to better protect against leaks via cross-site navigations.
+// cache key scheme to better protect against leaks via navigations.
 // These flags are mutually exclusive, and for each flag the HTTP cache will be
 // cleared when the flag first transitions from being disabled to being enabled.
 //
 // This flag incorporates a boolean into the cache key that is true for
-// renderer-initiated main frame navigations when the request initiator is
+// renderer-initiated main frame navigations when the request initiator site is
 // cross-site to the URL being navigated to.
 NET_EXPORT BASE_DECLARE_FEATURE(
     kSplitCacheByCrossSiteMainFrameNavigationBoolean);
-// This flag incorporates the request initiator into the cache key for
-// renderer-initiated main frame navigations when the request initiator is
-// cross-site to the URL being navigated to. If the request initiator is opaque,
-// then no caching is performed of the navigated-to document.
+// This flag incorporates the request initiator site into the cache key for
+// renderer-initiated main frame navigations when the request initiator site is
+// cross-site to the URL being navigated to. If the request initiator site is
+// opaque, then no caching is performed of the navigated-to document.
 NET_EXPORT BASE_DECLARE_FEATURE(kSplitCacheByMainFrameNavigationInitiator);
-// This flag incorporates the request initiator into the cache key for all
+// This flag incorporates the request initiator site into the cache key for all
 // renderer-initiated navigations (including subframe navigations) when the
-// request initiator is cross-site to the URL being navigated to. If the request
-// initiator is opaque, then no caching is performed of the navigated-to
+// request initiator site is cross-site to the URL being navigated to. If the
+// request initiator is opaque, then no caching is performed of the navigated-to
 // document. When this scheme is used, the `is-subframe-document-resource`
 // boolean is not incorporated into the cache key, since incorporating the
-// initiator for subframe navigations should be sufficient for mitigating the
-// attacks that the `is-subframe-document-resource` mitigates.
+// initiator site for subframe navigations should be sufficient for mitigating
+// the attacks that the `is-subframe-document-resource` mitigates.
 NET_EXPORT BASE_DECLARE_FEATURE(kSplitCacheByNavigationInitiator);
 // This flag doesn't result in changes to the HTTP cache scheme but provides an
 // experiment control group that mitigates the differences inherent in changing

@@ -270,21 +270,23 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
     // No additional partitioning is done for top-level navigations.
     kStandard,
     // A boolean is incorporated into the cache key that is true for
-    // renderer-initiated main frame navigations when the request initiator is
-    // cross-site to the URL being navigated to.
-    kCrossSiteNavigationBoolean,
-    // The request initiator is incorporated into the cache key for
-    // renderer-initiated main frame navigations when the request initiator is
-    // cross-site to the URL being navigated to. If the request initiator is
-    // opaque, then no caching is performed of the navigated-to document.
+    // renderer-initiated main frame navigations when the request initiator site
+    // is cross-site to the URL being navigated to.
+    kCrossSiteInitiatorBoolean,
+    // The request initiator site is incorporated into the cache key for
+    // renderer-initiated main frame navigations when the request initiator site
+    // is cross-site to the URL being navigated to. If the request initiator
+    // site is opaque, then no caching is performed of the navigated-to
+    // document.
     kMainFrameNavigationInitiator,
-    // The request initiator is incorporated into the cache key for all
+    // The request initiator site is incorporated into the cache key for all
     // renderer-initiated navigations (including subframe navigations) when the
-    // request initiator is cross-site to the URL being navigated to. If the
-    // request initiator is opaque, then no caching is performed of the
+    // request initiator site is cross-site to the URL being navigated to. If
+    // the request initiator site is opaque, then no caching is performed of the
     // navigated-to document. When this scheme is used, the
     // `is-subframe-document-resource` boolean is not incorporated into the
-    // cache key, since incorporating the initiator for subframe navigations
+    // cache key, since incorporating the initiator site for subframe
+    // navigations
     // should be sufficient for mitigating the attacks that the
     // `is-subframe-document-resource` mitigates.
     kNavigationInitiator,

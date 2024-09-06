@@ -1223,7 +1223,7 @@ TEST_F(HttpCacheTest, GetExperimentMode) {
         {net::features::kSplitCacheByMainFrameNavigationInitiator,
          net::features::kSplitCacheByNavigationInitiator});
 
-    EXPECT_EQ(HttpCache::ExperimentMode::kCrossSiteNavigationBoolean,
+    EXPECT_EQ(HttpCache::ExperimentMode::kCrossSiteInitiatorBoolean,
               HttpCache::GetExperimentMode());
   }
   {

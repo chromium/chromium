@@ -625,7 +625,7 @@ bool HttpCache::CanGenerateCacheKeyForRequest(const HttpRequestInfo* request) {
     if (request->initiator.has_value() && request->initiator->opaque()) {
       switch (HttpCache::GetExperimentMode()) {
         case HttpCache::ExperimentMode::kStandard:
-        case HttpCache::ExperimentMode::kCrossSiteNavigationBoolean:
+        case HttpCache::ExperimentMode::kCrossSiteInitiatorBoolean:
           break;
         case HttpCache::ExperimentMode::kMainFrameNavigationInitiator:
           if (request->is_main_frame_navigation) {
@@ -676,7 +676,7 @@ std::string HttpCache::GenerateCacheKey(
     if (is_subframe_document_resource) {
       switch (experiment_mode) {
         case HttpCache::ExperimentMode::kStandard:
-        case HttpCache::ExperimentMode::kCrossSiteNavigationBoolean:
+        case HttpCache::ExperimentMode::kCrossSiteInitiatorBoolean:
         case HttpCache::ExperimentMode::kMainFrameNavigationInitiator:
           subframe_document_resource_prefix = kSubframeDocumentResourcePrefix;
           break;
@@ -698,7 +698,7 @@ std::string HttpCache::GenerateCacheKey(
         switch (experiment_mode) {
           case HttpCache::ExperimentMode::kStandard:
             break;
-          case HttpCache::ExperimentMode::kCrossSiteNavigationBoolean:
+          case HttpCache::ExperimentMode::kCrossSiteInitiatorBoolean:
             if (is_mainframe_navigation) {
               navigation_experiment_prefix = "csnb_ ";
             }
@@ -752,7 +752,7 @@ HttpCache::ExperimentMode HttpCache::GetExperimentMode() {
         navigation_initiator_enabled) {
       return ExperimentMode::kStandard;
     }
-    return ExperimentMode::kCrossSiteNavigationBoolean;
+    return ExperimentMode::kCrossSiteInitiatorBoolean;
   } else if (main_frame_navigation_initiator_enabled) {
     if (navigation_initiator_enabled) {
       return ExperimentMode::kStandard;
