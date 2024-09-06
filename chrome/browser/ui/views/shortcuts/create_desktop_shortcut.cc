@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/shortcuts/create_desktop_shortcut.h"
 
+#include <optional>
 #include <string>
 
 #include "base/check_is_test.h"
@@ -44,7 +45,7 @@ namespace {
 // desktop of the OS. This API works only if kShortcutsNotApps is enabled.
 // Triggered from the three-dot menu on Chrome, Save & Share > Create Shortcut.
 // Callers of the API should pass a |CreateShortcutDialogCallback| so that the
-// user action on the dialog and the title in the dialog's text field can be
+// user action on the dialog or the title in the dialog's text field can be
 // obtained.
 void ShowCreateDesktopShortcutDialog(
     content::WebContents* web_contents,
@@ -53,8 +54,7 @@ void ShowCreateDesktopShortcutDialog(
     CreateShortcutDialogCallback dialog_action_and_text_callback) {
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser) {
-    std::move(dialog_action_and_text_callback)
-        .Run(/*is_accepted=*/false, title);
+    std::move(dialog_action_and_text_callback).Run(std::nullopt);
     return;
   }
 
@@ -62,8 +62,7 @@ void ShowCreateDesktopShortcutDialog(
   const web_modal::WebContentsModalDialogManager* manager =
       web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
   if (!manager || manager->IsDialogActive()) {
-    std::move(dialog_action_and_text_callback)
-        .Run(/*is_accepted=*/false, title);
+    std::move(dialog_action_and_text_callback).Run(std::nullopt);
     return;
   }
 

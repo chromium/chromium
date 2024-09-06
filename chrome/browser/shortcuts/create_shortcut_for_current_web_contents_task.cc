@@ -4,6 +4,9 @@
 
 #include "chrome/browser/shortcuts/create_shortcut_for_current_web_contents_task.h"
 
+#include <optional>
+#include <string>
+
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -146,9 +149,8 @@ void CreateShortcutForCurrentWebContentsTask::
 void CreateShortcutForCurrentWebContentsTask::OnShortcutDialogResultObtained(
     gfx::ImageFamily images,
     GURL shortcut_url,
-    bool dialog_result,
-    std::u16string title) {
-  if (!dialog_result) {
+    std::optional<std::u16string> dialog_result) {
+  if (!dialog_result.has_value()) {
     OnMetadataFetchCompleteSelfDestruct(base::unexpected(
         ShortcutCreationTaskResult::kUserCancelledShortcutCreationFromDialog));
     return;
@@ -157,6 +159,7 @@ void CreateShortcutForCurrentWebContentsTask::OnShortcutDialogResultObtained(
   // The title returned from the dialog is expected to be non-empty if
   // dialog_result is true, which is an invariant of how the create shortcut
   // view works.
+  std::u16string title = dialog_result.value();
   CHECK(!title.empty());
 
   ShortcutMetadata metadata;
