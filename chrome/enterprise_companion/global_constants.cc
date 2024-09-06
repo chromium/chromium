@@ -127,7 +127,7 @@ class GlobalConstantsImpl : public GlobalConstants {
     ApplyOverride(overrides, kDMEncryptedReportingUrlKey,
                   device_management_encrypted_reporting_url_);
     ApplyOverride(overrides, kDMRealtimeReportingUrlKey,
-                  device_management_encrypted_reporting_url_);
+                  device_management_realtime_reporting_url_);
     ApplyOverride(overrides, kDMServerUrlKey, device_management_server_url_);
     ApplyOverride(overrides, kEventLoggingUrlKey,
                   enterprise_companion_event_logging_url_);
