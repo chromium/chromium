@@ -46,7 +46,7 @@ std::string_view FormTypeToStringView(FormType form_type) {
     case FormType::kUnknownFormType:
       return "Unknown";
     case FormType::kStandaloneCvcForm:
-      return "VirtualCard.StandaloneCvc";
+      return "StandaloneCvc";
   }
 
   NOTREACHED();
@@ -67,7 +67,7 @@ std::string_view FormTypeNameForLoggingToStringView(
     case FormTypeNameForLogging::kUnknownFormType:
       return "Unknown";
     case FormTypeNameForLogging::kStandaloneCvcForm:
-      return "VirtualCard.StandaloneCvc";
+      return "StandaloneCvc";
     case FormTypeNameForLogging::kEmailOnlyForm:
       return "EmailOnly";
     case FormTypeNameForLogging::kPostalAddressForm:

@@ -415,9 +415,9 @@ chromium-metrics-reviews@google.com.
   <variant name=".Address" summary="Address form"/>
   <variant name=".CreditCard" summary="Credit card form"/>
   <variant name=".Password" summary="Password form"/>
+  <variant name=".StandaloneCvc"
+      summary="Standalone CVC form for a card saved on file"/>
   <variant name=".Unknown" summary="Unknown form type"/>
-  <variant name=".VirtualCard.StandaloneCvc"
-      summary="Standalone CVC form for a virtual card saved on file"/>
 </variants>
 
 <!-- Subset of variants "AutofillFormType.Fillable". Keep in sync. -->
@@ -428,15 +428,21 @@ chromium-metrics-reviews@google.com.
   <variant name="PostalAddress" summary="Postal address form"/>
 </variants>
 
-<!-- Superset of variants "AutofillFormType.Address". Keep in sync. -->
+<variants name="AutofillFormType.CreditCard">
+  <variant name="CreditCard" summary="Credit card form"/>
+  <variant name="StandaloneCvc"
+      summary="Standalone CVC form for a card saved on file"/>
+</variants>
+
+<!-- Superset of variants "AutofillFormType.Address/CreditCard". Keep in sync. -->
 
 <variants name="AutofillFormType.Fillable">
   <variant name="Address" summary="Address form"/>
   <variant name="CreditCard" summary="Credit card form"/>
   <variant name="EmailOnly" summary="Email-only form"/>
   <variant name="PostalAddress" summary="Postal address form"/>
-  <variant name="VirtualCard.StandaloneCvc"
-      summary="Standalone CVC form for a virtual card saved on file"/>
+  <variant name="StandaloneCvc"
+      summary="Standalone CVC form for a card saved on file"/>
 </variants>
 
 <variants name="AutofillPlusAddressModalCompletionStatus">
@@ -2370,7 +2376,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Address"/>
     <variant name="CreditCard"/>
     <variant name="Password"/>
-    <variant name="VirtualCard.StandaloneCvc"/>
+    <variant name="StandaloneCvc"/>
   </token>
   <token key="ClassificationMatchesFillingProduct"
       variants="ClassificationMatchesFillingProduct"/>
@@ -2395,7 +2401,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Address"/>
     <variant name="CreditCard"/>
     <variant name="PostalAddress"/>
-    <variant name="VirtualCard.StandaloneCvc"/>
+    <variant name="StandaloneCvc"/>
   </token>
 </histogram>
 
@@ -2582,7 +2588,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Address"/>
     <variant name="CreditCard"/>
     <variant name="Password"/>
-    <variant name="VirtualCard.StandaloneCvc"/>
+    <variant name="StandaloneCvc"/>
   </token>
   <token key="ClassificationMatchesFillingProduct"
       variants="ClassificationMatchesFillingProduct"/>
@@ -2626,29 +2632,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.FormEvents.CreditCard{CreditCardDataAvailability}"
-    enum="AutofillFormEvent" expires_after="2025-07-01">
-  <owner>jsaul@google.com</owner>
-  <owner>battre@chromium.org</owner>
-  <summary>
-    Autofill form events for credit card forms. These are recorded when the user
-    interacts with a form requesting a credit card. {CreditCardDataAvailability}
-
-    Important caveat about submission metrics: - Submission using autofill data
-    is determined by simply evaluating if there was a fill operation in this
-    page. So, if the user filled with local data, completed erased or modified
-    the data after and then submitted, we would only emit one &quot;Submitted
-    with server suggestion filled (once)&quot;; - The submission segmentation
-    works by checking what kind of data was last filled for this type of form in
-    the page load. So, if a user initially filled with local data and after that
-    filled with server, we will only emit &quot;Submitted with server suggestion
-    filled (once)&quot;.
-  </summary>
-  <token key="CreditCardDataAvailability" variants="CreditCardDataAvailability">
-    <variant name=""/>
-  </token>
-</histogram>
-
 <histogram name="Autofill.FormEvents.{AddressFormType}"
     enum="AutofillFormEvent" expires_after="2025-02-10">
   <owner>battre@chromium.org</owner>
@@ -2669,6 +2652,32 @@ chromium-metrics-reviews@google.com.
     filled (once)&quot;.
   </summary>
   <token key="AddressFormType" variants="AutofillFormType.Address"/>
+</histogram>
+
+<histogram
+    name="Autofill.FormEvents.{CreditCardFormType}{CreditCardDataAvailability}"
+    enum="AutofillFormEvent" expires_after="2025-07-01">
+  <owner>jsaul@google.com</owner>
+  <owner>battre@chromium.org</owner>
+  <summary>
+    Autofill form events for {CreditCardFormType} forms. These are recorded when
+    the user interacts with a form requesting a credit card.
+    {CreditCardDataAvailability}
+
+    Important caveat about submission metrics: - Submission using autofill data
+    is determined by simply evaluating if there was a fill operation in this
+    page. So, if the user filled with local data, then completed, erased, or
+    modified the data after and then submitted, we would only emit one
+    &quot;Submitted with server suggestion filled (once)&quot;; - The submission
+    segmentation works by checking what kind of data was last filled for this
+    type of form in the page load. So, if a user initially filled with local
+    data and after that filled with server, we will only emit &quot;Submitted
+    with server suggestion filled (once)&quot;.
+  </summary>
+  <token key="CreditCardFormType" variants="AutofillFormType.CreditCard"/>
+  <token key="CreditCardDataAvailability" variants="CreditCardDataAvailability">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Autofill.FormFillingComplexScore{AutofillFormType}"
@@ -4369,9 +4378,6 @@ chromium-metrics-reviews@google.com.
     disappears or cannot be displayed.
   </summary>
   <token key="FillingProduct">
-    <variant name=".VirtualCard.StandaloneCvc"
-        summary="User chose to fill a form or field with a CVC for a virtual
-                 card saved on file."/>
     <variant name="Address"
         summary="User chose to fill a form or field with an address profile."/>
     <variant name="Autocomplete"
@@ -4390,6 +4396,9 @@ chromium-metrics-reviews@google.com.
                  credentials."/>
     <variant name="PlusAddresses"
         summary="User chose to fill a field with a plus addresses suggestion."/>
+    <variant name="StandaloneCvc"
+        summary="User chose to fill a form or field with a CVC for a virtual
+                 card saved on file."/>
   </token>
 </histogram>
 
@@ -6488,7 +6497,7 @@ chromium-metrics-reviews@google.com.
                  credentials."/>
     <variant name="PlusAddresses"
         summary="User chose to fill a field with a plus addresses suggestion."/>
-    <variant name="VirtualCard.StandaloneCvc"
+    <variant name="StandaloneCvc"
         summary="User chose to fill a form or field with a CVC for a virtual
                  card saved on file."/>
   </token>

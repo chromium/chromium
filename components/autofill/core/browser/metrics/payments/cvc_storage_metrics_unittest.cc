@@ -10,8 +10,17 @@
 
 namespace autofill::autofill_metrics {
 
+// Enum class for different CVC form types, which is used to parameterize the
+// metric test.
+enum class CvcFormType {
+  kNormalCreditCardForm,
+  kStandaloneCvcWithLegacyVerificationCodeField,
+  kStandaloneCvcForm,
+};
+
 class CvcStorageMetricsTest : public AutofillMetricsBaseTest,
-                              public testing::Test {
+                              public testing::Test,
+                              public testing::WithParamInterface<CvcFormType> {
  public:
   CvcStorageMetricsTest() = default;
   ~CvcStorageMetricsTest() override = default;
@@ -21,16 +30,13 @@ class CvcStorageMetricsTest : public AutofillMetricsBaseTest,
 
   void SetUp() override {
     SetUpHelper();
+    form_type_ = GetParam();
+
     // Set up the form data. Reset form action to skip the IsFormMixedContent
     // check.
-    form_ =
-        GetAndAddSeenForm({.description_for_logging = "CvcStorage",
-                           .fields = {{.role = CREDIT_CARD_NAME_FULL},
-                                      {.role = CREDIT_CARD_NUMBER},
-                                      {.role = CREDIT_CARD_EXP_MONTH},
-                                      {.role = CREDIT_CARD_EXP_2_DIGIT_YEAR},
-                                      {.role = CREDIT_CARD_VERIFICATION_CODE}},
-                           .action = ""});
+    form_ = GetAndAddSeenForm({.description_for_logging = "CvcStorage",
+                               .fields = GetTestFormDataFields(),
+                               .action = ""});
 
     // Add a masked server card.
     card_ = test::WithCvc(test::GetMaskedServerCard());
@@ -39,13 +45,53 @@ class CvcStorageMetricsTest : public AutofillMetricsBaseTest,
 
   void TearDown() override { TearDownHelper(); }
 
+  std::vector<test::FieldDescription> GetTestFormDataFields() {
+    switch (form_type_) {
+      case CvcFormType::kNormalCreditCardForm:
+        return {{.role = CREDIT_CARD_NAME_FULL},
+                {.role = CREDIT_CARD_NUMBER},
+                {.role = CREDIT_CARD_EXP_MONTH},
+                {.role = CREDIT_CARD_EXP_2_DIGIT_YEAR},
+                {.role = CREDIT_CARD_VERIFICATION_CODE}};
+      case CvcFormType::kStandaloneCvcWithLegacyVerificationCodeField:
+        return {{.role = CREDIT_CARD_VERIFICATION_CODE}};
+      case CvcFormType::kStandaloneCvcForm:
+        return {{.role = CREDIT_CARD_STANDALONE_VERIFICATION_CODE}};
+    }
+  }
+
+  // Return the histogram name which should be logged to.
+  std::string GetExpectedHistogramName() {
+    switch (form_type_) {
+      case CvcFormType::kNormalCreditCardForm:
+      // TODO: crbug.com/356694842 - StandaloneCvc fields should log as
+      // StandaloneCvc instead of CreditCard.
+      case CvcFormType::kStandaloneCvcWithLegacyVerificationCodeField:
+        return "Autofill.FormEvents.CreditCard";
+      case CvcFormType::kStandaloneCvcForm:
+        return "Autofill.FormEvents.StandaloneCvc";
+    }
+  }
+
+  // Return the histogram name which should NOT be logged to.
+  std::string GetHistogramNameForEmptyRecord() {
+    switch (form_type_) {
+      case CvcFormType::kNormalCreditCardForm:
+      case CvcFormType::kStandaloneCvcWithLegacyVerificationCodeField:
+        return "Autofill.FormEvents.StandaloneCvc";
+      case CvcFormType::kStandaloneCvcForm:
+        return "Autofill.FormEvents.CreditCard";
+    }
+  }
+
  private:
   CreditCard card_;
   FormData form_;
+  CvcFormType form_type_;
 };
 
 // Test CVC suggestion shown metrics are correctly logged.
-TEST_F(CvcStorageMetricsTest, LogShownMetrics) {
+TEST_P(CvcStorageMetricsTest, LogShownMetrics) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList features(
       features::kAutofillEnableCvcStorageAndFilling);
@@ -58,7 +104,7 @@ TEST_F(CvcStorageMetricsTest, LogShownMetrics) {
   DidShowAutofillSuggestions(form(), /*field_index=*/0,
                              SuggestionType::kCreditCardEntry);
   EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      histogram_tester.GetAllSamples(GetExpectedHistogramName()),
       BucketsInclude(
           base::Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 1),
           base::Bucket(FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_SHOWN, 1),
@@ -70,15 +116,16 @@ TEST_F(CvcStorageMetricsTest, LogShownMetrics) {
   DidShowAutofillSuggestions(form(), /*field_index=*/0,
                              SuggestionType::kCreditCardEntry);
   EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      histogram_tester.GetAllSamples(GetExpectedHistogramName()),
       BucketsInclude(
           base::Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 2),
           base::Bucket(FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_SHOWN, 2),
           base::Bucket(FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_SHOWN_ONCE, 1)));
+  histogram_tester.ExpectTotalCount(GetHistogramNameForEmptyRecord(), 0);
 }
 
 // Test CVC suggestion selected metrics are correctly logged.
-TEST_F(CvcStorageMetricsTest, LogSelectedMetrics) {
+TEST_P(CvcStorageMetricsTest, LogSelectedMetrics) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList features(
       features::kAutofillEnableCvcStorageAndFilling);
@@ -98,7 +145,7 @@ TEST_F(CvcStorageMetricsTest, LogSelectedMetrics) {
       {.trigger_source = AutofillTriggerSource::kPopup});
 
   EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      histogram_tester.GetAllSamples(GetExpectedHistogramName()),
       BucketsInclude(
           base::Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED, 1),
           base::Bucket(FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_SELECTED, 1),
@@ -113,16 +160,17 @@ TEST_F(CvcStorageMetricsTest, LogSelectedMetrics) {
       {.trigger_source = AutofillTriggerSource::kPopup});
 
   EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      histogram_tester.GetAllSamples(GetExpectedHistogramName()),
       BucketsInclude(
           base::Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED, 2),
           base::Bucket(FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_SELECTED, 2),
           base::Bucket(FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_SELECTED_ONCE,
                        1)));
+  histogram_tester.ExpectTotalCount(GetHistogramNameForEmptyRecord(), 0);
 }
 
 // Test CVC suggestion filled metrics are correctly logged.
-TEST_F(CvcStorageMetricsTest, LogFilledMetrics) {
+TEST_P(CvcStorageMetricsTest, LogFilledMetrics) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList features(
       features::kAutofillEnableCvcStorageAndFilling);
@@ -142,7 +190,7 @@ TEST_F(CvcStorageMetricsTest, LogFilledMetrics) {
                            CreditCardFetchResult::kSuccess, &card());
 
   EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      histogram_tester.GetAllSamples(GetExpectedHistogramName()),
       BucketsInclude(
           base::Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED, 1),
           base::Bucket(FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_FILLED, 1),
@@ -160,16 +208,17 @@ TEST_F(CvcStorageMetricsTest, LogFilledMetrics) {
                            AutofillTriggerSource::kPopup,
                            CreditCardFetchResult::kSuccess, &card());
   EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      histogram_tester.GetAllSamples(GetExpectedHistogramName()),
       BucketsInclude(
           base::Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED, 2),
           base::Bucket(FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_FILLED, 2),
           base::Bucket(FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_FILLED_ONCE,
                        1)));
+  histogram_tester.ExpectTotalCount(GetHistogramNameForEmptyRecord(), 0);
 }
 
 // Test will submit and submitted metrics are correctly logged.
-TEST_F(CvcStorageMetricsTest, LogSubmitMetrics) {
+TEST_P(CvcStorageMetricsTest, LogSubmitMetrics) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList features(
       features::kAutofillEnableCvcStorageAndFilling);
@@ -192,7 +241,7 @@ TEST_F(CvcStorageMetricsTest, LogSubmitMetrics) {
   SubmitForm(form());
 
   EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      histogram_tester.GetAllSamples(GetExpectedHistogramName()),
       BucketsInclude(
           base::Bucket(
               FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_WILL_SUBMIT_ONCE, 1),
@@ -202,6 +251,14 @@ TEST_F(CvcStorageMetricsTest, LogSubmitMetrics) {
                        1),
           base::Bucket(FORM_EVENT_SUGGESTION_FOR_CARD_WITH_CVC_SUBMITTED_ONCE,
                        1)));
+  histogram_tester.ExpectTotalCount(GetHistogramNameForEmptyRecord(), 0);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    CvcStorageMetricsTest,
+    testing::Values(CvcFormType::kNormalCreditCardForm,
+                    CvcFormType::kStandaloneCvcWithLegacyVerificationCodeField,
+                    CvcFormType::kStandaloneCvcForm));
 
 }  // namespace autofill::autofill_metrics
