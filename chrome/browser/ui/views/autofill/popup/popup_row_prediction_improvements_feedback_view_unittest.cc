@@ -23,6 +23,8 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/styled_label.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
 
@@ -41,8 +43,7 @@ class PopupRowPredictionImprovementsFeedbackViewTest
     generator_ = std::make_unique<ui::test::EventGenerator>(
         GetRootWindow(widget_.get()));
     controller_.set_suggestions(
-        {Suggestion(u"Improved predictions",
-                    SuggestionType::kPredictionImprovementsFeedback)});
+        {Suggestion(SuggestionType::kPredictionImprovementsFeedback)});
   }
 
   void ShowView(
@@ -95,7 +96,7 @@ TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
   // Assert thumbs up button callback is run when clicked.
   EXPECT_CALL(controller(),
               PerformButtonActionForSuggestion(
-                  /*line_numer=*/0,
+                  /*line_number=*/0,
                   VariantWith<PredictionImprovementsButtonActions>(
                       PredictionImprovementsButtonActions::kThumbsUpClicked)));
   // In test env we have to manually set the bounds when a view becomes visible.
@@ -114,12 +115,29 @@ TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
   EXPECT_CALL(
       controller(),
       PerformButtonActionForSuggestion(
-          /*line_numer=*/0,
+          /*line_number=*/0,
           VariantWith<PredictionImprovementsButtonActions>(
               PredictionImprovementsButtonActions::kThumbsDownClicked)));
   generator().MoveMouseTo(
       view().GetThumbsDownButtonForTest()->GetBoundsInScreen().CenterPoint());
   generator().ClickLeftButton();
+}
+
+TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
+       LearnMoreClickTriggersCallback) {
+  CreateFeedbackRowAndGetButtons();
+  view().SetSelectedCell(PopupRowView::CellType::kContent);
+
+  EXPECT_CALL(controller(),
+              PerformButtonActionForSuggestion(
+                  /*line_number=*/0,
+                  VariantWith<PredictionImprovementsButtonActions>(
+                      PredictionImprovementsButtonActions::kLearnMoreClicked)));
+
+  auto* suggestion_text = views::AsViewClass<
+      views::StyledLabel>(view().GetViewByID(
+      PopupRowPredictionImprovementsFeedbackView::kLearnMoreStyledLabelViewID));
+  suggestion_text->ClickFirstLinkForTesting();
 }
 
 }  // namespace autofill

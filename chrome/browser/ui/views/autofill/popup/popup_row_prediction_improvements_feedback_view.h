@@ -26,6 +26,8 @@ class PopupRowPredictionImprovementsFeedbackView : public PopupRowView {
   METADATA_HEADER(PopupRowPredictionImprovementsFeedbackView, PopupRowView)
 
  public:
+  static constexpr int kLearnMoreStyledLabelViewID = 1;
+
   PopupRowPredictionImprovementsFeedbackView(
       AccessibilitySelectionDelegate& a11y_selection_delegate,
       SelectionDelegate& selection_delegate,

@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/autofill/core/browser/ui/suggestion_button_action.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -23,6 +24,7 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
@@ -38,20 +40,35 @@ constexpr int kIconSize = 20;
 constexpr int kButtonRadius = 12;
 
 // Creates the suggestion container view with its `text`.
+// also looks for the "Learn more" substring in `text` and make it a link which
+// will trigger `learn_more_cliked`.
 std::unique_ptr<PopupRowContentView> CreateFeedbackContentView(
-    const std::u16string& text) {
+    base::RepeatingClosure learn_more_clicked) {
   auto feedback_container = std::make_unique<PopupRowContentView>();
+
+  const std::u16string text = u"Prediction improvements. $1.";
+  const std::u16string learn_more_link_text = u"Learn more";
+  std::vector<size_t> replacement_offsets;
+  views::StyledLabel::RangeStyleInfo style_info =
+      views::StyledLabel::RangeStyleInfo::CreateForLink(
+          std::move(learn_more_clicked));
+  const std::u16string formatted_text = l10n_util::FormatString(
+      text, /*replacements=*/{learn_more_link_text}, &replacement_offsets);
+
   feedback_container->SetFlexForView(
       feedback_container->AddChildView(
-          views::Builder<views::Label>()
-              .SetText(text)
-              .SetMultiLine(true)
+          views::Builder<views::StyledLabel>()
+              .SetText(formatted_text)
               .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+              .AddStyleRange(gfx::Range(replacement_offsets[0],
+                                        replacement_offsets[0] +
+                                            learn_more_link_text.length()),
+                             style_info)
+              // This is used in tests only.
+              .SetID(PopupRowPredictionImprovementsFeedbackView::
+                         kLearnMoreStyledLabelViewID)
               .Build()),
       1);
-  feedback_container->SetBetweenChildSpacing(
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
 
   return feedback_container;
 }
@@ -71,18 +88,13 @@ std::unique_ptr<views::ImageButton> CreateFeedbackButton(
                                                     kIconSize);
   const bool is_thumbs_up = icon.name == vector_icons::kThumbUpIcon.name;
   // TODO(b/362468426): Make these strings come from a finch config.
-  const std::u16string tooltip =
-      is_thumbs_up ? u"thumbs up tooltip" : u"thumbs down tooltip";
-  const std::u16string accessible_name = is_thumbs_up
-                                             ? u"thumbs up accessible name"
-                                             : u"thumbs down accessible name";
+  const std::u16string tooltip = is_thumbs_up ? u"Thumbs up" : u"Thumbs down";
 
   views::InstallFixedSizeCircleHighlightPathGenerator(button.get(),
                                                       kButtonRadius);
   button->SetPreferredSize(gfx::Size(kButtonRadius * 2, kButtonRadius * 2));
   button->SetTooltipText(tooltip);
   button->GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
-  button->GetViewAccessibility().SetName(accessible_name);
   button->SetLayoutManager(std::make_unique<views::BoxLayout>());
   button->GetViewAccessibility().SetIsIgnored(true);
   return button;
@@ -102,8 +114,11 @@ PopupRowPredictionImprovementsFeedbackView::
           controller,
           line_number,
           /*content_view=*/
-          CreateFeedbackContentView(
-              controller->GetSuggestionAt(line_number).main_text.value)) {
+          CreateFeedbackContentView(base::BindRepeating(
+              &AutofillPopupController::PerformButtonActionForSuggestion,
+              controller,
+              line_number,
+              PredictionImprovementsButtonActions::kLearnMoreClicked))) {
   // Create the feedback buttons.
   auto* buttons_wrapper =
       GetContentView().AddChildView(std::make_unique<views::BoxLayoutView>());
