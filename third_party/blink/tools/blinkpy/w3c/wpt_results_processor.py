@@ -750,6 +750,7 @@ class WPTResultsProcessor:
         # compute the tests dict
         tests = {}
         num_passes = num_regressions = 0
+        shard_index = self.port.get_option('shard_index')
         for test_name, results in self._results_by_name.items():
             # TODO: the expected result calculated this way could change each time
             expected = ' '.join(results[0].expected)
@@ -761,12 +762,13 @@ class WPTResultsProcessor:
             test_dict = {}
             test_dict['expected'] = expected
             test_dict['actual'] = ' '.join(actual)
-            test_dict['shard'] = self.port.get_option('shard_index')
 
             # Fields below are optional. To avoid bloating the output results json
             # too much, only add them when they are True or non-empty.
             if len(set(actual)) > 1:
                 test_dict['is_flaky'] = True
+            if shard_index is not None:
+                test_dict['shard'] = shard_index
 
             rounded_run_time = round(results[0].took, 1)
             if rounded_run_time:

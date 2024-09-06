@@ -1127,6 +1127,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
 
     def test_process_json(self):
         """Ensure that various JSONs are written to the correct locations."""
+        self.processor.port.set_option_default('shard_index', 0)
         diff_stats = {'maxDifference': 100, 'maxPixels': 3}
         with mock.patch.object(self.processor.port,
                                'diff_image',
@@ -1173,6 +1174,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
                          'reftest-stderr.txt'),
         ])
         self.assertEqual(unexpected_fail['image_diff_stats'], diff_stats)
+        self.assertEqual(unexpected_fail['shard'], 0)
 
         path_to_failing_results = self.fs.join('/mock-checkout', 'out',
                                                'Default',

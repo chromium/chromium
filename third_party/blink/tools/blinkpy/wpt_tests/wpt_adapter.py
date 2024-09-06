@@ -167,6 +167,13 @@ class WPTAdapter:
         cls._ensure_value(options, 'no_virtual_tests', options.product
                           not in ['headless_shell', 'chrome'])
 
+        env_shard_index = host.environ.get('GTEST_SHARD_INDEX')
+        if env_shard_index is not None:
+            cls._ensure_value(options, 'shard_index', int(env_shard_index))
+        env_total_shards = host.environ.get('GTEST_TOTAL_SHARDS')
+        if env_total_shards is not None:
+            cls._ensure_value(options, 'total_shards', int(env_total_shards))
+
         if options.product in cls.PORT_NAME_BY_PRODUCT:
             port_name = cls.PORT_NAME_BY_PRODUCT[options.product]
         port = host.port_factory.get(port_name, options)
@@ -179,7 +186,7 @@ class WPTAdapter:
                 and not self.using_upstream_wpt):
             self.options.smoke = self.port.default_smoke_test_only()
         if self.options.smoke:
-            if not self.paths and not self.options.test_list and self.options.num_retries is None:
+            if not explicit_tests and self.options.num_retries is None:
                 # Retry failures 1 times if we're running a smoke test without
                 # additional tests. SmokeTests is an explicit list of tests, so we
                 # wouldn't retry by default without this special case.
@@ -191,13 +198,6 @@ class WPTAdapter:
 
         if self.options.gtest_filter:
             self.paths.extend(self.options.gtest_filter.split(':'))
-
-        if not self.options.total_shards and 'GTEST_TOTAL_SHARDS' in self.host.environ:
-            self.options.total_shards = int(
-                self.port.host.environ['GTEST_TOTAL_SHARDS'])
-        if not self.options.shard_index and 'GTEST_SHARD_INDEX' in self.port.host.environ:
-            self.options.shard_index = int(
-                self.port.host.environ['GTEST_SHARD_INDEX'])
 
     def log_config(self):
         logger.info(f'Running tests for {self.product.name}')
