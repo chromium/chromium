@@ -141,7 +141,6 @@ TEST_F(RegexPatternsTest, MatchPatternRefDereference) {
   EXPECT_TRUE((*a).negative_pattern);
   EXPECT_EQ((*a).positive_pattern, (*b).positive_pattern);
   EXPECT_EQ((*a).negative_pattern, (*b).negative_pattern);
-  EXPECT_EQ((*a).positive_score, (*b).positive_score);
   EXPECT_EQ((*a).form_control_types, (*b).form_control_types);
   EXPECT_THAT((*a).match_field_attributes, Contains(MatchAttribute::kLabel));
   EXPECT_THAT((*b).match_field_attributes, ElementsAre(MatchAttribute::kName));

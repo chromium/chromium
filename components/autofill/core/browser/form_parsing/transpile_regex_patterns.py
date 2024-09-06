@@ -163,7 +163,9 @@ def generate_cpp_constants(id_to_name_to_lang_to_patterns):
   def json_to_cpp_pattern(json):
     positive_pattern = json_to_cpp_u16string_literal(json['positive_pattern'])
     negative_pattern = json_to_cpp_u16string_literal(json['negative_pattern'])
-    positive_score = json['positive_score']
+    # In the JSON files, every pattern is annotated with a 'positive_score'.
+    # Since this is currently not used by the C++ logic, it is omitted to save
+    # some binary size.
     match_field_attributes = json_to_cpp_match_field_attributes(
         json['match_field_attributes'])
     form_control_types = json_to_cpp_form_control_types(
@@ -172,7 +174,6 @@ def generate_cpp_constants(id_to_name_to_lang_to_patterns):
     return f'MatchingPattern{{\n' \
            f'  .positive_pattern = {positive_pattern},\n' \
            f'  .negative_pattern = {negative_pattern},\n' \
-           f'  .positive_score = {positive_score},\n' \
            f'  .match_field_attributes = {match_field_attributes},\n' \
            f'  .form_control_types = {form_control_types},\n' \
            f'  .feature = {feature},\n' \

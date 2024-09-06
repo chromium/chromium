@@ -83,7 +83,6 @@ MatchingPattern MatchPatternRef::operator*() const {
   return {
       .positive_pattern = p.positive_pattern,
       .negative_pattern = p.negative_pattern,
-      .positive_score = p.positive_score,
       .match_field_attributes = is_supplementary()
                                     ? DenseSet({MatchAttribute::kName})
                                     : p.match_field_attributes,

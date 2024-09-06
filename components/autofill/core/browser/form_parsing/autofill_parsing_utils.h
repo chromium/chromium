@@ -105,12 +105,11 @@ class OptionalRegexFeatureWithState {
 // We pack this struct to minimize memory consumption of the built-in array of
 // MatchingPatterns (see GetMatchPatterns()), which holds several hundred
 // objects.
-// Using packed DenseSets reduces the size of the struct by 48 to 32 on 64 bit
-// platforms, and from 28 to 24 bytes on 32 bit platforms.
+// Using packed DenseSets reduces the size of the struct by 40 to 24 on 64 bit
+// platforms, and from 24 to 20 bytes on 32 bit platforms.
 struct MatchingPattern {
   const char16_t* positive_pattern;
   const char16_t* negative_pattern;
-  const float positive_score = 1.1;
   const DenseSet<MatchAttribute> match_field_attributes;
   const DenseSet<FormControlType> form_control_types;
   const OptionalRegexFeatureWithState feature;
