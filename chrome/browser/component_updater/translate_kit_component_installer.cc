@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/on_device_translation/constants.h"
 #include "chrome/browser/on_device_translation/pref_names.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/crx_file/id_util.h"
@@ -40,12 +41,6 @@ constexpr uint8_t kTranslateKitPublicKeySHA256[32] = {
 static_assert(std::size(kTranslateKitPublicKeySHA256) == crypto::kSHA256Length,
               "Wrong hash length");
 
-// The installation location of the entire TranslateKit component relative to
-// the User Data directory.
-constexpr base::FilePath::CharType
-    kTranslateKitComponentInstallationRelativePath[] =
-        FILE_PATH_LITERAL("TranslateKit");
-
 // The location of the libtranslatekit binary within the installation directory.
 #if BUILDFLAG(IS_WIN)
 constexpr base::FilePath::CharType kTranslateKitBinaryRelativePath[] =
@@ -65,8 +60,7 @@ constexpr char kTranslateKitManifestName[] = "Chrome TranslateKit";
 // Returns the full path where the libtranslatekit binary will be installed.
 //
 // The installation path is under
-//    <User Data
-//    Dir>/TranslateKit/<version>/TranslateKitFiles/libtranslatekit.xx
+//    <UserDataDir>/TranslateKit/lib/<version>/TranslateKitFiles/libtranslatekit.xx
 // where <User Data Dir> can be determined by following the guide:
 // https://chromium.googlesource.com/chromium/src.git/+/HEAD/docs/user_data_dir.md#current-location
 base::FilePath GetInstalledPath(const base::FilePath& base) {
@@ -116,6 +110,9 @@ void TranslateKitComponentInstallerPolicy::ComponentReady(
 
 #if !BUILDFLAG(IS_ANDROID)
   CHECK(pref_service_);
+  pref_service_->SetFilePath(
+      prefs::kTranslateKitRootDir,
+      on_device_translation::GetTranslateKitRootDirectory());
   pref_service_->SetFilePath(prefs::kTranslateKitBinaryPath,
                              GetInstalledPath(install_dir));
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -123,7 +120,8 @@ void TranslateKitComponentInstallerPolicy::ComponentReady(
 
 base::FilePath TranslateKitComponentInstallerPolicy::GetRelativeInstallDir()
     const {
-  return base::FilePath(kTranslateKitComponentInstallationRelativePath);
+  return base::FilePath(
+      on_device_translation::kTranslateKitBinaryInstallationRelativeDir);
 }
 
 void TranslateKitComponentInstallerPolicy::GetHash(

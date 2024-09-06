@@ -16,8 +16,26 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/service_process_host.h"
 
+namespace {
+
 const char kOnDeviceTranslationServiceDisplayName[] =
     "On-device Translation Service";
+
+std::string GetFilePathFromGlobalPrefs(std::string_view pref_name) {
+  PrefService* global_prefs = g_browser_process->local_state();
+  CHECK(global_prefs);
+
+  base::FilePath path = global_prefs->GetFilePath(pref_name);
+  // TODO(crbug.com/362123222): Get rid of conditional decoding.
+#if BUILDFLAG(IS_WIN)
+  std::string path_str = path.AsUTF8Unsafe();
+#else
+  std::string path_str = path.value();
+#endif  // BUILDFLAG(IS_WIN)
+  return path_str;
+}
+
+}  // namespace
 
 OnDeviceTranslationServiceController::OnDeviceTranslationServiceController() {
   auto receiver = service_remote_.BindNewPipeAndPassReceiver();
@@ -26,23 +44,24 @@ OnDeviceTranslationServiceController::OnDeviceTranslationServiceController() {
   std::vector<std::string> extra_switches;
   if (base::FeatureList::IsEnabled(
           on_device_translation::kEnableTranslateKitComponent)) {
-    PrefService* global_prefs = g_browser_process->local_state();
-    CHECK(global_prefs);
-    base::FilePath translate_kit_path =
-        global_prefs->GetFilePath(prefs::kTranslateKitBinaryPath);
-    if (translate_kit_path.empty()) {
+    std::string translate_kit_root_dir =
+        GetFilePathFromGlobalPrefs(prefs::kTranslateKitRootDir);
+    if (translate_kit_root_dir.empty()) {
+      LOG(ERROR) << "Got an empty root dir for TranslateKit.";
+    }
+    std::string translate_kit_binary_path =
+        GetFilePathFromGlobalPrefs(prefs::kTranslateKitBinaryPath);
+    if (translate_kit_binary_path.empty()) {
       LOG(ERROR) << "Got an empty path to TranslateKit binary on the device.";
     }
     // TODO(crbug.com/362123222): Pass the path via mojom instead of cmd
     // switches.
-#if BUILDFLAG(IS_WIN)
-    auto translate_kit_path_str = translate_kit_path.AsUTF8Unsafe();
-#else
-    std::string translate_kit_path_str = translate_kit_path.value();
-#endif  // BUILDFLAG(IS_WIN)
     extra_switches.push_back(
-        base::StrCat({on_device_translation::kTranslateKitPath, "=",
-                      translate_kit_path_str}));
+        base::StrCat({on_device_translation::kTranslateKitRootDir, "=",
+                      translate_kit_root_dir}));
+    extra_switches.push_back(
+        base::StrCat({on_device_translation::kTranslateKitBinaryPath, "=",
+                      translate_kit_binary_path}));
   }
 
   content::ServiceProcessHost::Launch<

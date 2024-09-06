@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
+#include "chrome/services/on_device_translation/proto/translate_kit_api.pb.h"
 #include "chrome/services/on_device_translation/translate_kit_structs.h"
 
 namespace on_device_translation {
@@ -34,8 +35,12 @@ void LogLoadTranslateKitResult(LoadTranslateKitResult result,
 
 }  // namespace
 
-TranslateKitClient::TranslateKitClient(base::FilePath library_path)
-    : lib_(library_path) {
+TranslateKitClient::TranslateKitClient(base::FilePath library_path,
+                                       base::FilePath package_info_dir,
+                                       base::FilePath model_root_dir)
+    : lib_(library_path),
+      package_info_dir_(package_info_dir),
+      model_root_dir_(model_root_dir) {
   if (!lib_.is_valid()) {
     load_lib_result_ = LoadTranslateKitResult::kInvalidBinary;
     LogLoadTranslateKitResult(load_lib_result_, lib_.GetError());
@@ -43,15 +48,15 @@ TranslateKitClient::TranslateKitClient(base::FilePath library_path)
   }
 
   // TODO(crbug.com/364773827): Update the following ABIs.
-  // Call `InitGoogle()` before everything.
-  reinterpret_cast<void (*)()>(lib_.GetFunctionPointer("InitGoogle"))();
+  // Call `InitTranslateKit()` before everything.
+  reinterpret_cast<void (*)()>(lib_.GetFunctionPointer("InitTranslateKit"))();
 
   is_language_supported_func_ =
       reinterpret_cast<bool (*)(TranslateKitLanguage)>(
           lib_.GetFunctionPointer("IsLanguageSupported"));
-  create_translator_func_ = reinterpret_cast<std::uintptr_t (*)(
-      TranslateKitPath, TranslateKitLanguage, TranslateKitLanguage)>(
-      lib_.GetFunctionPointer("CreateTranslator"));
+  create_translator_func_ =
+      reinterpret_cast<std::uintptr_t (*)(TranslateKitTranslatorConfig)>(
+          lib_.GetFunctionPointer("CreateTranslator"));
   delete_translator_func_ = reinterpret_cast<void (*)(std::uintptr_t)>(
       lib_.GetFunctionPointer("DeleteTranslator"));
   do_translation_func_ = reinterpret_cast<bool (*)(
@@ -107,14 +112,28 @@ TranslateKitClient::TranslatorImpl::TranslatorImpl(
     const std::string& target_lang)
     : client_(client) {
   CHECK(client_->IsInitialized());
-  // TODO(crbug.com/362123222): Implement a model loader and remove this.
-  // For now pass in an empty path which will fail subsequent calls.
-  std::string runfiles_path;
+  chrome::on_device_translation::TranslateKitConfig config;
+  config.set_package_info_dir(
+#if BUILDFLAG(IS_WIN)
+      client->package_info_dir_.AsUTF8Unsafe()
+#else
+      client->package_info_dir_.value()
+#endif  // BUILDFLAG(IS_WIN)
+  );
+  config.set_model_root_dir(
+#if BUILDFLAG(IS_WIN)
+      client->model_root_dir_.AsUTF8Unsafe()
+#else
+      client->model_root_dir_.value()
+#endif  // BUILDFLAG(IS_WIN)
+  );
+  auto config_str = config.SerializeAsString();
 
-  translator_ptr_ = client_->create_translator_func_(
-      TranslateKitPath(runfiles_path.c_str(), runfiles_path.length()),
-      TranslateKitLanguage(source_lang.c_str(), source_lang.length()),
-      TranslateKitLanguage(target_lang.c_str(), target_lang.length()));
+  translator_ptr_ =
+      client_->create_translator_func_(TranslateKitTranslatorConfig{
+          config_str.c_str(), config_str.size(),
+          TranslateKitLanguage(source_lang.c_str(), source_lang.length()),
+          TranslateKitLanguage(target_lang.c_str(), target_lang.length())});
 }
 
 DISABLE_CFI_DLSYM

@@ -12,3 +12,15 @@ source_set("prefs") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
+
+source_set("constants") {
+  sources = [
+    "constants.cc",
+    "constants.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/component_updater:component_updater_paths",
+  ]
+}

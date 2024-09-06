@@ -14,6 +14,15 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace on_device_translation {
+namespace {
+
+// TODO(crbug.com/362123222): Remove these once models are installed via CCU.
+constexpr base::FilePath::CharType kPackageInfoRelativePath[] =
+    FILE_PATH_LITERAL("models/config");
+constexpr base::FilePath::CharType kModelRelativePath[] =
+    FILE_PATH_LITERAL("models");
+
+}  // namespace
 
 // TranslateKitTranslator provides translation functionalities based on the
 // Translator from TranslateKitClient.
@@ -46,10 +55,16 @@ OnDeviceTranslationService::OnDeviceTranslationService(
     mojo::PendingReceiver<mojom::OnDeviceTranslationService> receiver)
     : receiver_(this, std::move(receiver)) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(kTranslateKitPath)) {
+  if (command_line->HasSwitch(kTranslateKitRootDir) &&
+      command_line->HasSwitch(kTranslateKitBinaryPath)) {
+    auto translate_kit_root_dir =
+        command_line->GetSwitchValuePath(kTranslateKitRootDir);
     auto translate_kit_path =
-        command_line->GetSwitchValuePath(kTranslateKitPath);
-    translate_kit_ = std::make_unique<TranslateKitClient>(translate_kit_path);
+        command_line->GetSwitchValuePath(kTranslateKitBinaryPath);
+    translate_kit_ = std::make_unique<TranslateKitClient>(
+        translate_kit_path,
+        translate_kit_root_dir.Append(kPackageInfoRelativePath),
+        translate_kit_root_dir.Append(kModelRelativePath));
   } else {
     LOG(ERROR)
         << "Failed to initialize TranslateKitClient due to missing path.";

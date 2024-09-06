@@ -47,7 +47,13 @@ class TranslateKitClient {
   };
 
   // `library_path` is the fully-qualified path to the TranslateKit binary.
-  explicit TranslateKitClient(base::FilePath library_path);
+  // `package_info_dir` is the fully-qualified path to the directory where
+  // PackageInfo files exist.
+  // `model_root_dir` is the fully-qualified path to the directory where
+  // TranslateKit models exist.
+  TranslateKitClient(base::FilePath library_path,
+                     base::FilePath package_info_dir,
+                     base::FilePath model_root_dir);
   ~TranslateKitClient();
 
   // Not copyable.
@@ -98,6 +104,11 @@ class TranslateKitClient {
   // The results after attempting to load `lib_`.
   LoadTranslateKitResult load_lib_result_ = LoadTranslateKitResult::kUnknown;
 
+  // The absolute path to the directory containing PackageInfo files.
+  const base::FilePath package_info_dir_;
+  // The absolute path to the directory of TranslateKit models.
+  const base::FilePath model_root_dir_;
+
   using TranslatorKey = std::pair<std::string, std::string>;
   // Manages all instances of `Translator` created by this client.
   std::map<TranslatorKey, std::unique_ptr<Translator>> translators_;
@@ -108,9 +119,8 @@ class TranslateKitClient {
   typedef bool (*IsLanguageSupportedFunction)(TranslateKitLanguage lang);
   IsLanguageSupportedFunction is_language_supported_func_;
 
-  typedef std::uintptr_t (*CreateTranslatorFunction)(TranslateKitPath,
-                                                     TranslateKitLanguage,
-                                                     TranslateKitLanguage);
+  typedef std::uintptr_t (*CreateTranslatorFunction)(
+      TranslateKitTranslatorConfig);
   CreateTranslatorFunction create_translator_func_;
 
   typedef void (*DeleteTranslatorFunction)(std::uintptr_t translator_ptr);

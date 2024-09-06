@@ -9,6 +9,11 @@
 
 namespace prefs {
 
+// The fully-qualified path to the root of installed TranslateKit binary and
+// models.
+const char kTranslateKitRootDir[] =
+    "on_device_translation.translate_kit_root_dir";
+
 // The fully-qualified path to the installed TranslateKit binary.
 const char kTranslateKitBinaryPath[] =
     "on_device_translation.translate_kit_binary_path";
@@ -18,6 +23,7 @@ const char kTranslateKitBinaryPath[] =
 namespace on_device_translation {
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterFilePathPref(prefs::kTranslateKitRootDir, base::FilePath());
   registry->RegisterFilePathPref(prefs::kTranslateKitBinaryPath,
                                  base::FilePath());
 }
