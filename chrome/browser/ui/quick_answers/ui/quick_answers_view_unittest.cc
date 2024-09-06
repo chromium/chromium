@@ -19,6 +19,7 @@
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -525,7 +526,10 @@ TEST_F(QuickAnswersViewsTest, Translation) {
   ResultView* result_view = GetQuickAnswersView()->GetResultViewForTesting();
   ASSERT_TRUE(result_view->GetVisible());
   EXPECT_EQ(result_view->GetFirstLineText(), kTextToTranslateU16);
-  EXPECT_EQ(result_view->GetFirstLineSubText(), u"Japanese");
+  EXPECT_EQ(result_view->GetFirstLineSubText(),
+            chromeos::features::IsQuickAnswersMaterialNextUIEnabled()
+                ? u"Japanese"
+                : u"");
   EXPECT_EQ(result_view->GetSecondLineText(), kTranslatedTextU16);
 }
 
