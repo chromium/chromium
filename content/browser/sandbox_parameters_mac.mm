@@ -243,6 +243,10 @@ bool SetupSandboxParameters(sandbox::mojom::Sandbox sandbox_type,
       SetupCommonSandboxParameters(compiler, command_line);
       CHECK(GetContentClient()->browser()->SetupEmbedderSandboxParameters(
           sandbox_type, compiler));
+      break;
+    case sandbox::mojom::Sandbox::kVideoEffects:
+      // TODO(crbug.com/361128453): Implement this.
+      NOTREACHED() << "kVideoEffects sandbox not implemented";
   }
   return true;
 }

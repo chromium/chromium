@@ -292,6 +292,9 @@ int UtilityMain(MainFunctionParams parameters) {
                              screen_ai::GetBinaryPathSwitch()));
       break;
 #endif
+    case sandbox::mojom::Sandbox::kVideoEffects:
+      // TODO(crbug.com/361128453): Implement this.
+      NOTREACHED() << "kVideoEffects sandbox not implemented.";
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
     case sandbox::mojom::Sandbox::kHardwareVideoDecoding:
       pre_sandbox_hook =

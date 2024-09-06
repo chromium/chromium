@@ -64,6 +64,9 @@ enum Sandbox {
   // Like kUtility but allows loading of speech recognition libraries.
   kSpeechRecognition,
 
+  // Like kUtility but allows loading of the optimization guide library.
+  kVideoEffects,
+
   // Like kUtility but allows loading of screen AI library.
   [EnableIf=enable_screen_ai_service]
   kScreenAI,

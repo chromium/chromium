@@ -46,6 +46,8 @@ const char* ProcessNameFromSandboxType(sandbox::mojom::Sandbox sandbox_type) {
       return "print-compositor";
     case sandbox::mojom::Sandbox::kSpeechRecognition:
       return "speech-recognition";
+    case sandbox::mojom::Sandbox::kVideoEffects:
+      return "video-effects";
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
     case sandbox::mojom::Sandbox::kPrintBackend:
       return "print-backend";

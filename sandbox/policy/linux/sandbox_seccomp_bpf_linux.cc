@@ -218,6 +218,9 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
     case sandbox::mojom::Sandbox::kScreenAI:
       return std::make_unique<ScreenAIProcessPolicy>();
 #endif
+    case sandbox::mojom::Sandbox::kVideoEffects:
+      // TODO(crbug.com/361128453): Implement this.
+      NOTREACHED() << "kVideoEffects sandbox not implemented.";
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
     case sandbox::mojom::Sandbox::kHardwareVideoDecoding:
       return std::make_unique<HardwareVideoDecodingProcessPolicy>(
@@ -287,6 +290,9 @@ void SandboxSeccompBPF::RunSandboxSanityChecks(
       CHECK_EQ(EPERM, errno);
 #endif  // !defined(NDEBUG)
     } break;
+    case sandbox::mojom::Sandbox::kVideoEffects:
+      // TODO(crbug.com/361128453): Implement this.
+      NOTREACHED() << "kVideoEffects sandbox not implemented.";
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
     case sandbox::mojom::Sandbox::kHardwareVideoDecoding:
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)

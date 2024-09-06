@@ -81,6 +81,7 @@ bool IsUnsandboxedSandboxType(Sandbox sandbox_type) {
     case Sandbox::kScreenAI:
 #endif
     case Sandbox::kSpeechRecognition:
+    case Sandbox::kVideoEffects:
       return false;
   }
 }
@@ -162,6 +163,7 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
     case Sandbox::kScreenAI:
 #endif
     case Sandbox::kSpeechRecognition:
+    case Sandbox::kVideoEffects:
       DCHECK(command_line->GetSwitchValueASCII(switches::kProcessType) ==
              switches::kUtilityProcess);
       DCHECK(!command_line->HasSwitch(switches::kServiceSandboxType));
@@ -271,6 +273,8 @@ std::string StringFromUtilitySandboxType(Sandbox sandbox_type) {
     case Sandbox::kScreenAI:
       return switches::kScreenAISandbox;
 #endif
+    case Sandbox::kVideoEffects:
+      return switches::kVideoEffectsSandbox;
 #if BUILDFLAG(IS_WIN)
     case Sandbox::kXrCompositing:
       return switches::kXrCompositingSandbox;
@@ -382,6 +386,9 @@ sandbox::mojom::Sandbox UtilitySandboxTypeFromString(
   if (sandbox_string == switches::kScreenAISandbox)
     return Sandbox::kScreenAI;
 #endif
+  if (sandbox_string == switches::kVideoEffectsSandbox) {
+    return Sandbox::kVideoEffects;
+  }
 #if BUILDFLAG(IS_FUCHSIA)
   if (sandbox_string == switches::kVideoCaptureSandbox)
     return Sandbox::kVideoCapture;
