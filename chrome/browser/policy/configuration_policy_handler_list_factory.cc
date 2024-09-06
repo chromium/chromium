@@ -2426,6 +2426,12 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   gen_ai_default_policies.emplace_back(
       key::kTabCompareSettings,
       optimization_guide::prefs::kProductSpecificationsEnterprisePolicyAllowed);
+#if BUILDFLAG(IS_CHROMEOS)
+  gen_ai_default_policies.emplace_back(key::kGenAIWallpaperSettings,
+                                       ash::prefs::kGenAIWallpaperSettings);
+  gen_ai_default_policies.emplace_back(key::kGenAIVcBackgroundSettings,
+                                       ash::prefs::kGenAIVcBackgroundSettings);
+#endif  // BUILDFLAG(IS_CHROMEOS)
   handlers->AddHandler(std::make_unique<GenAiDefaultSettingsPolicyHandler>(
       std::move(gen_ai_default_policies)));
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
