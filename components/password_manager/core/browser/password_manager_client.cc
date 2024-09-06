@@ -200,4 +200,10 @@ void PasswordManagerClient::RefreshPasswordManagerSettingsIfNeeded() const {
   // For most implementations settings do not need to be refreshed.
 }
 
+void PasswordManagerClient::ShowCredentialsInAmbientBubble(
+    std::vector<std::unique_ptr<password_manager::PasswordForm>> forms,
+    CredentialsCallback callback) {
+  std::move(callback).Run(nullptr);
+}
+
 }  // namespace password_manager

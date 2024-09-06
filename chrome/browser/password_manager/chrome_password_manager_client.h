@@ -306,6 +306,9 @@ class ChromePasswordManagerClient
       const std::u16string& password_origin,
       base::OnceClosure confirmation_callback) override;
 #endif  // !BUILDFLAG(IS_ANDROID)
+  void ShowCredentialsInAmbientBubble(
+      std::vector<std::unique_ptr<password_manager::PasswordForm>> forms,
+      CredentialsCallback callback) override;
 
   // autofill::mojom::PasswordGenerationDriver overrides.
   void AutomaticGenerationAvailable(

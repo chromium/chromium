@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/webauthn/ambient/ambient_signin_bubble_view.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -35,7 +36,7 @@ AmbientSigninController::~AmbientSigninController() {
 void AmbientSigninController::AddAndShowWebAuthnMethods(
     AuthenticatorRequestDialogModel* model,
     const std::vector<password_manager::PasskeyCredential>& credentials,
-    CredentialSelectionCallback callback) {
+    PasskeyCredentialSelectionCallback callback) {
   if (!model_) {
     model_ = model;
     model_->observers.AddObserver(this);
@@ -64,6 +65,10 @@ void AmbientSigninController::AddAndShowWebAuthnMethods(
     ambient_signin_bubble_view_->Update();
   }
 }
+
+void AmbientSigninController::AddAndShowPasswordMethods(
+    std::vector<std::unique_ptr<password_manager::PasswordForm>> local_forms,
+    password_manager::PasswordManagerClient::CredentialsCallback callback) {}
 
 AmbientSigninController::AmbientSigninController(
     RenderFrameHost* render_frame_host)

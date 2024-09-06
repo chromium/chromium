@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/webauthn/ambient/ambient_signin_bubble_view.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
+#include "components/password_manager/core/browser/password_manager_client.h"
 #include "content/public/browser/document_user_data.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -25,6 +26,7 @@ class RenderFrameHost;
 
 namespace password_manager {
 class PasskeyCredential;
+struct PasswordForm;
 }
 
 namespace tabs {
@@ -44,7 +46,7 @@ class AmbientSigninController
       public AuthenticatorRequestDialogModel::Observer,
       public views::WidgetObserver {
  public:
-  using CredentialSelectionCallback =
+  using PasskeyCredentialSelectionCallback =
       base::OnceCallback<void(const std::vector<uint8_t>)>;
 
   ~AmbientSigninController() override;
@@ -53,7 +55,11 @@ class AmbientSigninController
   void AddAndShowWebAuthnMethods(
       AuthenticatorRequestDialogModel* model,
       const std::vector<password_manager::PasskeyCredential>& credentials,
-      CredentialSelectionCallback callback);
+      PasskeyCredentialSelectionCallback callback);
+
+  void AddAndShowPasswordMethods(
+      std::vector<std::unique_ptr<password_manager::PasswordForm>> local_forms,
+      password_manager::PasswordManagerClient::CredentialsCallback callback);
 
   // Called when the user selects a passkey shown in the bubble.
   void OnPasskeySelected(const std::vector<uint8_t>& account_id,
@@ -80,7 +86,9 @@ class AmbientSigninController
 
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
   raw_ptr<AmbientSigninBubbleView> ambient_signin_bubble_view_;
-  CredentialSelectionCallback passkey_selection_callback_;
+  PasskeyCredentialSelectionCallback passkey_selection_callback_;
+  password_manager::PasswordManagerClient::CredentialsCallback
+      password_selection_callback_;
 
   raw_ptr<AuthenticatorRequestDialogModel> model_;
 

@@ -18,6 +18,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/ranges/algorithm.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/credential_manager_utils.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
@@ -30,6 +32,10 @@
 #include "net/cert/cert_status_flags.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#include "device/fido/features.h"
+#endif
 
 namespace password_manager {
 namespace {
@@ -249,6 +255,26 @@ void CredentialManagerPendingRequestTask::ProcessForms(
     delegate_->SendCredential(std::move(send_callback_), CredentialInfo());
     return;
   }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // TODO(https://crbug.com/358119268): This is prototyping code only. For now,
+  // rely on the Ambient Sign-in bubble whenever the flag is enabled. In the
+  // future it might depend on new `mediation` value. Also, this might not be
+  // right place to branch from the CredentialManagement handler path toward
+  // new UI, and this should be revisited before turning this into shipping
+  // code. See:
+  // https://chromium-review.googlesource.com/c/chromium/src/+/5829785/comment/5d18ceaa_513033a7/
+  // Initially this is only supported on desktop Chrome.
+  if (base::FeatureList::IsEnabled(device::kWebAuthnAmbientSignin)) {
+    delegate_->client()->ShowCredentialsInAmbientBubble(
+        std::move(results),
+        base::BindOnce(
+            &CredentialManagerPendingRequestTaskDelegate::SendPasswordForm,
+            base::Unretained(delegate_), std::move(send_callback_),
+            mediation_));
+    return;
+  }
+#endif
 
   if (results.empty()) {
     LogCredentialManagerGetResult(
