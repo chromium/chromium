@@ -532,12 +532,16 @@ suite('sea pen', () => {
                   ?.shadowRoot?.querySelector<WallpaperGridItemElement>(
                       `wallpaper-grid-item[aria-disabled='false']` +
                       `[data-sea-pen]`),
-        'waiting for sea-pen-tile');
+        'waiting for sea-pen-tile',
+        /*intervalMs=*/ 500,
+        /*timeoutMs=*/ 3001);
     seaPenTile.click();
     const seaPenRouter = await waitUntil(
         () => getRouter().shadowRoot?.querySelector<SeaPenRouterElement>(
             'sea-pen-router')!,
-        'waiting for sea-pen-router');
+        'waiting for sea-pen-router',
+        /*intervalMs=*/ 500,
+        /*timeoutMs=*/ 3001);
     return seaPenRouter;
   }
 
@@ -548,14 +552,18 @@ suite('sea pen', () => {
         () => seaPenRouter.shadowRoot?.querySelector('sea-pen-templates')
                   ?.shadowRoot?.querySelectorAll<WallpaperGridItemElement>(
                       `wallpaper-grid-item[data-sea-pen-image]`),
-        'waiting for sea-pen-tile');
+        'waiting for sea-pen-tile',
+        /*intervalMs=*/ 500,
+        /*timeoutMs=*/ 3001);
     templates[templateIndex]!.click();
 
     return await waitUntil(
         () =>
             seaPenRouter.shadowRoot?.querySelector<SeaPenTemplateQueryElement>(
                 'sea-pen-template-query')!,
-        'waiting for sea-pen-template-query');
+        'waiting for sea-pen-template-query',
+        /*intervalMs=*/ 500,
+        /*timeoutMs=*/ 3001);
   }
 
   function getSeaPenTemplatePrompt(
@@ -781,7 +789,9 @@ suite('sea pen', () => {
             () => seaPenRouter.shadowRoot
                       ?.querySelector<SeaPenRecentWallpapersElement>(
                           'sea-pen-recent-wallpapers'),
-            'waiting for sea-pen-recent-wallpapers');
+            'waiting for sea-pen-recent-wallpapers',
+            /*intervalMs=*/ 500,
+            /*timeoutMs=*/ 3001);
         assertTrue(!!recentImages, 'recent images should exist');
 
         const selectedRecentImage =
@@ -827,7 +837,9 @@ suite('sea pen', () => {
         () => seaPenRouter.shadowRoot
                   ?.querySelector<SeaPenRecentWallpapersElement>(
                       'sea-pen-recent-wallpapers'),
-        'waiting for sea-pen-recent-wallpapers');
+        'waiting for sea-pen-recent-wallpapers',
+        /*intervalMs=*/ 500,
+        /*timeoutMs=*/ 3001);
     assertTrue(!!recentImages, 'recent images should exist');
 
     {
@@ -939,7 +951,9 @@ suite('sea pen', () => {
         () => seaPenRouter.shadowRoot
                   ?.querySelector<SeaPenRecentWallpapersElement>(
                       'sea-pen-recent-wallpapers'),
-        'waiting for sea-pen-recent-wallpapers');
+        'waiting for sea-pen-recent-wallpapers',
+        /*intervalMs=*/ 500,
+        /*timeoutMs=*/ 3001);
     assertTrue(!!recentImages, 'recent images should exist');
 
     const images =
@@ -989,7 +1003,9 @@ suite('sea pen', () => {
     const seaPenImages = await waitUntil(
         () => seaPenRouter.shadowRoot?.querySelector<SeaPenImagesElement>(
             'sea-pen-images'),
-        'waiting for sea-pen-images');
+        'waiting for sea-pen-images',
+        /*intervalMs=*/ 500,
+        /*timeoutMs=*/ 3001);
     assertTrue(!!seaPenImages, 'Sea Pen images element exists');
   });
 
@@ -1000,7 +1016,9 @@ suite('sea pen', () => {
         () => seaPenRouter.shadowRoot
                   ?.querySelector<SeaPenRecentWallpapersElement>(
                       'sea-pen-recent-wallpapers'),
-        'waiting for sea-pen-recent-wallpapers');
+        'waiting for sea-pen-recent-wallpapers',
+        /*intervalMs=*/ 500,
+        /*timeoutMs=*/ 3001);
     assertTrue(!!recentImages, 'recent images should exist');
 
     const images =
@@ -1053,7 +1071,9 @@ suite('sea pen', () => {
     const seaPenImages = await waitUntil(
         () => seaPenFreeform.shadowRoot?.querySelector<SeaPenImagesElement>(
             'sea-pen-images'),
-        'waiting for sea-pen-images');
+        'waiting for sea-pen-images',
+        /*intervalMs=*/ 500,
+        /*timeoutMs=*/ 3001);
     assertTrue(!!seaPenImages, 'Sea Pen images element exists');
   });
 
@@ -1087,7 +1107,9 @@ suite('sea pen', () => {
         () => seaPenRouter.shadowRoot
                   ?.querySelector<SeaPenRecentWallpapersElement>(
                       'sea-pen-recent-wallpapers'),
-        'waiting for sea-pen-recent-wallpapers');
+        'waiting for sea-pen-recent-wallpapers',
+        /*intervalMs=*/ 500,
+        /*timeoutMs=*/ 3001);
     assertTrue(!!recentImages, 'recent images should exist');
 
     const images = recentImages.shadowRoot?.querySelectorAll<HTMLElement>(
@@ -1113,14 +1135,18 @@ suite('sea pen', () => {
         () => seaPenRouter.shadowRoot
                   ?.querySelector<SeaPenRecentWallpapersElement>(
                       'sea-pen-recent-wallpapers'),
-        'waiting for sea-pen-recent-wallpapers');
+        'waiting for sea-pen-recent-wallpapers',
+        /*intervalMs=*/ 500,
+        /*timeoutMs=*/ 3001);
     await waitUntil(
         () => numImages - 1 ===
             recentImages.shadowRoot
                 ?.querySelectorAll<HTMLElement>(
                     `.recent-image-container:not([hidden])`)
                 ?.length,
-        'a recent image has been deleted');
+        'a recent image has been deleted',
+        /*intervalMs=*/ 500,
+        /*timeoutMs=*/ 3001);
   });
 
   test('switch template update prompt', async () => {
