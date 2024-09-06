@@ -696,10 +696,13 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kIbanEntry:
     case SuggestionType::kMerchantPromoCodeEntry:
     case SuggestionType::kSeePromoCodeDetails:
-    case SuggestionType::kShowAccountCards:
     case SuggestionType::kScanCreditCard:
       DidAcceptPaymentsSuggestion(suggestion, metadata);
       break;
+    case SuggestionType::kShowAccountCards:
+      DidAcceptPaymentsSuggestion(suggestion, metadata);
+      manager_->RefetchCardsAndUpdatePopup(query_form_, query_field_);
+      return;
     case SuggestionType::kManageAddress:
     case SuggestionType::kManageCreditCard:
     case SuggestionType::kManageIban:
@@ -835,12 +838,9 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kPredictionImprovementsLoadingState:
       NOTREACHED();  // Should be handled elsewhere.
   }
-  if (suggestion.type == SuggestionType::kShowAccountCards) {
-    manager_->RefetchCardsAndUpdatePopup(query_form_, query_field_);
-  } else {
-    manager_->client().HideAutofillSuggestions(
-        SuggestionHidingReason::kAcceptSuggestion);
-  }
+  // Note that some suggestion types return early.
+  manager_->client().HideAutofillSuggestions(
+      SuggestionHidingReason::kAcceptSuggestion);
 }
 
 void AutofillExternalDelegate::DidPerformButtonActionForSuggestion(
