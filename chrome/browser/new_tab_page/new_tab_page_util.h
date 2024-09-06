@@ -28,5 +28,8 @@ std::string GetVariationsServiceCountryCode(
 void LogModuleEnablement(const base::Feature& feature,
                          bool enabled,
                          const std::string& reason);
+void LogModuleDismissed(const base::Feature& feature,
+                        bool enabled,
+                        const std::string& remaining_hours);
 
 #endif  // CHROME_BROWSER_NEW_TAB_PAGE_NEW_TAB_PAGE_UTIL_H_

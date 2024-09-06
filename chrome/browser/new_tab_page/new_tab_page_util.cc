@@ -4,6 +4,7 @@
 
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 
+#include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/new_tab_page/modules/modules_switches.h"
@@ -154,4 +155,19 @@ void LogModuleEnablement(const base::Feature& feature,
       optimization_guide_common::mojom::LogSource::NTP_MODULE,
       OptimizationGuideLogger::GetInstance())
       << feature.name << (enabled ? " enabled: " : " disabled: ") << reason;
+}
+
+void LogModuleDismissed(const base::Feature& feature,
+                        bool dismissed,
+                        const std::string& remaining_hours) {
+  std::string log = base::StrCat({feature.name, " dismissal: "});
+  if (dismissed) {
+    base::StrAppend(&log, {remaining_hours, " hours remaining"});
+  } else {
+    base::StrAppend(&log, {" not dismissed"});
+  }
+  OPTIMIZATION_GUIDE_LOGGER(
+      optimization_guide_common::mojom::LogSource::NTP_MODULE,
+      OptimizationGuideLogger::GetInstance())
+      << log;
 }

@@ -11,11 +11,13 @@
 #include <utility>
 
 #include "base/hash/hash.h"
+#include "base/i18n/number_formatting.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
@@ -278,16 +280,26 @@ bool DriveService::GetDriveModuleSegmentationData() {
 }
 
 void DriveService::GetDriveFilesInternal() {
+  const base::Time last_dismissed_time =
+      pref_service_->GetTime(kLastDismissedTimePrefName);
   // Bail if module is still dismissed.
-  if (!pref_service_->GetTime(kLastDismissedTimePrefName).is_null() &&
-      base::Time::Now() - pref_service_->GetTime(kLastDismissedTimePrefName) <
-          kDismissDuration) {
-    for (auto& callback : callbacks_) {
-      std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
+  if (!last_dismissed_time.is_null()) {
+    base::TimeDelta elapsed_time = base::Time::Now() - last_dismissed_time;
+    if (elapsed_time < kDismissDuration) {
+      const std::string remaining_hours =
+          base::NumberToString((kDismissDuration - elapsed_time).InHours());
+      LogModuleDismissed(ntp_features::kNtpDriveModule, true, remaining_hours);
+
+      for (auto& callback : callbacks_) {
+        std::move(callback).Run(std::vector<file_suggestion::mojom::FilePtr>());
+      }
+      callbacks_.clear();
+      return;
     }
-    callbacks_.clear();
-    return;
   }
+
+  LogModuleDismissed(ntp_features::kNtpDriveModule, false,
+                     /*remaining_hours=*/"0");
 
   // Skip fetch and jump straight to data parsing when serving fake data.
   if (base::GetFieldTrialParamValueByFeature(
