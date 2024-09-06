@@ -274,7 +274,6 @@ TEST_F(IsolatedWebAppUpdateManagerDevModeUpdateTest,
   ASSERT_THAT(temp_dir_.CreateUniqueTempDir(), IsTrue());
   base::FilePath path = temp_dir_.GetPath().AppendASCII("bundle.swbn");
   base::WriteFile(path, update_bundle.data);
-  IwaStorageUnownedBundle location{path};
 
   IsolatedWebAppUrlInfo url_info =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
@@ -299,7 +298,10 @@ TEST_F(IsolatedWebAppUpdateManagerDevModeUpdateTest,
   EXPECT_THAT(fake_provider().registrar_unsafe().GetAppById(url_info.app_id()),
               test::IwaIs(Eq("updated iwa"),
                           test::IsolationDataIs(
-                              location, Eq(base::Version("2.0.0")),
+                              Property("variant",
+                                       &IsolatedWebAppStorageLocation::variant,
+                                       VariantWith<IwaStorageOwnedBundle>(_)),
+                              Eq(base::Version("2.0.0")),
                               /*controlled_frame_partitions=*/_,
                               /*pending_update_info=*/Eq(std::nullopt),
                               /*integrity_block_data=*/_)));

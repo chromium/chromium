@@ -325,12 +325,11 @@ TEST_F(IsolatedWebAppInstallationManagerCommandLineTest,
       ParseCommandLine(std::nullopt, cwd.existing_file_name()),
       ValueIs(Optional(Property(
           &IsolatedWebAppInstallSource::source,
-          Property(
-              &IwaSourceWithModeAndFileOp::variant,
-              VariantWith<IwaSourceBundleWithModeAndFileOp>(
-                  Eq(IwaSourceBundleWithModeAndFileOp(
-                      cwd.existing_file_path(),
-                      IwaSourceBundleModeAndFileOp::kDevModeReference))))))));
+          Property(&IwaSourceWithModeAndFileOp::variant,
+                   VariantWith<IwaSourceBundleWithModeAndFileOp>(
+                       Eq(IwaSourceBundleWithModeAndFileOp(
+                           cwd.existing_file_path(),
+                           IwaSourceBundleModeAndFileOp::kDevModeCopy))))))));
 }
 
 TEST_F(IsolatedWebAppInstallationManagerCommandLineTest,
@@ -340,12 +339,11 @@ TEST_F(IsolatedWebAppInstallationManagerCommandLineTest,
       ParseCommandLine(std::nullopt, cwd.existing_file_path()),
       ValueIs(Optional(Property(
           &IsolatedWebAppInstallSource::source,
-          Property(
-              &IwaSourceWithModeAndFileOp::variant,
-              VariantWith<IwaSourceBundleWithModeAndFileOp>(
-                  Eq(IwaSourceBundleWithModeAndFileOp(
-                      cwd.existing_file_path(),
-                      IwaSourceBundleModeAndFileOp::kDevModeReference))))))));
+          Property(&IwaSourceWithModeAndFileOp::variant,
+                   VariantWith<IwaSourceBundleWithModeAndFileOp>(
+                       Eq(IwaSourceBundleWithModeAndFileOp(
+                           cwd.existing_file_path(),
+                           IwaSourceBundleModeAndFileOp::kDevModeCopy))))))));
 }
 
 TEST_F(IsolatedWebAppInstallationManagerCommandLineTest,
@@ -373,12 +371,11 @@ TEST_F(IsolatedWebAppInstallationManagerCommandLineTest,
       ParseCommandLine("", cwd.existing_file_name()),
       ValueIs(Optional(Property(
           &IsolatedWebAppInstallSource::source,
-          Property(
-              &IwaSourceWithModeAndFileOp::variant,
-              VariantWith<IwaSourceBundleWithModeAndFileOp>(
-                  Eq(IwaSourceBundleWithModeAndFileOp(
-                      cwd.existing_file_path(),
-                      IwaSourceBundleModeAndFileOp::kDevModeReference))))))));
+          Property(&IwaSourceWithModeAndFileOp::variant,
+                   VariantWith<IwaSourceBundleWithModeAndFileOp>(
+                       Eq(IwaSourceBundleWithModeAndFileOp(
+                           cwd.existing_file_path(),
+                           IwaSourceBundleModeAndFileOp::kDevModeCopy))))))));
 }
 
 TEST_F(IsolatedWebAppInstallationManagerCommandLineTest,

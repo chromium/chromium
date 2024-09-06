@@ -153,27 +153,17 @@ IN_PROC_BROWSER_TEST_F(InstallIsolatedWebAppFromCommandLineFromFileBrowserTest,
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(*bundle_id_).app_id());
   ASSERT_THAT(GetWebAppRegistrar().IsInstalled(id), IsTrue());
 
-  // Even if we didn't artificially add a relative `foo/..` segment to
-  // `signed_web_bundle_path_`, it might still not be absolute _and_ free of
-  // symlinks, because there is no guarantee that `ScopedTempDir::GetPath`
-  // returns a symlink-free path (this was observed on macOS 14,
-  // crbug.com/1454276). `base::MakeAbsoluteFilePath`, which the code under test
-  // uses as well, will resolve those symlinks, hence we also need to do so
-  // here.
-  base::FilePath absolute_path;
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    absolute_path = base::MakeAbsoluteFilePath(signed_web_bundle_path_);
-  }
-
+  // Check that the bundle was copied, not moved.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  EXPECT_TRUE(base::PathExists(signed_web_bundle_path_));
   EXPECT_THAT(
       GetWebAppRegistrar().GetAppById(id),
       test::IwaIs(
           Eq("Simple Isolated App"),
           test::IsolationDataIs(
               Property("variant", &IsolatedWebAppStorageLocation::variant,
-                       VariantWith<IwaStorageUnownedBundle>(Property(
-                           &IwaStorageUnownedBundle::path, Eq(absolute_path)))),
+                       VariantWith<IwaStorageOwnedBundle>(Property(
+                           &IwaStorageOwnedBundle::dev_mode, IsTrue()))),
               Eq(base::Version("1.0.0")),
               /*controlled_frame_partitions=*/_,
               /*pending_update_info=*/Eq(std::nullopt),
