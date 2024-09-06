@@ -48,6 +48,37 @@ function assertAnnotationBrush(expectedBrush: AnnotationBrush) {
 }
 
 /**
+ * Tests that the correct brush icons are displayed, depending on what brush
+ * is selected. The brush type matching `selectedBrushType` should have a filled
+ * icon.
+ * @param selectedBrushType The expected selected brush type that should
+ * have a filled icon.
+ */
+function assertBrushIcons(selectedBrushType: AnnotationBrushType) {
+  const eraserIcon = sidePanel.$.eraser.getAttribute('iron-icon');
+  assert(eraserIcon);
+  chrome.test.assertEq(
+      selectedBrushType === AnnotationBrushType.ERASER ? 'pdf:ink-eraser-fill' :
+                                                         'pdf:ink-eraser',
+      eraserIcon);
+
+  const highlighterIcon = sidePanel.$.highlighter.getAttribute('iron-icon');
+  assert(highlighterIcon);
+  chrome.test.assertEq(
+      selectedBrushType === AnnotationBrushType.HIGHLIGHTER ?
+          'pdf:ink-highlighter-fill' :
+          'pdf:ink-highlighter',
+      highlighterIcon);
+
+  const penIcon = sidePanel.$.pen.getAttribute('iron-icon');
+  assert(penIcon);
+  chrome.test.assertEq(
+      selectedBrushType === AnnotationBrushType.PEN ? 'pdf:ink-pen-fill' :
+                                                      'pdf:ink-pen',
+      penIcon);
+}
+
+/**
  * Tests that the brushes have correct values for the selected attribute. The
  * brush type matching `selectedBrushType` should be selected.
  * @param selectedBrushType The expected selected brush type.
@@ -118,6 +149,7 @@ chrome.test.runTests([
       color: {r: 0, g: 0, b: 0},
       size: 3,
     });
+    assertBrushIcons(AnnotationBrushType.PEN);
     assertSelectedBrush(AnnotationBrushType.PEN);
     assertSelectedSize(/*buttonIndex=*/ 2);
 
@@ -160,6 +192,7 @@ chrome.test.runTests([
       type: AnnotationBrushType.ERASER,
       size: 3,
     });
+    assertBrushIcons(AnnotationBrushType.ERASER);
     assertSelectedBrush(AnnotationBrushType.ERASER);
     assertSelectedSize(/*buttonIndex=*/ 2);
 
@@ -191,6 +224,7 @@ chrome.test.runTests([
       color: {r: 242, g: 139, b: 130},
       size: 8,
     });
+    assertBrushIcons(AnnotationBrushType.HIGHLIGHTER);
     assertSelectedBrush(AnnotationBrushType.HIGHLIGHTER);
     assertSelectedSize(/*buttonIndex=*/ 2);
 
@@ -235,6 +269,7 @@ chrome.test.runTests([
       color: {r: 253, g: 214, b: 99},
       size: 1,
     });
+    assertBrushIcons(AnnotationBrushType.PEN);
     assertSelectedBrush(AnnotationBrushType.PEN);
     assertSelectedSize(/*buttonIndex=*/ 0);
 
@@ -246,6 +281,7 @@ chrome.test.runTests([
       type: AnnotationBrushType.ERASER,
       size: 2,
     });
+    assertBrushIcons(AnnotationBrushType.ERASER);
     assertSelectedBrush(AnnotationBrushType.ERASER);
     assertSelectedSize(/*buttonIndex=*/ 1);
 
@@ -258,6 +294,7 @@ chrome.test.runTests([
       color: {r: 52, g: 168, b: 83},
       size: 16,
     });
+    assertBrushIcons(AnnotationBrushType.HIGHLIGHTER);
     assertSelectedBrush(AnnotationBrushType.HIGHLIGHTER);
     assertSelectedSize(/*buttonIndex=*/ 4);
     chrome.test.succeed();

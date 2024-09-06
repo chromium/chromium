@@ -262,6 +262,19 @@ export class ViewerSidePanelElement extends CrLitElement {
     this.brushDirty_ = true;
   }
 
+  protected getIcon_(type: AnnotationBrushType): string {
+    const isCurrentType = this.isCurrentType_(type);
+    switch (type) {
+      case AnnotationBrushType.ERASER:
+        return isCurrentType ? 'pdf:ink-eraser-fill' : 'pdf:ink-eraser';
+      case AnnotationBrushType.HIGHLIGHTER:
+        return isCurrentType ? 'pdf:ink-highlighter-fill' :
+                               'pdf:ink-highlighter';
+      case AnnotationBrushType.PEN:
+        return isCurrentType ? 'pdf:ink-pen-fill' : 'pdf:ink-pen';
+    }
+  }
+
   protected isCurrentType_(type: AnnotationBrushType): boolean {
     return this.currentType_ === type;
   }
