@@ -486,6 +486,12 @@ The only change in the delta is explicitly listing re-exports
 instead of using a `*` wildcard in `pub use clap_derive::{self, *}`.
 """
 
+[[audits.clap]]
+who = "danakj <danakj@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "4.5.15 -> 4.5.17"
+notes = "Minor code change and toml changes."
+
 [[audits.clap_builder]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -546,6 +552,12 @@ delta = "4.5.7 -> 4.5.8"
 who = "Dustin J. Mitchell <djmitche@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "4.5.8 -> 4.5.9"
+
+[[audits.clap_builder]]
+who = "danakj <danakj@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "4.5.15 -> 4.5.17"
+notes = "No new unsafe, net, fs"
 
 [[audits.clap_lex]]
 who = "danakj@chromium.org"

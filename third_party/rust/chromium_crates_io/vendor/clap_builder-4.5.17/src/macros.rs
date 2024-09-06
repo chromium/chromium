@@ -540,7 +540,7 @@ macro_rules! debug {
         let module_path = module_path!();
         let body = format!($($arg)*);
         let mut styled = $crate::builder::StyledStr::new();
-        let _ = write!(styled, "{}[{module_path:>28}]{body}{}\n", hint.render(), hint.render_reset());
+        let _ = write!(styled, "{hint}[{module_path:>28}]{body}{hint:#}\n");
         let color = $crate::output::fmt::Colorizer::new($crate::output::fmt::Stream::Stderr, $crate::ColorChoice::Auto).with_content(styled);
         let _ = color.print();
     })

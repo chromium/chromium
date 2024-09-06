@@ -490,11 +490,7 @@ impl<F: ErrorFormatter> Error<F> {
                 let mut styled_suggestion = StyledStr::new();
                 let _ = write!(
                     styled_suggestion,
-                    "to pass '{}{subcmd}{}' as a value, use '{}{name} -- {subcmd}{}'",
-                    invalid.render(),
-                    invalid.render_reset(),
-                    valid.render(),
-                    valid.render_reset()
+                    "to pass '{invalid}{subcmd}{invalid:#}' as a value, use '{valid}{name} -- {subcmd}{valid:#}'",
                 );
                 suggestions.push(styled_suggestion);
             }
@@ -726,11 +722,7 @@ impl<F: ErrorFormatter> Error<F> {
                 let mut styled_suggestion = StyledStr::new();
                 let _ = write!(
                     styled_suggestion,
-                    "to pass '{}{arg}{}' as a value, use '{}-- {arg}{}'",
-                    invalid.render(),
-                    invalid.render_reset(),
-                    valid.render(),
-                    valid.render_reset()
+                    "to pass '{invalid}{arg}{invalid:#}' as a value, use '{valid}-- {arg}{valid:#}'",
                 );
                 suggestions.push(styled_suggestion);
             }
@@ -744,12 +736,7 @@ impl<F: ErrorFormatter> Error<F> {
             match did_you_mean {
                 Some((flag, Some(sub))) => {
                     let mut styled_suggestion = StyledStr::new();
-                    let _ = write!(
-                        styled_suggestion,
-                        "'{}{sub} {flag}{}' exists",
-                        valid.render(),
-                        valid.render_reset()
-                    );
+                    let _ = write!(styled_suggestion, "'{valid}{sub} {flag}{valid:#}' exists",);
                     suggestions.push(styled_suggestion);
                 }
                 Some((flag, None)) => {
@@ -787,11 +774,7 @@ impl<F: ErrorFormatter> Error<F> {
             let mut styled_suggestion = StyledStr::new();
             let _ = write!(
                 styled_suggestion,
-                "subcommand '{}{arg}{}' exists; to use it, remove the '{}--{}' before it",
-                valid.render(),
-                valid.render_reset(),
-                invalid.render(),
-                invalid.render_reset()
+                "subcommand '{valid}{arg}{valid:#}' exists; to use it, remove the '{invalid}--{invalid:#}' before it",
             );
 
             err = err.extend_context_unchecked([

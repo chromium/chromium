@@ -4329,14 +4329,9 @@ impl Arg {
         let mut styled = StyledStr::new();
         // Write the name such --long or -l
         if let Some(l) = self.get_long() {
-            let _ = write!(
-                styled,
-                "{}--{l}{}",
-                literal.render(),
-                literal.render_reset()
-            );
+            let _ = write!(styled, "{literal}--{l}{literal:#}",);
         } else if let Some(s) = self.get_short() {
-            let _ = write!(styled, "{}-{s}{}", literal.render(), literal.render_reset());
+            let _ = write!(styled, "{literal}-{s}{literal:#}");
         }
         styled.push_styled(&self.stylize_arg_suffix(styles, required));
         styled
@@ -4364,32 +4359,17 @@ impl Arg {
             } else {
                 (placeholder, " ")
             };
-            let _ = write!(styled, "{}{start}{}", style.render(), style.render_reset());
+            let _ = write!(styled, "{style}{start}{style:#}");
         }
         if self.is_takes_value_set() || self.is_positional() {
             let required = required.unwrap_or_else(|| self.is_required_set());
             let arg_val = self.render_arg_val(required);
-            let _ = write!(
-                styled,
-                "{}{arg_val}{}",
-                placeholder.render(),
-                placeholder.render_reset()
-            );
+            let _ = write!(styled, "{placeholder}{arg_val}{placeholder:#}",);
         } else if matches!(*self.get_action(), ArgAction::Count) {
-            let _ = write!(
-                styled,
-                "{}...{}",
-                placeholder.render(),
-                placeholder.render_reset()
-            );
+            let _ = write!(styled, "{placeholder}...{placeholder:#}",);
         }
         if need_closing_bracket {
-            let _ = write!(
-                styled,
-                "{}]{}",
-                placeholder.render(),
-                placeholder.render_reset()
-            );
+            let _ = write!(styled, "{placeholder}]{placeholder:#}",);
         }
 
         styled

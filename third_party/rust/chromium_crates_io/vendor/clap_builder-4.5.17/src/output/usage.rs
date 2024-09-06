@@ -144,12 +144,7 @@ impl<'cmd> Usage<'cmd> {
                 .cmd
                 .get_subcommand_value_name()
                 .unwrap_or(DEFAULT_SUB_VALUE_NAME);
-            let _ = write!(
-                styled,
-                "{}<{value_name}>{}",
-                placeholder.render(),
-                placeholder.render_reset()
-            );
+            let _ = write!(styled, "{placeholder}<{value_name}>{placeholder:#}",);
         }
     }
 
@@ -162,21 +157,11 @@ impl<'cmd> Usage<'cmd> {
         let bin_name = self.cmd.get_usage_name_fallback();
         if !bin_name.is_empty() {
             // the trim won't properly remove a leading space due to the formatting
-            let _ = write!(
-                styled,
-                "{}{bin_name}{} ",
-                literal.render(),
-                literal.render_reset()
-            );
+            let _ = write!(styled, "{literal}{bin_name}{literal:#} ",);
         }
 
         if used.is_empty() && self.needs_options_tag() {
-            let _ = write!(
-                styled,
-                "{}[OPTIONS]{} ",
-                placeholder.render(),
-                placeholder.render_reset()
-            );
+            let _ = write!(styled, "{placeholder}[OPTIONS]{placeholder:#} ",);
         }
 
         self.write_args(styled, used, !incl_reqs);
@@ -202,35 +187,15 @@ impl<'cmd> Usage<'cmd> {
                 if self.cmd.is_args_conflicts_with_subcommands_set() {
                     let bin_name = self.cmd.get_usage_name_fallback();
                     // Short-circuit full usage creation since no args will be relevant
-                    let _ = write!(
-                        styled,
-                        "{}{bin_name}{} ",
-                        literal.render(),
-                        literal.render_reset()
-                    );
+                    let _ = write!(styled, "{literal}{bin_name}{literal:#} ",);
                 } else {
                     self.write_arg_usage(styled, &[], false);
                 }
-                let _ = write!(
-                    styled,
-                    "{}<{value_name}>{}",
-                    placeholder.render(),
-                    placeholder.render_reset()
-                );
+                let _ = write!(styled, "{placeholder}<{value_name}>{placeholder:#}",);
             } else if self.cmd.is_subcommand_required_set() {
-                let _ = write!(
-                    styled,
-                    "{}<{value_name}>{}",
-                    placeholder.render(),
-                    placeholder.render_reset()
-                );
+                let _ = write!(styled, "{placeholder}<{value_name}>{placeholder:#}",);
             } else {
-                let _ = write!(
-                    styled,
-                    "{}[{value_name}]{}",
-                    placeholder.render(),
-                    placeholder.render_reset()
-                );
+                let _ = write!(styled, "{placeholder}[{value_name}]{placeholder:#}",);
             }
         }
     }
@@ -373,7 +338,7 @@ impl<'cmd> Usage<'cmd> {
                 if pos.is_last_set() {
                     let styled = required_positionals[index].take().unwrap();
                     let mut new = StyledStr::new();
-                    let _ = write!(new, "{}--{} ", literal.render(), literal.render_reset());
+                    let _ = write!(new, "{literal}--{literal:#} ");
                     new.push_styled(&styled);
                     required_positionals[index] = Some(new);
                 }
@@ -381,9 +346,9 @@ impl<'cmd> Usage<'cmd> {
                 let mut styled;
                 if pos.is_last_set() {
                     styled = StyledStr::new();
-                    let _ = write!(styled, "{}[--{} ", literal.render(), literal.render_reset());
+                    let _ = write!(styled, "{literal}[--{literal:#} ");
                     styled.push_styled(&pos.stylized(self.styles, Some(true)));
-                    let _ = write!(styled, "{}]{}", literal.render(), literal.render_reset());
+                    let _ = write!(styled, "{literal}]{literal:#}");
                 } else {
                     styled = pos.stylized(self.styles, Some(false));
                 }

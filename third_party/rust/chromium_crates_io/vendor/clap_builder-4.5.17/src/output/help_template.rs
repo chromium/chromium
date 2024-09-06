@@ -406,12 +406,7 @@ impl<'cmd, 'writer> HelpTemplate<'cmd, 'writer> {
                 .cmd
                 .get_subcommand_help_heading()
                 .unwrap_or(&default_help_heading);
-            let _ = write!(
-                self.writer,
-                "{}{help_heading}:{}\n",
-                header.render(),
-                header.render_reset()
-            );
+            let _ = write!(self.writer, "{header}{help_heading}:{header:#}\n",);
 
             self.write_subcommands(self.cmd);
         }
@@ -423,12 +418,7 @@ impl<'cmd, 'writer> HelpTemplate<'cmd, 'writer> {
             first = false;
             // Write positional args if any
             let help_heading = "Arguments";
-            let _ = write!(
-                self.writer,
-                "{}{help_heading}:{}\n",
-                header.render(),
-                header.render_reset()
-            );
+            let _ = write!(self.writer, "{header}{help_heading}:{header:#}\n",);
             self.write_args(&pos, "Arguments", positional_sort_key);
         }
 
@@ -438,12 +428,7 @@ impl<'cmd, 'writer> HelpTemplate<'cmd, 'writer> {
             }
             first = false;
             let help_heading = "Options";
-            let _ = write!(
-                self.writer,
-                "{}{help_heading}:{}\n",
-                header.render(),
-                header.render_reset()
-            );
+            let _ = write!(self.writer, "{header}{help_heading}:{header:#}\n",);
             self.write_args(&non_pos, "Options", option_sort_key);
         }
         if !custom_headings.is_empty() {
@@ -465,12 +450,7 @@ impl<'cmd, 'writer> HelpTemplate<'cmd, 'writer> {
                         self.writer.push_str("\n\n");
                     }
                     first = false;
-                    let _ = write!(
-                        self.writer,
-                        "{}{heading}:{}\n",
-                        header.render(),
-                        header.render_reset()
-                    );
+                    let _ = write!(self.writer, "{header}{heading}:{header:#}\n",);
                     self.write_args(&args, heading, option_sort_key);
                 }
             }
@@ -554,12 +534,7 @@ impl<'cmd, 'writer> HelpTemplate<'cmd, 'writer> {
         let literal = &self.styles.get_literal();
 
         if let Some(s) = arg.get_short() {
-            let _ = write!(
-                self.writer,
-                "{}-{s}{}",
-                literal.render(),
-                literal.render_reset()
-            );
+            let _ = write!(self.writer, "{literal}-{s}{literal:#}",);
         } else if arg.get_long().is_some() {
             self.writer.push_str("    ");
         }
@@ -575,12 +550,7 @@ impl<'cmd, 'writer> HelpTemplate<'cmd, 'writer> {
             if arg.get_short().is_some() {
                 self.writer.push_str(", ");
             }
-            let _ = write!(
-                self.writer,
-                "{}--{long}{}",
-                literal.render(),
-                literal.render_reset()
-            );
+            let _ = write!(self.writer, "{literal}--{long}{literal:#}",);
         }
     }
 
@@ -707,12 +677,7 @@ impl<'cmd, 'writer> HelpTemplate<'cmd, 'writer> {
                         let name = pv.get_name();
 
                         let mut descr = StyledStr::new();
-                        let _ = write!(
-                            &mut descr,
-                            "{}{name}{}",
-                            literal.render(),
-                            literal.render_reset()
-                        );
+                        let _ = write!(&mut descr, "{literal}{name}{literal:#}",);
                         if let Some(help) = pv.get_help() {
                             debug!("HelpTemplate::help: Possible Value help");
                             // To align help messages
@@ -917,12 +882,7 @@ impl<'cmd, 'writer> HelpTemplate<'cmd, 'writer> {
                 .or_else(|| subcommand.get_long_about())
                 .unwrap_or_default();
 
-            let _ = write!(
-                self.writer,
-                "{}{heading}:{}\n",
-                header.render(),
-                header.render_reset()
-            );
+            let _ = write!(self.writer, "{header}{heading}:{header:#}\n",);
             if !about.is_empty() {
                 let _ = write!(self.writer, "{about}\n",);
             }
@@ -962,27 +922,12 @@ impl<'cmd, 'writer> HelpTemplate<'cmd, 'writer> {
         {
             let mut styled = StyledStr::new();
             let name = subcommand.get_name();
-            let _ = write!(
-                styled,
-                "{}{name}{}",
-                literal.render(),
-                literal.render_reset()
-            );
+            let _ = write!(styled, "{literal}{name}{literal:#}",);
             if let Some(short) = subcommand.get_short_flag() {
-                let _ = write!(
-                    styled,
-                    ", {}-{short}{}",
-                    literal.render(),
-                    literal.render_reset()
-                );
+                let _ = write!(styled, ", {literal}-{short}{literal:#}",);
             }
             if let Some(long) = subcommand.get_long_flag() {
-                let _ = write!(
-                    styled,
-                    ", {}--{long}{}",
-                    literal.render(),
-                    literal.render_reset()
-                );
+                let _ = write!(styled, ", {literal}--{long}{literal:#}",);
             }
             longest = longest.max(styled.display_width());
             ord_v.push((subcommand.get_display_order(), styled, subcommand));

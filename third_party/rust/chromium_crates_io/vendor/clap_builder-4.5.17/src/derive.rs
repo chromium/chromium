@@ -73,6 +73,10 @@ pub trait Parser: FromArgMatches + CommandFactory + Sized {
     }
 
     /// Update from iterator, [exit][Error::exit] on error.
+    ///
+    /// Unlike [`Parser::parse`], this works with an existing instance of `self`.
+    /// The assumption is that all required fields are already provided and any [`Args`] or
+    /// [`Subcommand`]s provided by the user will modify only what is specified.
     fn update_from<I, T>(&mut self, itr: I)
     where
         I: IntoIterator<Item = T>,
@@ -216,15 +220,19 @@ pub trait Args: FromArgMatches + Sized {
     fn group_id() -> Option<crate::Id> {
         None
     }
-    /// Append to [`Command`] so it can instantiate `Self`.
-    ///
-    /// See also [`CommandFactory`].
-    fn augment_args(cmd: Command) -> Command;
-    /// Append to [`Command`] so it can update `self`.
+    /// Append to [`Command`] so it can instantiate `Self` via
+    /// [`FromArgMatches::from_arg_matches_mut`]
     ///
     /// This is used to implement `#[command(flatten)]`
     ///
-    /// See also [`CommandFactory`].
+    /// See also [`CommandFactory::command`].
+    fn augment_args(cmd: Command) -> Command;
+    /// Append to [`Command`] so it can instantiate `self` via
+    /// [`FromArgMatches::update_from_arg_matches_mut`]
+    ///
+    /// This is used to implement `#[command(flatten)]`
+    ///
+    /// See also [`CommandFactory::command_for_update`].
     fn augment_args_for_update(cmd: Command) -> Command;
 }
 
@@ -239,15 +247,19 @@ pub trait Args: FromArgMatches + Sized {
 ///
 /// **NOTE:** Deriving requires the `derive` feature flag
 pub trait Subcommand: FromArgMatches + Sized {
-    /// Append to [`Command`] so it can instantiate `Self`.
-    ///
-    /// See also [`CommandFactory`].
-    fn augment_subcommands(cmd: Command) -> Command;
-    /// Append to [`Command`] so it can update `self`.
+    /// Append to [`Command`] so it can instantiate `Self` via
+    /// [`FromArgMatches::from_arg_matches_mut`]
     ///
     /// This is used to implement `#[command(flatten)]`
     ///
-    /// See also [`CommandFactory`].
+    /// See also [`CommandFactory::command`].
+    fn augment_subcommands(cmd: Command) -> Command;
+    /// Append to [`Command`] so it can instantiate `self` via
+    /// [`FromArgMatches::update_from_arg_matches_mut`]
+    ///
+    /// This is used to implement `#[command(flatten)]`
+    ///
+    /// See also [`CommandFactory::command_for_update`].
     fn augment_subcommands_for_update(cmd: Command) -> Command;
     /// Test whether `Self` can parse a specific subcommand
     fn has_subcommand(name: &str) -> bool;

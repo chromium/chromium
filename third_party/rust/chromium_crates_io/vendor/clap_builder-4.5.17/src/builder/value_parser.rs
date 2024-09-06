@@ -2419,9 +2419,10 @@ where
 
 #[doc(hidden)]
 #[derive(Debug)]
-pub struct _AutoValueParser<T>(std::marker::PhantomData<T>);
+#[allow(non_camel_case_types)]
+pub struct _infer_ValueParser_for<T>(std::marker::PhantomData<T>);
 
-impl<T> _AutoValueParser<T> {
+impl<T> _infer_ValueParser_for<T> {
     #[doc(hidden)]
     #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
@@ -2437,15 +2438,16 @@ impl<T> _AutoValueParser<T> {
 pub struct _AnonymousValueParser(ValueParser);
 
 #[doc(hidden)]
-pub mod via_prelude {
+pub mod impl_prelude {
     use super::*;
 
     #[doc(hidden)]
-    pub trait _ValueParserViaFactory: private::_ValueParserViaFactorySealed {
+    #[allow(non_camel_case_types)]
+    pub trait _impls_ValueParserFactory: private::_impls_ValueParserFactorySealed {
         type Parser;
         fn value_parser(&self) -> Self::Parser;
     }
-    impl<P: ValueParserFactory> _ValueParserViaFactory for &&&&&&_AutoValueParser<P> {
+    impl<P: ValueParserFactory> _impls_ValueParserFactory for &&&&&&_infer_ValueParser_for<P> {
         type Parser = P::Parser;
         fn value_parser(&self) -> Self::Parser {
             P::value_parser()
@@ -2453,13 +2455,14 @@ pub mod via_prelude {
     }
 
     #[doc(hidden)]
-    pub trait _ValueParserViaValueEnum: private::_ValueParserViaValueEnumSealed {
+    #[allow(non_camel_case_types)]
+    pub trait _impls_ValueEnum: private::_impls_ValueEnumSealed {
         type Output;
 
         fn value_parser(&self) -> Self::Output;
     }
-    impl<E: crate::ValueEnum + Clone + Send + Sync + 'static> _ValueParserViaValueEnum
-        for &&&&&_AutoValueParser<E>
+    impl<E: crate::ValueEnum + Clone + Send + Sync + 'static> _impls_ValueEnum
+        for &&&&&_infer_ValueParser_for<E>
     {
         type Output = EnumValueParser<E>;
 
@@ -2469,10 +2472,11 @@ pub mod via_prelude {
     }
 
     #[doc(hidden)]
-    pub trait _ValueParserViaFromOsString: private::_ValueParserViaFromOsStringSealed {
+    #[allow(non_camel_case_types)]
+    pub trait _impls_From_OsString: private::_impls_From_OsStringSealed {
         fn value_parser(&self) -> _AnonymousValueParser;
     }
-    impl<FromOsString> _ValueParserViaFromOsString for &&&&_AutoValueParser<FromOsString>
+    impl<FromOsString> _impls_From_OsString for &&&&_infer_ValueParser_for<FromOsString>
     where
         FromOsString: From<std::ffi::OsString> + std::any::Any + Clone + Send + Sync + 'static,
     {
@@ -2486,10 +2490,11 @@ pub mod via_prelude {
     }
 
     #[doc(hidden)]
-    pub trait _ValueParserViaFromOsStr: private::_ValueParserViaFromOsStrSealed {
+    #[allow(non_camel_case_types)]
+    pub trait _impls_From_OsStr: private::_impls_From_OsStrSealed {
         fn value_parser(&self) -> _AnonymousValueParser;
     }
-    impl<FromOsStr> _ValueParserViaFromOsStr for &&&_AutoValueParser<FromOsStr>
+    impl<FromOsStr> _impls_From_OsStr for &&&_infer_ValueParser_for<FromOsStr>
     where
         FromOsStr:
             for<'s> From<&'s std::ffi::OsStr> + std::any::Any + Clone + Send + Sync + 'static,
@@ -2504,10 +2509,11 @@ pub mod via_prelude {
     }
 
     #[doc(hidden)]
-    pub trait _ValueParserViaFromString: private::_ValueParserViaFromStringSealed {
+    #[allow(non_camel_case_types)]
+    pub trait _impls_From_String: private::_impls_From_StringSealed {
         fn value_parser(&self) -> _AnonymousValueParser;
     }
-    impl<FromString> _ValueParserViaFromString for &&_AutoValueParser<FromString>
+    impl<FromString> _impls_From_String for &&_infer_ValueParser_for<FromString>
     where
         FromString: From<String> + std::any::Any + Clone + Send + Sync + 'static,
     {
@@ -2517,10 +2523,11 @@ pub mod via_prelude {
     }
 
     #[doc(hidden)]
-    pub trait _ValueParserViaFromStr: private::_ValueParserViaFromStrSealed {
+    #[allow(non_camel_case_types)]
+    pub trait _impls_From_str: private::_impls_From_strSealed {
         fn value_parser(&self) -> _AnonymousValueParser;
     }
-    impl<FromStr> _ValueParserViaFromStr for &_AutoValueParser<FromStr>
+    impl<FromStr> _impls_From_str for &_infer_ValueParser_for<FromStr>
     where
         FromStr: for<'s> From<&'s str> + std::any::Any + Clone + Send + Sync + 'static,
     {
@@ -2530,10 +2537,11 @@ pub mod via_prelude {
     }
 
     #[doc(hidden)]
-    pub trait _ValueParserViaParse: private::_ValueParserViaParseSealed {
+    #[allow(non_camel_case_types)]
+    pub trait _impls_FromStr: private::_impls_FromStrSealed {
         fn value_parser(&self) -> _AnonymousValueParser;
     }
-    impl<Parse> _ValueParserViaParse for _AutoValueParser<Parse>
+    impl<Parse> _impls_FromStr for _infer_ValueParser_for<Parse>
     where
         Parse: std::str::FromStr + std::any::Any + Clone + Send + Sync + 'static,
         <Parse as std::str::FromStr>::Err: Into<Box<dyn std::error::Error + Send + Sync + 'static>>,
@@ -2601,8 +2609,8 @@ pub mod via_prelude {
 #[macro_export]
 macro_rules! value_parser {
     ($name:ty) => {{
-        use $crate::builder::via_prelude::*;
-        let auto = $crate::builder::_AutoValueParser::<$name>::new();
+        use $crate::builder::impl_prelude::*;
+        let auto = $crate::builder::_infer_ValueParser_for::<$name>::new();
         (&&&&&&auto).value_parser()
     }};
 }
@@ -2610,38 +2618,45 @@ macro_rules! value_parser {
 mod private {
     use super::*;
 
-    pub trait _ValueParserViaFactorySealed {}
-    impl<P: ValueParserFactory> _ValueParserViaFactorySealed for &&&&&&_AutoValueParser<P> {}
+    #[allow(non_camel_case_types)]
+    pub trait _impls_ValueParserFactorySealed {}
+    impl<P: ValueParserFactory> _impls_ValueParserFactorySealed for &&&&&&_infer_ValueParser_for<P> {}
 
-    pub trait _ValueParserViaValueEnumSealed {}
-    impl<E: crate::ValueEnum> _ValueParserViaValueEnumSealed for &&&&&_AutoValueParser<E> {}
+    #[allow(non_camel_case_types)]
+    pub trait _impls_ValueEnumSealed {}
+    impl<E: crate::ValueEnum> _impls_ValueEnumSealed for &&&&&_infer_ValueParser_for<E> {}
 
-    pub trait _ValueParserViaFromOsStringSealed {}
-    impl<FromOsString> _ValueParserViaFromOsStringSealed for &&&&_AutoValueParser<FromOsString> where
+    #[allow(non_camel_case_types)]
+    pub trait _impls_From_OsStringSealed {}
+    impl<FromOsString> _impls_From_OsStringSealed for &&&&_infer_ValueParser_for<FromOsString> where
         FromOsString: From<std::ffi::OsString> + std::any::Any + Send + Sync + 'static
     {
     }
 
-    pub trait _ValueParserViaFromOsStrSealed {}
-    impl<FromOsStr> _ValueParserViaFromOsStrSealed for &&&_AutoValueParser<FromOsStr> where
+    #[allow(non_camel_case_types)]
+    pub trait _impls_From_OsStrSealed {}
+    impl<FromOsStr> _impls_From_OsStrSealed for &&&_infer_ValueParser_for<FromOsStr> where
         FromOsStr: for<'s> From<&'s std::ffi::OsStr> + std::any::Any + Send + Sync + 'static
     {
     }
 
-    pub trait _ValueParserViaFromStringSealed {}
-    impl<FromString> _ValueParserViaFromStringSealed for &&_AutoValueParser<FromString> where
+    #[allow(non_camel_case_types)]
+    pub trait _impls_From_StringSealed {}
+    impl<FromString> _impls_From_StringSealed for &&_infer_ValueParser_for<FromString> where
         FromString: From<String> + std::any::Any + Send + Sync + 'static
     {
     }
 
-    pub trait _ValueParserViaFromStrSealed {}
-    impl<FromStr> _ValueParserViaFromStrSealed for &_AutoValueParser<FromStr> where
+    #[allow(non_camel_case_types)]
+    pub trait _impls_From_strSealed {}
+    impl<FromStr> _impls_From_strSealed for &_infer_ValueParser_for<FromStr> where
         FromStr: for<'s> From<&'s str> + std::any::Any + Send + Sync + 'static
     {
     }
 
-    pub trait _ValueParserViaParseSealed {}
-    impl<Parse> _ValueParserViaParseSealed for _AutoValueParser<Parse>
+    #[allow(non_camel_case_types)]
+    pub trait _impls_FromStrSealed {}
+    impl<Parse> _impls_FromStrSealed for _infer_ValueParser_for<Parse>
     where
         Parse: std::str::FromStr + std::any::Any + Send + Sync + 'static,
         <Parse as std::str::FromStr>::Err: Into<Box<dyn std::error::Error + Send + Sync + 'static>>,
