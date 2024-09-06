@@ -482,6 +482,12 @@ void IsClipboardCopyAllowedByPolicy(
     const content::ClipboardMetadata& metadata,
     const content::ClipboardPasteData& data,
     content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback) {
+  // TODO(crbug.com/362674391): Find a long term fix for this issue.
+  if (SkipDataControlOrContentAnalysisChecks(source)) {
+    std::move(callback).Run(metadata.format_type, data, std::nullopt);
+    return;
+  }
+
   DCHECK(source.web_contents());
   DCHECK(source.browser_context());
   DCHECK(source.data_transfer_endpoint());
