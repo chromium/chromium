@@ -424,12 +424,6 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
     query_target = GL_COMMANDS_COMPLETED_CHROMIUM;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(ARCH_CPU_ARM_FAMILY)
-  // TODO(reveman): This avoids a performance problem on ARM ChromeOS devices.
-  // https://crbug.com/580166
-  query_target = GL_COMMANDS_ISSUED_CHROMIUM;
-#endif
-
   // COMMANDS_ISSUED is sufficient for shared memory resources.
   if (staging_buffer->is_shared_memory) {
     query_target = GL_COMMANDS_ISSUED_CHROMIUM;
