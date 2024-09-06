@@ -3264,4 +3264,66 @@ TEST_F(HttpServerPropertiesManagerTest, SameOrderAfterReload) {
                 ->first.alternative_service.host);
 }
 
+// Test that different privacy modes have different QUIC server info.
+TEST_F(HttpServerPropertiesManagerTest, PrivacyMode) {
+  const quic::QuicServerId kQuicServerId("quic.example", 443);
+  constexpr char kQuicServerInfo[] = "info";
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kPartitionConnectionsByNetworkIsolationKey);
+
+  // Create and initialize an HttpServerProperties with no state.
+  std::unique_ptr<MockPrefDelegate> pref_delegate =
+      std::make_unique<MockPrefDelegate>();
+  MockPrefDelegate* unowned_pref_delegate = pref_delegate.get();
+  std::unique_ptr<HttpServerProperties> properties =
+      std::make_unique<HttpServerProperties>(std::move(pref_delegate),
+                                             /*net_log=*/nullptr,
+                                             GetMockTickClock());
+  unowned_pref_delegate->InitializePrefs(base::Value::Dict());
+
+  properties->SetQuicServerInfo(kQuicServerId, PRIVACY_MODE_DISABLED,
+                                NetworkAnonymizationKey(), kQuicServerInfo);
+  properties->SetQuicServerInfo(kQuicServerId, PRIVACY_MODE_ENABLED,
+                                NetworkAnonymizationKey(), kQuicServerInfo);
+  properties->SetQuicServerInfo(kQuicServerId,
+                                PRIVACY_MODE_ENABLED_WITHOUT_CLIENT_CERTS,
+                                NetworkAnonymizationKey(), kQuicServerInfo);
+  properties->SetQuicServerInfo(kQuicServerId,
+                                PRIVACY_MODE_ENABLED_PARTITIONED_STATE_ALLOWED,
+                                NetworkAnonymizationKey(), kQuicServerInfo);
+  EXPECT_EQ(4u, properties->quic_server_info_map_for_testing().size());
+
+  // Wait until the data's been written to prefs, and then tear down the
+  // HttpServerProperties.
+  FastForwardBy(HttpServerProperties::GetUpdatePrefsDelayForTesting());
+  base::Value::Dict saved_value =
+      unowned_pref_delegate->GetServerProperties().Clone();
+  properties.reset();
+
+  // Create a new HttpServerProperties using the value saved to prefs above.
+  pref_delegate = std::make_unique<MockPrefDelegate>();
+  unowned_pref_delegate = pref_delegate.get();
+  properties = std::make_unique<HttpServerProperties>(
+      std::move(pref_delegate), /*net_log=*/nullptr, GetMockTickClock());
+  unowned_pref_delegate->InitializePrefs(std::move(saved_value));
+
+  // All values should have been saved and be retrievable.
+  EXPECT_EQ(kQuicServerInfo,
+            *properties->GetQuicServerInfo(kQuicServerId, PRIVACY_MODE_DISABLED,
+                                           NetworkAnonymizationKey()));
+  EXPECT_EQ(kQuicServerInfo,
+            *properties->GetQuicServerInfo(kQuicServerId, PRIVACY_MODE_ENABLED,
+                                           NetworkAnonymizationKey()));
+  EXPECT_EQ(kQuicServerInfo,
+            *properties->GetQuicServerInfo(
+                kQuicServerId, PRIVACY_MODE_ENABLED_WITHOUT_CLIENT_CERTS,
+                NetworkAnonymizationKey()));
+  EXPECT_EQ(kQuicServerInfo,
+            *properties->GetQuicServerInfo(
+                kQuicServerId, PRIVACY_MODE_ENABLED_PARTITIONED_STATE_ALLOWED,
+                NetworkAnonymizationKey()));
+}
+
 }  // namespace net
