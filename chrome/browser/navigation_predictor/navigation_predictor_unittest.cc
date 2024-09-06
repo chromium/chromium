@@ -24,6 +24,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "navigation_predictor_metrics_document_data.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -1524,6 +1525,25 @@ TEST_F(NavigationPredictorTest, RemoveAnchorElement) {
   // We've seen the same element previously, so we don't consider this an
   // additional anchor.
   EXPECT_EQ(2u, data.number_of_anchors_);
+}
+
+TEST_F(NavigationPredictorUserInteractionsTest,
+       ReportAnchorElementsPositionUpdate_BadMessage) {
+  mojo::test::BadMessageObserver bad_message_observer;
+  mojo::Remote<blink::mojom::AnchorElementMetricsHost> predictor_service;
+  MockNavigationPredictorForTesting::Create(
+      main_rfh(), predictor_service.BindNewPipeAndPassReceiver());
+
+  auto anchor_id_1 = ReportNewAnchorElement(predictor_service.get());
+  ReportAnchorElementEnteredViewport(predictor_service.get(), anchor_id_1,
+                                     base::Milliseconds(200));
+
+  ReportAnchorElementPositionUpdate(predictor_service.get(), anchor_id_1,
+                                    0.456f, 0.123f);
+  EXPECT_EQ(
+      "ReportAnchorElementsPositionUpdate should only be called with "
+      "kNavigationPredictorNewViewportFeatures enabled.",
+      bad_message_observer.WaitForBadMessage());
 }
 
 class NavigationPredictorNewViewportFeaturesTest
