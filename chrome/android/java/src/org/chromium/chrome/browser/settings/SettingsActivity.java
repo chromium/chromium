@@ -113,31 +113,17 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
         mProfile = ProfileManager.getLastUsedRegularProfile();
 
-        // Initialize FragmentDependencyProvider before calling super.onCreate() because it may
+        // Register fragment lifecycle callbacks before calling super.onCreate() because it may
         // create fragments if there is a saved instance state.
-        FragmentDependencyProvider fragmentDependencyProvider =
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.registerFragmentLifecycleCallbacks(
                 new FragmentDependencyProvider(
                         this,
                         mProfile,
                         mSnackbarManagerSupplier,
                         mBottomSheetControllerSupplier,
-                        getModalDialogManagerSupplier());
-
-        // Register a fragment lifecycle callback to provide dependencies to all descendant
-        // fragments.
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.registerFragmentLifecycleCallbacks(
-                new FragmentManager.FragmentLifecycleCallbacks() {
-                    @Override
-                    public void onFragmentAttached(
-                            @NonNull FragmentManager fragmentManager,
-                            @NonNull Fragment fragment,
-                            @NonNull Context context) {
-                        fragmentDependencyProvider.provide(fragment);
-                    }
-                },
+                        getModalDialogManagerSupplier()),
                 true /* recursive */);
-
         fragmentManager.registerFragmentLifecycleCallbacks(
                 new TitleUpdater(), false /* recursive */);
         fragmentManager.registerFragmentLifecycleCallbacks(

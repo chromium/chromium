@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.settings;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -65,8 +67,8 @@ import org.chromium.components.privacy_sandbox.TrackingProtectionSettings;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
-/** Provides dependencies to fragments in the settings activity. * */
-public class FragmentDependencyProvider {
+/** Provides dependencies to fragments in the settings activity. */
+public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycleCallbacks {
     private final Context mContext;
     private final Profile mProfile;
 
@@ -90,12 +92,11 @@ public class FragmentDependencyProvider {
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
     }
 
-    /**
-     * Provides dependencies to a fragment.
-     *
-     * <p>Call this method on attaching a fragment to an activity.
-     */
-    public void provide(Fragment fragment) {
+    @Override
+    public void onFragmentAttached(
+            @NonNull FragmentManager fragmentManager,
+            @NonNull Fragment fragment,
+            @NonNull Context unusedContext) {
         // Common dependencies attachments.
         if (fragment instanceof ProfileDependentSetting) {
             ((ProfileDependentSetting) fragment).setProfile(mProfile);
