@@ -295,12 +295,16 @@ class FwupdClientTest : public testing::Test {
   }
 
   void CheckDevices(FwupdDeviceList* devices) {
+    run_loop_.Quit();
+
     FwupdDeviceList expected_devices = {
         FwupdDevice(kFakeDeviceIdForTesting, kFakeDeviceNameForTesting)};
     EXPECT_EQ(*devices, expected_devices);
   }
 
   void CheckDevicesWithInternal(FwupdDeviceList* devices) {
+    run_loop_.Quit();
+
     FwupdDeviceList expected_devices = {
         FwupdDevice(kFakeDeviceIdForTesting, kFakeDeviceNameForTesting),
         FwupdDevice(kFakeInternalDeviceIdForTesting,
@@ -310,6 +314,8 @@ class FwupdClientTest : public testing::Test {
   }
 
   void CheckUpdates(const std::string& device_id, FwupdUpdateList* updates) {
+    run_loop_.Quit();
+
     if (updates->empty()) {
       EXPECT_TRUE(expect_no_updates_);
       return;
@@ -421,6 +427,10 @@ class FwupdClientTest : public testing::Test {
   int expected_priority_ = kFakeUpdatePriorityForTesting;
 
   base::test::ScopedFeatureList scoped_feature_list_;
+
+ protected:
+  // This field must come after |task_environment_|.
+  base::RunLoop run_loop_;
 };
 
 // TODO (swifton): Rewrite this test with an observer when it's available.
@@ -445,7 +455,7 @@ TEST_F(FwupdClientTest, RequestDevices) {
 
   fwupd_client_->RequestDevices();
 
-  base::RunLoop().RunUntilIdle();
+  run_loop_.Run();
 }
 
 TEST_F(FwupdClientTest, RequestDevicesFlexEnabled) {
@@ -469,7 +479,7 @@ TEST_F(FwupdClientTest, RequestDevicesFlexEnabled) {
 
   fwupd_client_->RequestDevices();
 
-  base::RunLoop().RunUntilIdle();
+  run_loop_.Run();
 }
 
 TEST_F(FwupdClientTest, RequestUpgrades) {
@@ -535,7 +545,7 @@ TEST_F(FwupdClientTest, RequestUpgrades) {
 
   fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
 
-  base::RunLoop().RunUntilIdle();
+  run_loop_.Run();
 }
 
 TEST_F(FwupdClientTest, RequestUpgradesWithoutPriority) {
@@ -599,7 +609,7 @@ TEST_F(FwupdClientTest, RequestUpgradesWithoutPriority) {
 
   fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
 
-  base::RunLoop().RunUntilIdle();
+  run_loop_.Run();
 }
 
 TEST_F(FwupdClientTest, TwoChecksumAvailable) {
@@ -623,7 +633,7 @@ TEST_F(FwupdClientTest, TwoChecksumAvailable) {
 
   fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
 
-  base::RunLoop().RunUntilIdle();
+  run_loop_.Run();
 }
 
 TEST_F(FwupdClientTest, TwoChecksumAvailableInverse) {
@@ -647,7 +657,7 @@ TEST_F(FwupdClientTest, TwoChecksumAvailableInverse) {
 
   fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
 
-  base::RunLoop().RunUntilIdle();
+  run_loop_.Run();
 }
 
 TEST_F(FwupdClientTest, MissingChecksum) {
@@ -668,7 +678,7 @@ TEST_F(FwupdClientTest, MissingChecksum) {
 
   fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
 
-  base::RunLoop().RunUntilIdle();
+  run_loop_.Run();
 }
 
 TEST_F(FwupdClientTest, BadFormatChecksum) {
@@ -691,7 +701,7 @@ TEST_F(FwupdClientTest, BadFormatChecksum) {
 
   fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
 
-  base::RunLoop().RunUntilIdle();
+  run_loop_.Run();
 }
 
 TEST_F(FwupdClientTest, BadFormatChecksumOnlyComma) {
@@ -712,7 +722,7 @@ TEST_F(FwupdClientTest, BadFormatChecksumOnlyComma) {
 
   fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
 
-  base::RunLoop().RunUntilIdle();
+  run_loop_.Run();
 }
 
 TEST_F(FwupdClientTest, Install) {
@@ -784,7 +794,7 @@ TEST_F(FwupdClientTest, NoDescription) {
 
   fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
 
-  base::RunLoop().RunUntilIdle();
+  run_loop_.Run();
 }
 
 TEST_F(FwupdClientTest, SetFeatureFlagsWithV2FlagDisabled) {
@@ -904,13 +914,14 @@ TEST_P(FwupdClientTest_DeviceRequest, OnDeviceRequestReceived) {
       .WillOnce(Invoke([&](FwupdRequest req) {
         EXPECT_EQ(req.id, GetParam().expected_index_of_request_id);
         EXPECT_EQ(req.kind, 2u);
+        run_loop_.Quit();
       }));
 
   fwupd_client_->AddObserver(&observer);
 
   EmitSignal(kFwupdDeviceRequestReceivedSignalName, signal);
 
-  base::RunLoop().RunUntilIdle();
+  run_loop_.Run();
 }
 
 TEST_F(FwupdClientTest, UpdateMetadata) {
@@ -935,14 +946,13 @@ TEST_F(FwupdClientTest, UpdateMetadata) {
   auto sig_file = base::ScopedFD(
       base::File(temp_file.path(), kReadOnly).TakePlatformFile());
 
-  base::RunLoop run_loop;
   fwupd_client_->UpdateMetadata(
       kFakeRemoteIdForTesting, std::move(data_file), std::move(sig_file),
       base::BindLambdaForTesting([&](FwupdDbusResult result) {
         EXPECT_EQ(result, FwupdDbusResult::kSuccess);
-        run_loop.Quit();
+        run_loop_.Quit();
       }));
-  run_loop.Run();
+  run_loop_.Run();
 }
 
 }  // namespace ash
