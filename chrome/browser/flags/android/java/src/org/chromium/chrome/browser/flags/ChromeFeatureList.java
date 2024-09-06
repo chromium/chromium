@@ -443,6 +443,8 @@ public abstract class ChromeFeatureList {
     public static final String SAFETY_HUB_FOLLOWUP = "SafetyHubFollowup";
     public static final String SAFETY_HUB_MAGIC_STACK = "SafetyHubMagicStack";
     public static final String SAFE_BROWSING_DELAYED_WARNINGS = "SafeBrowsingDelayedWarnings";
+    public static final String SAFE_BROWSING_EXTENDED_REPORTING_REMOVE_PREF_DEPENDENCY =
+            "ExtendedReportingRemovePrefDependency";
     public static final String SEARCH_IN_CCT = "SearchInCCT";
     public static final String SEARCH_IN_CCT_ALTERNATE_TAP_HANDLING =
             "SearchInCCTAlternateTapHandling";

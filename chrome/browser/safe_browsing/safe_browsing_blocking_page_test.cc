@@ -4474,6 +4474,13 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageHashRealTimeCheckFeatureOffTest,
 }
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageHashRealTimeCheckTest,
                        TriggerHitReportAndClientSafeBrowsingReportRequest) {
+  if (base::FeatureList::IsEnabled(kExtendedReportingRemovePrefDependency)) {
+    // If the extended reporting pref dependency is removed, this test will not
+    // be run since it is testing HPRT lookup cases.
+    // TODO(crbug.com/362530516): Remove this test case and add a new test for
+    // sampled HPRT lookups.
+    return;
+  }
   SetExtendedReportingPrefForTests(browser()->profile()->GetPrefs(), true);
   SetUpAndNavigateToUrl(/*is_unsafe=*/true);
   ASSERT_TRUE(IsShowingInterstitial());

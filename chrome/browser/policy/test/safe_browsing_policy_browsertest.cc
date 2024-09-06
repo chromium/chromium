@@ -78,12 +78,23 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 
   // Also make sure the SafeBrowsing prefs helper functions agree with the
   // policy.
-  EXPECT_TRUE(safe_browsing::IsExtendedReportingPolicyManaged(*prefs));
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kExtendedReportingRemovePrefDependency)) {
+    EXPECT_FALSE(safe_browsing::IsExtendedReportingPolicyManaged(*prefs));
+  } else {
+    EXPECT_TRUE(safe_browsing::IsExtendedReportingPolicyManaged(*prefs));
+  }
+
   // Note that making SBER policy managed does NOT affect the SBEROptInAllowed
   // setting, which is intentionally kept distinct for now. When the latter is
   // deprecated, then SBER's policy management will imply whether the checkbox
   // is visible.
-  EXPECT_TRUE(safe_browsing::IsExtendedReportingOptInAllowed(*prefs));
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kExtendedReportingRemovePrefDependency)) {
+    EXPECT_FALSE(safe_browsing::IsExtendedReportingOptInAllowed(*prefs));
+  } else {
+    EXPECT_TRUE(safe_browsing::IsExtendedReportingOptInAllowed(*prefs));
+  }
 }
 
 #if !BUILDFLAG(IS_ANDROID)

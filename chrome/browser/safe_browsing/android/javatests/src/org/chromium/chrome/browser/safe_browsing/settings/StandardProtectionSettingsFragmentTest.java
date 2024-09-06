@@ -14,6 +14,8 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -50,6 +52,8 @@ public class StandardProtectionSettingsFragmentTest {
     private ChromeSwitchPreference mPasswordLeakDetectionPreference;
     private TextMessagePreference mStandardProtectionSubtitle;
 
+    // TODO(crbug.com/336547987): Add a new test for checking that mExtendedReportingPreference is
+    // not shown when the flag is enabled.
     private void launchSettingsActivity() {
         mTestRule.startSettingsActivity();
         StandardProtectionSettingsFragment fragment = mTestRule.getFragment();
@@ -86,6 +90,7 @@ public class StandardProtectionSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"SafeBrowsing"})
+    @DisableFeatures({ChromeFeatureList.SAFE_BROWSING_EXTENDED_REPORTING_REMOVE_PREF_DEPENDENCY})
     public void testSwitchExtendedReportingPreference() {
         setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
         launchSettingsActivity();
@@ -286,6 +291,7 @@ public class StandardProtectionSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"SafeBrowsing"})
+    @DisableFeatures({ChromeFeatureList.SAFE_BROWSING_EXTENDED_REPORTING_REMOVE_PREF_DEPENDENCY})
     @Policies.Add({@Policies.Item(key = "SafeBrowsingExtendedReportingEnabled", string = "true")})
     public void testExtendedReportingPolicyManaged() {
         mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
