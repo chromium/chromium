@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/threading/thread_checker.h"
+#include "base/types/pass_key.h"
 #include "content/public/browser/document_service_internal.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -20,6 +21,8 @@
 #include "url/origin.h"
 
 namespace content {
+
+class DocumentAssociatedData;
 
 enum class DocumentServiceDestructionReason : int {
   // The mojo connection terminated.
@@ -84,8 +87,8 @@ class DocumentService : public Interface, public internal::DocumentServiceBase {
   }
 
   ~DocumentService() override {
-    // To avoid potential destruction order issues, implementations must use one
-    // of the *AndDeleteThis() methods below instead of writing `delete this`.
+    // To avoid potential destruction order issues, subclasses must use one of
+    // the *AndDeleteThis() methods below instead of using `delete this`.
     DUMP_WILL_BE_CHECK(!receiver_.is_bound());
   }
 
@@ -107,11 +110,14 @@ class DocumentService : public Interface, public internal::DocumentServiceBase {
   // invoking the destructor, any pending Mojo reply callbacks can simply be
   // dropped by an interface implementation, without forcing the implementation
   // to (pointlessly) first run those reply callbacks.
-  //
-  // Marked final because there should be no real reason for a subclass to
-  // customize this behavior, and it allows for most `ResetAndDeleteThis()`
-  // calls to be devirtualized.
-  void ResetAndDeleteThis() final {
+  void ResetAndDeleteThis() {
+    InternalUnregister(base::PassKey<DocumentService>());
+    receiver_.reset();
+    delete this;
+  }
+
+  // Internal implementation helper:
+  void ResetAndDeleteThisInternal(base::PassKey<DocumentAssociatedData>) final {
     receiver_.reset();
     delete this;
   }
@@ -129,6 +135,7 @@ class DocumentService : public Interface, public internal::DocumentServiceBase {
   // Prefer over `mojo::ReportBadMessage()`, since using this method avoids the
   // need to run any pending reply callbacks with placeholder arguments.
   NOT_TAIL_CALLED void ReportBadMessageAndDeleteThis(std::string_view error) {
+    InternalUnregister(base::PassKey<DocumentService>());
     receiver_.ReportBadMessage(error);
     delete this;
   }

@@ -2146,7 +2146,6 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   // completes. Among other things, this ensures that any `SafeRef`s from
   // `DocumentService` and `RenderFrameHostUserData` subclasses are still valid
   // when their destructors run.
-  document_associated_data_->RemoveAllServices();
   document_associated_data_.reset();
 
   // If this was the last active frame in the SiteInstanceGroup, the
@@ -2766,12 +2765,11 @@ bool RenderFrameHostImpl::IsErrorDocument() const {
 }
 
 DocumentRef RenderFrameHostImpl::GetDocumentRef() {
-  return DocumentRef(document_associated_data_->weak_factory().GetSafeRef());
+  return DocumentRef(document_associated_data_->GetSafeRef());
 }
 
 WeakDocumentPtr RenderFrameHostImpl::GetWeakDocumentPtr() {
-  return WeakDocumentPtr(
-      document_associated_data_->weak_factory().GetWeakPtr());
+  return WeakDocumentPtr(document_associated_data_->GetWeakPtr());
 }
 
 void RenderFrameHostImpl::GetSerializedHtmlWithLocalLinks(
@@ -7135,18 +7133,6 @@ void RenderFrameHostImpl::EnforceInsecureRequestPolicy(
 void RenderFrameHostImpl::EnforceInsecureNavigationsSet(
     const std::vector<uint32_t>& set) {
   browsing_context_state_->SetInsecureNavigationsSet(set);
-}
-
-void RenderFrameHostImpl::AddDocumentService(
-    internal::DocumentServiceBase* document_service,
-    base::PassKey<internal::DocumentServiceBase>) {
-  document_associated_data_->services().push_back(document_service);
-}
-
-void RenderFrameHostImpl::RemoveDocumentService(
-    internal::DocumentServiceBase* document_service,
-    base::PassKey<internal::DocumentServiceBase>) {
-  std::erase(document_associated_data_->services(), document_service);
 }
 
 FrameTreeNode* RenderFrameHostImpl::FindAndVerifyChild(

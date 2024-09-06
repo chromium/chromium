@@ -262,10 +262,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kDoNotEvictOnAXLocationChange);
 
 namespace content {
 
-namespace internal {
-class DocumentServiceBase;
-}  // namespace internal
-
 class AgentSchedulingGroupHost;
 class BrowsingContextState;
 class CodeCacheHostImpl;
@@ -2575,23 +2571,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Document-associated data. This is cleared whenever a new document is hosted
   // by this RenderFrameHost. Please refer to the description at
   // content/public/browser/document_user_data.h for more details.
-  base::SupportsUserData::Data* GetDocumentUserData(const void* key) const {
-    return document_associated_data_->GetUserData(key);
+  const DocumentAssociatedData& document_associated_data() const {
+    return *document_associated_data_;
   }
 
-  void SetDocumentUserData(const void* key,
-                           std::unique_ptr<base::SupportsUserData::Data> data) {
-    document_associated_data_->SetUserData(key, std::move(data));
+  DocumentAssociatedData& document_associated_data() {
+    return *document_associated_data_;
   }
-
-  void RemoveDocumentUserData(const void* key) {
-    document_associated_data_->RemoveUserData(key);
-  }
-
-  void AddDocumentService(internal::DocumentServiceBase* document_service,
-                          base::PassKey<internal::DocumentServiceBase>);
-  void RemoveDocumentService(internal::DocumentServiceBase* document_service,
-                             base::PassKey<internal::DocumentServiceBase>);
 
   // Called when we commit speculative RFH early due to not having an alive
   // current frame. This happens when the renderer crashes before navigating to
