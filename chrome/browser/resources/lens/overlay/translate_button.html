@@ -56,7 +56,7 @@
   }
 
   .language-picker-menu {
-    background: var(--cr-menu-background-color);
+    background: white;
     box-shadow: 0px 2px 6px 0px rgba(60, 64, 67, 0.16);
     border-radius: 16px;
     color: var(--color-scrim);
@@ -262,75 +262,6 @@
         [[targetLanguage.displayName]]
       </span>
     </cr-button>
-    <div id="sourceLanguagePickerMenu" class="language-picker-menu" role="menu"
-        aria-labelledby="sourceLanguageButton">
-      <div class="language-picker-menu-title-section">
-        <cr-icon-button iron-icon="cr:arrow-back"
-            class="language-picker-menu-back-button" role="button"
-            aria-label="$i18n{backButton}" title="$i18n{backButton}"
-            on-click="hideLanguagePickerMenus"></cr-icon-button>
-        <div class="language-picker-menu-title">$i18n{translateFrom}</div>
-      </div>
-      <div class="language-picker-menu-section">
-        <cr-button id="sourceAutoDetectButton"
-            class="button language-picker-menu-button"
-            on-click="onAutoDetectMenuItemClick">
-          <cr-icon icon="cr:check" slot="prefix-icon"
-              class$="checked-icon [[getAutoCheckedClass(sourceLanguage)]]">
-          </cr-icon>
-          <div class="language-picker-menu-button-label">
-            $i18n{detectLanguage}
-          </div>
-          <div id="menuDetectedLanguage"
-              class="language-picker-menu-detected-language">
-            [[getContentLanguageDisplayName(contentLanguage)]]
-          </div>
-          <span id="languagePickerMenuStarsIcon" slot="suffix-icon"></span>
-          </cr-button>
-      </div>
-      <div class="language-picker-menu-section">
-        <h3 class="language-picker-menu-header">$i18n{allLanguages}</h3>
-        <template id="sourceLanguagePickerContainer" is="dom-repeat"
-            items="[[translateLanguageList]]" as="language">
-          <cr-button class="button language-picker-menu-button"
-              on-click="onSourceLanguageMenuItemClick">
-            <cr-icon icon="cr:check" slot="prefix-icon"
-                class$="checked-icon [[getLanguageCheckedClass(
-                language, sourceLanguage)]]">
-            </cr-icon>
-            <span class="language-picker-menu-button-label">
-              [[language.displayName]]
-            </span>
-            </cr-button>
-            </template>
-      </div>
-    </div>
-    <div id="targetLanguagePickerMenu" class="language-picker-menu" role="menu"
-        aria-labelledby="targetLanguageButton">
-      <div class="language-picker-menu-title-section">
-        <cr-icon-button iron-icon="cr:arrow-back"
-            class="language-picker-menu-back-button" role="button"
-            aria-label="$i18n{backButton}" title="$i18n{backButton}"
-            on-click="hideLanguagePickerMenus"></cr-icon-button>
-        <div class="language-picker-menu-title">$i18n{translateTo}</div>
-      </div>
-      <div class="language-picker-menu-section">
-        <h3 class="language-picker-menu-header">$i18n{allLanguages}</h3>
-        <template id="targetLanguagePickerContainer" is="dom-repeat"
-            items="[[translateLanguageList]]" as="language">
-          <cr-button class="button language-picker-menu-button"
-              on-click="onTargetLanguageMenuItemClick">
-            <cr-icon icon="cr:check" slot="prefix-icon"
-                class$="checked-icon [[getLanguageCheckedClass(
-                language, targetLanguage)]]">
-            </cr-icon>
-            <span class="language-picker-menu-button-label">
-              [[language.displayName]]
-            </span>
-            </cr-button>
-            </template>
-      </div>
-    </div>
   </div>
   <cr-button id="translateButton" class="button"
   on-click="onTranslateButtonClick">
@@ -339,4 +270,73 @@
       $i18n{translateButtonLabel}
     </span>
   </cr-button>
+  <div id="sourceLanguagePickerMenu" class="language-picker-menu" role="menu"
+      aria-labelledby="sourceLanguageButton">
+    <div class="language-picker-menu-title-section">
+      <cr-icon-button iron-icon="cr:arrow-back"
+          class="language-picker-menu-back-button" role="button"
+          aria-label="$i18n{backButton}" title="$i18n{backButton}"
+          on-click="hideLanguagePickerMenus"></cr-icon-button>
+      <div class="language-picker-menu-title">$i18n{translateFrom}</div>
+    </div>
+    <div class="language-picker-menu-section">
+      <cr-button id="sourceAutoDetectButton"
+          class="button language-picker-menu-button"
+          on-click="onAutoDetectMenuItemClick">
+        <cr-icon icon="cr:check" slot="prefix-icon"
+            class$="checked-icon [[getAutoCheckedClass(sourceLanguage)]]">
+        </cr-icon>
+        <div class="language-picker-menu-button-label">
+          $i18n{detectLanguage}
+        </div>
+        <div id="menuDetectedLanguage"
+            class="language-picker-menu-detected-language">
+          [[getContentLanguageDisplayName(contentLanguage)]]
+        </div>
+        <span id="languagePickerMenuStarsIcon" slot="suffix-icon"></span>
+        </cr-button>
+    </div>
+    <div class="language-picker-menu-section">
+      <h3 class="language-picker-menu-header">$i18n{allLanguages}</h3>
+      <template id="sourceLanguagePickerContainer" is="dom-repeat"
+          items="[[translateLanguageList]]" as="language">
+        <cr-button class="button language-picker-menu-button"
+            on-click="onSourceLanguageMenuItemClick">
+          <cr-icon icon="cr:check" slot="prefix-icon"
+              class$="checked-icon [[getLanguageCheckedClass(
+              language, sourceLanguage)]]">
+          </cr-icon>
+          <span class="language-picker-menu-button-label">
+            [[language.displayName]]
+          </span>
+          </cr-button>
+          </template>
+    </div>
+  </div>
+  <div id="targetLanguagePickerMenu" class="language-picker-menu" role="menu"
+      aria-labelledby="targetLanguageButton">
+    <div class="language-picker-menu-title-section">
+      <cr-icon-button iron-icon="cr:arrow-back"
+          class="language-picker-menu-back-button" role="button"
+          aria-label="$i18n{backButton}" title="$i18n{backButton}"
+          on-click="hideLanguagePickerMenus"></cr-icon-button>
+      <div class="language-picker-menu-title">$i18n{translateTo}</div>
+    </div>
+    <div class="language-picker-menu-section">
+      <h3 class="language-picker-menu-header">$i18n{allLanguages}</h3>
+      <template id="targetLanguagePickerContainer" is="dom-repeat"
+          items="[[translateLanguageList]]" as="language">
+        <cr-button class="button language-picker-menu-button"
+            on-click="onTargetLanguageMenuItemClick">
+          <cr-icon icon="cr:check" slot="prefix-icon"
+              class$="checked-icon [[getLanguageCheckedClass(
+              language, targetLanguage)]]">
+          </cr-icon>
+          <span class="language-picker-menu-button-label">
+            [[language.displayName]]
+          </span>
+          </cr-button>
+          </template>
+    </div>
+  </div>
 </div>
