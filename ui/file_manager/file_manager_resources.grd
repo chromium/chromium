@@ -27,7 +27,7 @@
       <!-- Image loader extension manifest and scripts. -->
       <if expr="chromeos_ash">
         <include name="IDR_IMAGE_LOADER_MANIFEST" file="image_loader/manifest.json" type="BINDATA" />
-        <include name="IDR_IMAGE_LOADER_BACKGROUND_HTML" file="image_loader/background.html" type="BINDATA" />
+        <include name="IDR_IMAGE_LOADER_OFFSCREEN_HTML" file="image_loader/offscreen.html" type="BINDATA" />
         <include name="IDR_IMAGE_LOADER_PIEX_WASM_JS" file="image_loader/piex/piex.js.wasm" type="BINDATA" />
         <include name="IDR_IMAGE_LOADER_PIEX_WASM" file="image_loader/piex/piex.out.wasm" type="BINDATA" />
       </if>

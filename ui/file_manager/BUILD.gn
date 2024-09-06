@@ -362,13 +362,13 @@ generate_grd("build_grd") {
 
   input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
   input_files = [
-    "image_loader/background.rollup.js",
+    "image_loader/offscreen.rollup.js",
     "image_loader/shared.rollup.js",
     "image_loader/service_worker.rollup.js",
   ]
 
   resource_path_rewrites = [
-    "image_loader/background.rollup.js|image_loader/background.js",
+    "image_loader/offscreen.rollup.js|image_loader/offscreen.js",
     "image_loader/service_worker.rollup.js|image_loader/service_worker.js",
   ]
 

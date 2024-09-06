@@ -78,7 +78,7 @@ optimize_webui("build") {
 
   input = image_loader_path
   js_module_in_files = [
-    "background.js",
+    "offscreen.js",
     "service_worker.js",
   ]
 

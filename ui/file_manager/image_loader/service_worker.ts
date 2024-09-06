@@ -20,7 +20,7 @@ const ALLOW_LISTED_NATIVE = 'com.google.ash_thumbnail_loader';
 // https://developer.chrome.com/docs/extensions/reference/api/offscreen#maintain_the_lifecycle_of_an_offscreen_document
 let creatingOffscreenDocument: Promise<void>|undefined;
 async function setupOffscreenDocument() {
-  const url = chrome.runtime.getURL('background.html');
+  const url = chrome.runtime.getURL('offscreen.html');
   const existingContexts = await chrome.runtime.getContexts({
     contextTypes: [chrome.runtime.ContextType.OFFSCREEN_DOCUMENT],
     documentUrls: [url],
