@@ -505,6 +505,10 @@ impl serde::Serializer for MapKeySerializer {
         Ok(value.to_string())
     }
 
+    fn serialize_i128(self, value: i128) -> Result<String> {
+        Ok(value.to_string())
+    }
+
     fn serialize_u8(self, value: u8) -> Result<String> {
         Ok(value.to_string())
     }
@@ -518,6 +522,10 @@ impl serde::Serializer for MapKeySerializer {
     }
 
     fn serialize_u64(self, value: u64) -> Result<String> {
+        Ok(value.to_string())
+    }
+
+    fn serialize_u128(self, value: u128) -> Result<String> {
         Ok(value.to_string())
     }
 

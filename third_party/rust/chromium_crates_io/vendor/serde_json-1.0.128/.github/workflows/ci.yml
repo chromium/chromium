@@ -31,6 +31,11 @@ jobs:
       - run: cargo test --features float_roundtrip,arbitrary_precision --tests -- --skip ui --exact
       - run: cargo test --features raw_value --tests -- --skip ui --exact
       - run: cargo test --features unbounded_depth --tests -- --skip ui --exact
+      - uses: actions/upload-artifact@v4
+        if: matrix.os == 'ubuntu' && always()
+        with:
+          name: Cargo.lock
+          path: Cargo.lock
 
   build:
     name: Rust ${{matrix.rust}} ${{matrix.os == 'windows' && '(windows)' || ''}}
