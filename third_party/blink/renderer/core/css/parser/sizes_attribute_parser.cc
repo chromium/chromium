@@ -32,8 +32,7 @@ bool SizesAttributeParser::Parse(CSSParserTokenStream& stream) {
   while (!stream.AtEnd()) {
     stream.ConsumeWhitespace();
 
-    if (RuntimeEnabledFeatures::AutoSizeLazyLoadedImagesEnabled() &&
-        css_parsing_utils::AtIdent(stream.Peek(), "auto")) {
+    if (css_parsing_utils::AtIdent(stream.Peek(), "auto")) {
       // Spec: "For better backwards-compatibility with legacy user
       // agents that don't support the auto keyword, fallback sizes
       // can be specified if desired."

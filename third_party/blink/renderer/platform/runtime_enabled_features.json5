@@ -453,12 +453,6 @@
       name: "AutoPictureInPictureVideoHeuristics",
       status: "experimental",
     },
-    {
-      // If enabled, lazy loaded images can be auto sized if the sizes
-      // attribute is missing or set to auto.
-      name: "AutoSizeLazyLoadedImages",
-      status: "stable",
-    },
     // When enabled, enforces new interoperable semantics for 3D transforms.
     // See crbug.com/1008483.
     {
