@@ -6,7 +6,9 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
 
+import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.util.Size;
 import android.view.View;
@@ -161,11 +163,6 @@ class TabGridViewBinder {
         } else if (TabProperties.CARD_ANIMATION_STATUS == propertyKey) {
             ((TabGridView) view)
                     .scaleTabGridCardView(model.get(TabProperties.CARD_ANIMATION_STATUS));
-        } else if (TabProperties.IS_INCOGNITO == propertyKey) {
-            boolean isIncognito = model.get(TabProperties.IS_INCOGNITO);
-            boolean isSelected = model.get(TabProperties.IS_SELECTED);
-            updateColor(view, isIncognito, isSelected);
-            updateColorForActionButton(view, isIncognito, isSelected);
         } else if (TabProperties.ACCESSIBILITY_DELEGATE == propertyKey) {
             view.setAccessibilityDelegate(model.get(TabProperties.ACCESSIBILITY_DELEGATE));
         } else if (TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER == propertyKey) {
@@ -225,16 +222,11 @@ class TabGridViewBinder {
             ((TabGridView) view)
                     .setSelectionDelegate(model.get(TabProperties.TAB_SELECTION_DELEGATE));
             ((TabGridView) view).setItem(tabId);
-        } else if (TabProperties.IS_INCOGNITO == propertyKey) {
-            boolean isIncognito = model.get(TabProperties.IS_INCOGNITO);
-            boolean isSelected = model.get(TabProperties.IS_SELECTED);
-            updateColor(view, isIncognito, isSelected);
-            updateColorForSelectionToggleButton(view, isIncognito, isSelected);
         } else if (TabProperties.TAB_ACTION_STATE == propertyKey) {
-            boolean isIncognito = model.get(TabProperties.IS_INCOGNITO);
-            boolean isSelected = model.get(TabProperties.IS_SELECTED);
-            updateColor(view, isIncognito, isSelected);
-            updateColorForSelectionToggleButton(view, isIncognito, isSelected);
+            updateColorForSelectionToggleButton(
+                    view,
+                    model.get(TabProperties.IS_INCOGNITO),
+                    model.get(TabProperties.IS_SELECTED));
         } else if (TabProperties.TAB_CARD_LABEL_DATA == propertyKey) {
             // Ignore this data for tab card labels in selectable mode.
             updateTabCardLabel(view, /* tabCardLabelData= */ null);
@@ -459,29 +451,28 @@ class TabGridViewBinder {
 
     private static void updateColorForSelectionToggleButton(
             ViewLookupCachingFrameLayout rootView, boolean isIncognito, boolean isSelected) {
-        final int defaultLevel =
-                rootView.getResources().getInteger(R.integer.list_item_level_default);
-        final int selectedLevel =
-                rootView.getResources().getInteger(R.integer.list_item_level_selected);
-
         ImageView actionButton = (ImageView) rootView.fastFindViewById(R.id.action_button);
-        actionButton.getBackground().setLevel(isSelected ? selectedLevel : defaultLevel);
+
+        Context context = rootView.getContext();
+        Resources res = rootView.getResources();
+        actionButton.getBackground().setLevel(getCheckmarkLevel(res, isSelected));
         DrawableCompat.setTintList(
                 actionButton.getBackground().mutate(),
                 TabUiThemeProvider.getToggleActionButtonBackgroundTintList(
-                        rootView.getContext(), isIncognito, isSelected));
+                        context, isIncognito, isSelected));
 
         // The check should be invisible if not selected.
-        actionButton.getDrawable().setAlpha(isSelected ? 255 : 0);
+        Drawable drawable = actionButton.getDrawable();
+        drawable.setAlpha(isSelected ? 255 : 0);
         ImageViewCompat.setImageTintList(
                 actionButton,
                 isSelected
                         ? TabUiThemeProvider.getToggleActionButtonCheckedDrawableTintList(
-                                rootView.getContext(), isIncognito)
+                                context, isIncognito)
                         : null);
 
         if (isSelected) {
-            ((AnimatedVectorDrawableCompat) actionButton.getDrawable()).start();
+            ((AnimatedVectorDrawableCompat) drawable).start();
         }
     }
 
@@ -497,6 +488,12 @@ class TabGridViewBinder {
             labelView = (TabCardLabelView) rootView.fastFindViewById(R.id.tab_card_label);
         }
         labelView.setData(tabCardLabelData);
+    }
+
+    private static int getCheckmarkLevel(Resources res, boolean isSelected) {
+        return isSelected
+                ? res.getInteger(R.integer.list_item_level_selected)
+                : res.getInteger(R.integer.list_item_level_default);
     }
 
     static void setThumbnailFeatureForTesting(ThumbnailFetcher fetcher) {

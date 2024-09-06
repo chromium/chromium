@@ -91,9 +91,13 @@ class TabListViewBinder {
                         setFavicon(view, tabFavicon.getDefaultDrawable());
                     });
         } else if (TabProperties.IS_SELECTED == propertyKey) {
+            boolean isSelected = model.get(TabProperties.IS_SELECTED);
+            boolean isIncognito = model.get(TabProperties.IS_INCOGNITO);
+            updateColors(view, isIncognito, isSelected);
+
             @DrawableRes
             int selectedTabBackground =
-                    model.get(TabProperties.IS_INCOGNITO)
+                    isIncognito
                             ? R.drawable.selected_tab_background_incognito
                             : R.drawable.selected_tab_background;
             Resources res = view.getResources();
@@ -102,12 +106,7 @@ class TabListViewBinder {
                     new InsetDrawable(
                             ResourcesCompat.getDrawable(res, selectedTabBackground, theme),
                             (int) res.getDimension(R.dimen.tab_list_selected_inset_low_end));
-            view.setForeground(model.get(TabProperties.IS_SELECTED) ? drawable : null);
-        } else if (TabProperties.IS_INCOGNITO == propertyKey) {
-            updateColors(
-                    view,
-                    model.get(TabProperties.IS_INCOGNITO),
-                    model.get(TabProperties.IS_SELECTED));
+            view.setForeground(isSelected ? drawable : null);
         } else if (TabProperties.URL_DOMAIN == propertyKey) {
             String domain = model.get(TabProperties.URL_DOMAIN);
             ((TextView) view.findViewById(R.id.description)).setText(domain);
@@ -138,7 +137,7 @@ class TabListViewBinder {
             PropertyModel model, ViewGroup view, @Nullable PropertyKey propertyKey) {
         bindListTab(model, view, propertyKey);
 
-        if (TabProperties.IS_INCOGNITO == propertyKey) {
+        if (TabProperties.IS_SELECTED == propertyKey) {
             ImageView closeButton = view.findViewById(R.id.end_button);
             ImageViewCompat.setImageTintList(
                     closeButton,
