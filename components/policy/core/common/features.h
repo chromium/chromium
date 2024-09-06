@@ -6,15 +6,14 @@
 #define COMPONENTS_POLICY_CORE_COMMON_FEATURES_H_
 
 #include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
-#include "base/time/time.h"
-#include "build/build_config.h"
 #include "components/policy/policy_export.h"
 
-namespace policy {
-namespace features {
+namespace policy::features {
 
-}  // namespace features
-}  // namespace policy
+// Enable the PolicyBlocklistThrottle optimization to hide the DEFER latency
+// on WillStartRequest and WillRedirectRequest. See https://crbug.com/349964973.
+POLICY_EXPORT BASE_DECLARE_FEATURE(kPolicyBlocklistProceedUntilResponse);
+
+}  // namespace policy::features
 
 #endif  // COMPONENTS_POLICY_CORE_COMMON_FEATURES_H_
