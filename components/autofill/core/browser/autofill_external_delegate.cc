@@ -849,6 +849,7 @@ void AutofillExternalDelegate::DidPerformButtonActionForSuggestion(
     case SuggestionType::kCreateNewPlusAddressInline:
       if (AutofillPlusAddressDelegate* plus_address_delegate =
               manager_->client().GetPlusAddressDelegate()) {
+        ClearPreviewedForm();
         base::span<const Suggestion> suggestions =
             manager_->client().GetAutofillSuggestions();
         // TODO(crbug.com/362445807): Change the signature of

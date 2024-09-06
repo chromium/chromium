@@ -2230,6 +2230,7 @@ TEST_F(AutofillExternalDelegateUnitTest, PlusAddressExtraButtonAction) {
 
     std::vector<Suggestion> updated_suggestions = suggestions;
     updated_suggestions.back().payload = Suggestion::PlusAddressPayload();
+    EXPECT_CALL(driver(), RendererShouldClearPreviewedForm);
     EXPECT_CALL(plus_address_delegate(),
                 OnClickedRefreshInlineSuggestion(
                     _, base::span<const Suggestion>(suggestions),
