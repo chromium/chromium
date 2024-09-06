@@ -622,13 +622,19 @@ void ActiveSessionAuthControllerImpl::OnAuthFactorStatusUpdate(
           user_data_auth::AUTH_FACTOR_TYPE_PIN) {
         ProcessAuthFactorStatusUpdate(update);
       }
-      break;
-
-    case ActiveSessionAuthState::kWaitForInit:
-    case ActiveSessionAuthState::kPasswordAuthStarted:
+      return;
     case ActiveSessionAuthState::kPinAuthStarted:
-      // TODO(b:363443439): Handle updates in these states.
-      // Currently skipping for simplicity.
+    case ActiveSessionAuthState::kPasswordAuthStarted:
+      // Handle the updates in the *Started states.
+      if (update.auth_factor_with_status().auth_factor().type() ==
+          user_data_auth::AUTH_FACTOR_TYPE_PIN) {
+        if (pending_pin_factor_status_update_.has_value()) {
+          LOG(WARNING) << "Overwrite pending pin status update.";
+        }
+        pending_pin_factor_status_update_ = update;
+      }
+      return;
+    case ActiveSessionAuthState::kWaitForInit:
       return;
 
     case ActiveSessionAuthState::kPasswordAuthSucceeded:
