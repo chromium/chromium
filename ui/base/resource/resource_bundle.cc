@@ -243,6 +243,7 @@ class ResourceBundle::BitmapImageSource : public gfx::ImageSkiaSource {
 #else
       DUMP_WILL_BE_NOTREACHED() << "Unable to load bitmap image with id "
                                 << resource_id_ << ", scale=" << scale;
+      return gfx::ImageSkiaRep(CreateEmptyBitmap(), scale);
 #endif
     }
 
