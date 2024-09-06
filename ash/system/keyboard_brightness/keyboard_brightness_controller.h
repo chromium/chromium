@@ -62,7 +62,6 @@ class ASH_EXPORT KeyboardBrightnessController
       const power_manager::AmbientLightSensorChange& change) override;
   void KeyboardBrightnessChanged(
       const power_manager::BacklightBrightnessChange& change) override;
-  void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
 
   // LoginDataDispatcher::Observer:
   void OnFocusPod(const AccountId& account_id) override;
@@ -123,10 +122,6 @@ class ASH_EXPORT KeyboardBrightnessController
 
   // True if the keyboard has an ambient light sensor.
   bool has_sensor_ = false;
-
-  // Used to re-enable ambient light sensor if source is not from settings app.
-  //   base::Time keyboard_ambient_light_sensor_disabled_timestamp_;
-  std::optional<base::Time> keyboard_ambient_light_sensor_disabled_timestamp_;
 
   // This PrefChangeRegistrar is used to check when the synced profile pref for
   // the keyboard ambient light sensor value has finished syncing.

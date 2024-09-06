@@ -285,35 +285,6 @@ void BrightnessControllerChromeos::OnSessionStateChanged(
   last_session_change_time_ = base::TimeTicks::Now();
 }
 
-// PowerManagerClient::Observer:
-void BrightnessControllerChromeos::SuspendImminent(
-    power_manager::SuspendImminent::Reason reason) {
-  if (!features::IsBrightnessControlInSettingsEnabled()) {
-    return;
-  }
-  // In tests, these may not be present.
-  if (!active_account_id_.has_value() || !local_state_) {
-    return;
-  }
-  if (!ambient_light_sensor_disabled_timestamp_.has_value()) {
-    return;
-  }
-
-  user_manager::KnownUser known_user(local_state_);
-  base::Time now = base::Time::Now();
-
-  // Re-enable ALS if it passed local midnight.
-  if (now.LocalMidnight() -
-          ambient_light_sensor_disabled_timestamp_.value().LocalMidnight() >=
-      base::Days(1)) {
-    if (ShouldReenableAmbientLightSensor(active_account_id_.value(),
-                                         known_user)) {
-      SetAmbientLightSensorEnabled(
-          true, AmbientLightSensorEnabledChangeSource::kSystemReenabled);
-    }
-  }
-}
-
 void BrightnessControllerChromeos::OnFocusPod(const AccountId& account_id) {
   active_account_id_ = account_id;
   if (!features::IsBrightnessControlInSettingsEnabled()) {
@@ -512,7 +483,6 @@ void BrightnessControllerChromeos::AmbientLightSensorEnabledChanged(
     known_user.SetPath(
         active_account_id_.value(), prefs::kAmbientLightSensorDisabledReason,
         std::make_optional<base::Value>(static_cast<int>(change.cause())));
-    ambient_light_sensor_disabled_timestamp_ = base::Time::Now();
   } else {
     // If the ambient light sensor was enabled, remove the existing "disabled
     // reason" pref.
