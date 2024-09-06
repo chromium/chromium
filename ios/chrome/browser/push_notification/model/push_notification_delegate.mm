@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/push_notification/model/push_notification_delegate.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/files/file_path.h"
 #import "base/metrics/histogram_functions.h"
@@ -25,6 +26,7 @@
 #import "ios/chrome/browser/content_notification/model/content_notification_settings_action.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_util.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_manager.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_configuration.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_delegate.h"
@@ -34,6 +36,8 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -59,6 +63,9 @@ constexpr int kTimeRangeHistogramBucketCount = 30;
 // The histogram used to record a push notification's current lifecycle state on
 // the device.
 const char kLifecycleEventsHistogram[] = "IOS.PushNotification.LifecyleEvents";
+
+// Key for the PushNotificationClientId in the Send Tab notification payload.
+NSString* const kPushNotificationClientIdKey = @"push_notification_client_id";
 
 // This enum is used to represent a point along the push notification's
 // lifecycle.
@@ -153,6 +160,13 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
       notification.request.content.userInfo);
 
   if (completionHandler) {
+    // If the app is foregrounded, Send Tab push notifications should not be
+    // displayed.
+    if ([notification.request.content.userInfo[kPushNotificationClientIdKey]
+            intValue] == static_cast<int>(PushNotificationClientId::kSendTab) &&
+        [self isSceneLevelForegroundActive]) {
+      completionHandler(UNNotificationPresentationOptionNone);
+    }
     completionHandler(UNNotificationPresentationOptionBanner);
   }
   base::UmaHistogramEnumeration(kAppLaunchSource,
@@ -351,6 +365,25 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
 - (BOOL)isContentNotificationAvailable:(ChromeBrowserState*)browserState {
   return IsContentNotificationEnabled(browserState) ||
          IsContentNotificationRegistered(browserState);
+}
+
+// Returns YES if there is a foreground active browser. Checks all profiles.
+- (BOOL)isSceneLevelForegroundActive {
+  std::vector<ChromeBrowserState*> loaded_profiles =
+      GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
+
+  for (ChromeBrowserState* profile : loaded_profiles) {
+    std::set<Browser*> browsers =
+        BrowserListFactory::GetForBrowserState(profile)->BrowsersOfType(
+            BrowserList::BrowserType::kRegular);
+    for (Browser* browser : browsers) {
+      if (browser->GetSceneState().activationLevel ==
+          SceneActivationLevelForegroundActive) {
+        return YES;
+      }
+    }
+  }
+  return NO;
 }
 
 @end
