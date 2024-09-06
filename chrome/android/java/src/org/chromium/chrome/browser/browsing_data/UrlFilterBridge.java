@@ -32,7 +32,7 @@ public class UrlFilterBridge implements UrlFilter {
     }
 
     /**
-     * Called from C++ by |nativeUrlFilterBridge| to insChromeBackupAgentImpltantiate this class.
+     * Called from C++ by |nativeUrlFilterBridge| to instantiate this class.
      * Note that this is the only way to construct an UrlFilterBridge; the constructor is private.
      *
      * @param nativeUrlFilterBridge The native counterpart that creates and owns this object.
