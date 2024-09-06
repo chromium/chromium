@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_PAGE_RESOURCE_MONITOR_H_
-#define CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_PAGE_RESOURCE_MONITOR_H_
+#ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_METRICS_PAGE_RESOURCE_MONITOR_H_
+#define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_METRICS_PAGE_RESOURCE_MONITOR_H_
 
 #include <map>
 #include <memory>
@@ -110,4 +110,4 @@ class PageResourceMonitor : public resource_attribution::QueryResultObserver,
 
 }  // namespace performance_manager::metrics
 
-#endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_PAGE_RESOURCE_MONITOR_H_
+#endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_METRICS_PAGE_RESOURCE_MONITOR_H_

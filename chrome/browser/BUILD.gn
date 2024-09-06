@@ -1045,8 +1045,6 @@ static_library("browser") {
     "performance_manager/mechanisms/working_set_trimmer.h",
     "performance_manager/metrics/metrics_provider_common.cc",
     "performance_manager/metrics/metrics_provider_common.h",
-    "performance_manager/metrics/page_resource_monitor.cc",
-    "performance_manager/metrics/page_resource_monitor.h",
     "performance_manager/observers/page_load_metrics_observer.cc",
     "performance_manager/observers/page_load_metrics_observer.h",
     "performance_manager/policies/policy_features.cc",
