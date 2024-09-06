@@ -55,9 +55,31 @@
     testRunner.log(prefetchStatusUpdated);
   }
 
+  async function testNoRedispatchAfterEnableIfCandidateRemoved() {
+    const { page, dp, session } = await testRunner.startBlank(
+      `Tests that Preload.prefetchStatusUpdated is not redispatched for a prefetch request if the candidate was removed.`);
+    await dp.Preload.enable();
+    page.navigate("https://127.0.0.1:8443/inspector-protocol/prefetch/resources/prefetch.https.html");
+    await waitUntilStatus(dp, 'Ready');
+
+    // Remove speculation candidate and wait for failure status.
+    session.evaluate('document.getElementById("speculationrule").remove()');
+    await waitUntilStatus(dp, 'Failure');
+
+    // Disable and re-enable Preload domain. We should not see the failure
+    // update re-dispatched for the removed candidate.
+    await dp.Preload.disable();
+    dp.Preload.onPrefetchStatusUpdated(() => {
+      testRunner.fail('Received status update for removed speculation candidate.');
+    });
+    await dp.Preload.enable();
+    testRunner.log('No update received after Preload domain is re-enabled.');
+  }
+
   testRunner.runTestSuite([
     basicTest,
     testRedispatchAfterEnable,
-    testRedispatchAfterEnable_FailedPrefetch
+    testRedispatchAfterEnable_FailedPrefetch,
+    testNoRedispatchAfterEnableIfCandidateRemoved
   ]);
 });

@@ -288,6 +288,10 @@ void DidUpdatePrerenderStatus(
     std::optional<std::string> disallowed_mojo_interface,
     const std::vector<PrerenderMismatchedHeaders>* mismatched_headers);
 
+void DidUpdateSpeculationCandidates(
+    RenderFrameHost& rfh,
+    const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates);
+
 void OnSignedExchangeReceived(
     FrameTreeNode* frame_tree_node,
     std::optional<const base::UnguessableToken> devtools_navigation_token,

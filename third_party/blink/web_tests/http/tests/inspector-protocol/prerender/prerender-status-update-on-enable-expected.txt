@@ -22,3 +22,7 @@ Test that a status update is sent for a completed prerender on enable
     status : Failure
 }
 
+Running test: testCandidateRemovedAfterFailure
+Test that a status update is sent for a completed prerender on enable
+No status update received after Preload domain is re-enabled.
+

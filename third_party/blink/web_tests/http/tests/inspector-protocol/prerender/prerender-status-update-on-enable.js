@@ -54,8 +54,30 @@
     testRunner.log(prerenderStatusUpdated);
   }
 
+  async function testCandidateRemovedAfterFailure() {
+    const {session, dp} = await setupSession();
+    await dp.Preload.enable();
+    session.navigate('resources/bad-http-prerender.html');
+    await waitForPrerender(dp, 'Failure');
+
+    // Remove speculation rule and disable Preload.
+    session.evaluate(() => {
+      document.querySelector('script').remove();
+    });
+    await dp.Preload.disable();
+
+    // Re-enable Preload; we should not get any status update for the removed
+    // speculation candidate.
+    dp.Preload.onPrerenderStatusUpdated(() => {
+      testRunner.fail('Status update received for removed speculation candidate.');
+    });
+    await dp.Preload.enable();
+    testRunner.log('No status update received after Preload domain is re-enabled.');
+  }
+
   testRunner.runTestSuite([
     testReady,
-    testFailure
+    testFailure,
+    testCandidateRemovedAfterFailure
   ]);
 });

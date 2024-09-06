@@ -782,6 +782,14 @@ void DidUpdatePrerenderStatus(
                    disallowed_mojo_interface, mismatched_headers);
 }
 
+void DidUpdateSpeculationCandidates(
+    RenderFrameHost& rfh,
+    const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates) {
+  if (auto* storage = DevToolsPreloadStorage::GetForCurrentDocument(&rfh)) {
+    storage->SpeculationCandidatesUpdated(candidates);
+  }
+}
+
 namespace {
 
 protocol::String BuildBlockedByResponseReason(

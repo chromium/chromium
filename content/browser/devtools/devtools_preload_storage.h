@@ -10,7 +10,7 @@
 #include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/preloading.h"
-#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-shared.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-forward.h"
 
 namespace content {
 
@@ -35,6 +35,9 @@ class DevToolsPreloadStorage : public DocumentUserData<DevToolsPreloadStorage> {
       const std::optional<std::string>& disallowed_mojo_interface,
       const std::vector<PrerenderMismatchedHeaders>* mismatched_headers);
 
+  void SpeculationCandidatesUpdated(
+      const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates);
+
   using PrefetchKey = GURL;
   struct PrefetchData {
     PreloadingTriggeringOutcome outcome;
@@ -48,6 +51,7 @@ class DevToolsPreloadStorage : public DocumentUserData<DevToolsPreloadStorage> {
       std::pair<GURL, std::optional<blink::mojom::SpeculationTargetHint>>;
   struct PrerenderData {
     PrerenderData();
+    PrerenderData(const PrerenderData& other);
     ~PrerenderData();
 
     PreloadingTriggeringOutcome outcome;
