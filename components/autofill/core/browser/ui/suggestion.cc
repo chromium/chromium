@@ -143,6 +143,8 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kEmail";
     case Suggestion::Icon::kEmpty:
       return "kEmpty";
+    case Suggestion::Icon::kError:
+      return "kError";
     case Suggestion::Icon::kGlobe:
       return "kGlobe";
     case Suggestion::Icon::kGoogle:

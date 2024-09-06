@@ -168,6 +168,7 @@ TEST_F(PlusAddressSuggestionGeneratorTest, GetPlusAddressErrorSuggestion) {
   EXPECT_EQ(
       suggestion.main_text.value,
       l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT));
+  EXPECT_EQ(suggestion.icon, Suggestion::Icon::kError);
   EXPECT_THAT(
       suggestion.labels,
       ElementsAre(ElementsAre(Suggestion::Text(l10n_util::GetStringUTF16(

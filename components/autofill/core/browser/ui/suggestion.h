@@ -148,6 +148,7 @@ struct Suggestion {
     kEdit,
     kEmail,
     kEmpty,
+    kError,
     kGlobe,
     kGoogle,
     kGoogleMonochrome,

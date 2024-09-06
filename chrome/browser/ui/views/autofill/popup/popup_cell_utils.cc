@@ -123,6 +123,7 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
     case Suggestion::Icon::kEdit:
     case Suggestion::Icon::kEmail:
     case Suggestion::Icon::kEmpty:
+    case Suggestion::Icon::kError:
     case Suggestion::Icon::kGlobe:
     case Suggestion::Icon::kGoogle:
     case Suggestion::Icon::kGoogleMonochrome:
@@ -246,47 +247,30 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
   switch (icon) {
     case Suggestion::Icon::kNoIcon:
       return std::nullopt;
-    case Suggestion::Icon::kHttpWarning:
-      // For the http warning message, get the icon images from VectorIcon,
-      // which is the same as the security indicator icons in the location bar.
-      return ImageModelFromVectorIcon(omnibox::kHttpIcon, kIconSize);
-    case Suggestion::Icon::kHttpsInvalid:
-      return ui::ImageModel::FromVectorIcon(vector_icons::kNotSecureWarningIcon,
-                                            ui::kColorAlertHighSeverity,
-                                            kIconSize);
-    case Suggestion::Icon::kKey:
-      return ImageModelFromVectorIcon(kKeyIcon, kIconSize);
-    case Suggestion::Icon::kEdit:
-      return ImageModelFromVectorIcon(vector_icons::kEditChromeRefreshIcon,
-                                      kChromeRefreshIconSize);
+    case Suggestion::Icon::kAccount:
+      return ImageModelFromVectorIcon(kAccountCircleIcon, kIconSize);
+    case Suggestion::Icon::kClear:
+      return ImageModelFromVectorIcon(kBackspaceIcon, kIconSize);
     case Suggestion::Icon::kCode:
       return ImageModelFromVectorIcon(vector_icons::kCodeIcon, kIconSize);
-    case Suggestion::Icon::kLocation:
-      return ImageModelFromVectorIcon(
-          vector_icons::kLocationOnChromeRefreshIcon, kChromeRefreshIconSize);
     case Suggestion::Icon::kDelete:
       return ImageModelFromVectorIcon(kTrashCanRefreshIcon,
                                       kChromeRefreshIconSize);
-    case Suggestion::Icon::kClear:
-      return ImageModelFromVectorIcon(kBackspaceIcon, kIconSize);
-    case Suggestion::Icon::kUndo:
-      return ImageModelFromVectorIcon(vector_icons::kUndoIcon, kIconSize);
-    case Suggestion::Icon::kGlobe:
-      return ImageModelFromVectorIcon(kGlobeIcon, kIconSize);
-    case Suggestion::Icon::kMagic:
-      return ImageModelFromVectorIcon(vector_icons::kMagicButtonIcon,
-                                      kIconSize);
-    case Suggestion::Icon::kAccount:
-      return ImageModelFromVectorIcon(kAccountCircleIcon, kIconSize);
-    case Suggestion::Icon::kSettings:
-      return ImageModelFromVectorIcon(omnibox::kProductIcon, kIconSize);
+    case Suggestion::Icon::kDevice:
+      return ImageModelFromVectorIcon(kDevicesIcon, kIconSize);
+    case Suggestion::Icon::kEdit:
+      return ImageModelFromVectorIcon(vector_icons::kEditChromeRefreshIcon,
+                                      kChromeRefreshIconSize);
     case Suggestion::Icon::kEmail:
       return ImageModelFromVectorIcon(vector_icons::kEmailOutlineIcon,
                                       kIconSize);
     case Suggestion::Icon::kEmpty:
       return ImageModelFromVectorIcon(omnibox::kHttpIcon, kIconSize);
-    case Suggestion::Icon::kDevice:
-      return ImageModelFromVectorIcon(kDevicesIcon, kIconSize);
+    case Suggestion::Icon::kError:
+      return ui::ImageModel::FromVectorIcon(vector_icons::kErrorIcon,
+                                            ui::kColorSysError, kIconSize);
+    case Suggestion::Icon::kGlobe:
+      return ImageModelFromVectorIcon(kGlobeIcon, kIconSize);
     case Suggestion::Icon::kGoogle:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       return ImageModelFromImageSkia(gfx::CreateVectorIcon(
@@ -301,15 +285,28 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
 #else
       return ImageModelFromVectorIcon(vector_icons::kEmailIcon, kIconSize);
 #endif
+    case Suggestion::Icon::kHttpWarning:
+      // For the http warning message, get the icon images from VectorIcon,
+      // which is the same as the security indicator icons in the location bar.
+      return ImageModelFromVectorIcon(omnibox::kHttpIcon, kIconSize);
+    case Suggestion::Icon::kHttpsInvalid:
+      return ui::ImageModel::FromVectorIcon(vector_icons::kNotSecureWarningIcon,
+                                            ui::kColorAlertHighSeverity,
+                                            kIconSize);
+    case Suggestion::Icon::kKey:
+      return ImageModelFromVectorIcon(kKeyIcon, kIconSize);
+    case Suggestion::Icon::kLocation:
+      return ImageModelFromVectorIcon(
+          vector_icons::kLocationOnChromeRefreshIcon, kChromeRefreshIconSize);
+    case Suggestion::Icon::kMagic:
+      return ImageModelFromVectorIcon(vector_icons::kMagicButtonIcon,
+                                      kIconSize);
     case Suggestion::Icon::kPenSpark:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       return ImageModelFromVectorIcon(vector_icons::kPenSparkIcon, kIconSize);
 #else
       return ImageModelFromVectorIcon(vector_icons::kEditIcon, kIconSize);
 #endif
-    case Suggestion::Icon::kGooglePasswordManager:
-      return ImageModelFromVectorIcon(GooglePasswordManagerVectorIcon(),
-                                      kGooglePasswordManagerIconSize);
     case Suggestion::Icon::kPlusAddress:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       return ImageModelFromVectorIcon(plus_addresses::kPlusAddressLogoSmallIcon,
@@ -317,6 +314,13 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
 #else
       return ImageModelFromVectorIcon(vector_icons::kEmailIcon, kIconSize);
 #endif
+    case Suggestion::Icon::kSettings:
+      return ImageModelFromVectorIcon(omnibox::kProductIcon, kIconSize);
+    case Suggestion::Icon::kUndo:
+      return ImageModelFromVectorIcon(vector_icons::kUndoIcon, kIconSize);
+    case Suggestion::Icon::kGooglePasswordManager:
+      return ImageModelFromVectorIcon(GooglePasswordManagerVectorIcon(),
+                                      kGooglePasswordManagerIconSize);
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case Suggestion::Icon::kGooglePay:
     case Suggestion::Icon::kGooglePayDark:
