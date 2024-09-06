@@ -274,12 +274,13 @@ void ProactiveNudgeTracker::OnAfterCaretMovedInFormField(
       !selection_valid) {
     // Cancel the timer if the selection is no longer valid.
     state_->timer_canceled = true;
-  } else if (state_->timer.IsRunning()) {
-    // Extend the timer if it is currently running. This will restart with
-    // the correct delay if the state has changed.
-    StartOrRestartTimer();
-  } else if (selection_valid) {
-    state_->selection_nudge_requested = true;
+  } else {
+    state_->selection_nudge_requested = selection_valid;
+    if (IsTimerRunning()) {
+      // Extend the timer if it is currently running. This will restart with
+      // the correct delay if the state has changed.
+      StartOrRestartTimer();
+    }
   }
   UpdateStateForCurrentFormField();
 }
@@ -429,7 +430,8 @@ bool ProactiveNudgeTracker::CanStartSelectionTimer() {
       state_->selection_nudge_shown) {
     return false;
   }
-  return state_->selection_nudge_requested;
+  return GetComposeConfig().selection_nudge_delay > base::Seconds(0) &&
+         state_->selection_nudge_requested;
 }
 
 void ProactiveNudgeTracker::StartOrRestartTimer() {
