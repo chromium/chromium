@@ -104,6 +104,7 @@ syncer::DataTypeController::TypeVector CreateControllers(
   controller_builder.SetProductSpecificationsService(nullptr);
   controller_builder.SetSendTabToSelfSyncService(nullptr);
   controller_builder.SetSessionSyncService(nullptr);
+  controller_builder.SetSharingMessageBridge(nullptr);
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   controller_builder.SetSupervisedUserSettingsService(nullptr);
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)

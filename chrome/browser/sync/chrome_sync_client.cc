@@ -78,8 +78,6 @@
 #include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
-#include "components/sharing_message/sharing_message_bridge.h"
-#include "components/sharing_message/sharing_message_data_type_controller.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/sync/base/data_type.h"
@@ -437,6 +435,10 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
       SendTabToSelfSyncServiceFactory::GetForProfile(profile_));
   builder.SetSessionSyncService(
       SessionSyncServiceFactory::GetForProfile(profile_));
+  builder.SetSharingMessageBridge(
+      ShouldSyncBrowserTypes()
+          ? SharingMessageBridgeFactory::GetForBrowserContext(profile_)
+          : nullptr);
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   builder.SetSupervisedUserSettingsService(
       SupervisedUserSettingsServiceFactory::GetForKey(
@@ -468,21 +470,6 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
         /*delegate_for_transport_mode=*/
         std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
             security_events_delegate)));
-
-    // Forward both full-sync and transport-only modes to the same delegate,
-    // since behavior for SHARING_MESSAGE does not differ. They both do not
-    // store data on persistent storage.
-    syncer::DataTypeControllerDelegate* sharing_message_delegate =
-        SharingMessageBridgeFactory::GetForBrowserContext(profile_)
-            ->GetControllerDelegate()
-            .get();
-    controllers.push_back(std::make_unique<SharingMessageDataTypeController>(
-        /*delegate_for_full_sync_mode=*/
-        std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
-            sharing_message_delegate),
-        /*delegate_for_transport_mode=*/
-        std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
-            sharing_message_delegate)));
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     // Extension sync is enabled by default.

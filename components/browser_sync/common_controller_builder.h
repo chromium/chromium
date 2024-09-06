@@ -20,6 +20,7 @@
 
 class GoogleGroupsManager;
 class PrefService;
+class SharingMessageBridge;
 
 namespace autofill {
 class AutofillWebDataService;
@@ -176,6 +177,7 @@ class CommonControllerBuilder {
                                        send_tab_to_self_sync_service);
   void SetSessionSyncService(
       sync_sessions::SessionSyncService* session_sync_service);
+  void SetSharingMessageBridge(SharingMessageBridge* sharing_message_bridge);
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   void SetSupervisedUserSettingsService(
@@ -281,6 +283,7 @@ class CommonControllerBuilder {
   SafeOptional<raw_ptr<commerce::ProductSpecificationsService>>
       product_specifications_service_;
   SafeOptional<raw_ptr<data_sharing::DataSharingService>> data_sharing_service_;
+  SafeOptional<raw_ptr<SharingMessageBridge>> sharing_message_bridge_;
 };
 
 }  // namespace browser_sync

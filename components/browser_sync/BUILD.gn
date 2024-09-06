@@ -52,6 +52,7 @@ static_library("browser_sync") {
     "//components/reading_list/core",
     "//components/reading_list/features:flags",
     "//components/send_tab_to_self",
+    "//components/sharing_message",
     "//components/supervised_user/core/common:buildflags",
     "//components/sync/invalidations",
     "//components/sync_bookmarks",

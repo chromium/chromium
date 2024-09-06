@@ -49,6 +49,8 @@
 #include "components/reading_list/core/reading_list_local_data_batch_uploader.h"
 #include "components/send_tab_to_self/send_tab_to_self_data_type_controller.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#include "components/sharing_message/sharing_message_bridge.h"
+#include "components/sharing_message/sharing_message_data_type_controller.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/forwarding_data_type_controller_delegate.h"
@@ -295,6 +297,11 @@ void CommonControllerBuilder::SetSendTabToSelfSyncService(
 void CommonControllerBuilder::SetSessionSyncService(
     sync_sessions::SessionSyncService* session_sync_service) {
   session_sync_service_.Set(session_sync_service);
+}
+
+void CommonControllerBuilder::SetSharingMessageBridge(
+    SharingMessageBridge* sharing_message_bridge) {
+  sharing_message_bridge_.Set(sharing_message_bridge);
 }
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -618,6 +625,19 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
                       kTransportModeWithSingleModel
                 : SyncableServiceBasedDataTypeController::DelegateMode::
                       kLegacyFullSyncModeOnly));
+  }
+
+  if (!disabled_types.Has(syncer::SHARING_MESSAGE) &&
+      sharing_message_bridge_.value()) {
+    syncer::DataTypeControllerDelegate* sharing_message_delegate =
+        sharing_message_bridge_.value()->GetControllerDelegate().get();
+    controllers.push_back(std::make_unique<SharingMessageDataTypeController>(
+        /*delegate_for_full_sync_mode=*/
+        std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+            sharing_message_delegate),
+        /*delegate_for_transport_mode=*/
+        std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+            sharing_message_delegate)));
   }
 
   if (!disabled_types.Has(syncer::READING_LIST)) {

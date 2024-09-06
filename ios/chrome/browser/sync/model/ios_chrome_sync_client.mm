@@ -32,8 +32,6 @@
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/saved_tab_groups/tab_group_sync_service.h"
 #import "components/send_tab_to_self/features.h"
-#import "components/sharing_message/sharing_message_bridge.h"
-#import "components/sharing_message/sharing_message_data_type_controller.h"
 #import "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #import "components/sync/base/features.h"
 #import "components/sync/base/report_unrecoverable_error.h"
@@ -208,6 +206,11 @@ IOSChromeSyncClient::CreateDataTypeControllers(
       SendTabToSelfSyncServiceFactory::GetForBrowserState(browser_state_));
   builder.SetSessionSyncService(
       SessionSyncServiceFactory::GetForBrowserState(browser_state_));
+  builder.SetSharingMessageBridge(
+      base::FeatureList::IsEnabled(
+          send_tab_to_self::kSendTabToSelfIOSPushNotifications)
+          ? IOSSharingMessageBridgeFactory::GetForBrowserState(browser_state_)
+          : nullptr);
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   builder.SetSupervisedUserSettingsService(
       SupervisedUserSettingsServiceFactory::GetForBrowserState(browser_state_));
@@ -233,21 +236,6 @@ IOSChromeSyncClient::CreateDataTypeControllers(
         /*delegate_for_transport_mode=*/
         std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
             delegate)));
-  }
-
-  if (base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
-    syncer::DataTypeControllerDelegate* sharing_message_delegate =
-        IOSSharingMessageBridgeFactory::GetForBrowserState(browser_state_)
-            ->GetControllerDelegate()
-            .get();
-    controllers.push_back(std::make_unique<SharingMessageDataTypeController>(
-        /*delegate_for_full_sync_mode=*/
-        std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
-            sharing_message_delegate),
-        /*delegate_for_transport_mode=*/
-        std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
-            sharing_message_delegate)));
   }
 
   return controllers;
