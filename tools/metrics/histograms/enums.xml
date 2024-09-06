@@ -19667,6 +19667,7 @@ from previous Chrome versions.
   <int value="-399166855"
       label="enable-bound-session-credentials-software-keys-for-manual-testing:enabled"/>
   <int value="-398922143" label="IframeOneGoogleBar:enabled"/>
+  <int value="-398706729" label="PermissionPredictionsV3:disabled"/>
   <int value="-398623652" label="CCTTargetTranslateLanguage:enabled"/>
   <int value="-398325847" label="HelpAppCrosComponents:enabled"/>
   <int value="-398012541"
@@ -23678,6 +23679,7 @@ from previous Chrome versions.
   <int value="1277167761" label="EnableTouchscreensInDiagnosticsApp:enabled"/>
   <int value="1277386636" label="QueryInOmnibox:disabled"/>
   <int value="1278244152" label="AutofillFillMerchantPromoCodeFields:enabled"/>
+  <int value="1278299178" label="PermissionPredictionsV3:enabled"/>
   <int value="1278508900"
       label="AutofillEnableNewStreetLevelFieldTypes:enabled"/>
   <int value="1278512661" label="SmartDimNewMlAgent:disabled"/>

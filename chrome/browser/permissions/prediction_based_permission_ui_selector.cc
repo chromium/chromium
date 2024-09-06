@@ -116,14 +116,17 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
   }
 
   auto features = BuildPredictionRequestFeatures(request);
-  if (features.requested_permission_counts.total() <
-      kRequestedPermissionMinimumHistoricalActions) {
-    VLOG(1) << "[CPSS] Historic prompt count ("
-            << features.requested_permission_counts.total()
-            << ") is smaller than threshold ("
-            << kRequestedPermissionMinimumHistoricalActions << ")";
-    std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
-    return;
+  if (!base::FeatureList::IsEnabled(
+          permissions::features::kPermissionPredictionsV3)) {
+    if (features.requested_permission_counts.total() <
+        kRequestedPermissionMinimumHistoricalActions) {
+      VLOG(1) << "[CPSS] Historic prompt count ("
+              << features.requested_permission_counts.total()
+              << ") is smaller than threshold ("
+              << kRequestedPermissionMinimumHistoricalActions << ")";
+      std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
+      return;
+    }
   }
 
   if (likelihood_override_for_testing_.has_value()) {

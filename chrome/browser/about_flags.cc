@@ -11862,6 +11862,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDevToolsPrivacyUIDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kDevToolsPrivacyUI)},
 
+    {"permission-predictions-v3",
+     flag_descriptions::kPermissionPredictionsV3Name,
+     flag_descriptions::kPermissionPredictionsV3Description, kOsAll,
+     FEATURE_VALUE_TYPE(permissions::features::kPermissionPredictionsV3)},
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"exclude-display-in-mirror-mode",
      flag_descriptions::kExcludeDisplayInMirrorModeName,
