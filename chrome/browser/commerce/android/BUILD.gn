@@ -9,6 +9,8 @@ import("//third_party/jni_zero/jni_zero.gni")
 android_library("java") {
   srcjar_deps = [ ":shopping_service_jni" ]
   sources = [
+    "java/src/org/chromium/chrome/browser/commerce/CommerceBottomSheetContentListener.java",
+    "java/src/org/chromium/chrome/browser/commerce/CommerceBottomSheetContentProvider.java",
     "java/src/org/chromium/chrome/browser/commerce/PriceNotificationSettingsFragment.java",
     "java/src/org/chromium/chrome/browser/commerce/PriceTrackingUtils.java",
     "java/src/org/chromium/chrome/browser/commerce/PriceUtils.java",
