@@ -7,6 +7,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -281,6 +283,18 @@ base::OnceClosure ShowDeviceChooserDialog(
     widget->Show();
   else
     widget->ShowInactive();
+
+  // If we're opening this device chooser dialog on a picture-in-picture window,
+  // then our widget is also always-on-top and needs to be tracked by the
+  // PictureInPictureOcclusionTracker so it can handle our widget occluding
+  // other widgets.
+  if (browser->is_type_picture_in_picture()) {
+    PictureInPictureOcclusionTracker* tracker =
+        PictureInPictureWindowManager::GetInstance()->GetOcclusionTracker();
+    if (tracker) {
+      tracker->OnPictureInPictureWidgetOpened(widget);
+    }
+  }
 
   return close_closure;
 }
