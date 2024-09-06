@@ -111,7 +111,7 @@ class PaintPreviewTabService : public PaintPreviewBaseService {
 
     TabServiceTask(int tab_id,
                    const DirectoryKey& key,
-                   int frame_tree_node_id,
+                   content::FrameTreeNodeId frame_tree_node_id,
                    content::GlobalRenderFrameHostId frame_routing_id,
                    float page_scale_factor,
                    int x,
@@ -124,7 +124,9 @@ class PaintPreviewTabService : public PaintPreviewBaseService {
 
     int tab_id() const { return tab_id_; }
     const DirectoryKey& key() const { return key_; }
-    int frame_tree_node_id() const { return frame_tree_node_id_; }
+    content::FrameTreeNodeId frame_tree_node_id() const {
+      return frame_tree_node_id_;
+    }
     content::GlobalRenderFrameHostId frame_routing_id() const {
       return frame_routing_id_;
     }
@@ -161,7 +163,7 @@ class PaintPreviewTabService : public PaintPreviewBaseService {
    private:
     int tab_id_;
     DirectoryKey key_;
-    int frame_tree_node_id_;
+    content::FrameTreeNodeId frame_tree_node_id_;
     content::GlobalRenderFrameHostId frame_routing_id_;
     float page_scale_factor_;
     int scroll_offset_x_;

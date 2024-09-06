@@ -63,7 +63,7 @@ int TabIdFromDirectoryKey(const DirectoryKey& key) {
 PaintPreviewTabService::TabServiceTask::TabServiceTask(
     int tab_id,
     const DirectoryKey& key,
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     content::GlobalRenderFrameHostId frame_routing_id,
     float page_scale_factor,
     int scroll_offset_x,
