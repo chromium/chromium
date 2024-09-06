@@ -45,8 +45,12 @@ class OidcAuthResponseCaptureNavigationThrottle
   ThrottleCheckResult WillRedirectRequest() override;
   ThrottleCheckResult WillProcessResponse() override;
 
-  static const url_matcher::URLMatcher* GetOidcEnrollmentUrlMatcher();
   const char* GetNameForLogging() override;
+
+  // Method to get a new URL matcher instead of the usual static one for
+  // testing, due the feature flag value may have changed in different cases.
+  static std::unique_ptr<url_matcher::URLMatcher>
+  GetOidcEnrollmentUrlMatcherForTesting();
 
  private:
   ThrottleCheckResult AttemptToTriggerInterception();

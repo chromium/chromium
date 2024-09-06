@@ -102,6 +102,12 @@ std::unique_ptr<URLMatcher> CreateOidcEnrollmentUrlMatcher() {
   return matcher;
 }
 
+const url_matcher::URLMatcher* GetOidcEnrollmentUrlMatcher() {
+  static base::NoDestructor<std::unique_ptr<URLMatcher>> matcher(
+      CreateOidcEnrollmentUrlMatcher());
+  return matcher->get();
+}
+
 void RecordUntrustedRedirectChain(
     content::NavigationHandle& navigation_handle) {
   ukm::SourceId source_id = ukm::ConvertToSourceId(
@@ -150,15 +156,14 @@ OidcAuthResponseCaptureNavigationThrottle::WillProcessResponse() {
              : PROCEED;
 }
 
-const url_matcher::URLMatcher*
-OidcAuthResponseCaptureNavigationThrottle::GetOidcEnrollmentUrlMatcher() {
-  static base::NoDestructor<std::unique_ptr<URLMatcher>> matcher(
-      CreateOidcEnrollmentUrlMatcher());
-  return matcher->get();
-}
-
 const char* OidcAuthResponseCaptureNavigationThrottle::GetNameForLogging() {
   return "OidcAuthResponseCaptureNavigationThrottle";
+}
+
+// static
+std::unique_ptr<URLMatcher> OidcAuthResponseCaptureNavigationThrottle::
+    GetOidcEnrollmentUrlMatcherForTesting() {
+  return CreateOidcEnrollmentUrlMatcher();
 }
 
 content::NavigationThrottle::ThrottleCheckResult
@@ -182,10 +187,7 @@ OidcAuthResponseCaptureNavigationThrottle::AttemptToTriggerInterception() {
     bool accept_redirect = false;
 
     for (const auto& chain_url : navigation_handle()->GetRedirectChain()) {
-      if (!OidcAuthResponseCaptureNavigationThrottle::
-               GetOidcEnrollmentUrlMatcher()
-                   ->MatchURL(chain_url)
-                   .empty()) {
+      if (!GetOidcEnrollmentUrlMatcher()->MatchURL(chain_url).empty()) {
         accept_redirect = true;
         break;
       }

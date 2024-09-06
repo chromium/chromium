@@ -25,6 +25,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using base::test::FeatureRef;
+using base::test::FeatureRefAndParams;
 using content::NavigationThrottle;
 using testing::_;
 
@@ -111,44 +113,52 @@ namespace profile_management {
 
 bool IsSourceUrlValid(std::string url_string) {
   return !OidcAuthResponseCaptureNavigationThrottle::
-              GetOidcEnrollmentUrlMatcher()
+              GetOidcEnrollmentUrlMatcherForTesting()
                   ->MatchURL(GURL(url_string))
                   .empty();
+}
+
+void ExpandFeatureList(std::vector<FeatureRefAndParams>& enabled_features,
+                       std::vector<FeatureRef>& disabled_features,
+                       const base::flat_map<FeatureRef, bool>& feature_states) {
+  for (const auto& [feature, enabled] : feature_states) {
+    if (enabled) {
+      enabled_features.push_back({*feature, {{}}});
+    } else {
+      disabled_features.push_back(feature);
+    }
+  }
 }
 
 class OidcAuthResponseCaptureNavigationThrottleTest
     : public BrowserWithTestWindowTest,
       public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
-  OidcAuthResponseCaptureNavigationThrottleTest() {
-    scoped_feature_list_.InitWithFeatureStates(
+  explicit OidcAuthResponseCaptureNavigationThrottleTest(
+      const std::string& additional_hosts) {
+    std::vector<FeatureRefAndParams> enabled_features;
+    std::vector<FeatureRef> disabled_features;
+
+    ExpandFeatureList(
+        enabled_features, disabled_features,
         {{features::kOidcAuthProfileManagement, enable_oidc_interception()},
          {features::kEnableGenericOidcAuthProfileManagement,
           enable_generic_oidc()},
          {features::kOidcAuthResponseInterception, enable_process_response()}});
+
+    if (!additional_hosts.empty()) {
+      enabled_features.push_back(
+          {features::kOidcEnrollmentAuthSource,
+           {{features::kOidcAuthAdditionalHosts.name, additional_hosts}}});
+    }
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
   }
 
-  // ctor to test URL matching and additional hosts from feature flag.
-  explicit OidcAuthResponseCaptureNavigationThrottleTest(
-      const std::string& additional_hosts) {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::kOidcAuthProfileManagement, {}},
-                              {features::kOidcEnrollmentAuthSource,
-                               {{features::kOidcAuthAdditionalHosts.name,
-                                 additional_hosts}}}},
-        /*disabled_features=*/{
-            features::kEnableGenericOidcAuthProfileManagement});
-  }
-
-  OidcAuthResponseCaptureNavigationThrottleTest(bool enable_oidc_interception,
-                                                bool enable_generic_oidc,
-                                                bool enable_process_response) {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kOidcAuthProfileManagement, enable_oidc_interception},
-         {features::kEnableGenericOidcAuthProfileManagement,
-          enable_generic_oidc},
-         {features::kOidcAuthResponseInterception, enable_process_response}});
-  }
+  OidcAuthResponseCaptureNavigationThrottleTest()
+      : OidcAuthResponseCaptureNavigationThrottleTest(
+            /*additional_hosts=*/std::string()) {}
 
   ~OidcAuthResponseCaptureNavigationThrottleTest() override = default;
 
@@ -201,21 +211,14 @@ class OidcAuthResponseCaptureNavigationThrottleTest
       NavigationThrottle::ThrottleAction expected_throttle_action) {
     content::MockNavigationHandle navigation_handle(
         GURL(kOidcEntraReprocessUrl), main_frame());
-    if (!enable_oidc_interception()) {
-      ASSERT_EQ(nullptr, oidc_interceptor);
-    } else {
-      EXPECT_CALL(*oidc_interceptor,
-                  MaybeInterceptOidcAuthentication(_, _, _, _, _))
-          .Times(0);
-    }
+
+    EXPECT_CALL(*oidc_interceptor,
+                MaybeInterceptOidcAuthentication(_, _, _, _, _))
+        .Times(0);
 
     auto throttle =
         OidcAuthResponseCaptureNavigationThrottle::MaybeCreateThrottleFor(
             &navigation_handle);
-    if (!enable_oidc_interception()) {
-      ASSERT_EQ(nullptr, throttle.get());
-      return;
-    }
 
     if (expected_throttle_action == NavigationThrottle::DEFER) {
       throttle->set_resume_callback_for_testing(
@@ -237,21 +240,17 @@ class OidcAuthResponseCaptureNavigationThrottleTest
   void ExpectOidcInterception(
       MockOidcAuthenticationSigninInterceptor* oidc_interceptor,
       ProfileManagementOidcTokens expected_oidc_tokens) {
-    if (!enable_oidc_interception()) {
-      ASSERT_EQ(nullptr, oidc_interceptor);
-    } else {
-      EXPECT_CALL(*oidc_interceptor, MaybeInterceptOidcAuthentication(
-                                         web_contents(), _, kExampleIdIssuer,
-                                         kExampleIdSubject, _))
-          .WillOnce([this, expected_oidc_tokens](
-                        content::WebContents* intercepted_contents,
-                        ProfileManagementOidcTokens oidc_tokens,
-                        std::string issuer_id, std::string subject_id,
-                        OidcInterceptionCallback oidc_callback) {
-            ValidateOidcTokens(oidc_tokens, expected_oidc_tokens);
-            std::move(oidc_callback).Run();
-          });
-    }
+    EXPECT_CALL(*oidc_interceptor,
+                MaybeInterceptOidcAuthentication(
+                    web_contents(), _, kExampleIdIssuer, kExampleIdSubject, _))
+        .WillOnce([this, expected_oidc_tokens](
+                      content::WebContents* intercepted_contents,
+                      ProfileManagementOidcTokens oidc_tokens,
+                      std::string issuer_id, std::string subject_id,
+                      OidcInterceptionCallback oidc_callback) {
+          ValidateOidcTokens(oidc_tokens, expected_oidc_tokens);
+          std::move(oidc_callback).Run();
+        });
   }
 
   void TestNoServiceForInvalidProfile(Profile* invalid_profile) {
@@ -270,23 +269,19 @@ class OidcAuthResponseCaptureNavigationThrottleTest
         OidcAuthResponseCaptureNavigationThrottle::MaybeCreateThrottleFor(
             &navigation_handle);
 
-    if (!enable_oidc_interception()) {
-      ASSERT_EQ(nullptr, throttle.get());
-    } else {
-      std::string redirection_url =
-          BuildStandardResponseUrl(/*oidc_state=*/std::string());
-      SetupRedirectionForHandle(
-          navigation_handle,
-          {GURL(kOidcEntraReprocessUrl), GURL(redirection_url)},
-          GURL(redirection_url));
+    std::string redirection_url =
+        BuildStandardResponseUrl(/*oidc_state=*/std::string());
+    SetupRedirectionForHandle(
+        navigation_handle,
+        {GURL(kOidcEntraReprocessUrl), GURL(redirection_url)},
+        GURL(redirection_url));
 
-      EXPECT_EQ(NavigationThrottle::PROCEED,
-                throttle->WillRedirectRequest().action());
-      task_environment()->RunUntilIdle();
-      CheckFunnelAndResultHistogram(
-          OidcInterceptionFunnelStep::kValidRedirectionCaptured,
-          OidcInterceptionResult::kInvalidProfile);
-    }
+    EXPECT_EQ(NavigationThrottle::PROCEED,
+              throttle->WillRedirectRequest().action());
+
+    CheckFunnelAndResultHistogram(
+        OidcInterceptionFunnelStep::kValidRedirectionCaptured,
+        OidcInterceptionResult::kInvalidProfile);
   }
 
   void TestInterceptionForUrl(bool add_oidc_state,
@@ -310,9 +305,7 @@ class OidcAuthResponseCaptureNavigationThrottleTest
                                                     main_frame());
 
     auto* oidc_interceptor = GetMockOidcInterceptor();
-    if (!enable_oidc_interception()) {
-      ASSERT_EQ(nullptr, oidc_interceptor);
-    } else if (enable_generic_oidc() || IsSourceUrlValid(source_url)) {
+    if (enable_generic_oidc() || IsSourceUrlValid(source_url)) {
       ExpectOidcInterception(
           oidc_interceptor,
           ProfileManagementOidcTokens(auth_token, id_token, oidc_state));
@@ -325,10 +318,6 @@ class OidcAuthResponseCaptureNavigationThrottleTest
     auto throttle =
         OidcAuthResponseCaptureNavigationThrottle::MaybeCreateThrottleFor(
             &navigation_handle);
-    if (!enable_oidc_interception()) {
-      ASSERT_EQ(nullptr, throttle.get());
-      return;
-    }
 
     SetupRedirectionForHandle(navigation_handle,
                               {GURL(source_url), GURL(redirection_url)},
@@ -357,7 +346,7 @@ class OidcAuthResponseCaptureNavigationThrottleTest
       std::optional<OidcInterceptionResult> expected_enrollment_result) {
     histogram_tester_.ExpectBucketCount(
         base::StrCat({kOidcEnrollmentHistogramName, ".Interception.Funnel"}),
-        expected_last_funnel_step, enable_oidc_interception() ? 1 : 0);
+        expected_last_funnel_step, 1);
 
     if (expected_enrollment_result == std::nullopt) {
       return;
@@ -365,7 +354,7 @@ class OidcAuthResponseCaptureNavigationThrottleTest
 
     histogram_tester_.ExpectUniqueSample(
         base::StrCat({kOidcEnrollmentHistogramName, ".Interception.Result"}),
-        expected_enrollment_result.value(), enable_oidc_interception() ? 1 : 0);
+        expected_enrollment_result.value(), 1);
   }
 
   void ExpectNoUkmLogged() const {
@@ -410,93 +399,6 @@ class OidcAuthResponseCaptureNavigationThrottleTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
-       NoInterceptionForDirectNavigation) {
-  std::string direct_navigate_url =
-      BuildStandardResponseUrl(/*oidc_state=*/std::string());
-
-  content::MockNavigationHandle navigation_handle(GURL(direct_navigate_url),
-                                                  main_frame());
-  auto* oidc_interceptor = GetMockOidcInterceptor();
-
-  if (!enable_oidc_interception()) {
-    ASSERT_EQ(nullptr, oidc_interceptor);
-  } else {
-    EXPECT_CALL(*oidc_interceptor,
-                MaybeInterceptOidcAuthentication(_, _, _, _, _))
-        .Times(0);
-  }
-
-  auto throttle =
-      OidcAuthResponseCaptureNavigationThrottle::MaybeCreateThrottleFor(
-          &navigation_handle);
-
-  if (enable_oidc_interception()) {
-    navigation_handle.set_url(GURL(direct_navigate_url));
-    EXPECT_EQ(NavigationThrottle::PROCEED,
-              throttle->WillProcessResponse().action());
-
-    if (enable_process_response()) {
-      ExpectUkmLogged(navigation_handle.GetNavigationId());
-    } else {
-      ExpectNoUkmLogged();
-    }
-  } else {
-    ASSERT_EQ(nullptr, throttle);
-    ExpectNoUkmLogged();
-  }
-}
-
-TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, MissingRedirectionChain) {
-  std::string auth_token = BuildTokenFromDict(
-      base::Value::Dict()
-          .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
-          .Set(kSubjectClaimName, kExampleAuthSubject));
-  std::string id_token = BuildTokenFromDict(
-      base::Value::Dict()
-          .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
-          .Set(kSubjectClaimName, kExampleIdSubject)
-          .Set(kIssuerClaimName, kExampleIdIssuer));
-  std::string url_without_redirection_chain =
-      BuildOidcResponseUrl(auth_token, id_token, /*state=*/std::string());
-
-  content::MockNavigationHandle navigation_handle(
-      GURL(url_without_redirection_chain), main_frame());
-  auto* oidc_interceptor = GetMockOidcInterceptor();
-
-  if (!enable_oidc_interception()) {
-    ASSERT_EQ(nullptr, oidc_interceptor);
-  } else if (enable_generic_oidc()) {
-    ExpectOidcInterception(
-        oidc_interceptor, ProfileManagementOidcTokens(auth_token, id_token,
-                                                      /*state=*/std::string()));
-  } else {
-    EXPECT_CALL(*oidc_interceptor,
-                MaybeInterceptOidcAuthentication(_, _, _, _, _))
-        .Times(0);
-  }
-
-  auto throttle =
-      OidcAuthResponseCaptureNavigationThrottle::MaybeCreateThrottleFor(
-          &navigation_handle);
-
-  if (!enable_oidc_interception()) {
-    ASSERT_EQ(nullptr, throttle.get());
-    return;
-  }
-
-  if (enable_generic_oidc()) {
-    throttle->set_resume_callback_for_testing(
-        task_environment()->QuitClosure());
-    EXPECT_EQ(NavigationThrottle::DEFER,
-              throttle->WillRedirectRequest().action());
-    task_environment()->RunUntilQuit();
-  } else {
-    EXPECT_EQ(NavigationThrottle::PROCEED,
-              throttle->WillRedirectRequest().action());
-  }
-}
-
 TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, SuccessfulInterception) {
   TestInterceptionForUrl(/*add_oidc_state=*/false,
                          /*should_log_ukm=*/false,
@@ -513,22 +415,6 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
   CheckFunnelAndResultHistogram(
       OidcInterceptionFunnelStep::kSuccessfulInfoParsed, std::nullopt);
   ExpectNoUkmLogged();
-}
-
-// Test case for when the source URL of OIDC authentication is not considered to
-// be valid. We should only consider interception if Generic OIDC flag is
-// enabled.
-TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
-       SuccessfulInterceptionWithState_invalidSourceUrl) {
-  TestInterceptionForUrl(
-      /*add_oidc_state=*/true,
-      /*should_log_ukm=*/!enable_generic_oidc() && enable_oidc_interception(),
-      /*source_url=*/kOidcNonEntraReprocessUrl);
-
-  if (enable_generic_oidc()) {
-    CheckFunnelAndResultHistogram(
-        OidcInterceptionFunnelStep::kSuccessfulInfoParsed, std::nullopt);
-  }
 }
 
 TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, MsftKmsiThrottling) {
@@ -743,8 +629,129 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, NotInMainFrame) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     OidcAuthResponseCaptureNavigationThrottleTest,
-    testing::Combine(/*enable_oidc_interception=*/testing::Bool(),
+    testing::Combine(/*enable_oidc_interception=*/testing::Values(true),
+                     /*enable_generic_oidc=*/testing::Values(false),
+                     /*enable_process_response=*/testing::Values(false)));
+
+// Test class dedicated to test if OIDC throttle validatation accepts the
+// correct set of URLs.
+class OidcAuthNavigationThrottleGenericOidcTest
+    : public OidcAuthResponseCaptureNavigationThrottleTest {
+ public:
+  OidcAuthNavigationThrottleGenericOidcTest() = default;
+
+  ~OidcAuthNavigationThrottleGenericOidcTest() override = default;
+};
+
+// Test case for when the source URL of OIDC authentication is not considered to
+// be valid. We should only consider interception if Generic OIDC flag is
+// enabled.
+TEST_P(OidcAuthNavigationThrottleGenericOidcTest,
+       SuccessfulInterceptionWithState_invalidSourceUrl) {
+  TestInterceptionForUrl(
+      /*add_oidc_state=*/true,
+      /*should_log_ukm=*/!enable_generic_oidc(),
+      /*source_url=*/kOidcNonEntraReprocessUrl);
+
+  if (enable_generic_oidc()) {
+    CheckFunnelAndResultHistogram(
+        OidcInterceptionFunnelStep::kSuccessfulInfoParsed, std::nullopt);
+  }
+}
+
+TEST_P(OidcAuthNavigationThrottleGenericOidcTest, MissingRedirectionChain) {
+  std::string auth_token = BuildTokenFromDict(
+      base::Value::Dict()
+          .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
+          .Set(kSubjectClaimName, kExampleAuthSubject));
+  std::string id_token = BuildTokenFromDict(
+      base::Value::Dict()
+          .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
+          .Set(kSubjectClaimName, kExampleIdSubject)
+          .Set(kIssuerClaimName, kExampleIdIssuer));
+  std::string url_without_redirection_chain =
+      BuildOidcResponseUrl(auth_token, id_token, /*oidc_state=*/std::string());
+
+  content::MockNavigationHandle navigation_handle(
+      GURL(url_without_redirection_chain), main_frame());
+  auto* oidc_interceptor = GetMockOidcInterceptor();
+
+  if (enable_generic_oidc()) {
+    ExpectOidcInterception(
+        oidc_interceptor, ProfileManagementOidcTokens(auth_token, id_token,
+                                                      /*state=*/std::string()));
+  } else {
+    EXPECT_CALL(*oidc_interceptor,
+                MaybeInterceptOidcAuthentication(_, _, _, _, _))
+        .Times(0);
+  }
+
+  auto throttle =
+      OidcAuthResponseCaptureNavigationThrottle::MaybeCreateThrottleFor(
+          &navigation_handle);
+
+  if (enable_generic_oidc()) {
+    throttle->set_resume_callback_for_testing(
+        task_environment()->QuitClosure());
+    EXPECT_EQ(NavigationThrottle::DEFER,
+              throttle->WillRedirectRequest().action());
+    task_environment()->RunUntilQuit();
+  } else {
+    EXPECT_EQ(NavigationThrottle::PROCEED,
+              throttle->WillRedirectRequest().action());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    OidcAuthNavigationThrottleGenericOidcTest,
+    testing::Combine(/*enable_oidc_interception=*/testing::Values(true),
                      /*enable_generic_oidc=*/testing::Bool(),
+                     /*enable_process_response=*/testing::Values(false)));
+
+// Test class dedicated to test if OIDC throttle validatation accepts the
+// correct set of URLs.
+class OidcAuthNavigationThrottleFeatureDisabledTest
+    : public OidcAuthResponseCaptureNavigationThrottleTest {
+ public:
+  OidcAuthNavigationThrottleFeatureDisabledTest() = default;
+
+  ~OidcAuthNavigationThrottleFeatureDisabledTest() override = default;
+};
+
+TEST_P(OidcAuthNavigationThrottleFeatureDisabledTest, NoThrottleCreation) {
+  content::MockNavigationHandle msft_navigation_handle(
+      GURL(kOidcEntraReprocessUrl), main_frame());
+  auto msft_throttle =
+      OidcAuthResponseCaptureNavigationThrottle::MaybeCreateThrottleFor(
+          &msft_navigation_handle);
+  ASSERT_EQ(nullptr, msft_throttle.get());
+
+  content::MockNavigationHandle full_navigation_handle(
+      GURL(kOidcEntraReprocessUrl), main_frame());
+  std::string redirection_url =
+      BuildStandardResponseUrl(/*oidc_state=*/std::string());
+  SetupRedirectionForHandle(
+      full_navigation_handle,
+      {GURL(kOidcEntraReprocessUrl), GURL(redirection_url)},
+      GURL(redirection_url));
+  auto full_throttle =
+      OidcAuthResponseCaptureNavigationThrottle::MaybeCreateThrottleFor(
+          &full_navigation_handle);
+  ASSERT_EQ(nullptr, full_throttle.get());
+
+  ExpectNoUkmLogged();
+}
+
+TEST_P(OidcAuthNavigationThrottleFeatureDisabledTest, NoInterceptorCreation) {
+  ASSERT_EQ(nullptr, GetMockOidcInterceptor());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    OidcAuthNavigationThrottleFeatureDisabledTest,
+    testing::Combine(/*enable_oidc_interception=*/testing::Values(false),
+                     /*enable_generic_oidc=*/testing::Values(false),
                      /*enable_process_response=*/testing::Values(false)));
 
 // Test class dedicated for OIDC throttle regarding WillProcessResponse
@@ -756,6 +763,35 @@ class OidcAuthNavigationThrottleProcessResponseTest
 
   ~OidcAuthNavigationThrottleProcessResponseTest() override = default;
 };
+
+// Direction navigation should not trigger OIDC enrollment regardless of whether
+// ProcessResponse is enabled
+TEST_P(OidcAuthNavigationThrottleProcessResponseTest,
+       NoInterceptionForDirectNavigation) {
+  std::string direct_navigate_url =
+      BuildStandardResponseUrl(/*oidc_state=*/std::string());
+
+  content::MockNavigationHandle navigation_handle(GURL(direct_navigate_url),
+                                                  main_frame());
+  auto* oidc_interceptor = GetMockOidcInterceptor();
+  EXPECT_CALL(*oidc_interceptor,
+              MaybeInterceptOidcAuthentication(_, _, _, _, _))
+      .Times(0);
+
+  auto throttle =
+      OidcAuthResponseCaptureNavigationThrottle::MaybeCreateThrottleFor(
+          &navigation_handle);
+
+  navigation_handle.set_url(GURL(direct_navigate_url));
+  EXPECT_EQ(NavigationThrottle::PROCEED,
+            throttle->WillProcessResponse().action());
+
+  if (enable_process_response()) {
+    ExpectUkmLogged(navigation_handle.GetNavigationId());
+  } else {
+    ExpectNoUkmLogged();
+  }
+}
 
 TEST_P(OidcAuthNavigationThrottleProcessResponseTest, ProcessResponse) {
   std::string auth_token = BuildTokenFromDict(
@@ -775,9 +811,7 @@ TEST_P(OidcAuthNavigationThrottleProcessResponseTest, ProcessResponse) {
                                                   main_frame());
   auto* oidc_interceptor = GetMockOidcInterceptor();
 
-  if (!enable_oidc_interception()) {
-    ASSERT_EQ(nullptr, oidc_interceptor);
-  } else if (enable_process_response()) {
+  if (enable_process_response()) {
     ExpectOidcInterception(
         oidc_interceptor,
         ProfileManagementOidcTokens(auth_token, id_token, /*state=*/""));
@@ -791,7 +825,7 @@ TEST_P(OidcAuthNavigationThrottleProcessResponseTest, ProcessResponse) {
       OidcAuthResponseCaptureNavigationThrottle::MaybeCreateThrottleFor(
           &navigation_handle);
 
-  if (enable_process_response() && enable_oidc_interception()) {
+  if (enable_process_response()) {
     throttle->set_resume_callback_for_testing(
         task_environment()->QuitClosure());
 
@@ -805,21 +839,19 @@ TEST_P(OidcAuthNavigationThrottleProcessResponseTest, ProcessResponse) {
     task_environment()->RunUntilQuit();
     CheckFunnelAndResultHistogram(
         OidcInterceptionFunnelStep::kSuccessfulInfoParsed, std::nullopt);
-  } else if (enable_oidc_interception()) {
+  } else {
     navigation_handle.set_url(GURL(direct_navigate_url));
     EXPECT_EQ(NavigationThrottle::PROCEED,
               throttle->WillProcessResponse().action());
-  } else {
-    ASSERT_EQ(nullptr, throttle);
   }
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     OidcAuthNavigationThrottleProcessResponseTest,
-    testing::Combine(/*enable_oidc_interception=*/testing::Bool(),
-                     /*enable_generic_oidc=*/testing::Bool(),
-                     /*enable_process_response=*/testing::Values(true)));
+    testing::Combine(/*enable_oidc_interception=*/testing::Values(true),
+                     /*enable_generic_oidc=*/testing::Values(false),
+                     /*enable_process_response=*/testing::Bool()));
 
 // Test class dedicated to test if OIDC throttle validatation accepts the
 // correct set of URLs.
@@ -838,7 +870,7 @@ class OidcAuthNavigationThrottleUrlMatchingTest
   }
 };
 
-TEST_F(OidcAuthNavigationThrottleUrlMatchingTest, MsftThrottleUrlMatching) {
+TEST_P(OidcAuthNavigationThrottleUrlMatchingTest, MsftThrottleUrlMatching) {
   TestUrlMatching("https://login.microsoftonline.com/some-tenant-id/reprocess");
   TestUrlMatching("https://login.microsoftonline.com/common/reprocess");
   TestUrlMatching("https://login.microsoftonline.com/some-tenant-id/login");
@@ -852,13 +884,14 @@ TEST_F(OidcAuthNavigationThrottleUrlMatchingTest, MsftThrottleUrlMatching) {
   TestUrlMatching("https://login.microsoftonline.com/common/somethingelse");
 }
 
-TEST_F(OidcAuthNavigationThrottleUrlMatchingTest, AdditionalHostMatching) {
+TEST_P(OidcAuthNavigationThrottleUrlMatchingTest, AdditionalHostMatching) {
   TestUrlMatching("https://add-host1.com/some-tenant-id/reprocess");
   TestUrlMatching("https://add-host2.com/common/reprocess");
   TestUrlMatching("https://add-host3.com/common/reprocess");
+  TestUrlMatching("http://add-host3.com/common/reprocess");
 }
 
-TEST_F(OidcAuthNavigationThrottleUrlMatchingTest, MsftThrottleUrlNotMatching) {
+TEST_P(OidcAuthNavigationThrottleUrlMatchingTest, MsftThrottleUrlNotMatching) {
   TestUrlMatching("https://mismatchhost.microsoftonline.com/common/reprocess",
                   /*expect_matched=*/false);
   TestUrlMatching("https://add-host1.ca/common/reprocess",
@@ -866,5 +899,12 @@ TEST_F(OidcAuthNavigationThrottleUrlMatchingTest, MsftThrottleUrlNotMatching) {
   TestUrlMatching("https://add-host4.com/common/reprocess",
                   /*expect_matched=*/false);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    OidcAuthNavigationThrottleUrlMatchingTest,
+    testing::Combine(/*enable_oidc_interception=*/testing::Values(true),
+                     /*enable_generic_oidc=*/testing::Values(false),
+                     /*enable_process_response=*/testing::Values(false)));
 
 }  // namespace profile_management
