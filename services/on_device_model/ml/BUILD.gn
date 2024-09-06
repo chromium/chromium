@@ -69,5 +69,8 @@ if (enable_ml_internal) {
     data_deps = [
       "//components/optimization_guide/internal:optimization_guide_internal",
     ]
+    if (is_ios) {
+      deps = [ "//components/optimization_guide/internal:optimization_guide_internal+bundle" ]
+    }
   }
 }
