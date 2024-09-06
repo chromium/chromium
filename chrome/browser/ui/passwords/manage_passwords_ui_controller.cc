@@ -37,9 +37,6 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/hats/hats_service.h"
-#include "chrome/browser/ui/hats/hats_service_factory.h"
-#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -347,16 +344,6 @@ void ManagePasswordsUIController::OnAutomaticPasswordSave(
 
   bubble_status_ = BubbleStatus::SHOULD_POP_UP;
   UpdateBubbleAndIconVisibility();
-
-  HatsService* hats_service = HatsServiceFactory::GetForProfile(
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
-      /*create_if_necessary=*/true);
-  if (hats_service) {
-    hats_service->LaunchDelayedSurveyForWebContents(
-        kHatsSurveyTriggerSuggestedPasswordsExperiment, web_contents(),
-        /*timeout_ms=*/0, /*product_specific_bits_data=*/
-        {{"Suggested password accepted", true}});
-  }
 }
 
 void ManagePasswordsUIController::OnPasswordAutofilled(
@@ -890,16 +877,6 @@ void ManagePasswordsUIController::SavePassword(const std::u16string& username,
       return;
     }
     MaybeShowPasswordManagerShortcutIPH(browser);
-  }
-
-  HatsService* hats_service = HatsServiceFactory::GetForProfile(
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
-      /*create_if_necessary=*/true);
-  if (hats_service) {
-    hats_service->LaunchDelayedSurveyForWebContents(
-        kHatsSurveyTriggerSuggestedPasswordsExperiment, web_contents(),
-        /*timeout_ms=*/0, /*product_specific_bits_data=*/
-        {{"Suggested password accepted", false}});
   }
 }
 

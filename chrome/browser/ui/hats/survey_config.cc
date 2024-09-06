@@ -78,8 +78,6 @@ constexpr char kHatsSurveyTriggerRedWarning[] = "red-warning";
 constexpr char kHatsSurveyTriggerSettings[] = "settings";
 constexpr char kHatsSurveyTriggerSettingsPrivacy[] = "settings-privacy";
 constexpr char kHatsSurveyTriggerSettingsSecurity[] = "settings-security";
-constexpr char kHatsSurveyTriggerSuggestedPasswordsExperiment[] =
-    "suggested-passwords-experiment";
 constexpr char kHatsSurveyTriggerTrustSafetyPrivacySandbox4ConsentAccept[] =
     "ts-ps4-consent-accept";
 constexpr char kHatsSurveyTriggerTrustSafetyPrivacySandbox4ConsentDecline[] =
@@ -533,14 +531,6 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       std::vector<std::string>{
           safe_browsing::kFlaggedUrl, safe_browsing::kMainFrameUrl,
           safe_browsing::kReferrerUrl, safe_browsing::kUserActivityWithUrls});
-
-  // Suggested passwords experiment surveys.
-  survey_configs.emplace_back(
-      &password_manager::features::kPasswordGenerationExperiment,
-      kHatsSurveyTriggerSuggestedPasswordsExperiment,
-      password_manager::features::kPasswordGenerationExperimentSurveyTriggerId
-          .Get(),
-      std::vector<std::string>{"Suggested password accepted"});
 
   // Desktop download warning surveys.
   survey_configs.emplace_back(

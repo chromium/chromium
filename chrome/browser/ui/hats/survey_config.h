@@ -49,7 +49,6 @@ extern const char kHatsSurveyTriggerPrivacyGuide[];
 extern const char kHatsSurveyTriggerRedWarning[];
 extern const char kHatsSurveyTriggerSettings[];
 extern const char kHatsSurveyTriggerSettingsPrivacy[];
-extern const char kHatsSurveyTriggerSuggestedPasswordsExperiment[];
 extern const char kHatsSurveyTriggerSettingsSecurity[];
 extern const char kHatsSurveyTriggerTrustSafetyPrivacySandbox4ConsentAccept[];
 extern const char kHatsSurveyTriggerTrustSafetyPrivacySandbox4ConsentDecline[];
