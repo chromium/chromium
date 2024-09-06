@@ -54,7 +54,7 @@ class TableViewTestHelper;
 // - only text
 // - a small icon (16x16) and some text
 // - a check box and some text
-enum class TableType { kTextOnly, kIconAndText };
+enum class TableType : bool { kTextOnly, kIconAndText };
 
 class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   METADATA_HEADER(TableView, View)
@@ -63,7 +63,7 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   // Used by AdvanceActiveVisibleColumn(), AdvanceSelection() and
   // ResizeColumnViaKeyboard() to determine the direction to change the
   // selection.
-  enum class AdvanceDirection {
+  enum class AdvanceDirection : bool {
     kDecrement,
     kIncrement,
   };
