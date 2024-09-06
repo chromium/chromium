@@ -16,6 +16,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::ElementsAre;
+using ::testing::Optional;
+using ::testing::Pair;
 
 namespace base {
 
@@ -406,32 +408,32 @@ TEST(StringSplitTest, SplitStringOnce) {
   EXPECT_EQ(std::nullopt, SplitStringOnce("a", ""));
   EXPECT_EQ(std::nullopt, SplitStringOnce("ab", ""));
 
-  EXPECT_EQ(std::pair("a", "b:c"), SplitStringOnce("a:b:c", ':'));
-  EXPECT_EQ(std::pair("a", ""), SplitStringOnce("a:", ':'));
-  EXPECT_EQ(std::pair("", "b"), SplitStringOnce(":b", ':'));
+  EXPECT_THAT(SplitStringOnce("a:b:c", ':'), Optional(Pair("a", "b:c")));
+  EXPECT_THAT(SplitStringOnce("a:", ':'), Optional(Pair("a", "")));
+  EXPECT_THAT(SplitStringOnce(":b", ':'), Optional(Pair("", "b")));
 
   // Now the same using the multiple separators overload, but with only one
   // separator specified.
-  EXPECT_EQ(std::pair("a", "b:c"), SplitStringOnce("a:b:c", ":"));
-  EXPECT_EQ(std::pair("a", ""), SplitStringOnce("a:", ":"));
-  EXPECT_EQ(std::pair("", "b"), SplitStringOnce(":b", ":"));
+  EXPECT_THAT(SplitStringOnce("a:b:c", ":"), Optional(Pair("a", "b:c")));
+  EXPECT_THAT(SplitStringOnce("a:", ":"), Optional(Pair("a", "")));
+  EXPECT_THAT(SplitStringOnce(":b", ":"), Optional(Pair("", "b")));
 
   // Multiple separators overload, but only the first one present.
-  EXPECT_EQ(std::pair("a", "b:c"), SplitStringOnce("a:b:c", ":="));
-  EXPECT_EQ(std::pair("a", ""), SplitStringOnce("a:", ":="));
-  EXPECT_EQ(std::pair("", "b"), SplitStringOnce(":b", ":="));
+  EXPECT_THAT(SplitStringOnce("a:b:c", ":="), Optional(Pair("a", "b:c")));
+  EXPECT_THAT(SplitStringOnce("a:", ":="), Optional(Pair("a", "")));
+  EXPECT_THAT(SplitStringOnce(":b", ":="), Optional(Pair("", "b")));
 
   // Multiple separators overload, but only the second one present.
-  EXPECT_EQ(std::pair("a", "b:c"), SplitStringOnce("a:b:c", "=:"));
-  EXPECT_EQ(std::pair("a", ""), SplitStringOnce("a:", "=:"));
-  EXPECT_EQ(std::pair("", "b"), SplitStringOnce(":b", "=:"));
+  EXPECT_THAT(SplitStringOnce("a:b:c", "=:"), Optional(Pair("a", "b:c")));
+  EXPECT_THAT(SplitStringOnce("a:", "=:"), Optional(Pair("a", "")));
+  EXPECT_THAT(SplitStringOnce(":b", "=:"), Optional(Pair("", "b")));
 
   // Multiple separators overload, both present. The separator that comes first
   // in the input string (not separators string) should win.
-  EXPECT_EQ(std::pair("a", "b=c"), SplitStringOnce("a:b=c", ":="));
-  EXPECT_EQ(std::pair("a", "b=c"), SplitStringOnce("a:b=c", "=:"));
-  EXPECT_EQ(std::pair("a", "b:c"), SplitStringOnce("a=b:c", ":="));
-  EXPECT_EQ(std::pair("a", "b:c"), SplitStringOnce("a=b:c", "=:"));
+  EXPECT_THAT(SplitStringOnce("a:b=c", ":="), Optional(Pair("a", "b=c")));
+  EXPECT_THAT(SplitStringOnce("a:b=c", "=:"), Optional(Pair("a", "b=c")));
+  EXPECT_THAT(SplitStringOnce("a=b:c", ":="), Optional(Pair("a", "b:c")));
+  EXPECT_THAT(SplitStringOnce("a=b:c", "=:"), Optional(Pair("a", "b:c")));
 }
 
 TEST(StringSplitTest, RSplitStringOnce) {
@@ -440,32 +442,32 @@ TEST(StringSplitTest, RSplitStringOnce) {
   EXPECT_EQ(std::nullopt, RSplitStringOnce("a", ""));
   EXPECT_EQ(std::nullopt, RSplitStringOnce("ab", ""));
 
-  EXPECT_EQ(std::pair("a:b", "c"), RSplitStringOnce("a:b:c", ':'));
-  EXPECT_EQ(std::pair("a", ""), RSplitStringOnce("a:", ':'));
-  EXPECT_EQ(std::pair("", "b"), RSplitStringOnce(":b", ':'));
+  EXPECT_THAT(RSplitStringOnce("a:b:c", ':'), Optional(Pair("a:b", "c")));
+  EXPECT_THAT(RSplitStringOnce("a:", ':'), Optional(Pair("a", "")));
+  EXPECT_THAT(RSplitStringOnce(":b", ':'), Optional(Pair("", "b")));
 
   // Now the same using the multiple separators overload, but with only one
   // separator specified.
-  EXPECT_EQ(std::pair("a:b", "c"), RSplitStringOnce("a:b:c", ":"));
-  EXPECT_EQ(std::pair("a", ""), RSplitStringOnce("a:", ":"));
-  EXPECT_EQ(std::pair("", "b"), RSplitStringOnce(":b", ":"));
+  EXPECT_THAT(RSplitStringOnce("a:b:c", ":"), Optional(Pair("a:b", "c")));
+  EXPECT_THAT(RSplitStringOnce("a:", ":"), Optional(Pair("a", "")));
+  EXPECT_THAT(RSplitStringOnce(":b", ":"), Optional(Pair("", "b")));
 
   // Multiple separators overload, but only the first one present.
-  EXPECT_EQ(std::pair("a:b", "c"), RSplitStringOnce("a:b:c", ":="));
-  EXPECT_EQ(std::pair("a", ""), RSplitStringOnce("a:", ":="));
-  EXPECT_EQ(std::pair("", "b"), RSplitStringOnce(":b", ":="));
+  EXPECT_THAT(RSplitStringOnce("a:b:c", ":="), Optional(Pair("a:b", "c")));
+  EXPECT_THAT(RSplitStringOnce("a:", ":="), Optional(Pair("a", "")));
+  EXPECT_THAT(RSplitStringOnce(":b", ":="), Optional(Pair("", "b")));
 
   // Multiple separators overload, but only the second one present.
-  EXPECT_EQ(std::pair("a:b", "c"), RSplitStringOnce("a:b:c", "=:"));
-  EXPECT_EQ(std::pair("a", ""), RSplitStringOnce("a:", "=:"));
-  EXPECT_EQ(std::pair("", "b"), RSplitStringOnce(":b", "=:"));
+  EXPECT_THAT(RSplitStringOnce("a:b:c", "=:"), Optional(Pair("a:b", "c")));
+  EXPECT_THAT(RSplitStringOnce("a:", "=:"), Optional(Pair("a", "")));
+  EXPECT_THAT(RSplitStringOnce(":b", "=:"), Optional(Pair("", "b")));
 
   // Multiple separators overload, both present. The separator that comes first
   // in the input string (not separators string) should win.
-  EXPECT_EQ(std::pair("a:b", "c"), RSplitStringOnce("a:b=c", ":="));
-  EXPECT_EQ(std::pair("a:b", "c"), RSplitStringOnce("a:b=c", "=:"));
-  EXPECT_EQ(std::pair("a=b", "c"), RSplitStringOnce("a=b:c", ":="));
-  EXPECT_EQ(std::pair("a=b", "c"), RSplitStringOnce("a=b:c", "=:"));
+  EXPECT_THAT(RSplitStringOnce("a:b=c", ":="), Optional(Pair("a:b", "c")));
+  EXPECT_THAT(RSplitStringOnce("a:b=c", "=:"), Optional(Pair("a:b", "c")));
+  EXPECT_THAT(RSplitStringOnce("a=b:c", ":="), Optional(Pair("a=b", "c")));
+  EXPECT_THAT(RSplitStringOnce("a=b:c", "=:"), Optional(Pair("a=b", "c")));
 }
 
 TEST(StringSplitTest, StringSplitKeepWhitespace) {
