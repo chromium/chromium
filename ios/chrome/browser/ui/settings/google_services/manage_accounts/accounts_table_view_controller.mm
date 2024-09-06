@@ -40,12 +40,6 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
 }  // namespace
 
 @interface AccountsTableViewController () {
-  // Whether to close the view after adding an account.
-  BOOL _closeSettingsOnAddAccount;
-
-  // ApplicationCommands handler.
-  id<ApplicationCommands> _applicationHandler;
-
   // Enable lookup of item corresponding to a given IdentityViewItem GAIA ID
   // string.
   NSDictionary<NSString*, TableViewItem*>* _identityMap;
@@ -60,15 +54,9 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
 
 @synthesize modelIdentityDataSource;
 
-- (instancetype)initWithCloseSettingsOnAddAccount:
-                    (BOOL)closeSettingsOnAddAccount
-                       applicationCommandsHandler:
-                           (id<ApplicationCommands>)applicationCommandsHandler
-                                     offerSignout:(BOOL)offerSignout {
+- (instancetype)initWithOfferSignout:(BOOL)offerSignout {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
-    _closeSettingsOnAddAccount = closeSettingsOnAddAccount;
-    _applicationHandler = applicationCommandsHandler;
     _offerSignout = offerSignout;
   }
 

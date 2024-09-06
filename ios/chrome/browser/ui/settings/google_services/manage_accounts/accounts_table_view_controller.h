@@ -12,7 +12,6 @@
 
 @protocol AccountsModelIdentityDataSource;
 @protocol AccountsMutator;
-@protocol ApplicationCommands;
 @protocol SettingsCommands;
 
 // TableView that handles the settings for accounts when the user is signed in
@@ -29,13 +28,7 @@
 // Mutator.
 @property(nonatomic, weak) id<AccountsMutator> mutator;
 
-// If `closeSettingsOnAddAccount` is YES, then this account table view
-// controller will close the settings view when an account is added.
-- (instancetype)initWithCloseSettingsOnAddAccount:
-                    (BOOL)closeSettingsOnAddAccount
-                       applicationCommandsHandler:
-                           (id<ApplicationCommands>)applicationCommandsHandler
-                                     offerSignout:(BOOL)offerSignout
+- (instancetype)initWithOfferSignout:(BOOL)offerSignout
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;

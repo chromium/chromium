@@ -119,12 +119,7 @@ using signin_metrics::PromoAction;
       !syncService->HasSyncConsent()) {
     AccountsTableViewController* viewController =
         [[AccountsTableViewController alloc]
-            initWithCloseSettingsOnAddAccount:_closeSettingsOnAddAccount
-                   applicationCommandsHandler:HandlerForProtocol(
-                                                  self.browser
-                                                      ->GetCommandDispatcher(),
-                                                  ApplicationCommands)
-                                 offerSignout:self.showSignoutButton];
+            initWithOfferSignout:self.showSignoutButton];
     _viewController = viewController;
     _mediator.consumer = viewController;
     _mediator.delegate = self;
@@ -349,6 +344,9 @@ using signin_metrics::PromoAction;
 
 - (void)addAccountToDeviceCompleted {
   [_viewController allowUserInteraction];
+  if (_closeSettingsOnAddAccount) {
+    [self closeSettings];
+  }
 }
 
 - (void)handleSignOutCompleted:(BOOL)success {

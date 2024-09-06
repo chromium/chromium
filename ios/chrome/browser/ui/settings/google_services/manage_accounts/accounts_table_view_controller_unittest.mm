@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
@@ -65,12 +64,6 @@ class AccountsTableViewControllerTest
   }
 
   LegacyChromeTableViewController* InstantiateController() override {
-    // Set up ApplicationCommands mock.
-    id mock_application_handler =
-        OCMProtocolMock(@protocol(ApplicationCommands));
-    CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
-    [dispatcher startDispatchingToTarget:mock_application_handler
-                             forProtocol:@protocol(ApplicationCommands)];
 
     AccountsMediator* mediator =
         [[AccountsMediator alloc] initWithSyncService:test_sync_service()
@@ -80,9 +73,7 @@ class AccountsTableViewControllerTest
 
     AccountsTableViewController* controller =
         [[AccountsTableViewController alloc]
-            initWithCloseSettingsOnAddAccount:NO
-                   applicationCommandsHandler:mock_application_handler
-                                 offerSignout:show_signout_button_];
+            initWithOfferSignout:show_signout_button_];
 
     mediator.consumer = controller;
     controller.modelIdentityDataSource = mediator;
