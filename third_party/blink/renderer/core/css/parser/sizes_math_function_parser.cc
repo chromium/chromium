@@ -10,10 +10,10 @@
 
 namespace blink {
 
-SizesMathFunctionParser::SizesMathFunctionParser(CSSParserTokenRange range,
+SizesMathFunctionParser::SizesMathFunctionParser(CSSParserTokenStream& stream,
                                                  MediaValues* media_values)
     : media_values_(media_values), result_(0) {
-  is_valid_ = CalcToReversePolishNotation(range) && Calculate();
+  is_valid_ = CalcToReversePolishNotation(stream) && Calculate();
 }
 
 float SizesMathFunctionParser::Result() const {
@@ -167,56 +167,135 @@ void SizesMathFunctionParser::AppendOperator(const CSSParserToken& token) {
 }
 
 bool SizesMathFunctionParser::CalcToReversePolishNotation(
-    CSSParserTokenRange range) {
+    CSSParserTokenStream& stream) {
   // This method implements the shunting yard algorithm, to turn the calc syntax
   // into a reverse polish notation.
   // http://en.wikipedia.org/wiki/Shunting-yard_algorithm
 
+  stream.EnsureLookAhead();
+  CSSParserTokenStream::State savepoint = stream.Save();
+
   Vector<CSSParserToken> stack;
-  while (!range.AtEnd()) {
-    const CSSParserToken& token = range.Consume();
-    switch (token.GetType()) {
+  if (!ConsumeCalc(stream, stack)) {
+    stream.EnsureLookAhead();
+    stream.Restore(savepoint);
+    return false;
+  }
+
+  // When there are no more tokens to read:
+  // While there are still operator tokens in the stack:
+  while (!stack.empty()) {
+    // If the operator token on the top of the stack is a parenthesis, then
+    // there are unclosed parentheses.
+    CSSParserTokenType type = stack.back().GetType();
+    if (type != kLeftParenthesisToken && type != kFunctionToken) {
+      // Pop the operator onto the output queue.
+      AppendOperator(stack.back());
+    }
+    stack.pop_back();
+  }
+
+  return true;
+}
+
+namespace {
+
+bool IsValidMathFunction(CSSValueID value_id) {
+  switch (value_id) {
+    case CSSValueID::kMin:
+    case CSSValueID::kMax:
+    case CSSValueID::kClamp:
+    case CSSValueID::kCalc:
+      return true;
+    default:
+      return false;
+  }
+}
+}  // namespace
+
+// Note: Does not restore the stream on failure.
+bool SizesMathFunctionParser::ConsumeCalc(CSSParserTokenStream& stream,
+                                          Vector<CSSParserToken>& stack) {
+  DCHECK_EQ(stream.Peek().GetType(), kFunctionToken);
+
+  if (!IsValidMathFunction(stream.Peek().FunctionId())) {
+    return false;
+  }
+
+  // Consume exactly one math function, leaving any trailing tokens
+  // (except whitespace) intact.
+
+  stack.push_back(stream.Peek());  // kFunctionToken
+
+  {
+    CSSParserTokenStream::BlockGuard guard(stream);
+    if (!ConsumeBlockContent(stream, stack)) {
+      return false;
+    }
+  }
+
+  if (!HandleRightParenthesis(stack)) {
+    return false;
+  }
+
+  stream.ConsumeWhitespace();
+
+  return true;
+}
+
+// Consume the interior of a math function (e.g. calc(), max()) or plain
+// parenthesis.
+bool SizesMathFunctionParser::ConsumeBlockContent(
+    CSSParserTokenStream& stream,
+    Vector<CSSParserToken>& stack) {
+  while (!stream.AtEnd()) {
+    switch (stream.Peek().GetType()) {
       case kNumberToken:
-        AppendNumber(token);
+        AppendNumber(stream.Consume());
         break;
-      case kDimensionToken:
+      case kDimensionToken: {
+        const CSSParserToken& token = stream.Consume();
         if (!CSSPrimitiveValue::IsLength(token.GetUnitType()) ||
             !AppendLength(token)) {
           return false;
         }
-        break;
+      } break;
       case kDelimiterToken:
-        if (!HandleOperator(stack, token)) {
+        if (!HandleOperator(stack, stream.Consume())) {
           return false;
         }
         break;
       case kFunctionToken:
-        if (token.FunctionId() == CSSValueID::kMin ||
-            token.FunctionId() == CSSValueID::kMax ||
-            token.FunctionId() == CSSValueID::kClamp) {
-          stack.push_back(token);
-          break;
-        }
-        if (token.FunctionId() != CSSValueID::kCalc) {
+        if (!IsValidMathFunction(stream.Peek().FunctionId())) {
           return false;
         }
-        // "calc(" is the same as "("
         [[fallthrough]];
       case kLeftParenthesisToken:
-        // If the token is a left parenthesis, then push it onto the stack.
-        stack.push_back(token);
-        break;
-      case kRightParenthesisToken:
+        stack.push_back(stream.Peek());
+        {
+          CSSParserTokenStream::BlockGuard guard(stream);
+          if (!ConsumeBlockContent(stream, stack)) {
+            return false;
+          }
+        }
         if (!HandleRightParenthesis(stack)) {
           return false;
         }
         break;
+      case kRightParenthesisToken:
+        // This should only happen for mismatched kRightParenthesisTokens.
+        // Correctly matched tokens should have been consumed by
+        // the BlockGuard during kLeftParenthesisToken.
+        DCHECK_EQ(stream.Peek().GetBlockType(), CSSParserToken::kNotBlock);
+        return false;
       case kCommaToken:
-        if (!HandleComma(stack, token)) {
+        if (!HandleComma(stack, stream.Consume())) {
           return false;
         }
         break;
       case kWhitespaceToken:
+        stream.Consume();
+        break;
       case kEOFToken:
         break;
       case kCommentToken:
@@ -249,18 +328,6 @@ bool SizesMathFunctionParser::CalcToReversePolishNotation(
     }
   }
 
-  // When there are no more tokens to read:
-  // While there are still operator tokens in the stack:
-  while (!stack.empty()) {
-    // If the operator token on the top of the stack is a parenthesis, then
-    // there are unclosed parentheses.
-    CSSParserTokenType type = stack.back().GetType();
-    if (type != kLeftParenthesisToken && type != kFunctionToken) {
-      // Pop the operator onto the output queue.
-      AppendOperator(stack.back());
-    }
-    stack.pop_back();
-  }
   return true;
 }
 

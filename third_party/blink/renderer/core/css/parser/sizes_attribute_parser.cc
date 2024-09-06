@@ -62,11 +62,10 @@ bool SizesAttributeParser::Parse(CSSParserTokenStream& stream) {
     }
 
     if (stream.Peek().GetType() != kCommaToken) {
-      CSSParserTokenRange length_tokens = stream.ConsumeComponentValue();
-      stream.ConsumeWhitespace();
-      if (stream.AtEnd() || stream.Peek().GetType() == kCommaToken) {
-        float length;
-        if (CalculateLengthInPixels(length_tokens, length)) {
+      float length;
+      if (CalculateLengthInPixels(stream, length)) {
+        stream.ConsumeWhitespace();
+        if (stream.AtEnd() || stream.Peek().GetType() == kCommaToken) {
           size_ = length;
           size_was_set_ = true;
           return true;
@@ -83,9 +82,9 @@ bool SizesAttributeParser::Parse(CSSParserTokenStream& stream) {
   return false;
 }
 
-bool SizesAttributeParser::CalculateLengthInPixels(CSSParserTokenRange range,
+bool SizesAttributeParser::CalculateLengthInPixels(CSSParserTokenStream& stream,
                                                    float& result) {
-  const CSSParserToken& start_token = range.Peek();
+  const CSSParserToken& start_token = stream.Peek();
   CSSParserTokenType type = start_token.GetType();
   if (type == kDimensionToken) {
     double length;
@@ -97,10 +96,11 @@ bool SizesAttributeParser::CalculateLengthInPixels(CSSParserTokenRange range,
                                       start_token.GetUnitType(), length)) &&
         (length >= 0)) {
       result = ClampTo<float>(length);
+      stream.Consume();
       return true;
     }
   } else if (type == kFunctionToken) {
-    SizesMathFunctionParser calc_parser(range, media_values_);
+    SizesMathFunctionParser calc_parser(stream, media_values_);
     if (!calc_parser.IsValid()) {
       return false;
     }
@@ -108,6 +108,7 @@ bool SizesAttributeParser::CalculateLengthInPixels(CSSParserTokenRange range,
     result = calc_parser.Result();
     return true;
   } else if (type == kNumberToken && !start_token.NumericValue()) {
+    stream.Consume();
     result = 0;
     return true;
   }
