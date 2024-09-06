@@ -298,16 +298,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-live-changed.html"));
 }
 
-// TODO(crbug.com/338217303): Very flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_AccessibilityEventsAriaMenuItemFocus \
-  DISABLED_AccessibilityEventsAriaMenuItemFocus
-#else
-#define MAYBE_AccessibilityEventsAriaMenuItemFocus \
-  AccessibilityEventsAriaMenuItemFocus
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       MAYBE_AccessibilityEventsAriaMenuItemFocus) {
+                       AccessibilityEventsAriaMenuItemFocus) {
   RunEventTest(FILE_PATH_LITERAL("aria-menuitem-focus.html"));
 }
 
