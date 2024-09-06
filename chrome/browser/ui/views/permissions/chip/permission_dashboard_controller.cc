@@ -554,7 +554,7 @@ std::u16string PermissionDashboardController::GetIndicatorTitle(
       return l10n_util::GetStringUTF16(IDS_MICROPHONE_NOT_ALLOWED);
     }
 
-    NOTREACHED_IN_MIGRATION();
+    DUMP_WILL_BE_NOTREACHED();
     return std::u16string();
   }
 

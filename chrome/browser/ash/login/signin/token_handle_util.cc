@@ -252,7 +252,7 @@ void TokenHandleUtil::OnStatusChecked(TokenValidationCallback callback,
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(account_id);
   if (!user) {
-    NOTREACHED_IN_MIGRATION() << "Invalid user";
+    DUMP_WILL_BE_NOTREACHED() << "Invalid user";
     FinishWithStatus(std::move(callback), token, account_id, status,
                      /*user_has_gaia_password=*/true);
     return;

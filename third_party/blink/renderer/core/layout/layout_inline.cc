@@ -623,7 +623,7 @@ bool LayoutInline::NodeAtPoint(HitTestResult& result,
     // TODO(crbug.com/965976): We should fix the root cause of the missed
     // layout.
     if (UNLIKELY(NeedsLayout())) {
-      NOTREACHED_IN_MIGRATION();
+      DUMP_WILL_BE_NOTREACHED();
       return false;
     }
 

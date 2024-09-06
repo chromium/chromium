@@ -165,7 +165,7 @@ ExtensionContextMenuModel::ContextMenuAction CommandIdToContextMenuAction(
     default:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
+  DUMP_WILL_BE_NOTREACHED();
   return ContextMenuAction::kNoAction;
 }
 

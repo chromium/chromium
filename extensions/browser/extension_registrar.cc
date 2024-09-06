@@ -77,7 +77,7 @@ void ExtensionRegistrar::AddExtension(
       // but that's caused problems. There are apparently times when this
       // happens that we aren't accounting for. We should track those down and
       // fix them, but it can be tricky.
-      NOTREACHED_IN_MIGRATION()
+      DUMP_WILL_BE_NOTREACHED()
           << "Attempted to downgrade extension." << "\nID: " << extension->id()
           << "\nOld Version: " << old->version()
           << "\nNew Version: " << extension->version()

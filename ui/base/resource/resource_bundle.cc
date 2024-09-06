@@ -236,7 +236,7 @@ class ResourceBundle::BitmapImageSource : public gfx::ImageSkiaSource {
       // TODO(oshima): Android unit_tests runs at DSF=3 with 100P assets.
       return gfx::ImageSkiaRep();
 #else
-      NOTREACHED_IN_MIGRATION() << "Unable to load bitmap image with id "
+      DUMP_WILL_BE_NOTREACHED() << "Unable to load bitmap image with id "
                                 << resource_id_ << ", scale=" << scale;
       return gfx::ImageSkiaRep(CreateEmptyBitmap(), scale);
 #endif

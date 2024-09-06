@@ -1204,7 +1204,7 @@ void CorsURLLoader::HandleComplete(URLLoaderCompletionStatus status) {
 
     // DCHECK that we never run into this scenario, but fail the request for
     // safety if this ever happens in production.
-    NOTREACHED_IN_MIGRATION();
+    DUMP_WILL_BE_NOTREACHED();
   }
 
   status.private_network_access_preflight_result =

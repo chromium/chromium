@@ -371,7 +371,7 @@ bool DoUpgradeTasks(const base::CommandLine& command_line) {
   // At this point the chrome.exe has been swapped with the new one.
   if (!RelaunchChromeBrowser(command_line)) {
     // The relaunch failed. Feel free to panic now.
-    NOTREACHED_IN_MIGRATION();
+    DUMP_WILL_BE_NOTREACHED();
   }
   return true;
 }

@@ -336,10 +336,8 @@ gfx::Rect LoginBaseBubbleView::GetBoundsAvailableToShowBubble() const {
 views::View* LoginBaseBubbleView::GetAnchorView() const {
   if (anchor_view_.WasInvalidated()) {
     // TODO(crbug.com/1171827): This is to detect dangling anchor_view_
-    // pointers. This should not cause a crash, but is still indicative of UI
-    // bugs.
-    base::debug::DumpWithoutCrashing();
-    NOTREACHED_IN_MIGRATION();
+    // pointers.
+    DUMP_WILL_BE_NOTREACHED();
   }
   return anchor_view_.get();
 }

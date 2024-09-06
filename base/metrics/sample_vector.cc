@@ -370,7 +370,7 @@ bool SampleVectorBase::AddSubtractImpl(SampleCountIterator* iter,
       SCOPED_CRASH_KEY_NUMBER("SampleVector", "range_max",
                               bucket_ranges_->range(dest_index + 1));
 #endif  // !BUILDFLAG(IS_NACL)
-      NOTREACHED_IN_MIGRATION()
+      DUMP_WILL_BE_NOTREACHED()
           << "sample=" << min << "," << max
           << "; range=" << bucket_ranges_->range(dest_index) << ","
           << bucket_ranges_->range(dest_index + 1);

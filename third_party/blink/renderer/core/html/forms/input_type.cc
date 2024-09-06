@@ -563,7 +563,7 @@ String InputType::BadInputText() const {
 }
 
 String InputType::ValueNotEqualText(const Decimal& value) const {
-  NOTREACHED_IN_MIGRATION();
+  DUMP_WILL_BE_NOTREACHED();
   return String();
 }
 

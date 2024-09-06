@@ -29,7 +29,7 @@ bool RegisterUninstallationViaOsSettingsWithOs(
 bool UnregisterUninstallationViaOsSettingsWithOs(
     const webapps::AppId& app_id,
     const base::FilePath& profile_path) {
-  NOTREACHED_IN_MIGRATION();
+  DUMP_WILL_BE_NOTREACHED();
   return true;
 }
 
