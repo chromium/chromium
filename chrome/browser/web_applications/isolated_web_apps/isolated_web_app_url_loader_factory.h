@@ -14,6 +14,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
@@ -59,7 +60,7 @@ class IsolatedWebAppURLLoaderFactory
   static mojo::PendingRemote<network::mojom::URLLoaderFactory> CreateForFrame(
       content::BrowserContext* browser_context,
       std::optional<url::Origin> app_origin,
-      int frame_tree_node_id);
+      content::FrameTreeNodeId frame_tree_node_id);
 
   // The same as `CreateForFrame`, but doesn't have access to a FrameTreeNode
   // to log errors to.
@@ -76,12 +77,12 @@ class IsolatedWebAppURLLoaderFactory
   static mojo::PendingRemote<network::mojom::URLLoaderFactory> CreateInternal(
       content::BrowserContext* browser_context,
       std::optional<url::Origin> app_origin,
-      std::optional<int> frame_tree_node_id);
+      std::optional<content::FrameTreeNodeId> frame_tree_node_id);
 
   IsolatedWebAppURLLoaderFactory(
       Profile* profile,
       std::optional<url::Origin> app_origin,
-      std::optional<int> frame_tree_node_id,
+      std::optional<content::FrameTreeNodeId> frame_tree_node_id,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver);
 
   void HandleSignedBundle(
@@ -133,7 +134,7 @@ class IsolatedWebAppURLLoaderFactory
   // via `profile_observation_` when the `Profile` is destroyed.
   const raw_ptr<Profile> profile_;
   const std::optional<url::Origin> app_origin_;
-  const std::optional<int> frame_tree_node_id_;
+  const std::optional<content::FrameTreeNodeId> frame_tree_node_id_;
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
   base::WeakPtrFactory<IsolatedWebAppURLLoaderFactory> weak_factory_{this};
 };
