@@ -253,7 +253,7 @@ class FileChooserDelegate : public WebContentsDelegate {
 // the given frame tree node.
 class FrameTestNavigationManager : public TestNavigationManager {
  public:
-  FrameTestNavigationManager(int frame_tree_node_id,
+  FrameTestNavigationManager(FrameTreeNodeId frame_tree_node_id,
                              WebContents* web_contents,
                              const GURL& url);
 
@@ -266,7 +266,7 @@ class FrameTestNavigationManager : public TestNavigationManager {
   bool ShouldMonitorNavigation(NavigationHandle* handle) override;
 
   // Notifications are filtered so only this frame is monitored.
-  int filtering_frame_tree_node_id_;
+  FrameTreeNodeId filtering_frame_tree_node_id_;
 };
 
 // An observer that can wait for a specific URL to be committed in a specific
@@ -287,7 +287,7 @@ class UrlCommitObserver : WebContentsObserver {
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
 
   // The id of the FrameTreeNode in which navigations are peformed.
-  int frame_tree_node_id_;
+  FrameTreeNodeId frame_tree_node_id_;
 
   // The URL this observer is expecting to be committed.
   GURL url_;
@@ -587,7 +587,7 @@ class FrameNavigateParamsCapturer : public WebContentsObserver {
   // The id of the FrameTreeNode whose navigations to observe. If this is not
   // set, then this FrameNavigateParamsCapturer observes all navigations that
   // happen in the observed WebContents.
-  std::optional<int> frame_tree_node_id_;
+  std::optional<FrameTreeNodeId> frame_tree_node_id_;
 
   // How many navigations remain to capture.
   int navigations_remaining_ = 1;

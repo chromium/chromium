@@ -44,7 +44,7 @@ class NavigationHandleObserver : public WebContentsObserver {
   bool is_renderer_initiated() { return is_renderer_initiated_; }
   bool is_same_document() { return is_same_document_; }
   bool was_redirected() { return was_redirected_; }
-  int frame_tree_node_id() { return frame_tree_node_id_; }
+  FrameTreeNodeId frame_tree_node_id() { return frame_tree_node_id_; }
   const GURL& last_committed_url() { return last_committed_url_; }
   ui::PageTransition page_transition() { return page_transition_; }
   net::Error net_error_code() { return net_error_code_; }
@@ -78,7 +78,7 @@ class NavigationHandleObserver : public WebContentsObserver {
   bool is_renderer_initiated_ = true;
   bool is_same_document_ = false;
   bool was_redirected_ = false;
-  int frame_tree_node_id_ = RenderFrameHost::kNoFrameTreeNodeId;
+  FrameTreeNodeId frame_tree_node_id_;
   ui::PageTransition page_transition_ = ui::PAGE_TRANSITION_LINK;
   GURL expected_start_url_;
   GURL last_committed_url_;

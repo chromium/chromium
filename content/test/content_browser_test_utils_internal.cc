@@ -587,7 +587,7 @@ void FileChooserDelegate::RunFileChooser(
 }
 
 FrameTestNavigationManager::FrameTestNavigationManager(
-    int filtering_frame_tree_node_id,
+    FrameTreeNodeId filtering_frame_tree_node_id,
     WebContents* web_contents,
     const GURL& url)
     : TestNavigationManager(web_contents, url),

@@ -1346,8 +1346,9 @@ void WebTestControlHost::OnTestFinished() {
                             barrier_closure);
 }
 
-void WebTestControlHost::OnDumpFrameLayoutResponse(int frame_tree_node_id,
-                                                   const std::string& dump) {
+void WebTestControlHost::OnDumpFrameLayoutResponse(
+    FrameTreeNodeId frame_tree_node_id,
+    const std::string& dump) {
   // Store the result.
   auto pair = frame_to_layout_dump_map_.emplace(frame_tree_node_id, dump);
   bool insertion_took_place = pair.second;

@@ -52,7 +52,7 @@ class TestFrameNavigationObserver : public WebContentsObserver {
   void DidStopLoading() override;
 
   // The id of the FrameTreeNode in which navigations are peformed.
-  int frame_tree_node_id_;
+  FrameTreeNodeId frame_tree_node_id_;
 
   // If true the navigation has started.
   bool navigation_started_ = false;

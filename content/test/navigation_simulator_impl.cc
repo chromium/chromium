@@ -93,10 +93,11 @@ int64_t g_unique_identifier = 0;
 FrameTreeNode* GetFrameTreeNodeForPendingEntry(
     NavigationControllerImpl& controller) {
   NavigationEntryImpl* pending_entry = controller.GetPendingEntry();
-  int frame_tree_node_id = pending_entry->frame_tree_node_id();
+  FrameTreeNodeId frame_tree_node_id = pending_entry->frame_tree_node_id();
   FrameTree& frame_tree = controller.frame_tree();
-  if (frame_tree_node_id == FrameTreeNode::kFrameTreeNodeInvalidId)
+  if (frame_tree_node_id.is_null()) {
     return frame_tree.root();
+  }
   return frame_tree.FindByID(frame_tree_node_id);
 }
 

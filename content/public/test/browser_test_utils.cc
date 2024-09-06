@@ -3126,7 +3126,7 @@ class FrameDeletedObserver::FrameTreeNodeObserverImpl
 
   bool IsDestroyed() const { return owner_ == nullptr; }
 
-  int frame_tree_node_id() const { return frame_tree_node_id_; }
+  FrameTreeNodeId frame_tree_node_id() const { return frame_tree_node_id_; }
 
  private:
   // FrameTreeNode::Observer:
@@ -3137,7 +3137,7 @@ class FrameDeletedObserver::FrameTreeNodeObserverImpl
     }
   }
 
-  const int frame_tree_node_id_;
+  const content::FrameTreeNodeId frame_tree_node_id_;
   raw_ptr<FrameTreeNode> owner_;
   base::RunLoop run_loop_;
 };
@@ -3156,7 +3156,7 @@ bool FrameDeletedObserver::IsDeleted() const {
   return impl_->IsDestroyed();
 }
 
-int FrameDeletedObserver::GetFrameTreeNodeId() const {
+content::FrameTreeNodeId FrameDeletedObserver::GetFrameTreeNodeId() const {
   return impl_->frame_tree_node_id();
 }
 

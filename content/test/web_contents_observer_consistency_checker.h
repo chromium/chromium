@@ -136,7 +136,7 @@ class WebContentsObserverConsistencyChecker
   // Remembers parents to make sure RenderFrameHost::GetParent() never changes.
   std::map<GlobalRoutingID, GlobalRoutingID> parent_ids_;
 
-  std::set<int> frame_tree_node_ids_;
+  std::set<FrameTreeNodeId> frame_tree_node_ids_;
 
   bool is_loading_;
 

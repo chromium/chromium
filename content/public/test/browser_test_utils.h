@@ -1678,7 +1678,7 @@ class FrameDeletedObserver {
 
   bool IsDeleted() const;
 
-  int GetFrameTreeNodeId() const;
+  FrameTreeNodeId GetFrameTreeNodeId() const;
 
  private:
   // Private impl struct which hides non public types including FrameTreeNode.
