@@ -77,6 +77,30 @@ chromium-metrics-reviews@google.com.
   <token key="SessionType" variants="SessionType"/>
 </histogram>
 
+<histogram name="AI.Translation.LoadTranslateKitErrorCode"
+    enum="WinGetLastError" expires_after="2025-03-01">
+  <owner>mych@google.com</owner>
+  <owner>fergal@google.com</owner>
+  <summary>
+    Records the error code of a failed attempt to load the TranslateKit binary
+    for on-device translation. It may happen when browser tries to initialize
+    the OnDeviceTranslationService. This is only logged on Windows. See
+    on_device_translation::TranslateKitClient for more details.
+  </summary>
+</histogram>
+
+<histogram name="AI.Translation.LoadTranslateKitResult"
+    enum="LoadTranslateKitResult" expires_after="2025-03-01">
+  <owner>mych@google.com</owner>
+  <owner>fergal@google.com</owner>
+  <summary>
+    Records the result of an attempt to load the TranslateKit binary for
+    on-device translation. It is logged when browser tries to initialize the
+    OnDeviceTranslationService. See on_device_translation::TranslateKitClient
+    for more details.
+  </summary>
+</histogram>
+
 <histogram name="AI.{SessionType}.APIUsage" enum="AIAPI"
     expires_after="2024-12-11">
   <owner>leimy@chromium.org</owner>

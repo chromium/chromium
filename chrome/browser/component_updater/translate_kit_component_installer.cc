@@ -15,12 +15,16 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/services/on_device_translation/public/cpp/features.h"
+#include "chrome/browser/on_device_translation/pref_names.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/crx_file/id_util.h"
 #include "components/update_client/update_client_errors.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/sha2.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/services/on_device_translation/public/cpp/features.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace component_updater {
 
@@ -71,8 +75,9 @@ base::FilePath GetInstalledPath(const base::FilePath& base) {
 
 }  // namespace
 
-TranslateKitComponentInstallerPolicy::TranslateKitComponentInstallerPolicy() =
-    default;
+TranslateKitComponentInstallerPolicy::TranslateKitComponentInstallerPolicy(
+    PrefService* pref_service)
+    : pref_service_(pref_service) {}
 
 TranslateKitComponentInstallerPolicy::~TranslateKitComponentInstallerPolicy() =
     default;
@@ -109,7 +114,11 @@ void TranslateKitComponentInstallerPolicy::ComponentReady(
   VLOG(1) << "Component ready, version " << version.GetString() << " in "
           << install_dir.value();
 
-  // TODO(crbug.com/362123222): Notify TranslationAPI controller.
+#if !BUILDFLAG(IS_ANDROID)
+  CHECK(pref_service_);
+  pref_service_->SetFilePath(prefs::kTranslateKitBinaryPath,
+                             GetInstalledPath(install_dir));
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 base::FilePath TranslateKitComponentInstallerPolicy::GetRelativeInstallDir()
@@ -132,7 +141,8 @@ TranslateKitComponentInstallerPolicy::GetInstallerAttributes() const {
   return update_client::InstallerAttributes();
 }
 
-void RegisterTranslateKitComponent(ComponentUpdateService* cus) {
+void RegisterTranslateKitComponent(ComponentUpdateService* cus,
+                                   PrefService* pref_service) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!base::FeatureList::IsEnabled(
           on_device_translation::kEnableTranslateKitComponent)) {
@@ -142,7 +152,7 @@ void RegisterTranslateKitComponent(ComponentUpdateService* cus) {
   VLOG(1) << "Registering TranslateKit component.";
   // TODO(crbug.com/362123222): Update when adding language model installer.
   auto installer = base::MakeRefCounted<ComponentInstaller>(
-      std::make_unique<TranslateKitComponentInstallerPolicy>());
+      std::make_unique<TranslateKitComponentInstallerPolicy>(pref_service));
   installer->Register(cus, base::OnceClosure());
 }
 

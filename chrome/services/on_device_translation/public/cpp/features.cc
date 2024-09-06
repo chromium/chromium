@@ -6,12 +6,8 @@
 
 namespace on_device_translation {
 
-BASE_FEATURE(kUseTranslateKitForTranslationAPI,
-             "UseTranslateKitForTranslationAPI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableTranslateKitComponent,
-             "kEnableTranslateKitComponent",
+             "EnableTranslateKitComponent",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace on_device_translation

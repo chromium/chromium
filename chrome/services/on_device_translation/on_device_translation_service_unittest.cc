@@ -25,7 +25,7 @@ class MockOnDeviceTranslationServiceTest : public testing::Test {
   MockOnDeviceTranslationServiceTest()
       : service_impl_(service_remote_.BindNewPipeAndPassReceiver()),
         weak_factory_(this) {
-    feature_list_.InitAndDisableFeature(kUseTranslateKitForTranslationAPI);
+    feature_list_.InitAndDisableFeature(kEnableTranslateKitComponent);
   }
 
   mojo::PendingReceiver<mojom::Translator>

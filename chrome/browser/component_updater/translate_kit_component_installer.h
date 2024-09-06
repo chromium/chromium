@@ -10,6 +10,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"
+#include "components/prefs/pref_service.h"
 #include "components/update_client/update_client.h"
 
 namespace component_updater {
@@ -17,7 +18,7 @@ namespace component_updater {
 // The installer policy for the TranslateKit Component.
 class TranslateKitComponentInstallerPolicy : public ComponentInstallerPolicy {
  public:
-  TranslateKitComponentInstallerPolicy();
+  explicit TranslateKitComponentInstallerPolicy(PrefService* pref_service);
   ~TranslateKitComponentInstallerPolicy() override;
 
   // Not Copyable.
@@ -46,11 +47,14 @@ class TranslateKitComponentInstallerPolicy : public ComponentInstallerPolicy {
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
+
+  raw_ptr<PrefService> pref_service_;
 };
 
 // Call once during startup to make the component update service aware of
 // the TranslateKit component.
-void RegisterTranslateKitComponent(ComponentUpdateService* cus);
+void RegisterTranslateKitComponent(ComponentUpdateService* cus,
+                                   PrefService* pref_service);
 
 }  // namespace component_updater
 

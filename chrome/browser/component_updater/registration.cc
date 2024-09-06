@@ -218,10 +218,10 @@ void RegisterComponentsForUpdate() {
 
   RegisterPlusAddressBlocklistComponent(cus);
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-  // TODO(crbug.com/362123222): Support both platforms.
-  RegisterTranslateKitComponent(cus);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/364795294): Support Android platform.
+  RegisterTranslateKitComponent(cus, g_browser_process->local_state());
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace component_updater

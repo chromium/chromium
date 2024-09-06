@@ -8,15 +8,10 @@ source_set("on_device_translation_service") {
     "mock_translator.h",
     "on_device_translation_service.cc",
     "on_device_translation_service.h",
+    "translate_kit_client.cc",
+    "translate_kit_client.h",
+    "translate_kit_structs.h",
   ]
-  if (!is_win) {
-    sources += [
-      "translate_kit_translator.cc",
-      "translate_kit_translator.h",
-      "translate_kit_wrapper.cc",
-      "translate_kit_wrapper.h",
-    ]
-  }
   public_deps = [
     "//base",
     "//chrome/services/on_device_translation/public/cpp",

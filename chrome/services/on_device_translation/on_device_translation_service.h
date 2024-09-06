@@ -5,11 +5,15 @@
 #ifndef CHROME_SERVICES_ON_DEVICE_TRANSLATION_ON_DEVICE_TRANSLATION_SERVICE_H_
 #define CHROME_SERVICES_ON_DEVICE_TRANSLATION_ON_DEVICE_TRANSLATION_SERVICE_H_
 
+#include <memory>
+
 #include "chrome/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace on_device_translation {
+
+class TranslateKitClient;
 
 class OnDeviceTranslationService : public mojom::OnDeviceTranslationService {
  public:
@@ -22,19 +26,19 @@ class OnDeviceTranslationService : public mojom::OnDeviceTranslationService {
   OnDeviceTranslationService& operator=(const OnDeviceTranslationService&) =
       delete;
 
-  // mojom::OnDeviceTranslationService overrides.
+  // `mojom::OnDeviceTranslationService` overrides:
   void CreateTranslator(
       const std::string& source_lang,
       const std::string& target_lang,
       mojo::PendingReceiver<on_device_translation::mojom::Translator> receiver,
       CreateTranslatorCallback create_translator_callback) override;
-
   void CanTranslate(const std::string& source_lang,
                     const std::string& target_lang,
                     CanTranslateCallback can_translate_callback) override;
 
  private:
   mojo::Receiver<mojom::OnDeviceTranslationService> receiver_;
+  std::unique_ptr<TranslateKitClient> translate_kit_;
 };
 
 }  // namespace on_device_translation

@@ -8,9 +8,12 @@
 #include "base/functional/callback_forward.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/on_device_translation/pref_names.h"
 #include "chrome/services/on_device_translation/public/cpp/features.h"
 #include "chrome/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
 #include "chrome/services/on_device_translation/public/mojom/translator.mojom.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/service_process_host.h"
 
 const char kOnDeviceTranslationServiceDisplayName[] =
@@ -21,18 +24,25 @@ OnDeviceTranslationServiceController::OnDeviceTranslationServiceController() {
   service_remote_.reset_on_disconnect();
 
   std::vector<std::string> extra_switches;
-
-  // If the translation API should use Translatekit library, we need to forward
-  // the genfiles directory as extra command switch.
   if (base::FeatureList::IsEnabled(
-          on_device_translation::kUseTranslateKitForTranslationAPI)) {
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    if (command_line->HasSwitch(on_device_translation::kTranslateKitDir)) {
-      extra_switches.push_back(
-          base::StrCat({on_device_translation::kTranslateKitDir, "=",
-                        command_line->GetSwitchValueASCII(
-                            on_device_translation::kTranslateKitDir)}));
+          on_device_translation::kEnableTranslateKitComponent)) {
+    PrefService* global_prefs = g_browser_process->local_state();
+    CHECK(global_prefs);
+    base::FilePath translate_kit_path =
+        global_prefs->GetFilePath(prefs::kTranslateKitBinaryPath);
+    if (translate_kit_path.empty()) {
+      LOG(ERROR) << "Got an empty path to TranslateKit binary on the device.";
     }
+    // TODO(crbug.com/362123222): Pass the path via mojom instead of cmd
+    // switches.
+#if BUILDFLAG(IS_WIN)
+    auto translate_kit_path_str = translate_kit_path.AsUTF8Unsafe();
+#else
+    std::string translate_kit_path_str = translate_kit_path.value();
+#endif  // BUILDFLAG(IS_WIN)
+    extra_switches.push_back(
+        base::StrCat({on_device_translation::kTranslateKitPath, "=",
+                      translate_kit_path_str}));
   }
 
   content::ServiceProcessHost::Launch<

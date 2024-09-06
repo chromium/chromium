@@ -101,6 +101,22 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/ai/model_streaming_responder.mojom:ModelStreamingResponseStatus) -->
 
+<!-- LINT.IfChange(LoadTranslateKitResult) -->
+
+<enum name="LoadTranslateKitResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success">Success to load TranslateKit binary.</int>
+  <int value="2" label="InvalidBinary">
+    Fails due to invalid TranslateKit binary.
+  </int>
+  <int value="3" label="InvalidFunctionPointer">
+    Success to load TranslateKit binary but one or more function pointers are
+    null.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/services/on_device_translation/translate_kit_client.h:LoadTranslateKitResult) -->
+
 </enums>
 
 </histogram-configuration>

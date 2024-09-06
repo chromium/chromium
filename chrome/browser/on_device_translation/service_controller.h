@@ -12,6 +12,7 @@
 
 // This class is the controller that launches the on-device translation service
 // and delegates the functionalities.
+// TODO(crbug.com/364795294): This class does not support Android yet.
 class OnDeviceTranslationServiceController {
  public:
   OnDeviceTranslationServiceController(

@@ -17,6 +17,8 @@
 #include "base/version.h"
 #include "chrome/services/on_device_translation/public/cpp/features.h"
 #include "components/component_updater/mock_component_updater_service.h"
+#include "components/prefs/pref_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -61,6 +63,7 @@ class TranslateKitComponentInstallerTestBase : public ::testing::Test {
 
  protected:
   content::BrowserTaskEnvironment& env() { return env_; }
+  PrefService* pref_service() { return &pref_service_; }
   const base::FilePath& install_dir() const {
     return fake_install_dir_.GetPath();
   }
@@ -74,6 +77,7 @@ class TranslateKitComponentInstallerTestBase : public ::testing::Test {
 
  private:
   content::BrowserTaskEnvironment env_;
+  sync_preferences::TestingPrefServiceSyncable pref_service_;
   base::ScopedTempDir fake_install_dir_;
   base::Version fake_version_;
   base::Value::Dict fake_manifest_;
@@ -91,7 +95,7 @@ TEST_F(RegisterTranslateKitComponentTest, ComponentDisabled) {
       std::make_unique<TranslateKitComponentMockComponentUpdateService>();
 
   EXPECT_CALL(*service, RegisterComponent(_)).Times(0);
-  RegisterTranslateKitComponent(service.get());
+  RegisterTranslateKitComponent(service.get(), pref_service());
 
   env().RunUntilIdle();
 }
@@ -105,7 +109,7 @@ TEST_F(RegisterTranslateKitComponentTest, ComponentRegistration) {
       std::make_unique<TranslateKitComponentMockComponentUpdateService>();
 
   EXPECT_CALL(*service, RegisterComponent(_)).Times(1);
-  RegisterTranslateKitComponent(service.get());
+  RegisterTranslateKitComponent(service.get(), pref_service());
 
   env().RunUntilIdle();
 }
@@ -123,7 +127,7 @@ class TranslateKitComponentInstallerTest
 };
 
 TEST_F(TranslateKitComponentInstallerTest, VerifyInstallationDefaultEmpty) {
-  TranslateKitComponentInstallerPolicy policy;
+  TranslateKitComponentInstallerPolicy policy(pref_service());
 
   // An empty directory lacks all required files.
   EXPECT_FALSE(policy.VerifyInstallation(manifest(), install_dir()));
