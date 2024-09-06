@@ -30,29 +30,30 @@
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/image_model_utils.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/views/controls/throbber.h"
-#include "ui/views/layout/layout_types.h"
-#include "ui/views/layout/table_layout.h"
-#include "ui/views/view_class_properties.h"
-#include "components/strings/grit/components_strings.h"
-#include "components/vector_icons/vector_icons.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_config.h"
+#include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/layout_types.h"
+#include "ui/views/layout/table_layout.h"
 #include "ui/views/layout/table_layout_view.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "components/plus_addresses/resources/vector_icons.h"
@@ -466,7 +467,17 @@ void AddSuggestionContentToView(
 
   // The leading icon.
   if (suggestion.is_loading) {
-    content_view.AddChildView(std::make_unique<views::Throbber>())->Start();
+    views::Throbber* throbber =
+        content_view.AddChildView(std::make_unique<views::Throbber>());
+    if (icon) {
+      // Prevent that the layout is shifted when transitioning from throbber to
+      // icon and vice versa when there is a width difference.
+      const int size_delta =
+          icon->GetMinimumSize().width() - throbber->GetMinimumSize().width();
+      throbber->SetProperty(views::kMarginsKey,
+                            gfx::Insets::VH(0, std::max(size_delta, 0) / 2));
+    }
+    throbber->Start();
     AddSpacerWithSize(content_view, PopupBaseView::ArrowHorizontalMargin(),
                       /*resize=*/false);
     content_view.SetEnabled(false);
