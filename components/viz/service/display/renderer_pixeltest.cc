@@ -429,12 +429,12 @@ void CreateTestY16TextureDrawQuad_FromVideoFrame(
 
   // Obtain frame resources and perform AppendQuads which chooses the correct
   // quad to append to.
-  video_resource_updater->ObtainFrameResources(video_frame);
-  video_resource_updater->AppendQuads(render_pass, video_frame, transform, rect,
-                                      visible_rect, gfx::MaskFilterInfo(),
-                                      /*clip_rect=*/std::nullopt,
-                                      contents_opaque, draw_opacity,
-                                      sorting_context_id);
+  video_resource_updater->ObtainFrameResource(video_frame);
+  video_resource_updater->AppendQuad(render_pass, video_frame, transform, rect,
+                                     visible_rect, gfx::MaskFilterInfo(),
+                                     /*clip_rect=*/std::nullopt,
+                                     contents_opaque, draw_opacity,
+                                     sorting_context_id);
 
   // Get the appended quad and map resource ids for transfer.
   auto* quad = render_pass->quad_list.back();
@@ -581,8 +581,8 @@ void CreateTestMultiplanarVideoDrawQuad_FromVideoFrame(
 
   // Obtain frame resources and perform AppendQuads which chooses the correct
   // quad to append to.
-  video_resource_updater->ObtainFrameResources(video_frame);
-  video_resource_updater->AppendQuads(
+  video_resource_updater->ObtainFrameResource(video_frame);
+  video_resource_updater->AppendQuad(
       render_pass, video_frame, transform, rect, visible_rect, mask_filter_info,
       /*clip_rect=*/std::nullopt, contents_opaque, draw_opacity,
       sorting_context_id);

@@ -45,8 +45,7 @@ class ClientSharedImageInterface;
 namespace media {
 class PaintCanvasVideoRenderer;
 
-// Specifies what type of data is contained in the mailboxes, as well as how
-// many mailboxes will be present.
+// Specifies what type of data is contained in the mailbox.
 enum class VideoFrameResourceType {
   NONE,
   RGB,
@@ -59,18 +58,18 @@ enum class VideoFrameResourceType {
   VIDEO_HOLE,
 };
 
-class MEDIA_EXPORT VideoFrameExternalResources {
+class MEDIA_EXPORT VideoFrameExternalResource {
  public:
   VideoFrameResourceType type = VideoFrameResourceType::NONE;
-  std::vector<viz::TransferableResource> resources;
-  std::vector<viz::ReleaseCallback> release_callbacks;
+  viz::TransferableResource resource;
+  viz::ReleaseCallback release_callback;
 
   uint32_t bits_per_channel = 8;
 
-  VideoFrameExternalResources();
-  VideoFrameExternalResources(VideoFrameExternalResources&& other);
-  VideoFrameExternalResources& operator=(VideoFrameExternalResources&& other);
-  ~VideoFrameExternalResources();
+  VideoFrameExternalResource();
+  VideoFrameExternalResource(VideoFrameExternalResource&& other);
+  VideoFrameExternalResource& operator=(VideoFrameExternalResource&& other);
+  ~VideoFrameExternalResource();
 };
 
 // VideoResourceUpdater is used by the video system to produce frame content as
@@ -96,32 +95,32 @@ class MEDIA_EXPORT VideoResourceUpdater
   ~VideoResourceUpdater() override;
 
   // For each CompositorFrame the following sequence is expected:
-  // 1. ObtainFrameResources(): Import resources for the next video frame with
+  // 1. ObtainFrameResource(): Import resource for the next video frame with
   //    viz::ClientResourceProvider. This will reuse existing GPU or
   //    SharedMemory buffers if possible, otherwise it will allocate new ones.
-  // 2. AppendQuads(): Add DrawQuads to CompositorFrame for video.
-  // 3. ReleaseFrameResources(): After the CompositorFrame has been submitted,
-  //    remove imported resources from viz::ClientResourceProvider.
-  void ObtainFrameResources(scoped_refptr<VideoFrame> video_frame);
-  void ReleaseFrameResources();
+  // 2. AppendQuad(): Add DrawQuad to CompositorFrame for video.
+  // 3. ReleaseFrameResource(): After the CompositorFrame has been submitted,
+  //    remove imported resource from viz::ClientResourceProvider.
+  void ObtainFrameResource(scoped_refptr<VideoFrame> video_frame);
+  void ReleaseFrameResource();
   // Appends a quad representing |frame| to |render_pass|.
   // At most one quad is expected to be appended, this is enforced by the users
   // of this class (e.g: VideoFrameSubmitter). Producing only one quad will
   // allow viz to optimize compositing when the only content changing per-frame
   // is the video.
-  void AppendQuads(viz::CompositorRenderPass* render_pass,
-                   scoped_refptr<VideoFrame> frame,
-                   gfx::Transform transform,
-                   gfx::Rect quad_rect,
-                   gfx::Rect visible_quad_rect,
-                   const gfx::MaskFilterInfo& mask_filter_info,
-                   std::optional<gfx::Rect> clip_rect,
-                   bool context_opaque,
-                   float draw_opacity,
-                   int sorting_context_id);
+  void AppendQuad(viz::CompositorRenderPass* render_pass,
+                  scoped_refptr<VideoFrame> frame,
+                  gfx::Transform transform,
+                  gfx::Rect quad_rect,
+                  gfx::Rect visible_quad_rect,
+                  const gfx::MaskFilterInfo& mask_filter_info,
+                  std::optional<gfx::Rect> clip_rect,
+                  bool context_opaque,
+                  float draw_opacity,
+                  int sorting_context_id);
 
   // TODO(kylechar): This is only public for testing, make private.
-  VideoFrameExternalResources CreateExternalResourcesFromVideoFrame(
+  VideoFrameExternalResource CreateExternalResourceFromVideoFrame(
       scoped_refptr<VideoFrame> video_frame);
 
   viz::SharedImageFormat YuvSharedImageFormat(int bits_per_channel);
@@ -131,16 +130,6 @@ class MEDIA_EXPORT VideoResourceUpdater
   class PlaneResource;
   class HardwarePlaneResource;
   class SoftwarePlaneResource;
-
-  // A resource that will be embedded in a DrawQuad in the next CompositorFrame.
-  // Each video plane will correspond to one FrameResource.
-  struct FrameResource {
-    FrameResource();
-    FrameResource(viz::ResourceId id, const gfx::Size& size);
-
-    viz::ResourceId id;
-    gfx::Size size_in_pixels;
-  };
 
   bool software_compositor() const { return context_provider_ == nullptr; }
 
@@ -167,12 +156,12 @@ class MEDIA_EXPORT VideoResourceUpdater
   // https://crbug.com/582170
   void CopyHardwarePlane(VideoFrame* video_frame,
                          const gpu::MailboxHolder& mailbox_holder,
-                         VideoFrameExternalResources* external_resources);
+                         VideoFrameExternalResource* external_resources);
 
-  // Get resources ready to be appended into DrawQuads. This is used for GPU
+  // Get resource ready to be appended into DrawQuad. This is used for GPU
   // compositing most of the time, except for the cases mentioned in
   // CreateForSoftwarePlanes().
-  VideoFrameExternalResources CreateForHardwarePlanes(
+  VideoFrameExternalResource CreateForHardwarePlanes(
       scoped_refptr<VideoFrame> video_frame);
 
   // Get the shared image format for creating resource which is used for
@@ -204,10 +193,10 @@ class MEDIA_EXPORT VideoResourceUpdater
       HardwarePlaneResource* resource,
       size_t bits_per_channel);
 
-  // Get resources ready to be appended into DrawQuads. This is always used for
+  // Get resource ready to be appended into DrawQuad. This is always used for
   // software compositing. This is also used for GPU compositing when the input
   // video frame has no textures.
-  VideoFrameExternalResources CreateForSoftwarePlanes(
+  VideoFrameExternalResource CreateForSoftwarePlanes(
       scoped_refptr<VideoFrame> video_frame);
 
   gpu::raster::RasterInterface* RasterInterface();
@@ -243,9 +232,9 @@ class MEDIA_EXPORT VideoResourceUpdater
 
   VideoFrameResourceType frame_resource_type_;
 
-  // Resources that will be placed into quads by the next call to
+  // Id of resource that will be placed into quad by the next call to
   // AppendDrawQuads().
-  std::vector<FrameResource> frame_resources_;
+  viz::ResourceId frame_resource_id_;
   // If the video resource is a hole punching VideoFrame sent by Chromecast,
   // the VideoFrame carries an |overlay_plane_id_| to activate the video
   // overlay, but there is no video content to display within VideoFrame.

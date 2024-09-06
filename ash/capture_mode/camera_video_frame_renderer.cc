@@ -123,12 +123,12 @@ bool CameraVideoFrameRenderer::OnBeginFrameDerivedImpl(
     frame_for_test = current_video_frame_;
 
   pending_compositor_frame_ack_ = true;
-  video_resource_updater_->ObtainFrameResources(current_video_frame_);
+  video_resource_updater_->ObtainFrameResource(current_video_frame_);
   layer_tree_frame_sink_->SubmitCompositorFrame(
       CreateCompositorFrame(current_begin_frame_ack,
                             std::move(current_video_frame_)),
       /*hit_test_data_changed=*/false);
-  video_resource_updater_->ReleaseFrameResources();
+  video_resource_updater_->ReleaseFrameResource();
 
   if (on_video_frame_rendered_for_test_) {
     DCHECK(frame_for_test);
@@ -272,9 +272,9 @@ viz::CompositorFrame CameraVideoFrameRenderer::CreateCompositorFrame(
   transform.Translate(x_offset, y_offset);
 
   const bool context_opaque = media::IsOpaque(video_frame->format());
-  // Note that `video_frame`'s ownership is moved into `AppendQuads()`. Do not
+  // Note that `video_frame`'s ownership is moved into `AppendQuad()`. Do not
   // access after the `std::move()` below.
-  video_resource_updater_->AppendQuads(
+  video_resource_updater_->AppendQuad(
       render_pass.get(), std::move(video_frame), transform, quad_rect,
       /*visible_quad_rect=*/quad_rect,
       /*mask_filter_info=*/gfx::MaskFilterInfo(),
