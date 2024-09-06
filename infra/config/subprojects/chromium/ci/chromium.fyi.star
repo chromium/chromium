@@ -465,7 +465,7 @@ fyi_ios_builder(
         "passing the --disable-field-trial-config flag. This causes " +
         "testing/variations/fieldtrial_testing_config.json not to be used for" +
         " determining which finch experiments are enabled. Instead, the " +
-        "default configuration with no experiments enabled is used."
+        "default configuration of every feature flag is used."
     ),
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
