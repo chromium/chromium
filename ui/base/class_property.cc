@@ -23,8 +23,9 @@ PropertyHandler::~PropertyHandler() {
 }
 
 void PropertyHandler::AcquireAllPropertiesFrom(PropertyHandler&& other) {
-  for (auto& prop_pair : other.prop_map_)
-    prop_map_[std::move(prop_pair.first)] = std::move(prop_pair.second);
+  for (auto& prop_pair : other.prop_map_) {
+    prop_map_[prop_pair.first] = std::move(prop_pair.second);
+  }
   other.prop_map_.clear();
 }
 

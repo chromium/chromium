@@ -193,7 +193,7 @@ class DisplayDeciderImpl : public DisplayDecider {
             ScheduleParams::Priority::kNoThrottle) {
           results->emplace(notification->guid);
         } else {
-          throttled_notifications[type].emplace_back(std::move(notification));
+          throttled_notifications[type].emplace_back(notification);
         }
       }
     }

@@ -16,7 +16,7 @@ namespace segmentation_platform {
 CachedResultProvider::CachedResultProvider(
     ClientResultPrefs* prefs,
     const std::vector<std::unique_ptr<Config>>& configs)
-    : configs_(configs), result_prefs_(std::move(prefs)) {
+    : configs_(configs), result_prefs_(prefs) {
   for (const auto& config : *configs_) {
     const proto::ClientResult* client_result =
         result_prefs_->ReadClientResultFromPrefs(config->segmentation_key);
