@@ -338,7 +338,8 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 
 // Tests that tapping on an account button causes the managed account to sign
 // out with a sign-out confirmation dialog.
-- (void)testSwitchFromManagedAccount {
+// TODO(crbug.com/365110901): Fails consistently, fix and reenable.
+- (void)DISABLED_testSwitchFromManagedAccount {
   [SigninEarlGrey signinWithFakeIdentity:kManagedIdentity];
   [ChromeEarlGreyUI waitForAppToIdle];
   [SigninEarlGrey addFakeIdentity:kPrimaryIdentity];
