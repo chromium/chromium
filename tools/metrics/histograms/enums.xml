@@ -23442,6 +23442,7 @@ from previous Chrome versions.
   <int value="1183431946" label="v8-cache-options"/>
   <int value="1184093076" label="WebRtcUseMinMaxVEADimensions:enabled"/>
   <int value="1184225265" label="AllowSyncXHRInPageDismissal:enabled"/>
+  <int value="1185029400" label="AndroidBottomToolbar:disabled"/>
   <int value="1185424279" label="enable-media-router"/>
   <int value="1185669166" label="AlwaysAbandonScheduledTask:disabled"/>
   <int value="1187103825" label="OmniboxSuggestionsWrapAround:enabled"/>
@@ -25603,6 +25604,7 @@ from previous Chrome versions.
   <int value="2058425230" label="LauncherNudgeSessionReset:enabled"/>
   <int value="2058439723" label="CalculateNativeWinOcclusion:disabled"/>
   <int value="2059322877" label="new-avatar-menu"/>
+  <int value="2060099975" label="AndroidBottomToolbar:enabled"/>
   <int value="2061585881" label="EnableAIPromptAPI:enabled"/>
   <int value="2062051946" label="AccessCodeCastFreezeUI:disabled"/>
   <int value="2062665434" label="AddPrinterViaPrintscanmgr:enabled"/>

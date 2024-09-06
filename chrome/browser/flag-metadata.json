@@ -159,6 +159,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "android-bottom-toolbar",
+    "owners": [ "pnoland@chromium.org","gangwu@chromium.org","lazzzis@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "android-browser-controls-in-viz",
     "owners": [ "peilinwang@google.com", "kylechar@chromium.org" ],
     "expiry_milestone": 135

@@ -58,6 +58,10 @@ const char kAndroidAppIntegrationName[] = "Integrate with Android App Search";
 const char kAndroidAppIntegrationDescription[] =
     "If enabled, allows Chrome to integrate with the Android App Search.";
 
+const char kAndroidBottomToolbarName[] = "Bottom Toolbar";
+const char kAndroidBottomToolbarDescription[] =
+    "If enabled, displays the toolbar at the bottom.";
+
 const char kAndroidExtendedKeyboardShortcutsName[] =
     "Android Extended Keyboard Shortcuts";
 const char kAndroidExtendedKeyboardShortcutsDescription[] =

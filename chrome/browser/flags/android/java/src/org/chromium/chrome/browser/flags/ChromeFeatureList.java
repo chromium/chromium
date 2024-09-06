@@ -163,6 +163,7 @@ public abstract class ChromeFeatureList {
             "AdaptiveButtonInTopToolbarCustomizationV2";
     public static final String ALLOW_NEW_INCOGNITO_TAB_INTENTS = "AllowNewIncognitoTabIntents";
     public static final String ANDROID_APP_INTEGRATION = "AndroidAppIntegration";
+    public static final String ANDROID_BOTTOM_TOOLBAR = "AndroidBottomToolbar";
     public static final String ANDROID_ELEGANT_TEXT_HEIGHT = "AndroidElegantTextHeight";
     public static final String ANDROID_GOOGLE_SANS_TEXT = "AndroidGoogleSansText";
     public static final String ANDROID_HUB_FLOATING_ACTION_BUTTON =
@@ -553,6 +554,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW, true);
     public static final CachedFlag sAndroidAppIntegration =
             newCachedFlag(ANDROID_APP_INTEGRATION, false);
+    public static final CachedFlag sAndroidBottomToolbar =
+            newCachedFlag(ANDROID_BOTTOM_TOOLBAR, false);
     public static final CachedFlag sAuxiliarySearchThirdParty =
             newCachedFlag(AUXILIARY_SEARCH_THIRD_PARTY, false);
     public static final CachedFlag sAndroidElegantTextHeight =
@@ -736,6 +739,7 @@ public abstract class ChromeFeatureList {
             List.of(
                     sAccountReauthenticationRecentTimeWindow,
                     sAndroidAppIntegration,
+                    sAndroidBottomToolbar,
                     sAndroidElegantTextHeight,
                     sAndroidGoogleSansText,
                     sAndroidHubFloatingActionButton,
