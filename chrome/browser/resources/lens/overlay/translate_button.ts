@@ -9,6 +9,7 @@ import '//resources/cr_elements/icons.html.js';
 
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import {assert, assertInstanceof} from '//resources/js/assert.js';
+import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {DomRepeat} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -43,6 +44,7 @@ export interface TranslateState {
 
 export interface TranslateButtonElement {
   $: {
+    menuDetectedLanguage: HTMLDivElement,
     languagePicker: HTMLDivElement,
     sourceAutoDetectButton: CrButtonElement,
     sourceLanguageButton: CrButtonElement,
@@ -66,6 +68,10 @@ export class TranslateButtonElement extends PolymerElement {
 
   static get properties() {
     return {
+      contentLanguage: {
+        type: String,
+        reflectToAttribute: true,
+      },
       isTranslateModeEnabled: {
         type: Boolean,
         reflectToAttribute: true,
@@ -88,6 +94,7 @@ export class TranslateButtonElement extends PolymerElement {
     };
   }
 
+  private eventTracker_: EventTracker = new EventTracker();
   // Whether the translate mode on the lens overlay has been enabled.
   private isTranslateModeEnabled: boolean = false;
   // Whether the stars icon is visible on the source language button.
@@ -103,6 +110,8 @@ export class TranslateButtonElement extends PolymerElement {
   private targetLanguageMenuVisible: boolean = false;
   // The list of target languages provided by the chrome API.
   private translateLanguageList: chrome.languageSettingsPrivate.Language[];
+  // The content language code received from the lext layer.
+  private contentLanguage: string = '';
   // A browser proxy for communicating with the C++ Lens overlay controller.
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
   // A browser proxy for fetching the language settings from the Chrome API.
@@ -113,6 +122,19 @@ export class TranslateButtonElement extends PolymerElement {
     super.connectedCallback();
     this.languageBrowserProxy.getLanguageList().then(
         this.onLanguageListRetrieved.bind(this));
+    this.eventTracker_.add(
+        document, 'received-content-language', (e: CustomEvent) => {
+          // Lens sends 'zh' and 'zh-Hant', which need to be converted to
+          // 'zh-CN' and 'zh-TW' to match the language codes used by
+          // chrome.languageSettingsPrivate.
+          if (e.detail.contentLanguage === 'zh') {
+            this.contentLanguage = 'zh-CN';
+          } else if (e.detail.contentLanguage === 'zh-Hant') {
+            this.contentLanguage = 'zh-TW';
+          } else {
+            this.contentLanguage = e.detail.contentLanguage;
+          }
+        });
   }
 
   private onLanguageListRetrieved(
@@ -224,8 +246,25 @@ export class TranslateButtonElement extends PolymerElement {
     if (this.sourceLanguage) {
       return this.sourceLanguage.displayName;
     }
-
+    if (this.contentLanguage !== '') {
+      const detectedLanguage = this.translateLanguageList.find(
+          language => language.code === this.contentLanguage);
+      if (detectedLanguage !== undefined) {
+        return detectedLanguage.displayName;
+      }
+    }
     return loadTimeData.getString('detectLanguage');
+  }
+
+  private getContentLanguageDisplayName(): string {
+    if (this.contentLanguage !== '') {
+      const detectedLanguage = this.translateLanguageList.find(
+          language => language.code === this.contentLanguage);
+      if (detectedLanguage !== undefined) {
+        return detectedLanguage.displayName;
+      }
+    }
+    return '';
   }
 
   private computeShouldShowStarsIcon(): boolean {

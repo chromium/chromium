@@ -13,7 +13,7 @@ import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome-untrusted://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome-untrusted://webui-test/metrics_test_support.js';
-import {flushTasks} from 'chrome-untrusted://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {TestLanguageBrowserProxy} from './test_language_browser_proxy.js';
@@ -290,5 +290,28 @@ suite('OverlayTranslateButton', function() {
         metrics.count(
             'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
             UserAction.kTranslateTargetLanguageChanged));
+  });
+
+  test('DetectedLanguageShown', async () => {
+    // Receive content language from text layer.
+    document.dispatchEvent(new CustomEvent(
+        'received-content-language', {detail: {contentLanguage: 'sw'}}));
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    // Click the translate button to show the language picker.
+    overlayTranslateButtonElement.$.translateButton.click();
+
+    // Source language should show the detected language.
+    assertEquals(
+        overlayTranslateButtonElement.$.sourceLanguageButton.innerText,
+        'Swahili');
+
+    // Clicking the source language button should open the picker menu.
+    overlayTranslateButtonElement.$.sourceLanguageButton.click();
+
+    // Auto detect button should have the detected language.
+    assertEquals(
+        overlayTranslateButtonElement.$.menuDetectedLanguage.innerText,
+        'Swahili');
   });
 });

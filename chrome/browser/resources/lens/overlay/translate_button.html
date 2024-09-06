@@ -83,12 +83,18 @@
   }
 
   .language-picker-menu-button-label {
-    height: 36px;
     font-size: 13px;
     font-style: normal;
     font-weight: 500;
     line-height: 22px;
-    margin-block-start: 28px;
+  }
+
+  .language-picker-menu-detected-language {
+    color: var(--color-surface-container-highest-dark);
+    font-size: 11px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 18px;
   }
 
   .language-picker-menu-header {
@@ -153,6 +159,10 @@
 
   :host(:not([should-show-stars-icon])) #sourceLanguageLabel {
     margin-inline-start: 16px;
+  }
+
+  #sourceAutoDetectButton {
+    padding: 20px 16px 24px 44px;
   }
 
   #starsIcon {
@@ -242,7 +252,7 @@
       <span id="starsIcon" slot="prefix-icon"></span>
       <span id="sourceLanguageLabel"
           class="button-label language-picker-label">
-        [[getSourceLanguageDisplayName(sourceLanguage)]]
+        [[getSourceLanguageDisplayName(sourceLanguage, contentLanguage)]]
       </span>
     </cr-button>
     <span id="arrowRightIcon"></span>
@@ -268,9 +278,13 @@
           <cr-icon icon="cr:check" slot="prefix-icon"
               class$="checked-icon [[getAutoCheckedClass(sourceLanguage)]]">
           </cr-icon>
-          <span class="language-picker-menu-button-label">
+          <div class="language-picker-menu-button-label">
             $i18n{detectLanguage}
-          </span>
+          </div>
+          <div id="menuDetectedLanguage"
+              class="language-picker-menu-detected-language">
+            [[getContentLanguageDisplayName(contentLanguage)]]
+          </div>
           <span id="languagePickerMenuStarsIcon" slot="suffix-icon"></span>
           </cr-button>
       </div>

@@ -665,6 +665,13 @@ export class TextLayerElement extends PolymerElement {
     // already been selected, text in the region can be detected.
     this.dispatchEvent(new CustomEvent(
         'finished-receiving-text', {bubbles: true, composed: true}));
+
+    // Used by the translate button to label the detected language.
+    this.dispatchEvent(new CustomEvent('received-content-language', {
+      bubbles: true,
+      composed: true,
+      detail: {contentLanguage: this.contentLanguage},
+    }));
   }
 
   private calculateFontSizePixels(translatedLine: TranslatedLineData): number {
