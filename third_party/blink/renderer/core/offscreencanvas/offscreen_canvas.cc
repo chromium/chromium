@@ -624,7 +624,7 @@ void OffscreenCanvas::SetFilterQualityInResource(
 
   SetFilterQuality(filter_quality);
   if (ResourceProvider())
-    GetOrCreateResourceProvider()->SetFilterQuality(filter_quality);
+    ResourceProvider()->SetFilterQuality(filter_quality);
   if (context_ && (IsWebGL() || IsWebGPU())) {
     context_->SetFilterQuality(filter_quality);
   }
