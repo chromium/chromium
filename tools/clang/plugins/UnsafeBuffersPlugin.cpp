@@ -31,6 +31,10 @@ struct CheckFilePrefixes {
 
 // Sort the prefixes and remove duplicates.
 void NormalizePrefixList(std::vector<llvm::StringRef>& prefixes) {
+  if (prefixes.empty()) {
+    return;
+  }
+
   // TODO(danakj): Use std::ranges::sort when Clang is build with C++20.
   std::sort(prefixes.begin(), prefixes.end());
 
