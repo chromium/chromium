@@ -316,8 +316,9 @@ class FwupdClientTest : public testing::Test {
   void CheckUpdates(const std::string& device_id, FwupdUpdateList* updates) {
     run_loop_.Quit();
 
+    EXPECT_EQ(expect_no_updates_, updates->empty());
+
     if (updates->empty()) {
-      EXPECT_TRUE(expect_no_updates_);
       return;
     }
 
