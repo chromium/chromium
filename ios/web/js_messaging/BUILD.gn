@@ -162,11 +162,7 @@ optimize_ts("setup_frame_js") {
 
   sources = [ "resources/setup_frame.ts" ]
 
-  deps = [
-    "//ios/web/public/js_messaging:frame_id",
-    "//ios/web/public/js_messaging:gcrweb",
-    "//ios/web/public/js_messaging:util_scripts",
-  ]
+  deps = [ "//ios/web/public/js_messaging:frame_id" ]
 }
 
 optimize_ts("frame_listeners_js") {
