@@ -122,6 +122,12 @@ group("gn_all") {
       "//url:url_unittests",
     ]
 
+    if (current_cpu == "arm64" && is_android && host_os == "linux") {
+      deps += [
+        "//components/allocation_recorder/tools:dump_allocation_recorder_data",
+      ]
+    }
+
     if (!is_component_build) {
       deps += [ "//third_party/abseil-cpp:absl_tests" ]
     }
