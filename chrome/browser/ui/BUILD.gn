@@ -443,6 +443,8 @@ static_library("ui") {
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
     "//chrome/browser/metrics/structured:features",
     "//chrome/browser/permissions",
+    "//chrome/browser/picture_in_picture",
+    "//chrome/browser/picture_in_picture:impl",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiling_host",
@@ -765,6 +767,7 @@ static_library("ui") {
     "//chrome/browser/ui/blocked_content:impl",
 
     "//chrome/browser/ui/bluetooth:impl",
+    "//chrome/browser/picture_in_picture:impl",
   ]
 
   if (enable_vr && is_win) {

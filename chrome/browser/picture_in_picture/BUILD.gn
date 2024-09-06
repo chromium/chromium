@@ -1,0 +1,203 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+source_set("picture_in_picture") {
+  sources = [
+    "picture_in_picture_bounds_cache.h",
+    "picture_in_picture_window_manager.h",
+  ]
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+    "//third_party/blink/public/common",
+    "//ui/gfx/geometry",
+    "//url",
+  ]
+
+  if (!is_android) {
+    sources += [
+      "auto_picture_in_picture_tab_helper.h",
+      "auto_picture_in_picture_tab_strip_observer_helper.h",
+      "auto_pip_setting_helper.h",
+      "auto_pip_setting_overlay_view.h",
+      "auto_pip_setting_view.h",
+      "picture_in_picture_occlusion_observer.h",
+      "picture_in_picture_occlusion_tracker.h",
+      "picture_in_picture_occlusion_tracker_observer.h",
+      "scoped_disallow_picture_in_picture.h",
+      "scoped_picture_in_picture_occlusion_observation.h",
+    ]
+    public_deps += [
+      "//chrome/browser/ui/tabs:tab_strip_model_observer",
+      "//ui/views",
+    ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "picture_in_picture_bounds_cache.cc",
+    "picture_in_picture_window_manager.cc",
+  ]
+
+  deps = [
+    ":picture_in_picture",
+    "//base",
+    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//content/public/browser",
+    "//content/public/common",
+    "//extensions/buildflags",
+    "//media",
+    "//ui/display",
+    "//ui/gfx/geometry",
+  ]
+
+  if (enable_extensions_core) {
+    deps += [ "//extensions/common:common_constants" ]
+  }
+
+  if (!is_android) {
+    sources += [
+      "auto_picture_in_picture_tab_helper.cc",
+      "auto_picture_in_picture_tab_strip_observer_helper.cc",
+      "auto_pip_setting_helper.cc",
+      "auto_pip_setting_overlay_view.cc",
+      "auto_pip_setting_view.cc",
+      "picture_in_picture_occlusion_observer.cc",
+      "picture_in_picture_occlusion_tracker.cc",
+      "picture_in_picture_occlusion_tracker_observer.cc",
+      "scoped_disallow_picture_in_picture.cc",
+      "scoped_picture_in_picture_occlusion_observation.cc",
+    ]
+    deps += [
+      "//chrome/app:generated_resources",
+      "//chrome/browser/media/webrtc",
+      "//chrome/browser/permissions",
+      "//chrome/browser/picture_in_picture",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/color:color_headers",
+      "//components/content_settings/core/browser",
+      "//components/permissions",
+      "//components/strings:components_strings",
+      "//components/url_formatter",
+      "//net",
+      "//third_party/blink/public/common:headers",
+      "//ui/views",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "picture_in_picture_bounds_cache_unittest.cc",
+    "picture_in_picture_window_manager_unittest.cc",
+  ]
+
+  deps = [
+    ":picture_in_picture",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//extensions/buildflags",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/display",
+  ]
+
+  if (!is_android) {
+    sources += [
+      "auto_pip_setting_helper_unittest.cc",
+      "auto_pip_setting_overlay_view_unittest.cc",
+      "auto_pip_setting_view_unittest.cc",
+      "picture_in_picture_occlusion_tracker_unittest.cc",
+    ]
+    deps += [ "//ui/events:test_support" ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [
+      "auto_picture_in_picture_tab_helper_browsertest.cc",
+      "auto_picture_in_picture_tab_strip_observer_helper_browsertest.cc",
+      "document_picture_in_picture_pixel_browsertest.cc",
+      "document_picture_in_picture_window_controller_browsertest.cc",
+      "video_picture_in_picture_window_controller_browsertest.cc",
+    ]
+
+    deps = [
+      ":picture_in_picture",
+      "//base",
+      "//base/test:test_support",
+      "//build:chromeos_buildflags",
+      "//chrome/browser",
+      "//chrome/browser/devtools:test_support",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+      "//chrome/browser/web_applications",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//chrome/test:webrtc_browser_tests_base",
+      "//components/content_settings/core/browser",
+      "//components/metrics:content",
+      "//components/permissions",
+      "//components/viz/common",
+      "//content/public/browser",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//media",
+      "//net:test_support",
+      "//services/media_session/public/cpp",
+      "//services/network/public/cpp",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//third_party/blink/public/common:headers",
+      "//ui/base:hit_test",
+      "//ui/compositor:test_support",
+      "//ui/display",
+      "//ui/events:test_support",
+      "//ui/gfx/codec",
+      "//ui/views:test_support",
+      "//url",
+    ]
+
+    if (is_chromeos) {
+      deps += [
+        "//chromeos/ui/base",
+        "//ui/aura",
+      ]
+    }
+  }
+}
+
+if (!is_android) {
+  source_set("test_support_ui") {
+    testonly = true
+    sources = [
+      "document_picture_in_picture_mixin_test_base.cc",
+      "document_picture_in_picture_mixin_test_base.h",
+    ]
+    public_deps = [
+      "//base",
+      "//chrome/test:test_support_ui",
+      "//ui/gfx/geometry",
+    ]
+    deps = [
+      "//chrome/browser/ui",
+      "//content/public/browser",
+      "//content/test:test_support",
+    ]
+  }
+}

@@ -28,6 +28,7 @@ static_library("media_client") {
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/picture_in_picture",
     "//components/account_id",
     "//components/services/app_service",
     "//components/user_manager",

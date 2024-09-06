@@ -92,6 +92,8 @@ source_set("browser_tests") {
     "//chrome/browser/metrics/structured:features",
     "//chrome/browser/metrics/structured:test_support",
     "//chrome/browser/permissions",
+    "//chrome/browser/picture_in_picture",
+    "//chrome/browser/picture_in_picture:test_support_ui",
     "//chrome/browser/shortcuts",
     "//chrome/browser/themes",
     "//chrome/browser/ui:ui_features",

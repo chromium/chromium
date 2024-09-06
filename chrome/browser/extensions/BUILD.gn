@@ -781,6 +781,7 @@ source_set("extensions") {
     "//chrome/browser/apps:user_type_filter",
     "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/feedback",
+    "//chrome/browser/picture_in_picture",
     "//chrome/browser/search",
     "//chrome/browser/search/background",
     "//chrome/browser/search_engines",
