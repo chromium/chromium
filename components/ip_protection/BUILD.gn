@@ -144,6 +144,20 @@ source_set("unit_tests") {
   }
 }
 
+# A unit test binary that only runs tests for this component. This is useful
+# during development, but these tests are typically run as part of
+# `//components:components_unittests`.
+test("components_ip_protection_unittests") {
+  sources = [ "test/run_all_unittests.cc" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/ip_protection:unit_tests",
+    "//mojo/core/embedder",
+    "//testing/gtest",
+  ]
+}
+
 proto_library("get_proxy_config_proto") {
   sources = [ "get_proxy_config.proto" ]
 }
