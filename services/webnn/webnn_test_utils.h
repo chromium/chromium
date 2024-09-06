@@ -127,6 +127,11 @@ class GraphInfoBuilder final {
         mojom::Operation::NewConv2d(std::move(conv2d)));
   }
 
+  void BuildDequantizeLinear(uint64_t input_operand_id,
+                             uint64_t scale_operand_id,
+                             uint64_t zero_point_operand_id,
+                             uint64_t output_operand_id);
+
   void BuildElementWiseBinary(mojom::ElementWiseBinary::Kind kind,
                               uint64_t lhs_operand,
                               uint64_t rhs_operand,
@@ -441,6 +446,11 @@ class GraphInfoBuilder final {
   void BuildPrelu(uint64_t input_operand_id,
                   uint64_t slope_operand_id,
                   uint64_t output_operand_id);
+
+  void BuildQuantizeLinear(uint64_t input_operand_id,
+                           uint64_t scale_operand_id,
+                           uint64_t zero_point_operand_id,
+                           uint64_t output_operand_id);
 
   void BuildReduce(mojom::Reduce::Kind kind,
                    uint64_t input_operand_id,

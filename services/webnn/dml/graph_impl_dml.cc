@@ -800,6 +800,14 @@ void RetrieveOperationConnectivity(
       output_ids = {conv2d->output_operand_id};
       break;
     }
+    case Operation::Tag::kDequantizeLinear: {
+      const auto& dequantize_linear = operation->get_dequantize_linear();
+      input_ids = {dequantize_linear->input_operand_id,
+                   dequantize_linear->scale_operand_id,
+                   dequantize_linear->zero_point_operand_id};
+      output_ids = {dequantize_linear->output_operand_id};
+      break;
+    }
     case Operation::Tag::kElementWiseBinary: {
       const auto& binary = operation->get_element_wise_binary();
       input_ids = {binary->lhs_operand_id, binary->rhs_operand_id};
@@ -1012,6 +1020,14 @@ void RetrieveOperationConnectivity(
       const auto& prelu = operation->get_prelu();
       input_ids = {prelu->input_operand_id, prelu->slope_operand_id};
       output_ids = {prelu->output_operand_id};
+      break;
+    }
+    case Operation::Tag::kQuantizeLinear: {
+      const auto& quantize_linear = operation->get_quantize_linear();
+      input_ids = {quantize_linear->input_operand_id,
+                   quantize_linear->scale_operand_id,
+                   quantize_linear->zero_point_operand_id};
+      output_ids = {quantize_linear->output_operand_id};
       break;
     }
     case Operation::Tag::kReduce: {

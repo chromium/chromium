@@ -1540,6 +1540,176 @@ TEST_F(WebNNGraphImplTest, ConvTranspose2dTest) {
   }
 }
 
+struct DequantizeLinearTester {
+  OperandInfo input;
+  OperandInfo scale;
+  OperandInfo zero_point;
+  OperandInfo output;
+  bool expected;
+
+  void Test() {
+    auto context_properties = GetContextPropertiesForTesting();
+
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t scale_operand_id =
+        builder.BuildInput("scale", scale.dimensions, scale.type);
+    uint64_t zero_point_operand_id = builder.BuildInput(
+        "zero_point", zero_point.dimensions, zero_point.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildDequantizeLinear(input_operand_id, scale_operand_id,
+                                  zero_point_operand_id, output_operand_id);
+    EXPECT_EQ(WebNNGraphBuilderImpl::IsValidForTesting(context_properties,
+                                                       builder.GetGraphInfo()),
+              expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, DequantizeLinearTest) {
+  {
+    // Test dequantizeLinear operator when the input, the scale and the
+    // zero_point have the same shape.
+    DequantizeLinearTester{
+        .input = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
+        .scale = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
+        .zero_point = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test dequantizeLinear operator with a broadcastable scale.
+    DequantizeLinearTester{
+        .input = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
+        .scale = {.type = OperandDataType::kFloat32, .dimensions = {5}},
+        .zero_point = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test dequantizeLinear operator with a broadcastable scale.
+    DequantizeLinearTester{
+        .input = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
+        .scale = {.type = OperandDataType::kFloat32, .dimensions = {3, 1, 1}},
+        .zero_point = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test dequantizeLinear operator with a broadcastable zeroPoint.
+    DequantizeLinearTester{
+        .input = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
+        .scale = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
+        .zero_point = {.type = OperandDataType::kInt8, .dimensions = {5}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test the invalid graph with an invalid scale.
+    DequantizeLinearTester{
+        .input = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
+        .scale = {.type = OperandDataType::kFloat32, .dimensions = {2}},
+        .zero_point = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph with an invalid zero_point.
+    DequantizeLinearTester{
+        .input = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
+        .scale = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
+        .zero_point = {.type = OperandDataType::kInt8, .dimensions = {2}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the zero_point datatype doesn't match the
+    // input's datatype.
+    DequantizeLinearTester{
+        .input = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
+        .scale = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
+        .zero_point = {.type = OperandDataType::kUint8,
+                       .dimensions = {3, 2, 5}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the output datatype doesn't match the
+    // scale's datatype.
+    DequantizeLinearTester{
+        .input = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
+        .scale = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
+        .zero_point = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
+        .output = {.type = OperandDataType::kFloat16, .dimensions = {3, 2, 5}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for the output shapes are not expected.
+    DequantizeLinearTester{
+        .input = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
+        .scale = {.type = OperandDataType::kFloat32, .dimensions = {5}},
+        .zero_point = {.type = OperandDataType::kInt8, .dimensions = {5}},
+        .output = {.type = OperandDataType::kFloat16, .dimensions = {5}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the input is as same as output.
+    auto context_properties = GetContextPropertiesForTesting();
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {2, 3}, OperandDataType::kInt8);
+    uint64_t scale_operand_id =
+        builder.BuildInput("scale", {2, 3}, OperandDataType::kFloat32);
+    uint64_t zero_point_operand_id =
+        builder.BuildInput("zero_point", {2, 3}, OperandDataType::kInt8);
+    builder.BuildDequantizeLinear(input_operand_id, scale_operand_id,
+                                  zero_point_operand_id, input_operand_id);
+    EXPECT_FALSE(WebNNGraphBuilderImpl::IsValidForTesting(
+        context_properties, builder.GetGraphInfo()));
+  }
+  {
+    // Test the invalid graph when the scale is as same as output.
+    auto context_properties = GetContextPropertiesForTesting();
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {2, 3}, OperandDataType::kInt8);
+    uint64_t scale_operand_id =
+        builder.BuildInput("scale", {2, 3}, OperandDataType::kFloat32);
+    uint64_t zero_point_operand_id =
+        builder.BuildInput("zero_point", {2, 3}, OperandDataType::kInt8);
+    builder.BuildDequantizeLinear(input_operand_id, scale_operand_id,
+                                  zero_point_operand_id, scale_operand_id);
+    EXPECT_FALSE(WebNNGraphBuilderImpl::IsValidForTesting(
+        context_properties, builder.GetGraphInfo()));
+  }
+  {
+    // Test the invalid graph when the zeroPoint is as same as output.
+    auto context_properties = GetContextPropertiesForTesting();
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {2, 3}, OperandDataType::kInt8);
+    uint64_t scale_operand_id =
+        builder.BuildInput("scale", {2, 3}, OperandDataType::kFloat32);
+    uint64_t zero_point_operand_id =
+        builder.BuildInput("zero_point", {2, 3}, OperandDataType::kInt8);
+    builder.BuildDequantizeLinear(input_operand_id, scale_operand_id,
+                                  zero_point_operand_id, zero_point_operand_id);
+    EXPECT_FALSE(WebNNGraphBuilderImpl::IsValidForTesting(
+        context_properties, builder.GetGraphInfo()));
+  }
+}
+
 struct ElementWiseBinaryTester {
   mojom::ElementWiseBinary::Kind kind;
   OperandInfo lhs;
@@ -4833,6 +5003,175 @@ TEST_F(WebNNGraphImplTest, PreluTest) {
     uint64_t output_operand_id =
         builder.BuildOutput("output", {2, 3}, OperandDataType::kFloat32);
     builder.BuildPrelu(input_operand_id, output_operand_id, output_operand_id);
+    EXPECT_FALSE(WebNNGraphBuilderImpl::IsValidForTesting(
+        context_properties, builder.GetGraphInfo()));
+  }
+}
+
+struct QuantizeLinearTester {
+  OperandInfo input;
+  OperandInfo scale;
+  OperandInfo zero_point;
+  OperandInfo output;
+  bool expected;
+
+  void Test() {
+    auto context_properties = GetContextPropertiesForTesting();
+
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t scale_operand_id =
+        builder.BuildInput("scale", scale.dimensions, scale.type);
+    uint64_t zero_point_operand_id = builder.BuildInput(
+        "zero_point", zero_point.dimensions, zero_point.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildQuantizeLinear(input_operand_id, scale_operand_id,
+                                zero_point_operand_id, output_operand_id);
+    EXPECT_EQ(WebNNGraphBuilderImpl::IsValidForTesting(context_properties,
+                                                       builder.GetGraphInfo()),
+              expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, QuantizeLinearTest) {
+  {
+    // Test quantizeLinear operator when the input, the scale and the zero_point
+    // have the same shape.
+    QuantizeLinearTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
+        .scale = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
+        .zero_point = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
+        .output = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test quantizeLinear operator with a broadcastable scale.
+    QuantizeLinearTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
+        .scale = {.type = OperandDataType::kFloat32, .dimensions = {5}},
+        .zero_point = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
+        .output = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test quantizeLinear operator with a broadcastable zeroPoint.
+    QuantizeLinearTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
+        .scale = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
+        .zero_point = {.type = OperandDataType::kInt8, .dimensions = {5}},
+        .output = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test quantizeLinear operator with a broadcastable zeroPoint.
+    QuantizeLinearTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
+        .scale = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
+        .zero_point = {.type = OperandDataType::kInt8, .dimensions = {3, 1, 1}},
+        .output = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test the invalid graph with an invalid scale.
+    QuantizeLinearTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
+        .scale = {.type = OperandDataType::kFloat32, .dimensions = {3, 5}},
+        .zero_point = {.type = OperandDataType::kInt8, .dimensions = {5}},
+        .output = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph with an invalid zero_point.
+    QuantizeLinearTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
+        .scale = {.type = OperandDataType::kFloat32, .dimensions = {5}},
+        .zero_point = {.type = OperandDataType::kInt8, .dimensions = {2}},
+        .output = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the scale datatype doesn't match the
+    // input's datatype.
+    QuantizeLinearTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
+        .scale = {.type = OperandDataType::kFloat16, .dimensions = {5}},
+        .zero_point = {.type = OperandDataType::kInt8, .dimensions = {5}},
+        .output = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the output datatype doesn't match the
+    // zero_point's datatype.
+    QuantizeLinearTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
+        .scale = {.type = OperandDataType::kFloat32, .dimensions = {5}},
+        .zero_point = {.type = OperandDataType::kInt8, .dimensions = {5}},
+        .output = {.type = OperandDataType::kUint8, .dimensions = {3, 2, 5}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for the output shapes are not expected.
+    QuantizeLinearTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
+        .scale = {.type = OperandDataType::kFloat32, .dimensions = {5}},
+        .zero_point = {.type = OperandDataType::kInt8, .dimensions = {5}},
+        .output = {.type = OperandDataType::kUint8, .dimensions = {5}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the input is as same as output.
+    auto context_properties = GetContextPropertiesForTesting();
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {2, 3}, OperandDataType::kFloat32);
+    uint64_t scale_operand_id =
+        builder.BuildInput("scale", {2, 3}, OperandDataType::kFloat32);
+    uint64_t zero_point_operand_id =
+        builder.BuildInput("zero_point", {2, 3}, OperandDataType::kInt8);
+    builder.BuildQuantizeLinear(input_operand_id, scale_operand_id,
+                                zero_point_operand_id, input_operand_id);
+    EXPECT_FALSE(WebNNGraphBuilderImpl::IsValidForTesting(
+        context_properties, builder.GetGraphInfo()));
+  }
+  {
+    // Test the invalid graph when the scale is as same as output.
+    auto context_properties = GetContextPropertiesForTesting();
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {2, 3}, OperandDataType::kFloat32);
+    uint64_t scale_operand_id =
+        builder.BuildInput("scale", {2, 3}, OperandDataType::kFloat32);
+    uint64_t zero_point_operand_id =
+        builder.BuildInput("zero_point", {2, 3}, OperandDataType::kInt8);
+    builder.BuildQuantizeLinear(input_operand_id, scale_operand_id,
+                                zero_point_operand_id, scale_operand_id);
+    EXPECT_FALSE(WebNNGraphBuilderImpl::IsValidForTesting(
+        context_properties, builder.GetGraphInfo()));
+  }
+  {
+    // Test the invalid graph when the zeroPoint is as same as output.
+    auto context_properties = GetContextPropertiesForTesting();
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {2, 3}, OperandDataType::kFloat32);
+    uint64_t scale_operand_id =
+        builder.BuildInput("scale", {2, 3}, OperandDataType::kFloat32);
+    uint64_t zero_point_operand_id =
+        builder.BuildInput("zero_point", {2, 3}, OperandDataType::kInt8);
+    builder.BuildQuantizeLinear(input_operand_id, scale_operand_id,
+                                zero_point_operand_id, zero_point_operand_id);
     EXPECT_FALSE(WebNNGraphBuilderImpl::IsValidForTesting(
         context_properties, builder.GetGraphInfo()));
   }

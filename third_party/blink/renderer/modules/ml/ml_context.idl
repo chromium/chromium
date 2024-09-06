@@ -124,6 +124,13 @@ dictionary MLPreluSupportLimits {
   MLSupportLimits output;
 };
 
+dictionary MLQuantizeDequantizeLinearSupportLimits {
+  MLSupportLimits input;
+  MLSupportLimits scale;
+  MLSupportLimits zeroPoint;
+  MLSupportLimits output;
+};
+
 dictionary MLLogicalNotSupportLimits {
   MLSupportLimits a;
   MLSupportLimits output;
@@ -155,6 +162,7 @@ dictionary MLOpSupportLimits {
   MLConcatSupportLimits concat;
   MLConv2dSupportLimits conv2d;
   MLConv2dSupportLimits convTranspose2d;
+  MLQuantizeDequantizeLinearSupportLimits dequantizeLinear;
 
   // Element-wise binary ops.
   MLBinarySupportLimits add;
@@ -208,6 +216,7 @@ dictionary MLOpSupportLimits {
   MLBinarySupportLimits matmul;
   MLSingleInputSupportLimits pad;
   MLPreluSupportLimits prelu;
+  MLQuantizeDequantizeLinearSupportLimits quantizeLinear;
 
   // Pool2d.
   MLSingleInputSupportLimits averagePool2d;

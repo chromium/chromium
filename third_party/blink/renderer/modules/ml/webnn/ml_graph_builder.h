@@ -230,6 +230,12 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                   const MLOperatorOptions* options,
                   ExceptionState& exception_state);
 
+  MLOperand* dequantizeLinear(const MLOperand* input,
+                              const MLOperand* scale,
+                              const MLOperand* zeroPoint,
+                              const MLOperatorOptions* options,
+                              ExceptionState& exception_state);
+
   MLOperand* elu(const MLOperand* input,
                  const MLEluOptions* options,
                  ExceptionState& exception_state);
@@ -344,6 +350,12 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                    const MLOperand* slope,
                    const MLOperatorOptions* options,
                    ExceptionState& exception_state);
+
+  MLOperand* quantizeLinear(const MLOperand* input,
+                            const MLOperand* scale,
+                            const MLOperand* zeroPoint,
+                            const MLOperatorOptions* options,
+                            ExceptionState& exception_state);
 
   // Reduction operations
   MLOperand* reduceL1(const MLOperand* input,

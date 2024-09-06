@@ -754,6 +754,26 @@ std::optional<String> SerializeConv2dOperation(
   return std::nullopt;
 }
 
+OperationPtr CreateDequantizeLinearOperation(
+    const OperandToIdMap& operand_to_id_map,
+    const MLOperator* dequantize_linear) {
+  auto dequantize_linear_mojo = blink_mojom::DequantizeLinear::New();
+  dequantize_linear_mojo->input_operand_id =
+      GetOperatorInputId(dequantize_linear, operand_to_id_map, 0);
+  dequantize_linear_mojo->scale_operand_id =
+      GetOperatorInputId(dequantize_linear, operand_to_id_map, 1);
+  dequantize_linear_mojo->zero_point_operand_id =
+      GetOperatorInputId(dequantize_linear, operand_to_id_map, 2);
+  dequantize_linear_mojo->output_operand_id =
+      GetOperatorOutputId(dequantize_linear, operand_to_id_map);
+
+  const auto* options = static_cast<const blink::MLOperatorOptions*>(
+      dequantize_linear->Options());
+  dequantize_linear_mojo->label = options->label();
+  return blink_mojom::Operation::NewDequantizeLinear(
+      std::move(dequantize_linear_mojo));
+}
+
 OperationPtr CreateElementWiseBinaryOperator(
     const OperandToIdMap& operand_to_id_map,
     const MLOperator* binary,
@@ -1316,6 +1336,26 @@ OperationPtr CreatePreluOperation(const OperandToIdMap& operand_to_id_map,
   return blink_mojom::Operation::NewPrelu(std::move(prelu_mojo));
 }
 
+OperationPtr CreateQuantizeLinearOperation(
+    const OperandToIdMap& operand_to_id_map,
+    const MLOperator* quantize_linear) {
+  auto quantize_linear_mojo = blink_mojom::QuantizeLinear::New();
+  quantize_linear_mojo->input_operand_id =
+      GetOperatorInputId(quantize_linear, operand_to_id_map, 0);
+  quantize_linear_mojo->scale_operand_id =
+      GetOperatorInputId(quantize_linear, operand_to_id_map, 1);
+  quantize_linear_mojo->zero_point_operand_id =
+      GetOperatorInputId(quantize_linear, operand_to_id_map, 2);
+  quantize_linear_mojo->output_operand_id =
+      GetOperatorOutputId(quantize_linear, operand_to_id_map);
+
+  const auto* options =
+      static_cast<const blink::MLOperatorOptions*>(quantize_linear->Options());
+  quantize_linear_mojo->label = options->label();
+  return blink_mojom::Operation::NewQuantizeLinear(
+      std::move(quantize_linear_mojo));
+}
+
 OperationPtr CreateReduceOperator(const OperandToIdMap& operand_to_id_map,
                                   const MLOperator* reduce,
                                   const blink_mojom::Reduce::Kind kind) {
@@ -1666,6 +1706,10 @@ std::optional<String> SerializeMojoOperation(
       }
       break;
     }
+    case blink_mojom::Operation::Tag::kDequantizeLinear:
+      graph_info->operations.push_back(
+          CreateDequantizeLinearOperation(operand_to_id_map, op));
+      break;
     case blink_mojom::Operation::Tag::kElementWiseBinary:
       graph_info->operations.push_back(CreateElementWiseBinaryOperator(
           operand_to_id_map, op,
@@ -1760,6 +1804,10 @@ std::optional<String> SerializeMojoOperation(
     case blink_mojom::Operation::Tag::kPrelu:
       graph_info->operations.push_back(
           CreatePreluOperation(operand_to_id_map, op));
+      break;
+    case blink_mojom::Operation::Tag::kQuantizeLinear:
+      graph_info->operations.push_back(
+          CreateQuantizeLinearOperation(operand_to_id_map, op));
       break;
     case blink_mojom::Operation::Tag::kReduce:
       graph_info->operations.push_back(CreateReduceOperator(

@@ -104,6 +104,10 @@ ContextProperties ContextImplDml::GetProperties(
        /*conv2d_input=*/DataTypeConstraint::kFloat16To32,
        /*conv_transpose2d_input=*/DataTypeConstraint::kFloat16To32,
 
+       // DequantizeLinear is not implemented.
+       /*dequantize_linear_input=*/{},
+       /*dequantize_linear_scale=*/{},
+
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_add_operator_desc#tensor-support
        /*add_input=*/kFloat16To32Ints32,
 
@@ -254,6 +258,10 @@ ContextProperties ContextImplDml::GetProperties(
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_parameterized_relu_operator_desc#tensor-support
        /*prelu_input=*/DataTypeConstraint::kFloat16To32,
+
+       // QuantizeLinear is not implemented.
+       /*quantize_linear_input=*/{},
+       /*quantize_linear_zero_point=*/{},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_reduce_operator_desc#tensor-support-according-to-function
        /*reduce_l1_input=*/DataTypeConstraint::kFloat16To32,

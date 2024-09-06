@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_power_preference.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_prelu_support_limits.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_quantize_dequantize_linear_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_single_input_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_support_limits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_tensor_descriptor.h"
@@ -304,6 +305,18 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
   conv_transpose2d->setOutput(SupportedDataTypesToSupportLimits(
       data_type_limits.conv_transpose2d_input));
   op_support_limits->setConvTranspose2d(conv_transpose2d);
+
+  MLQuantizeDequantizeLinearSupportLimits* dequantize_linear =
+      MLQuantizeDequantizeLinearSupportLimits::Create();
+  dequantize_linear->setInput(SupportedDataTypesToSupportLimits(
+      data_type_limits.dequantize_linear_input));
+  dequantize_linear->setScale(SupportedDataTypesToSupportLimits(
+      data_type_limits.dequantize_linear_scale));
+  dequantize_linear->setZeroPoint(SupportedDataTypesToSupportLimits(
+      data_type_limits.dequantize_linear_input));
+  dequantize_linear->setOutput(SupportedDataTypesToSupportLimits(
+      data_type_limits.dequantize_linear_scale));
+  op_support_limits->setDequantizeLinear(dequantize_linear);
 
   // Element-wise binary ops.
   MLBinarySupportLimits* add = MLBinarySupportLimits::Create();
@@ -677,6 +690,18 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
   prelu->setOutput(
       SupportedDataTypesToSupportLimits(data_type_limits.prelu_input));
   op_support_limits->setPrelu(prelu);
+
+  MLQuantizeDequantizeLinearSupportLimits* quantize_linear =
+      MLQuantizeDequantizeLinearSupportLimits::Create();
+  quantize_linear->setInput(SupportedDataTypesToSupportLimits(
+      data_type_limits.quantize_linear_input));
+  quantize_linear->setScale(SupportedDataTypesToSupportLimits(
+      data_type_limits.quantize_linear_input));
+  quantize_linear->setZeroPoint(SupportedDataTypesToSupportLimits(
+      data_type_limits.quantize_linear_zero_point));
+  quantize_linear->setOutput(SupportedDataTypesToSupportLimits(
+      data_type_limits.quantize_linear_zero_point));
+  op_support_limits->setQuantizeLinear(quantize_linear);
 
   // Reduction ops.
   MLSingleInputSupportLimits* reduce_l1 = MLSingleInputSupportLimits::Create();

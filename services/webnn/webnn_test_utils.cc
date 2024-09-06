@@ -189,6 +189,19 @@ void GraphInfoBuilder::BuildConcat(std::vector<uint64_t> input_operand_ids,
       mojom::Operation::NewConcat(std::move(concat)));
 }
 
+void GraphInfoBuilder::BuildDequantizeLinear(uint64_t input_operand_id,
+                                             uint64_t scale_operand_id,
+                                             uint64_t zero_point_operand_id,
+                                             uint64_t output_operand_id) {
+  mojom::DequantizeLinearPtr dequantize_linear = mojom::DequantizeLinear::New();
+  dequantize_linear->input_operand_id = input_operand_id;
+  dequantize_linear->scale_operand_id = scale_operand_id;
+  dequantize_linear->zero_point_operand_id = zero_point_operand_id;
+  dequantize_linear->output_operand_id = output_operand_id;
+  graph_info_->operations.push_back(
+      mojom::Operation::NewDequantizeLinear(std::move(dequantize_linear)));
+}
+
 void GraphInfoBuilder::BuildElementWiseBinary(
     mojom::ElementWiseBinary::Kind kind,
     uint64_t lhs_operand,
@@ -299,6 +312,19 @@ void GraphInfoBuilder::BuildPrelu(uint64_t input_operand_id,
   prelu->output_operand_id = output_operand_id;
   graph_info_->operations.push_back(
       mojom::Operation::NewPrelu(std::move(prelu)));
+}
+
+void GraphInfoBuilder::BuildQuantizeLinear(uint64_t input_operand_id,
+                                           uint64_t scale_operand_id,
+                                           uint64_t zero_point_operand_id,
+                                           uint64_t output_operand_id) {
+  mojom::QuantizeLinearPtr quantize_linear = mojom::QuantizeLinear::New();
+  quantize_linear->input_operand_id = input_operand_id;
+  quantize_linear->scale_operand_id = scale_operand_id;
+  quantize_linear->zero_point_operand_id = zero_point_operand_id;
+  quantize_linear->output_operand_id = output_operand_id;
+  graph_info_->operations.push_back(
+      mojom::Operation::NewQuantizeLinear(std::move(quantize_linear)));
 }
 
 void GraphInfoBuilder::BuildReduce(mojom::Reduce::Kind kind,
@@ -478,6 +504,8 @@ ContextProperties GetContextPropertiesForTesting() {
        /*conv2d_input=*/DataTypeConstraint::kFloat16To32,
        /*conv_transpose2d_input=*/
        DataTypeConstraint::kFloat16To32,
+       /*dequantize_linear_input=*/SupportedDataTypes::All(),
+       /*dequantize_linear_scale=*/SupportedDataTypes::All(),
        /*add_input=*/SupportedDataTypes::All(),
        /*sub_input=*/SupportedDataTypes::All(),
        /*mul_input=*/SupportedDataTypes::All(),
@@ -532,6 +560,8 @@ ContextProperties GetContextPropertiesForTesting() {
        /*l2_pool2d_input=*/SupportedDataTypes::All(),
        /*max_pool2d_input=*/SupportedDataTypes::All(),
        /*prelu_input=*/SupportedDataTypes::All(),
+       /*quantize_linear_input=*/SupportedDataTypes::All(),
+       /*quantize_linear_zero_point=*/SupportedDataTypes::All(),
        /*reduce_l1_input=*/SupportedDataTypes::All(),
        /*reduce_l2_input=*/SupportedDataTypes::All(),
        /*reduce_log_sum_input=*/SupportedDataTypes::All(),

@@ -856,6 +856,68 @@ ValidateConvTranspose2dAndInferOutput(
                                                   output_info);
 }
 
+// This helper method is intended to validate scale and zero_point
+// operands of quantizeLinear and dequantizeLinear against the input
+// operand.
+base::expected<void, std::string>
+ValidateScaleZeroPointOperandShapeIsCompatibleWithInput(
+    base::span<const uint32_t> input_shape,
+    base::span<const uint32_t> scale_shape,
+    base::span<const uint32_t> zero_point_shape,
+    std::string_view label) {
+  if (!BroadcastShapes(scale_shape, input_shape, /*bidirectional=*/false)) {
+    return base::unexpected(ErrorWithLabel(
+        label,
+        "The shape of scale is not broadcastable to the shape of input."));
+  }
+  if (!BroadcastShapes(zero_point_shape, input_shape,
+                       /*bidirectional=*/false)) {
+    return base::unexpected(ErrorWithLabel(
+        label,
+        "The shape of zeroPoint is not broadcastable to the shape of input."));
+  }
+
+  return base::ok();
+}
+
+base::expected<OperandDescriptor, std::string>
+ValidateDequantizeLinearAndInferOutput(
+    const ContextProperties& context_properties,
+    const OperandDescriptor& input,
+    const OperandDescriptor& scale,
+    const OperandDescriptor& zero_point,
+    std::string_view label) {
+  // Validate scale and zero_point operands.
+  RETURN_IF_ERROR(ValidateScaleZeroPointOperandShapeIsCompatibleWithInput(
+      input.shape(), scale.shape(), zero_point.shape(), label));
+
+  if (!context_properties.data_type_limits.dequantize_linear_input.Has(
+          input.data_type())) {
+    return base::unexpected(ErrorWithLabel(
+        label,
+        NotSupportedInputArgumentTypeError(
+            input.data_type(),
+            context_properties.data_type_limits.dequantize_linear_input)));
+  }
+
+  if (input.data_type() != zero_point.data_type()) {
+    return base::unexpected(ErrorWithLabel(
+        label, "The data type of input and zero point must be the same."));
+  }
+
+  if (!context_properties.data_type_limits.dequantize_linear_scale.Has(
+          scale.data_type())) {
+    return base::unexpected(ErrorWithLabel(
+        label,
+        NotSupportedInputArgumentTypeError(
+            scale.data_type(),
+            context_properties.data_type_limits.dequantize_linear_scale)));
+  }
+
+  // The data type of scale determines the output type.
+  return OperandDescriptor::Create(scale.data_type(), input.shape());
+}
+
 base::expected<OperandDescriptor, std::string> ValidatePadAndInferOutput(
     const ContextProperties& context_properties,
     const OperandDescriptor& input,
@@ -2124,6 +2186,42 @@ base::expected<OperandDescriptor, std::string> ValidatePreluAndInferOutput(
   }
 
   return input;
+}
+
+base::expected<OperandDescriptor, std::string>
+ValidateQuantizeLinearAndInferOutput(
+    const ContextProperties& context_properties,
+    const OperandDescriptor& input,
+    const OperandDescriptor& scale,
+    const OperandDescriptor& zero_point,
+    std::string_view label) {
+  // Validate scale and zero_point operands.
+  RETURN_IF_ERROR(ValidateScaleZeroPointOperandShapeIsCompatibleWithInput(
+      input.shape(), scale.shape(), zero_point.shape(), label));
+
+  if (!context_properties.data_type_limits.quantize_linear_input.Has(
+          input.data_type())) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedInputArgumentTypeError(
+                   input.data_type(),
+                   context_properties.data_type_limits.quantize_linear_input)));
+  }
+
+  if (input.data_type() != scale.data_type()) {
+    return base::unexpected(ErrorWithLabel(
+        label, "The data type of input and scale must be the same."));
+  }
+
+  if (!context_properties.data_type_limits.quantize_linear_zero_point.Has(
+          zero_point.data_type())) {
+    return base::unexpected(ErrorWithLabel(
+        label,
+        NotSupportedInputArgumentTypeError(
+            zero_point.data_type(),
+            context_properties.data_type_limits.quantize_linear_zero_point)));
+  }
+  // The data type of zero_point determines the output type.
+  return OperandDescriptor::Create(zero_point.data_type(), input.shape());
 }
 
 base::expected<OperandDescriptor, std::string> ValidateTileAndInferOutput(

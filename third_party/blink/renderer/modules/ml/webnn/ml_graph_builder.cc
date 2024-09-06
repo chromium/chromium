@@ -1408,6 +1408,30 @@ MLOperand* MLGraphBuilder::cast(const MLOperand* input,
   return output;
 }
 
+MLOperand* MLGraphBuilder::dequantizeLinear(const MLOperand* input,
+                                            const MLOperand* scale,
+                                            const MLOperand* zeroPoint,
+                                            const MLOperatorOptions* options,
+                                            ExceptionState& exception_state) {
+  THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
+  HeapVector<Member<const MLOperand>> inputs = {input, scale, zeroPoint};
+  THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs), nullptr);
+
+  ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
+      webnn::OperandDescriptor output_descriptor,
+      webnn::ValidateDequantizeLinearAndInferOutput(
+          ml_context_->GetProperties(), input->Descriptor(),
+          scale->Descriptor(), zeroPoint->Descriptor(),
+          options->label().Utf8()));
+
+  auto* dequantize_linear = MakeGarbageCollected<MLOperator>(
+      this, webnn::mojom::blink::Operation::Tag::kDequantizeLinear, options);
+  MLOperand* output = MLOperand::CreateOutput(
+      this, std::move(output_descriptor), dequantize_linear);
+  dequantize_linear->Connect(std::move(inputs), {output});
+  return output;
+}
+
 #define BUILD_REDUCE_OP(op, op_kind)                                     \
   MLOperand* MLGraphBuilder::op(const MLOperand* input,                  \
                                 const MLReduceOptions* options,          \
@@ -2066,6 +2090,30 @@ MLOperand* MLGraphBuilder::prelu(const MLOperand* input,
       MLOperand::CreateOutput(this, std::move(output_descriptor), prelu);
 
   prelu->Connect(std::move(inputs), {output});
+  return output;
+}
+
+MLOperand* MLGraphBuilder::quantizeLinear(const MLOperand* input,
+                                          const MLOperand* scale,
+                                          const MLOperand* zeroPoint,
+                                          const MLOperatorOptions* options,
+                                          ExceptionState& exception_state) {
+  THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
+  HeapVector<Member<const MLOperand>> inputs = {input, scale, zeroPoint};
+  THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs), nullptr);
+
+  ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
+      webnn::OperandDescriptor output_descriptor,
+      webnn::ValidateQuantizeLinearAndInferOutput(
+          ml_context_->GetProperties(), input->Descriptor(),
+          scale->Descriptor(), zeroPoint->Descriptor(),
+          options->label().Utf8()));
+
+  auto* quantize_linear = MakeGarbageCollected<MLOperator>(
+      this, webnn::mojom::blink::Operation::Tag::kQuantizeLinear, options);
+  MLOperand* output = MLOperand::CreateOutput(
+      this, std::move(output_descriptor), quantize_linear);
+  quantize_linear->Connect(std::move(inputs), {output});
   return output;
 }
 

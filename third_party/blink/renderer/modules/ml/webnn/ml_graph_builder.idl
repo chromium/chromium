@@ -263,6 +263,8 @@ dictionary MLTriangularOptions : MLOperatorOptions {
 
   [RaisesException] MLOperand cast(MLOperand input, MLOperandDataType outputDataType, optional MLOperatorOptions options = {});
 
+  [RaisesException] MLOperand dequantizeLinear(MLOperand input, MLOperand scale, MLOperand zeroPoint, optional MLOperatorOptions options = {});
+
   [RaisesException] MLOperand elu(MLOperand x, optional MLEluOptions options = {});
 
   [RaisesException] MLOperand expand(MLOperand input, sequence<[EnforceRange] unsigned long> newShape, optional MLOperatorOptions options = {});
@@ -316,6 +318,8 @@ dictionary MLTriangularOptions : MLOperatorOptions {
   [RaisesException] MLOperand maxPool2d(MLOperand input, optional MLPool2dOptions options = {});
 
   [RaisesException] MLOperand prelu(MLOperand x, MLOperand slope, optional MLOperatorOptions options = {});
+
+  [RaisesException] MLOperand quantizeLinear(MLOperand input, MLOperand scale, MLOperand zeroPoint, optional MLOperatorOptions options = {});
 
   [RaisesException] MLOperand reduceL1(MLOperand input, optional MLReduceOptions options = {});
   [RaisesException] MLOperand reduceL2(MLOperand input, optional MLReduceOptions options = {});

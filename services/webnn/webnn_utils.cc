@@ -76,6 +76,8 @@ std::string OpTagToString(mojom::Operation::Tag tag) {
       return ops::kConcat;
     case mojom::Operation::Tag::kConv2d:
       return ops::kConv2d;
+    case mojom::Operation::Tag::kDequantizeLinear:
+      return ops::kDequantizeLinear;
     case mojom::Operation::Tag::kElementWiseBinary:
       return "element-wise binary";
     case mojom::Operation::Tag::kElu:
@@ -120,6 +122,8 @@ std::string OpTagToString(mojom::Operation::Tag tag) {
       return "pool2d";
     case mojom::Operation::Tag::kPrelu:
       return ops::kPrelu;
+    case mojom::Operation::Tag::kQuantizeLinear:
+      return ops::kQuantizeLinear;
     case mojom::Operation::Tag::kReduce:
       return "reduce";
     case mojom::Operation::Tag::kRelu:

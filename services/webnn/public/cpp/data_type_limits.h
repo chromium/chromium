@@ -23,6 +23,8 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedDataTypes concat_inputs,
                  SupportedDataTypes conv2d_input,
                  SupportedDataTypes conv_transpose2d_input,
+                 SupportedDataTypes dequantize_linear_input,
+                 SupportedDataTypes dequantize_linear_scale,
                  SupportedDataTypes add_input,
                  SupportedDataTypes sub_input,
                  SupportedDataTypes mul_input,
@@ -75,6 +77,8 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedDataTypes l2_pool2d_input,
                  SupportedDataTypes max_pool2d_input,
                  SupportedDataTypes prelu_input,
+                 SupportedDataTypes quantize_linear_input,
+                 SupportedDataTypes quantize_linear_zero_point,
                  SupportedDataTypes reduce_l1_input,
                  SupportedDataTypes reduce_l2_input,
                  SupportedDataTypes reduce_log_sum_input,
@@ -120,6 +124,8 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedDataTypes concat_inputs;
   SupportedDataTypes conv2d_input;
   SupportedDataTypes conv_transpose2d_input;
+  SupportedDataTypes dequantize_linear_input;
+  SupportedDataTypes dequantize_linear_scale;
   SupportedDataTypes add_input;
   SupportedDataTypes sub_input;
   SupportedDataTypes mul_input;
@@ -172,6 +178,8 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedDataTypes l2_pool2d_input;
   SupportedDataTypes max_pool2d_input;
   SupportedDataTypes prelu_input;
+  SupportedDataTypes quantize_linear_input;
+  SupportedDataTypes quantize_linear_zero_point;
   SupportedDataTypes reduce_l1_input;
   SupportedDataTypes reduce_l2_input;
   SupportedDataTypes reduce_log_sum_input;
@@ -210,6 +218,8 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.concat_inputs == rhs.concat_inputs &&
          lhs.conv2d_input == rhs.conv2d_input &&
          lhs.conv_transpose2d_input == rhs.conv_transpose2d_input &&
+         lhs.dequantize_linear_input == rhs.dequantize_linear_input &&
+         lhs.dequantize_linear_scale == rhs.dequantize_linear_scale &&
          lhs.add_input == rhs.add_input &&
          lhs.sub_input == rhs.sub_input &&
          lhs.mul_input == rhs.mul_input &&
@@ -262,6 +272,8 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.l2_pool2d_input == rhs.l2_pool2d_input &&
          lhs.max_pool2d_input == rhs.max_pool2d_input &&
          lhs.prelu_input == rhs.prelu_input &&
+         lhs.quantize_linear_input == rhs.quantize_linear_input &&
+         lhs.quantize_linear_zero_point == rhs.quantize_linear_zero_point &&
          lhs.reduce_l1_input == rhs.reduce_l1_input &&
          lhs.reduce_l2_input == rhs.reduce_l2_input &&
          lhs.reduce_log_sum_input == rhs.reduce_log_sum_input &&

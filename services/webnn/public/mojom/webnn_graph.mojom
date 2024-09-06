@@ -202,6 +202,30 @@ struct Conv2d {
   string label;
 };
 
+// Represents an elementwise operator to scale a low precision integer
+// (typically uint8 with a zero-point bias) to floating point:
+//   output = (input - zeroPoint) * scale.
+// This saves space in models and memory during GPU upload/computation.
+struct DequantizeLinear {
+  // The id of input operand.
+  uint64 input_operand_id;
+  // The scale operand (referenced by the scale_operand_id) must be distinct
+  // from the input operand (referenced by the input_operand_id), and the
+  // scale shape must be broadcastable to the input shape.
+  uint64 scale_operand_id;
+  // The zero_point operand (referenced by the zero_point_operand_id) must
+  // be distinct from the input operand (referenced by the input_operand_id)
+  // and the scale operand (referenced by the scale_operand_id). The data
+  // type of zero_point shape must be the same as the input.
+  uint64 zero_point_operand_id;
+  // The output operand (referenced by output_operand_id) must be distinct
+  // from the input operand (referenced by input_operand_id). The data type
+  // of the output is the same as the scale.
+  uint64 output_operand_id;
+  // User defined label from MLOperatorOptions.
+  string label;
+};
+
 // Represents an element-wise binary operation, mathematically equivalent to:
 // <output_operand> = <lhs_operand> <operation_kind> <rhs_operand>;
 // The shapes of left-hand side (lhs) operand and right-hand side (rhs) operand
@@ -880,6 +904,30 @@ struct Prelu {
   string label;
 };
 
+// Represents an element-wise operator to quantize floating point down to a
+// low precision integer (typically uint8 with a zero-point bias):
+//  output = clamp(roundToNearestEvens(input / scale) + zeroPoint, 0, 255).
+struct QuantizeLinear {
+  // The id of input operand.
+  uint64 input_operand_id;
+  // The scale operand (referenced by the scale_operand_id) must be distinct
+  // from the input operand (referenced by the input_operand_id), and the
+  // scale shape must be broadcastable to the input shape. The data type of
+  // scale must be the same as input.
+  uint64 scale_operand_id;
+  // The zero_point operand (referenced by the zero_point_operand_id) must
+  // be distinct from the input operand (referenced by the input_operand_id)
+  // and the scale operand (referenced by the scale_operand_id). The
+  // zero_point shape must be broadcastable to the input shape.
+  uint64 zero_point_operand_id;
+  // The output operand (referenced by output_operand_id) must be distinct
+  // from the input operand (referenced by input_operand_id). The data type
+  // of output is the same as the zero_point.
+  uint64 output_operand_id;
+  // User defined label from MLOperatorOptions.
+  string label;
+};
+
 // Corresponds to `MLOperand relu(MLOperand x)` that compute the rectified
 // linear function of the input tensor.
 struct Relu {
@@ -1106,6 +1154,7 @@ union Operation {
   Clamp clamp;
   Concat concat;
   Conv2d conv2d;
+  DequantizeLinear dequantize_linear;
   ElementWiseBinary element_wise_binary;
   Elu elu;
   ElementWiseUnary element_wise_unary;
@@ -1128,6 +1177,7 @@ union Operation {
   Pad pad;
   Pool2d pool2d;
   Prelu prelu;
+  QuantizeLinear quantize_linear;
   Reduce reduce;
   Relu relu;
   Resample2d resample2d;

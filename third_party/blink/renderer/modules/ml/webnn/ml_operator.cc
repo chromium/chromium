@@ -77,6 +77,9 @@ String MLOperator::OperatorKindToString(
           return "convTranspose2d";
       }
     }
+    case webnn::mojom::blink::Operation::Tag::kDequantizeLinear:
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
+      return "dequantizeLinear";
     case webnn::mojom::blink::Operation::Tag::kElementWiseUnary: {
       switch (
           absl::get<webnn::mojom::blink::ElementWiseUnary::Kind>(sub_kind)) {
@@ -181,6 +184,9 @@ String MLOperator::OperatorKindToString(
     case webnn::mojom::blink::Operation::Tag::kPrelu:
       CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "prelu";
+    case webnn::mojom::blink::Operation::Tag::kQuantizeLinear:
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
+      return "quantizeLinear";
     case webnn::mojom::blink::Operation::Tag::kReduce: {
       switch (absl::get<webnn::mojom::blink::Reduce::Kind>(sub_kind)) {
         case webnn::mojom::blink::Reduce::Kind::kL1:

@@ -54,6 +54,14 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.conv_transpose2d_input;
   }
+  static webnn::SupportedDataTypes dequantize_linear_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.dequantize_linear_input;
+  }
+  static webnn::SupportedDataTypes dequantize_linear_scale(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.dequantize_linear_scale;
+  }
   static webnn::SupportedDataTypes add_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.add_input;
@@ -262,6 +270,14 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.prelu_input;
   }
+  static webnn::SupportedDataTypes quantize_linear_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.quantize_linear_input;
+  }
+  static webnn::SupportedDataTypes quantize_linear_zero_point(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.quantize_linear_zero_point;
+  }
   static webnn::SupportedDataTypes reduce_l1_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.reduce_l1_input;
@@ -370,6 +386,8 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
            data.ReadConcatInputs(&out->concat_inputs) &&
            data.ReadConv2dInput(&out->conv2d_input) &&
            data.ReadConvTranspose2dInput(&out->conv_transpose2d_input) &&
+           data.ReadDequantizeLinearInput(&out->dequantize_linear_input) &&
+           data.ReadDequantizeLinearScale(&out->dequantize_linear_scale) &&
            data.ReadAddInput(&out->add_input) &&
            data.ReadSubInput(&out->sub_input) &&
            data.ReadMulInput(&out->mul_input) &&
@@ -423,6 +441,8 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
            data.ReadL2Pool2dInput(&out->l2_pool2d_input) &&
            data.ReadMaxPool2dInput(&out->max_pool2d_input) &&
            data.ReadPreluInput(&out->prelu_input) &&
+           data.ReadQuantizeLinearInput(&out->quantize_linear_input) &&
+           data.ReadQuantizeLinearZeroPoint(&out->quantize_linear_zero_point) &&
            data.ReadReduceL1Input(&out->reduce_l1_input) &&
            data.ReadReduceL2Input(&out->reduce_l2_input) &&
            data.ReadReduceLogSumInput(&out->reduce_log_sum_input) &&

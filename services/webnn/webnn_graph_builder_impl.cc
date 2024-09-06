@@ -771,6 +771,44 @@ bool ValidateConv2d(const ContextProperties& context_properties,
   return true;
 }
 
+bool ValidateDequantizeLinear(const ContextProperties& context_properties,
+                              const IdToOperandMap& id_to_operand_map,
+                              const mojom::DequantizeLinear& dequantize_linear,
+                              base::flat_set<uint64_t>& processed_operands) {
+  if (!processed_operands.contains(dequantize_linear.input_operand_id) ||
+      !processed_operands.contains(dequantize_linear.scale_operand_id) ||
+      !processed_operands.contains(dequantize_linear.zero_point_operand_id)) {
+    return false;
+  }
+  processed_operands.insert(dequantize_linear.output_operand_id);
+
+  auto* input =
+      GetMojoOperand(id_to_operand_map, dequantize_linear.input_operand_id);
+  auto* output =
+      GetMojoOperand(id_to_operand_map, dequantize_linear.output_operand_id);
+  auto* scale =
+      GetMojoOperand(id_to_operand_map, dequantize_linear.scale_operand_id);
+  auto* zero_point = GetMojoOperand(id_to_operand_map,
+                                    dequantize_linear.zero_point_operand_id);
+  if (!input || !output || !scale || !zero_point || output == input ||
+      output == scale || output == zero_point) {
+    // The quantize_linear operator is invalid.
+    return false;
+  }
+
+  auto validated_output = ValidateDequantizeLinearAndInferOutput(
+      context_properties, input->descriptor, scale->descriptor,
+      zero_point->descriptor, dequantize_linear.label);
+  if (!validated_output.has_value()) {
+    return false;
+  }
+  if (validated_output != output->descriptor) {
+    return false;
+  }
+
+  return true;
+}
+
 bool ValidateElementWiseBinaryDataTypes(
     const ContextProperties& context_properties,
     const mojom::Operand* lhs,
@@ -1686,6 +1724,44 @@ bool ValidatePrelu(const ContextProperties& context_properties,
   return true;
 }
 
+bool ValidateQuantizeLinear(const ContextProperties& context_properties,
+                            const IdToOperandMap& id_to_operand_map,
+                            const mojom::QuantizeLinear& quantize_linear,
+                            base::flat_set<uint64_t>& processed_operands) {
+  if (!processed_operands.contains(quantize_linear.input_operand_id) ||
+      !processed_operands.contains(quantize_linear.scale_operand_id) ||
+      !processed_operands.contains(quantize_linear.zero_point_operand_id)) {
+    return false;
+  }
+  processed_operands.insert(quantize_linear.output_operand_id);
+
+  auto* input =
+      GetMojoOperand(id_to_operand_map, quantize_linear.input_operand_id);
+  auto* output =
+      GetMojoOperand(id_to_operand_map, quantize_linear.output_operand_id);
+  auto* scale =
+      GetMojoOperand(id_to_operand_map, quantize_linear.scale_operand_id);
+  auto* zero_point =
+      GetMojoOperand(id_to_operand_map, quantize_linear.zero_point_operand_id);
+  if (!input || !output || !scale || !zero_point || output == input ||
+      output == scale || output == zero_point) {
+    // The quantize_linear operator is invalid.
+    return false;
+  }
+
+  auto validated_output = ValidateQuantizeLinearAndInferOutput(
+      context_properties, input->descriptor, scale->descriptor,
+      zero_point->descriptor, quantize_linear.label);
+  if (!validated_output.has_value()) {
+    return false;
+  }
+  if (validated_output != output->descriptor) {
+    return false;
+  }
+
+  return true;
+}
+
 bool ValidateResample2d(const ContextProperties& context_properties,
                         const IdToOperandMap& id_to_operand_map,
                         const mojom::Resample2d& resample2d,
@@ -2063,6 +2139,10 @@ bool ValidateOperation(const ContextProperties& context_properties,
     case mojom::Operation::Tag::kConv2d:
       return ValidateConv2d(context_properties, id_to_operand_map,
                             *operation.get_conv2d(), processed_operands);
+    case mojom::Operation::Tag::kDequantizeLinear:
+      return ValidateDequantizeLinear(context_properties, id_to_operand_map,
+                                      *operation.get_dequantize_linear(),
+                                      processed_operands);
     case mojom::Operation::Tag::kElementWiseBinary:
       return ValidateElementWiseBinary(context_properties, id_to_operand_map,
                                        *operation.get_element_wise_binary(),
@@ -2138,6 +2218,10 @@ bool ValidateOperation(const ContextProperties& context_properties,
     case mojom::Operation::Tag::kPrelu:
       return ValidatePrelu(context_properties, id_to_operand_map,
                            *operation.get_prelu(), processed_operands);
+    case mojom::Operation::Tag::kQuantizeLinear:
+      return ValidateQuantizeLinear(context_properties, id_to_operand_map,
+                                    *operation.get_quantize_linear(),
+                                    processed_operands);
     case mojom::Operation::Tag::kReduce:
       return ValidateReduce(context_properties, id_to_operand_map,
                             *operation.get_reduce(), processed_operands);

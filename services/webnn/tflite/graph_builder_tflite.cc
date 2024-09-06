@@ -345,6 +345,9 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*concat_inputs=*/SupportedDataTypes::All(),
        /*conv2d_input=*/kFloat32,
        /*conv_transpose2d_input=*/kFloat32,
+       // DequantizeLinear is not implemented.
+       /*dequantize_linear_input=*/{},
+       /*dequantize_linear_scale=*/{},
        /*add_input=*/kFloat32AndInt32To64,
        /*sub_input=*/kFloat32AndInt32To64,
        /*mul_input=*/kFloat32AndInt32To64AndUint32,
@@ -400,6 +403,9 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*l2_pool2d_input=*/{},
        /*max_pool2d_input=*/kFloat32,
        /*prelu_input=*/kFloat32,
+       // QuantizeLinear is not implemented.
+       /*quantize_linear_input=*/{},
+       /*quantize_linear_zero_point=*/{},
        // ReduceL1 is emulated by abs and reduceSum.
        /*reduce_l1_input=*/kFloat32AndInt32,
        // ReduceL2 is emulated by pow and reduceSumSquare.
@@ -502,6 +508,9 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
     case mojom::Operation::Tag::kConcat:
       operator_offset = SerializeConcat(*op.get_concat());
       break;
+    case mojom::Operation::Tag::kDequantizeLinear:
+      return base::unexpected(
+          "DequantizeLinear operation is not implemented in tflite.");
     case mojom::Operation::Tag::kElementWiseBinary: {
       operator_offset =
           SerializeElementWiseBinary(*op.get_element_wise_binary());
@@ -586,6 +595,9 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
       ASSIGN_OR_RETURN(operator_offset, SerializePrelu(*op.get_prelu()));
       break;
     }
+    case mojom::Operation::Tag::kQuantizeLinear:
+      return base::unexpected(
+          "QuantizeLinear operation is not implemented in tflite.");
     case mojom::Operation::Tag::kReduce: {
       ASSIGN_OR_RETURN(operator_offset, SerializeReduce(*op.get_reduce()));
       break;

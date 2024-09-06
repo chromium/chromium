@@ -646,6 +646,9 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        /*concat_inputs=*/kFloatsAndInt32,
        /*conv2d_input=*/DataTypeConstraint::kFloat16To32,
        /*conv_transpose2d_input=*/DataTypeConstraint::kFloat16To32,
+       // DequantizeLinear is not implemented.
+       /*dequantize_linear_input=*/{},
+       /*dequantize_linear_scale=*/{},
        /*add_input=*/kFloatsAndInt32,
        /*sub_input=*/kFloatsAndInt32,
        /*mul_input=*/kFloatsAndInt32,
@@ -711,6 +714,9 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        /*max_pool2d_input=*/DataTypeConstraint::kFloat16To32,
        // Prelu is not implemented.
        /*prelu_input=*/{},
+       // QuantizeLinear is not implemented.
+       /*quantize_linear_input=*/{},
+       /*quantize_linear_zero_point=*/{},
        /*reduce_l1_input=*/kFloatsAndInt32,
        /*reduce_l2_input=*/kFloatsAndInt32,
        /*reduce_log_sum_input=*/kFloatsAndInt32,
@@ -991,6 +997,7 @@ GraphBuilderCoreml::BuildCoreMLModel() {
         RETURN_IF_ERROR(AddOperationForWhere(*operation->get_where(), block));
         break;
       }
+      case mojom::Operation::Tag::kDequantizeLinear:
       case mojom::Operation::Tag::kGatherElements:
       case mojom::Operation::Tag::kGelu:
       case mojom::Operation::Tag::kGru:
@@ -998,6 +1005,7 @@ GraphBuilderCoreml::BuildCoreMLModel() {
       case mojom::Operation::Tag::kLstm:
       case mojom::Operation::Tag::kLstmCell:
       case mojom::Operation::Tag::kPrelu:
+      case mojom::Operation::Tag::kQuantizeLinear:
       case mojom::Operation::Tag::kTile:
       case mojom::Operation::Tag::kTriangular:
         return NewNotSupportedError(NotSupportedOperatorError(*operation));

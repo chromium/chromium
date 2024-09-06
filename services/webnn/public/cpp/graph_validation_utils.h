@@ -454,6 +454,15 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
         const OperandDescriptor& filter,
         const ConvTranspose2dAttributes& attributes);
 
+base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
+    WEBNN_PUBLIC_CPP)
+    ValidateDequantizeLinearAndInferOutput(
+        const ContextProperties& context_properties,
+        const OperandDescriptor& input,
+        const OperandDescriptor& scale,
+        const OperandDescriptor& zero_point,
+        std::string_view label);
+
 // Validate and infer output information of pad operator defined in
 // WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-pad
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
@@ -610,6 +619,15 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
                                 const OperandDescriptor& input,
                                 const OperandDescriptor& slope,
                                 std::string_view label);
+
+base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
+    WEBNN_PUBLIC_CPP)
+    ValidateQuantizeLinearAndInferOutput(
+        const ContextProperties& context_properties,
+        const OperandDescriptor& input,
+        const OperandDescriptor& scale,
+        const OperandDescriptor& zero_point,
+        std::string_view label);
 
 // Validate tile operator defined in WebIDL here
 // https://github.com/webmachinelearning/webnn/issues/375
