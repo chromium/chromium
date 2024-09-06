@@ -273,7 +273,7 @@ public class TabGroupListMediator {
             ListItem listItem = new ListItem(0, model);
             mModelList.add(listItem);
 
-            if (isShared) {
+            if (isShared && mDataSharingService != null) {
                 if (currentAccountInfo == null) {
                     currentAccountInfo = getAccountInfo();
                 }
@@ -281,7 +281,8 @@ public class TabGroupListMediator {
                 mDataSharingService.readGroup(
                         collaborationId,
                         (GroupDataOrFailureOutcome outcome) ->
-                                onGroupDataOrFailureOutcome(outcome, finalAccountInfo, model));
+                                onGroupDataOrFailureOutcome(
+                                        outcome, finalAccountInfo, model, savedTabGroup));
             }
         }
 
@@ -294,10 +295,17 @@ public class TabGroupListMediator {
     }
 
     private void onGroupDataOrFailureOutcome(
-            GroupDataOrFailureOutcome outcome, CoreAccountInfo accountInfo, PropertyModel model) {
+            GroupDataOrFailureOutcome outcome,
+            CoreAccountInfo accountInfo,
+            PropertyModel model,
+            SavedTabGroup savedTabGroup) {
         @MemberRole
         int memberRole = TabShareUtils.getSelfMemberRole(outcome, accountInfo.getGaiaId());
         @Nullable GroupData groupData = outcome.groupData;
+        if (groupData == null || memberRole == MemberRole.UNKNOWN) {
+            // Likely no longer shared.
+            model.set(DELETE_RUNNABLE, () -> processDeleteGroup(savedTabGroup));
+        }
         if (memberRole == MemberRole.OWNER) {
             model.set(
                     DELETE_RUNNABLE,

@@ -798,4 +798,45 @@ public class TabGroupListMediatorUnitTest {
         controller.onClick(mModalPropertyModelCaptor.getValue(), ButtonType.POSITIVE);
         verify(mModalDialogManager).dismissDialog(any(), anyInt());
     }
+
+    @Test
+    public void testDeleteRunnable_shareReadFailure() {
+        CoreAccountInfo coreAccountInfo = CoreAccountInfo.createFromEmailAndGaiaId(EMAIL, GAIA_ID1);
+        when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(coreAccountInfo);
+
+        SavedTabGroup group1 = new SavedTabGroup();
+        group1.syncId = SYNC_GROUP_ID1;
+        group1.savedTabs = Arrays.asList(new SavedTabGroupTab());
+        group1.localId = new LocalTabGroupId(LOCAL_GROUP_ID1);
+        group1.collaborationId = COLLABORATION_ID1;
+
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_GROUP_ID1});
+        when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(group1);
+        when(mTabGroupModelFilter.getRootIdFromStableId(LOCAL_GROUP_ID1)).thenReturn(ROOT_ID1);
+        when(mTabGroupModelFilter.getRelatedTabListForRootId(ROOT_ID1))
+                .thenReturn(Arrays.asList(mTab1));
+        when(mComprehensiveModel.getCount()).thenReturn(1);
+        when(mComprehensiveModel.getTabAt(0)).thenReturn(mTab1);
+        when(mTab1.getRootId()).thenReturn(ROOT_ID1);
+        when(mTab1.getTabGroupId()).thenReturn(LOCAL_GROUP_ID1);
+        when(mTab1.isClosing()).thenReturn(false);
+
+        createMediator();
+
+        assertEquals(1, mModelList.size());
+        PropertyModel model = mModelList.get(0).model;
+        assertNull(model.get(DELETE_RUNNABLE));
+
+        verify(mDataSharingService)
+                .readGroup(eq(COLLABORATION_ID1), mReadGroupCallbackCaptor.capture());
+
+        GroupDataOrFailureOutcome outcome =
+                new GroupDataOrFailureOutcome(
+                        /* groupData= */ null, PeopleGroupActionFailure.TRANSIENT_FAILURE);
+        mReadGroupCallbackCaptor.getValue().onResult(outcome);
+
+        assertNotNull(model.get(DELETE_RUNNABLE));
+        model.get(DELETE_RUNNABLE).run();
+        verify(mActionConfirmationManager).processDeleteGroupAttempt(any());
+    }
 }
