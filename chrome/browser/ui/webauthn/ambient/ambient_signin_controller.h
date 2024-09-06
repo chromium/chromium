@@ -4,10 +4,12 @@
 #ifndef CHROME_BROWSER_UI_WEBAUTHN_AMBIENT_AMBIENT_SIGNIN_CONTROLLER_H_
 #define CHROME_BROWSER_UI_WEBAUTHN_AMBIENT_AMBIENT_SIGNIN_CONTROLLER_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ui/views/webauthn/ambient/ambient_signin_bubble_view.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -58,12 +60,16 @@ class AmbientSigninController
       PasskeyCredentialSelectionCallback callback);
 
   void AddAndShowPasswordMethods(
-      std::vector<std::unique_ptr<password_manager::PasswordForm>> local_forms,
+      std::vector<std::unique_ptr<password_manager::PasswordForm>> forms,
       password_manager::PasswordManagerClient::CredentialsCallback callback);
 
   // Called when the user selects a passkey shown in the bubble.
   void OnPasskeySelected(const std::vector<uint8_t>& account_id,
                          const ui::Event& event);
+
+  // Called when the user selects a password shown in the bubble.
+  void OnPasswordSelected(const password_manager::PasswordForm* form,
+                          const ui::Event& event);
 
   base::WeakPtr<AmbientSigninController> GetWeakPtr();
 
@@ -72,6 +78,15 @@ class AmbientSigninController
   explicit AmbientSigninController(content::RenderFrameHost* render_frame_host);
   friend class content::DocumentUserData<AmbientSigninController>;
   DOCUMENT_USER_DATA_KEY_DECL();
+
+  enum class CredentialsReceived {
+    kNone,
+    kPasskeys,
+    kPasswords,
+    kPasswordsAndPasskeys,
+  };
+
+  void ShowBubble();
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
@@ -89,6 +104,19 @@ class AmbientSigninController
   PasskeyCredentialSelectionCallback passkey_selection_callback_;
   password_manager::PasswordManagerClient::CredentialsCallback
       password_selection_callback_;
+  CredentialsReceived credentials_received_state_ = CredentialsReceived::kNone;
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> password_forms_;
+  std::vector<password_manager::PasskeyCredential> passkey_credentials_;
+
+  // TODO(ambient): This is a temporary measure for prototyping. Right now
+  // it is impossible to know if the website is going to try to supply both
+  // passkeys and passwords, or just one of those things. The Credential
+  // Management API implementation needs to be changed to accept both kinds
+  // of requests in a single call, and awareness of the requested types has
+  // to be plumbed here so that we know when we have received all
+  // credentials, and the bubble can be shown. Until then, we just have a
+  // time delay for both request types to arrive when requested.
+  base::OneShotTimer timer_;
 
   raw_ptr<AuthenticatorRequestDialogModel> model_;
 

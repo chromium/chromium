@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webauthn/ambient/ambient_signin_controller.h"
 
 #include "base/functional/bind.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -17,10 +18,16 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/views/widget/widget.h"
 
-namespace ambient_signin {
-
 using content::RenderFrameHost;
 using content::WebContents;
+
+namespace ambient_signin {
+
+namespace {
+
+inline constexpr base::TimeDelta kWaitForCredentials = base::Milliseconds(1000);
+
+}  // namespace
 
 AmbientSigninController::~AmbientSigninController() {
   if (model_) {
@@ -45,6 +52,62 @@ void AmbientSigninController::AddAndShowWebAuthnMethods(
   }
 
   passkey_selection_callback_ = std::move(callback);
+  passkey_credentials_ = credentials;
+
+  if (credentials_received_state_ == CredentialsReceived::kPasskeys ||
+      credentials_received_state_ ==
+          CredentialsReceived::kPasswordsAndPasskeys) {
+    return;
+  }
+
+  if (credentials_received_state_ == CredentialsReceived::kNone) {
+    credentials_received_state_ = CredentialsReceived::kPasskeys;
+    // Unretained |this| is safe because the timer will be destroyed on
+    // destruction of this object.
+    timer_.Start(FROM_HERE, kWaitForCredentials, this,
+                 &AmbientSigninController::ShowBubble);
+    return;
+  }
+
+  credentials_received_state_ = CredentialsReceived::kPasswordsAndPasskeys;
+  ShowBubble();
+}
+
+void AmbientSigninController::AddAndShowPasswordMethods(
+    std::vector<std::unique_ptr<password_manager::PasswordForm>> forms,
+    password_manager::PasswordManagerClient::CredentialsCallback callback) {
+  password_selection_callback_ = std::move(callback);
+
+  password_forms_.swap(forms);
+
+  if (credentials_received_state_ == CredentialsReceived::kPasswords ||
+      credentials_received_state_ ==
+          CredentialsReceived::kPasswordsAndPasskeys) {
+    return;
+  }
+
+  if (credentials_received_state_ == CredentialsReceived::kNone) {
+    credentials_received_state_ = CredentialsReceived::kPasswords;
+    // Unretained |this| is safe because the timer will be destroyed on
+    // destruction of this object.
+    timer_.Start(FROM_HERE, kWaitForCredentials, this,
+                 &AmbientSigninController::ShowBubble);
+    return;
+  }
+
+  credentials_received_state_ = CredentialsReceived::kPasswordsAndPasskeys;
+  ShowBubble();
+}
+
+void AmbientSigninController::ShowBubble() {
+  if (password_forms_.empty() && passkey_credentials_.empty()) {
+    return;
+  }
+
+  if (timer_.IsRunning()) {
+    timer_.Stop();
+  }
+
   // TODO: double check how this behaves if a conditional request is made while
   // the tab is in background.
   auto* web_contents =
@@ -60,15 +123,12 @@ void AmbientSigninController::AddAndShowWebAuthnMethods(
   if (!ambient_signin_bubble_view_) {
     ambient_signin_bubble_view_ =
         new AmbientSigninBubbleView(anchor_view, this);
-    ambient_signin_bubble_view_->ShowPasskeys(credentials);
+    ambient_signin_bubble_view_->ShowCredentials(passkey_credentials_,
+                                                 password_forms_);
   } else {
     ambient_signin_bubble_view_->Update();
   }
 }
-
-void AmbientSigninController::AddAndShowPasswordMethods(
-    std::vector<std::unique_ptr<password_manager::PasswordForm>> local_forms,
-    password_manager::PasswordManagerClient::CredentialsCallback callback) {}
 
 AmbientSigninController::AmbientSigninController(
     RenderFrameHost* render_frame_host)
@@ -87,6 +147,12 @@ void AmbientSigninController::OnPasskeySelected(
     const std::vector<uint8_t>& account_id,
     const ui::Event& event) {
   std::move(passkey_selection_callback_).Run(account_id);
+}
+
+void AmbientSigninController::OnPasswordSelected(
+    const password_manager::PasswordForm* form,
+    const ui::Event& event) {
+  std::move(password_selection_callback_).Run(form);
 }
 
 void AmbientSigninController::OnWidgetDestroying(views::Widget* widget) {

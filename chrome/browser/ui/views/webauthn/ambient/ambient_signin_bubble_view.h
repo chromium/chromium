@@ -14,6 +14,7 @@
 
 namespace password_manager {
 class PasskeyCredential;
+struct PasswordForm;
 }
 
 namespace ambient_signin {
@@ -30,10 +31,12 @@ class AmbientSigninBubbleView : public views::BubbleDialogDelegateView {
   AmbientSigninBubbleView(const AmbientSigninBubbleView&) = delete;
   AmbientSigninBubbleView& operator=(const AmbientSigninBubbleView&) = delete;
 
-  // Provide passkeys for display and show the bubble. This must be called
+  // Provide credentials for display and show the bubble. This must be called
   // before any of the methods below are called.
-  void ShowPasskeys(
-      const std::vector<password_manager::PasskeyCredential>& credentials);
+  void ShowCredentials(
+      const std::vector<password_manager::PasskeyCredential>& credentials,
+      const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
+          forms);
 
   void Show();
   void Update();
@@ -45,6 +48,8 @@ class AmbientSigninBubbleView : public views::BubbleDialogDelegateView {
  private:
   std::unique_ptr<views::View> CreatePasskeyRow(
       const password_manager::PasskeyCredential& passkey);
+  std::unique_ptr<views::View> CreatePasswordRow(
+      const password_manager::PasswordForm* form);
 
   raw_ptr<AmbientSigninController> controller_;
   base::WeakPtr<views::Widget> widget_;
