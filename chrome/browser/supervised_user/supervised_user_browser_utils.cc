@@ -193,6 +193,7 @@ std::string CreateReauthenticationInterstitial(
       std::make_unique<SupervisedUserVerificationPage>(
           web_contents, profile->GetProfileUserName(), request_url,
           verification_purpose, child_account_service,
+          navigation_handle.GetNextPageUkmSourceId(),
           std::make_unique<SupervisedUserVerificationControllerClient>(
               web_contents, profile->GetPrefs(),
               g_browser_process->GetApplicationLocale(),
