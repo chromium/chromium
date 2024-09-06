@@ -3383,9 +3383,6 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
       feature_info_->oes_texture_half_float_linear_available();
   caps.image_ycbcr_420v =
       feature_info_->feature_flags().chromium_image_ycbcr_420v;
-  caps.image_ycbcr_420v_disabled_for_video_frames =
-      group_->gpu_preferences()
-          .disable_biplanar_gpu_memory_buffers_for_video_frames;
   caps.image_ar30 = feature_info_->feature_flags().chromium_image_ar30;
   caps.image_ab30 = feature_info_->feature_flags().chromium_image_ab30;
   caps.image_ycbcr_p010 =

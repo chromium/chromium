@@ -1188,8 +1188,6 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
       !feature_info()->workarounds().etc1_power_of_two_only;
   caps.image_ycbcr_420v =
       feature_info()->feature_flags().chromium_image_ycbcr_420v;
-  caps.image_ycbcr_420v_disabled_for_video_frames =
-      gpu_preferences_.disable_biplanar_gpu_memory_buffers_for_video_frames;
   caps.image_ar30 = feature_info()->feature_flags().chromium_image_ar30;
   caps.image_ab30 = feature_info()->feature_flags().chromium_image_ab30;
   caps.image_ycbcr_p010 =

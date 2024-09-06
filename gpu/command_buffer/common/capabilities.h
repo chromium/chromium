@@ -47,7 +47,6 @@ struct GPU_EXPORT Capabilities {
   bool texture_norm16 = false;
   bool texture_half_float_linear = false;
   bool image_ycbcr_420v = false;
-  bool image_ycbcr_420v_disabled_for_video_frames = false;
   bool image_ar30 = false;
   bool image_ab30 = false;
   bool image_ycbcr_p010 = false;
