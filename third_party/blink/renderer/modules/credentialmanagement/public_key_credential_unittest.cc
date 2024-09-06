@@ -263,8 +263,8 @@ MATCHER(StrEq, "") {
 
 // Matches the underlying `T` pointee of a `blink::Member<T>`.
 template <typename T>
-Matcher<Member<T>> MemberField(Matcher<T> matcher) {
-  return Property("Get", &Member<T>::Get, Pointee(matcher));
+Matcher<Member<T>> MemberField(Matcher<T*> matcher) {
+  return Property("Get", &Member<T>::Get, matcher);
 }
 
 // Performs WebAuthn Base64URL encoding, which is always unpadded.
@@ -305,7 +305,7 @@ MATCHER(CredentialDescriptorsEq, "") {
 
 // Matches `PublicKeyCredentialParameters`.
 MATCHER_P2(PubKeyCredParamsEq, type, alg, "") {
-  return arg.type() == String(type) && arg.alg() == alg;
+  return arg->type() == String(type) && arg->alg() == alg;
 }
 
 // Matches `AuthenticationExtensionsPRFValues`.
