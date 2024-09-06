@@ -39,6 +39,8 @@ BASE_FEATURE(kPresetTracing,
 
 namespace {
 
+const char kBackgroundTracingFieldTrial[] = "BackgroundTracing";
+
 const base::FeatureParam<std::string> kTracingTriggerRulesConfig{
     &kTracingTriggers, "config", ""};
 const base::FeatureParam<bool> kTracingTriggerRulesCompressed{
@@ -238,6 +240,48 @@ bool SetupPresetTracingFromFieldTrial() {
     return true;
   }
   return false;
+}
+
+bool SetupSystemTracingFromFieldTrial() {
+  if (tracing::GetBackgroundTracingSetupMode() !=
+      BackgroundTracingSetupMode::kFromFieldTrial) {
+    return false;
+  }
+
+  auto& manager = content::BackgroundTracingManager::GetInstance();
+  auto trigger_config = tracing::GetTracingTriggerRulesConfig();
+  if (!trigger_config) {
+    return false;
+  }
+  return manager.InitializePerfettoTriggerRules(std::move(*trigger_config));
+}
+
+bool SetupFieldTracingFromFieldTrial() {
+  if (GetBackgroundTracingSetupMode() !=
+      BackgroundTracingSetupMode::kFromFieldTrial) {
+    return false;
+  }
+
+  content::BackgroundTracingManager::DataFiltering data_filtering =
+      content::BackgroundTracingManager::ANONYMIZE_DATA;
+  if (tracing::HasBackgroundTracingOutputPath()) {
+    data_filtering = content::BackgroundTracingManager::NO_DATA_FILTERING;
+    if (!tracing::SetBackgroundTracingOutputPath()) {
+      return false;
+    }
+  } else if (!tracing::ShouldAnonymizeFieldTracing()) {
+    data_filtering = content::BackgroundTracingManager::NO_DATA_FILTERING;
+  }
+
+  auto& manager = content::BackgroundTracingManager::GetInstance();
+  auto field_tracing_config = tracing::GetFieldTracingConfig();
+  if (field_tracing_config) {
+    return manager.InitializeFieldScenarios(std::move(*field_tracing_config),
+                                            data_filtering);
+  }
+  std::unique_ptr<content::BackgroundTracingConfig> config =
+      manager.GetBackgroundTracingConfig(kBackgroundTracingFieldTrial);
+  return manager.SetActiveScenario(std::move(config), data_filtering);
 }
 
 bool HasBackgroundTracingOutputPath() {

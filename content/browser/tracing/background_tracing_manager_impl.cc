@@ -272,6 +272,9 @@ BackgroundTracingManagerImpl::~BackgroundTracingManagerImpl() {
   if (legacy_active_scenario_) {
     legacy_active_scenario_->AbortScenario();
   }
+  for (auto& rule : trigger_rules_) {
+    rule->Uninstall();
+  }
   BackgroundTracingManager::SetInstance(nullptr);
   NamedTriggerManager::SetInstance(nullptr);
   g_background_tracing_manager_impl = nullptr;

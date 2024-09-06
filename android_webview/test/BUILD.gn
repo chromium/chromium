@@ -571,7 +571,6 @@ test("android_webview_unittests") {
     "//android_webview/browser/metrics",
     "//android_webview/common",
     "//android_webview/nonembedded",
-    "//base/test:proto_test_support",
     "//base/test:test_support",
     "//components/autofill/core/browser",
     "//components/component_updater",
@@ -611,14 +610,7 @@ test("android_webview_unittests") {
     "//ui/gl:test_support",
   ]
 
-  data_deps = [
-    "//third_party/perfetto/protos/perfetto/config/chrome:scenario_descriptor",
-  ]
-
-  data = [
-    "data/",
-    "$root_gen_dir/third_party/perfetto/protos/perfetto/config/chrome/scenario_config.descriptor",
-  ]
+  data = [ "data/" ]
 
   sources = [
     "../browser/aw_app_defined_websites_unittest.cc",
@@ -658,7 +650,6 @@ test("android_webview_unittests") {
     "../browser/state_serializer_unittest.cc",
     "../browser/tracing/aw_background_tracing_metrics_provider_unittest.cc",
     "../browser/tracing/aw_tracing_delegate_unittest.cc",
-    "../browser/tracing/background_tracing_field_trial_unittest.cc",
     "../lib/webview_tests.cc",
     "../nonembedded/component_updater/aw_component_installer_policy_shim_unittest.cc",
     "../nonembedded/component_updater/aw_component_installer_policy_unittest.cc",

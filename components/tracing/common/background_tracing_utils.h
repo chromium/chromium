@@ -15,7 +15,7 @@ namespace tracing {
 
 COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS) BASE_DECLARE_FEATURE(kFieldTracing);
 COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
-BASE_DECLARE_FEATURE(kFieldSystemTracing);
+BASE_DECLARE_FEATURE(kTracingTriggers);
 
 // These values are logged to UMA. Entries should not be renumbered and numeric
 // values should never be reused. Please keep in sync with
@@ -64,6 +64,12 @@ bool SetupBackgroundTracingFromCommandLine();
 
 COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
 bool SetupPresetTracingFromFieldTrial();
+
+COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
+bool SetupFieldTracingFromFieldTrial();
+
+COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
+bool SetupSystemTracingFromFieldTrial();
 
 COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)
 bool SetBackgroundTracingOutputPath();
