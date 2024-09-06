@@ -40,18 +40,6 @@ namespace {
 
 constexpr int kHostGpuMemoryBufferManagerId = 1;
 
-bool MustSignalGmbConfigReadyForTest() {
-#if BUILDFLAG(IS_OZONE)
-  // Some Ozone platforms (Ozone/X11) require GPU process initialization to
-  // determine GMB support.
-  return ui::OzonePlatform::GetInstance()
-      ->GetPlatformProperties()
-      .fetch_buffer_formats_for_gmb_on_gpu;
-#else
-  return false;
-#endif
-}
-
 class TestGpuService : public mojom::GpuService {
  public:
   TestGpuService() = default;
@@ -326,8 +314,6 @@ class HostGpuMemoryBufferManagerTest : public ::testing::Test {
         std::move(gpu_service_provider), kHostGpuMemoryBufferManagerId,
         std::move(gpu_memory_buffer_support),
         base::SingleThreadTaskRunner::GetCurrentDefault());
-    if (MustSignalGmbConfigReadyForTest())
-      gpu_memory_buffer_manager_->native_configurations_initialized_.Set();
   }
 
   // Not all platforms support native configurations (currently only Windows,
@@ -348,8 +334,6 @@ class HostGpuMemoryBufferManagerTest : public ::testing::Test {
     if (native_pixmap_supported)
       return true;
 
-    DCHECK(gpu::GpuMemoryBufferSupport::GetNativeGpuMemoryBufferConfigurations()
-               .empty());
     return false;
   }
 

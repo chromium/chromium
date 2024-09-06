@@ -25,29 +25,7 @@
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_usage_util.h"
 
-#if BUILDFLAG(IS_OZONE)
-#include "ui/ozone/public/ozone_platform.h"
-#endif
-
 namespace viz {
-
-namespace {
-
-bool WillGetGmbConfigFromGpu() {
-#if BUILDFLAG(IS_OZONE)
-  // Ozone/X11 cannot get buffer formats in the browser process and requires gpu
-  // initialization to be done before it can determine what formats gmb can use.
-  // This limitation comes from the requirement to have GLX bindings
-  // initialized. The buffer formats will be passed through gpu extra info.
-  return ui::OzonePlatform::GetInstance()
-      ->GetPlatformProperties()
-      .fetch_buffer_formats_for_gmb_on_gpu;
-#else
-  return false;
-#endif
-}
-
-}  // namespace
 
 HostGpuMemoryBufferManager::PendingBufferInfo::PendingBufferInfo() = default;
 HostGpuMemoryBufferManager::PendingBufferInfo::PendingBufferInfo(
@@ -68,11 +46,6 @@ HostGpuMemoryBufferManager::HostGpuMemoryBufferManager(
 
   weak_ptr_ = weak_factory_.GetWeakPtr();
 
-  if (!WillGetGmbConfigFromGpu()) {
-    native_configurations_ =
-        gpu::GpuMemoryBufferSupport::GetNativeGpuMemoryBufferConfigurations();
-    native_configurations_initialized_.Set();
-  }
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "HostGpuMemoryBufferManager", task_runner_);
 }
@@ -151,18 +124,6 @@ void HostGpuMemoryBufferManager::AllocateGpuMemoryBuffer(
         base::BindOnce(&HostGpuMemoryBufferManager::OnGpuMemoryBufferAllocated,
                        weak_ptr_, gpu_service_version_, id));
   }
-}
-
-bool HostGpuMemoryBufferManager::IsNativeGpuMemoryBufferConfiguration(
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage) const {
-  if (WillGetGmbConfigFromGpu()) {
-    DCHECK(native_configurations_initialized_.IsSet())
-        << "On X11 this must have waited for GPU initialization to complete "
-        << "before knowing that GpuMemoryBuffers can be used.";
-  }
-  return native_configurations_.find(gfx::BufferUsageAndFormat(
-             usage, format)) != native_configurations_.end();
 }
 
 std::unique_ptr<gfx::GpuMemoryBuffer>
@@ -305,17 +266,6 @@ bool HostGpuMemoryBufferManager::OnMemoryDump(
     }
   }
   return true;
-}
-
-void HostGpuMemoryBufferManager::SetNativeConfigurations(
-    gpu::GpuMemoryBufferConfigurationSet native_configurations) {
-  if (native_configurations_initialized_.IsSet()) {
-    // The configurations are set on GPU initialization and should not change.
-    DCHECK(native_configurations_ == native_configurations);
-  } else {
-    native_configurations_ = native_configurations;
-    native_configurations_initialized_.Set();
-  }
 }
 
 mojom::GpuService* HostGpuMemoryBufferManager::GetGpuService() {
