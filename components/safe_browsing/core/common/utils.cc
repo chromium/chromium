@@ -149,8 +149,6 @@ bool ErrorIsRetriable(int net_error, int http_error) {
 std::string GetExtraMetricsSuffix(
     security_interstitials::UnsafeResource unsafe_resource) {
   switch (unsafe_resource.threat_source) {
-    case safe_browsing::ThreatSource::REMOTE:
-      return "from_device";
     case safe_browsing::ThreatSource::LOCAL_PVER4:
       return "from_device_v4";
     case safe_browsing::ThreatSource::CLIENT_SIDE_DETECTION:

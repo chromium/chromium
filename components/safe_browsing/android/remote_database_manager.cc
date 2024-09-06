@@ -346,7 +346,7 @@ RemoteSafeBrowsingDatabaseManager::GetBrowseUrlThreatSource(
 
 safe_browsing::ThreatSource
 RemoteSafeBrowsingDatabaseManager::GetNonBrowseUrlThreatSource() const {
-  return safe_browsing::ThreatSource::REMOTE;
+  NOTREACHED();
 }
 
 void RemoteSafeBrowsingDatabaseManager::StartOnUIThread(

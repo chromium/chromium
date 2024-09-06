@@ -505,9 +505,6 @@ GURL PingManager::SafeBrowsingHitUrl(
 
   std::string threat_source = "none";
   switch (hit_report->threat_source) {
-    case safe_browsing::ThreatSource::REMOTE:
-      threat_source = "rem";
-      break;
     case safe_browsing::ThreatSource::LOCAL_PVER4:
       threat_source = "l4";
       break;

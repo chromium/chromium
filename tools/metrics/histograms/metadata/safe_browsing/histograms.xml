@@ -80,7 +80,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".AndroidSafeBrowsingRealTime"/>
   <variant name=".LocalPVer4"/>
   <variant name=".NativePVer5RealTime"/>
-  <variant name=".Remote"/>
   <variant name=".Unknown"/>
   <variant name=".UrlRealTimeCheck"/>
 </variants>

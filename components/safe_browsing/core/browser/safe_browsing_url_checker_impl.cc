@@ -89,9 +89,6 @@ void MaybeRecordFirstRequestMetrics(SBThreatType threat_type,
     case ThreatSource::LOCAL_PVER4:
       threat_source_name = "LocalPVer4";
       break;
-    case ThreatSource::REMOTE:
-      threat_source_name = "Remote";
-      break;
     case ThreatSource::CLIENT_SIDE_DETECTION:
       NOTREACHED();
     case ThreatSource::URL_REAL_TIME_CHECK:

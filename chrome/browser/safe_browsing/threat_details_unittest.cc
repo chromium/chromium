@@ -1493,8 +1493,9 @@ TEST_F(ThreatDetailsTest, ThreatWithRedirectUrl) {
       ->NavigateAndCommit(GURL(kLandingURL));
 
   UnsafeResource resource;
-  InitResource(SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING, ThreatSource::REMOTE,
-               false /* is_async_check */, GURL(kThreatURL), &resource);
+  InitResource(SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING,
+               ThreatSource::CLIENT_SIDE_DETECTION, false /* is_async_check */,
+               GURL(kThreatURL), &resource);
   resource.original_url = GURL(kOriginalLandingURL);
 
   // add some redirect urls
@@ -1514,8 +1515,10 @@ TEST_F(ThreatDetailsTest, ThreatWithRedirectUrl) {
 
   ClientSafeBrowsingReportRequest expected;
   expected.set_type(ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING);
+  // TODO(crbug.com/361008606): Create a new SafeBrowsingUrlApiType for
+  // ThreatSource::CLIENT_SIDE_DETECTION.
   expected.mutable_client_properties()->set_url_api_type(
-      ClientSafeBrowsingReportRequest::ANDROID_SAFETYNET);
+      ClientSafeBrowsingReportRequest::SAFE_BROWSING_URL_API_TYPE_UNSPECIFIED);
   expected.mutable_client_properties()->set_is_async_check(false);
   expected.set_url(kThreatURL);
   expected.set_url_request_destination(

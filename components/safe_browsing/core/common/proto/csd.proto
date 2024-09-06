@@ -1660,7 +1660,7 @@ message ClientSafeBrowsingReportRequest {
     PVER4_NATIVE = 2;
     // Android SafetyNet API.
     // https://developer.android.com/training/safetynet/safebrowsing.html
-    ANDROID_SAFETYNET = 3;
+    ANDROID_SAFETYNET = 3 [deprecated = true];
     // Flywheel (data compression service).
     // Deprecated as of 2021-1. Data saver has been completely turned down.
     FLYWHEEL = 4 [deprecated = true];

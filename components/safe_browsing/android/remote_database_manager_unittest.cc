@@ -172,12 +172,10 @@ TEST_F(RemoteDatabaseManagerTest, CheckBrowseUrl_HashRealtime) {
 }
 
 TEST_F(RemoteDatabaseManagerTest, ThreatSource) {
-  base::test::ScopedFeatureList scoped_feature_list;
   EXPECT_EQ(ThreatSource::ANDROID_SAFEBROWSING,
             db_->GetBrowseUrlThreatSource(CheckBrowseUrlType::kHashDatabase));
   EXPECT_EQ(ThreatSource::ANDROID_SAFEBROWSING_REAL_TIME,
             db_->GetBrowseUrlThreatSource(CheckBrowseUrlType::kHashRealTime));
-  EXPECT_EQ(ThreatSource::REMOTE, db_->GetNonBrowseUrlThreatSource());
 }
 
 TEST_F(RemoteDatabaseManagerTest, CheckDownloadUrl) {

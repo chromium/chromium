@@ -14,8 +14,6 @@ CSBRR::SafeBrowsingUrlApiType GetUrlApiTypeForThreatSource(
   switch (source) {
     case safe_browsing::ThreatSource::LOCAL_PVER4:
       return CSBRR::PVER4_NATIVE;
-    case safe_browsing::ThreatSource::REMOTE:
-      return CSBRR::ANDROID_SAFETYNET;
     case safe_browsing::ThreatSource::URL_REAL_TIME_CHECK:
       return CSBRR::REAL_TIME;
     case safe_browsing::ThreatSource::NATIVE_PVER5_REAL_TIME:
