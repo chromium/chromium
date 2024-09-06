@@ -611,6 +611,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Returns whether TransferSizeUpdated IPC should be sent.
   bool ShouldSendTransferSizeUpdated() const;
 
+  // Records metrics about GET requests.
+  void RecordRequestMetrics();
+
   raw_ptr<net::URLRequestContext> url_request_context_;
 
   raw_ptr<mojom::NetworkContextClient> network_context_client_;
@@ -672,6 +675,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   bool enable_reporting_raw_headers_ = false;
   bool seen_raw_request_headers_ = false;
+  // Used for metrics.
+  size_t raw_request_line_size_ = 0;
+  size_t raw_request_headers_size_ = 0;
   scoped_refptr<const net::HttpResponseHeaders> raw_response_headers_;
 
   std::unique_ptr<UploadProgressTracker> upload_progress_tracker_;

@@ -5198,6 +5198,33 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="NetworkService.Requests.{Multiplexed}.{RequestType}.{Method}.{Result}.TotalRequestSize"
+    units="bytes" expires_after="2025-08-01">
+  <owner>ortuno@chromium.org</owner>
+  <owner>navtracking-team@google.com</owner>
+  <summary>
+    The total size of network requests. Many servers reject requests that exceed
+    a certain size, which can cause cross-site leaks. This metrics helps us
+    understand what those sizes are.
+  </summary>
+  <token key="Multiplexed">
+    <variant name="Multiplexed"/>
+    <variant name="Simple"/>
+  </token>
+  <token key="RequestType">
+    <variant name="MainFrame"/>
+  </token>
+  <token key="Method">
+    <variant name="Get"/>
+  </token>
+  <token key="Result">
+    <variant name="ClientError"/>
+    <variant name="ServerError"/>
+    <variant name="Success"/>
+  </token>
+</histogram>
+
 <histogram name="NetworkService.SlopBucket.DisabledReason"
     enum="SlopBucketDisabledReason" expires_after="2024-10-23">
   <owner>ricea@chromium.org</owner>
