@@ -6,7 +6,6 @@ package org.chromium.components.signin;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.accounts.AuthenticatorDescription;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -71,10 +70,6 @@ public interface AccountManagerDelegate {
      */
     @WorkerThread
     void invalidateAuthToken(String authToken) throws AuthException;
-
-    /** Get all the available authenticator types. */
-    @AnyThread
-    AuthenticatorDescription[] getAuthenticatorTypes();
 
     /** Check whether the given account has a specific feature. */
     @WorkerThread

@@ -5,7 +5,6 @@
 package org.chromium.components.signin.test.util;
 
 import android.accounts.Account;
-import android.accounts.AuthenticatorDescription;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,7 +17,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerDelegate;
 import org.chromium.components.signin.AccountManagerDelegateException;
-import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.AuthException;
 import org.chromium.components.signin.base.AccountInfo;
@@ -133,14 +131,6 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
                 }
             }
         }
-    }
-
-    @Override
-    public AuthenticatorDescription[] getAuthenticatorTypes() {
-        AuthenticatorDescription googleAuthenticator =
-                new AuthenticatorDescription(AccountUtils.GOOGLE_ACCOUNT_TYPE, "p1", 0, 0, 0, 0);
-
-        return new AuthenticatorDescription[] {googleAuthenticator};
     }
 
     @Override

@@ -128,11 +128,6 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     }
 
     @Override
-    public boolean hasGoogleAccountAuthenticator() {
-        return true;
-    }
-
-    @Override
     public AccessTokenData getAccessToken(CoreAccountInfo coreAccountInfo, String scope)
             throws AuthException {
         @Nullable

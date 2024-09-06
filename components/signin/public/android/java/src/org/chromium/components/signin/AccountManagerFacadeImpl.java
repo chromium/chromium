@@ -6,7 +6,6 @@ package org.chromium.components.signin;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.accounts.AuthenticatorDescription;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -131,19 +130,10 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         return mCoreAccountInfosPromise;
     }
 
-    /** @return Whether or not there is an account authenticator for Google accounts. */
-    @Override
-    public boolean hasGoogleAccountAuthenticator() {
-        AuthenticatorDescription[] descs = mDelegate.getAuthenticatorTypes();
-        for (AuthenticatorDescription desc : descs) {
-            if (AccountUtils.GOOGLE_ACCOUNT_TYPE.equals(desc.type)) return true;
-        }
-        return false;
-    }
-
     /**
-     * Synchronously gets an OAuth2 access token. May return a cached version, use
-     * {@link #invalidateAccessToken} to invalidate a token in the cache.
+     * Synchronously gets an OAuth2 access token. May return a cached version, use {@link
+     * #invalidateAccessToken} to invalidate a token in the cache.
+     *
      * @param coreAccountInfo The {@link CoreAccountInfo} for which the token is requested.
      * @param scope OAuth2 scope for which the requested token should be valid.
      * @return The OAuth2 access token as an AccessTokenData with a string and an expiration time..
