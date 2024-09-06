@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_WEB_APP_INTERNALS_WEB_APP_INTERNALS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_WEB_APP_INTERNALS_WEB_APP_INTERNALS_UI_H_
 
+#include "base/check_is_test.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
@@ -25,6 +26,11 @@ class WebAppInternalsUI : public ui::MojoWebUIController {
   // interface passing the pending receiver that will be internally bound.
   void BindInterface(
       mojo::PendingReceiver<mojom::WebAppInternalsHandler> receiver);
+
+  WebAppInternalsHandler* GetHandlerForTesting() {
+    CHECK_IS_TEST();
+    return page_handler_.get();
+  }
 
  private:
   std::unique_ptr<WebAppInternalsHandler> page_handler_;

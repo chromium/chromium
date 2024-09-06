@@ -227,6 +227,18 @@ void IsolatedWebAppInstallationManager::InstallIsolatedWebAppFromDevModeBundle(
       CreateInstallSource(path, install_surface), std::move(callback));
 }
 
+void IsolatedWebAppInstallationManager::InstallIsolatedWebAppFromDevModeBundle(
+    const base::ScopedTempFile* file,
+    InstallSurface install_surface,
+    base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
+        callback) {
+  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(!callback.is_null());
+
+  InstallIsolatedWebAppFromInstallSource(
+      CreateInstallSource(file, install_surface), std::move(callback));
+}
+
 // static
 bool IsolatedWebAppInstallationManager::HasIwaInstallSwitch(
     const base::CommandLine& command_line) {
@@ -306,7 +318,8 @@ void IsolatedWebAppInstallationManager::
 // static
 IsolatedWebAppInstallSource
 IsolatedWebAppInstallationManager::CreateInstallSource(
-    absl::variant<base::FilePath, url::Origin> source,
+    absl::variant<base::FilePath, const base::ScopedTempFile*, url::Origin>
+        source,
     InstallSurface surface) {
   switch (surface) {
     case InstallSurface::kDevUi:
@@ -315,6 +328,11 @@ IsolatedWebAppInstallationManager::CreateInstallSource(
               [](base::FilePath path) -> IwaSourceDevModeWithFileOp {
                 return IwaSourceBundleDevModeWithFileOp(
                     std::move(path), kDefaultBundleDevFileOp);
+              },
+              [](const base::ScopedTempFile* temp_file)
+                  -> IwaSourceDevModeWithFileOp {
+                return IwaSourceBundleDevModeWithFileOp(
+                    temp_file->path(), IwaSourceBundleDevFileOp::kMove);
               },
               [](url::Origin proxy_url) -> IwaSourceDevModeWithFileOp {
                 return IwaSourceProxy(std::move(proxy_url));
@@ -365,11 +383,8 @@ void IsolatedWebAppInstallationManager::InstallIsolatedWebAppFromInstallSource(
   auto keep_alive = std::make_unique<ScopedKeepAlive>(
       KeepAliveOrigin::ISOLATED_WEB_APP_INSTALL,
       KeepAliveRestartOption::DISABLED);
-  std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive;
-  if (!profile_->IsOffTheRecord()) {
-    optional_profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
-        &*profile_, ProfileKeepAliveOrigin::kIsolatedWebAppInstall);
-  }
+  auto optional_profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+      &profile_.get(), ProfileKeepAliveOrigin::kIsolatedWebAppInstall);
   InstallIsolatedWebAppFromInstallSource(std::move(keep_alive),
                                          std::move(optional_profile_keep_alive),
                                          install_source, std::move(callback));

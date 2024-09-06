@@ -11,3 +11,27 @@ pre {
 .iwa-dev-update-button {
   margin-left: 4px;
 }
+
+dialog#iwa-update-manifest-dialog {
+  border: 0;
+  border-radius: 8px 8px 8px 8px;
+}
+
+dialog[open]#iwa-update-manifest-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+div#iwa-update-manifest-version {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+}
+
+div#iwa-update-manifest-dialog-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: 8px;
+}

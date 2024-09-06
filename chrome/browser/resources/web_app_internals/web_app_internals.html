@@ -49,6 +49,24 @@
           Select file...
         </button>
       </p>
+      <p>Install IWA from Update Manifest:
+        <input type="url" id="iwa-dev-update-manifest-url" size="50" required
+            placeholder="http://localhost:8000/update_manifest.json">
+        <button id="iwa-dev-update-manifest-fetch-button" type="submit">Fetch</button>
+      </p>
+
+      <dialog id="iwa-update-manifest-dialog">
+        <div>Installing IWA</div>
+        <div id="iwa-update-manifest-version">
+          <div id="iwa-update-manifest-version-title">Select Version:</div>
+          <select id="iwa-update-manifest-version-select"></select>
+        </div>
+        <div id="iwa-update-manifest-dialog-buttons">
+          <button id="iwa-update-manifest-dialog-close">Close</button>
+          <button id="iwa-update-manifest-dialog-install">Install</button>
+        </div>
+      </dialog>
+
       <div id="iwa-dev-install-message"></div>
       <h4>Installed Dev Mode IWAs</h4>
       <ul id="iwa-dev-updates-app-list"></ul>

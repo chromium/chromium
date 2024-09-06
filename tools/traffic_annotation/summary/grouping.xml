@@ -339,6 +339,8 @@ after discussions on the right group.
       <annotation id="help_me_read_request"/>
       <annotation id="chrome_data_sharing_preview"/>
       <annotation id="lens_overlay_save"/>
+      <annotation id="iwa_web_app_internals_update_manifest"/>
+      <annotation id="iwa_web_app_internals_web_bundle"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

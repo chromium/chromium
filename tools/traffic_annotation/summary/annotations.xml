@@ -481,4 +481,6 @@ Refer to README.md for content description and update process.
  <item id="help_me_read_request" added_in_milestone="130" content_hash_code="003a1aeb" os_list="chromeos" file_path="components/manta/mahi_provider.cc" />
  <item id="chrome_data_sharing_preview" added_in_milestone="130" content_hash_code="011e6703" os_list="linux,windows,android,chromeos" file_path="components/data_sharing/internal/preview_server_proxy.cc" />
  <item id="lens_overlay_save" added_in_milestone="130" content_hash_code="07f4c171" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/lens/lens_overlay_controller.cc" />
+ <item id="iwa_web_app_internals_update_manifest" added_in_milestone="130" type="partial" second_id="iwa_update_manifest_fetcher" content_hash_code="04b02418" os_list="linux,windows,chromeos" semantics_fields="1,2,3" policy_fields="3,5" file_path="chrome/browser/ui/webui/web_app_internals/web_app_internals_handler.cc" />
+ <item id="iwa_web_app_internals_web_bundle" added_in_milestone="130" type="partial" second_id="iwa_bundle_downloader" content_hash_code="01076400" os_list="linux,windows,chromeos" semantics_fields="1,2,3" policy_fields="3,5" file_path="chrome/browser/ui/webui/web_app_internals/web_app_internals_handler.cc" />
 </annotations>

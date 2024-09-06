@@ -11,7 +11,7 @@ import type {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file
 import type {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import type {InstallIsolatedWebAppResult, IwaDevModeAppInfo, IwaDevModeLocation} from './web_app_internals.mojom-webui.js';
+import type {InstallIsolatedWebAppResult, IwaDevModeAppInfo, IwaDevModeLocation, ParseUpdateManifestFromUrlResult, UpdateManifest, VersionEntry} from './web_app_internals.mojom-webui.js';
 import {WebAppInternalsHandler} from './web_app_internals.mojom-webui.js';
 
 const webAppInternalsHandler = WebAppInternalsHandler.getRemote();
@@ -24,6 +24,12 @@ const iwaDevProxyInstallButton =
     getRequiredElement('iwa-dev-install-proxy-button') as HTMLButtonElement;
 const iwaDevProxyInstallUrl =
     getRequiredElement('iwa-dev-install-proxy-url') as HTMLInputElement;
+
+const iwaDevUpdateManifestUrl =
+    getRequiredElement('iwa-dev-update-manifest-url') as HTMLInputElement;
+
+const iwaDevUpdateManifestDialog =
+    getRequiredElement('iwa-update-manifest-dialog') as HTMLDialogElement;
 
 /**
  * Converts a mojo origin into a user-readable string, omitting default ports.
@@ -165,6 +171,106 @@ getRequiredElement('iwa-dev-install-bundle-selector')
       iwaInstallMessageDiv.innerText =
           `Installing IWA: failed to install: ${result.error}`;
     });
+
+async function iwaDevFetchUpdateManifest() {
+  const iwaInstallMessageDiv = getRequiredElement('iwa-dev-install-message');
+
+  // Validate the provided URL.
+  try {
+    // We don't need the result of this, only to verify it doesn't throw an
+    // exception.
+    new URL(iwaDevUpdateManifestUrl.value);
+  } catch (_) {
+    iwaInstallMessageDiv.innerText = `Fetching the update manifest: ${
+        iwaDevUpdateManifestUrl.value} is not a valid URL`;
+    return;
+  }
+
+  iwaInstallMessageDiv.innerText =
+      `Fetching the update manifest at ${iwaDevUpdateManifestUrl.value}...`;
+
+  const updateManifestUrl: Url = {url: iwaDevUpdateManifestUrl.value};
+
+  const result: ParseUpdateManifestFromUrlResult =
+      (await webAppInternalsHandler.parseUpdateManifestFromUrl(
+           updateManifestUrl))
+          .result;
+  if (result.error) {
+    iwaInstallMessageDiv.innerText = `Installing IWA from update manifest: ${
+        iwaDevUpdateManifestUrl.value} failed to install: ${result.error}`;
+    return;
+  }
+
+  // `result` is a mojo union where there's always one of `error` or
+  // `updateManifest` defined.
+  const manifest: UpdateManifest = result.updateManifest!;
+  const versions: VersionEntry[] = manifest.versions;
+
+  const select = getRequiredElement('iwa-update-manifest-version-select') as
+      HTMLSelectElement;
+  select.replaceChildren();
+
+  for (const versionEntry of versions) {
+    const option = document.createElement('option');
+    option.value = versionEntry.version;
+    option.textContent = versionEntry.version;
+    select.appendChild(option);
+  }
+
+  const installButton =
+      getRequiredElement('iwa-update-manifest-dialog-install') as
+      HTMLButtonElement;
+
+  const installEventListener = async () => {
+    installButton.removeEventListener('click', installEventListener);
+
+    const selectedVersion = select.value;
+    iwaDevUpdateManifestDialog.close();
+
+    iwaInstallMessageDiv.innerText = `Installing version ${
+        selectedVersion} from ${updateManifestUrl.url}...`;
+    const selectedVersionEntry: VersionEntry|null =
+        versions.find(
+            versionEntry => versionEntry.version === selectedVersion) ||
+        null;
+
+    if (!selectedVersionEntry) {
+      iwaInstallMessageDiv.innerText =
+          `Installing version ${selectedVersion} from ${
+              updateManifestUrl.url} failed: no such version`;
+      return;
+    }
+
+    const installResult: InstallIsolatedWebAppResult =
+        (await webAppInternalsHandler.installIsolatedWebAppFromBundleUrl({
+          webBundleUrl: selectedVersionEntry.webBundleUrl,
+        })).result;
+    if (installResult.success) {
+      iwaInstallMessageDiv.innerText = `Installing version ${
+          selectedVersion} from ${updateManifestUrl.url}: success!`;
+    } else {
+      iwaInstallMessageDiv.innerText =
+          `Installing version ${selectedVersion} from ${
+              updateManifestUrl.url} failed: ${installResult.error}`;
+    }
+
+    refreshDevModeAppList();
+  };
+
+  installButton.addEventListener('click', installEventListener);
+
+  iwaDevUpdateManifestDialog.showModal();
+}
+
+getRequiredElement('iwa-update-manifest-dialog-close')
+    .addEventListener('click', () => {
+      getRequiredElement('iwa-dev-install-message').innerText = '';
+      iwaDevUpdateManifestDialog.close();
+    });
+
+iwaDevUpdateManifestUrl.addEventListener('enter', iwaDevFetchUpdateManifest);
+getRequiredElement('iwa-dev-update-manifest-fetch-button')
+    .addEventListener('click', iwaDevFetchUpdateManifest);
 
 getRequiredElement('iwa-updates-search-button')
     .addEventListener('click', async () => {

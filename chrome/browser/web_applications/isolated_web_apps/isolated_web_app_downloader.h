@@ -43,6 +43,8 @@ class ScopedTempWebBundleFile {
 
   explicit operator bool() const { return !!file_; }
 
+  const base::ScopedTempFile* file() const { return file_.get(); }
+
   // Will CHECK() if `file_` is nullptr.
   const base::FilePath& path() const;
 
@@ -63,11 +65,9 @@ class IsolatedWebAppDownloader {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       DownloadCallback download_callback);
 
-  ~IsolatedWebAppDownloader();
-
- private:
   explicit IsolatedWebAppDownloader(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  ~IsolatedWebAppDownloader();
 
   void DownloadSignedWebBundle(
       GURL url,
@@ -75,6 +75,7 @@ class IsolatedWebAppDownloader {
       net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation,
       DownloadCallback download_callback);
 
+ private:
   int32_t OnSignedWebBundleDownloaded(base::FilePath destination,
                                       base::FilePath actual_destination);
 

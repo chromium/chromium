@@ -8,10 +8,21 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
+#include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom.h"
+#include "chrome/browser/ui/webui/web_app_internals/web_app_internals_handler.h"
+#include "chrome/browser/ui/webui/web_app_internals/web_app_internals_ui.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_server_mixin.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -197,6 +208,96 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsBrowserTest,
 
   EXPECT_EQ(TrimLineEndings(expected_error),
             TrimLineEndings(error_log.DebugString()));
+}
+
+class WebAppInternalsIwaInstallationBrowserTest
+    : public IsolatedWebAppBrowserTestHarness {
+ protected:
+  WebAppInternalsHandler* OpenWebAppInternals() {
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL("chrome://web-app-internals")));
+    return static_cast<WebAppInternalsUI*>(browser()
+                                               ->tab_strip_model()
+                                               ->GetActiveWebContents()
+                                               ->GetWebUI()
+                                               ->GetController())
+        ->GetHandlerForTesting();
+  }
+
+  IsolatedWebAppUpdateServerMixin update_server_mixin_{&mixin_host_};
+};
+
+IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
+                       FetchUpdateManifestAndInstallIwa) {
+  update_server_mixin_.AddBundle(
+      IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
+          .BuildBundle(test::GetDefaultEd25519KeyPair()));
+
+  auto* handler = OpenWebAppInternals();
+
+  base::test::TestFuture<::mojom::ParseUpdateManifestFromUrlResultPtr>
+      um_future;
+  handler->ParseUpdateManifestFromUrl(update_server_mixin_.GetUpdateManifestUrl(
+                                          test::GetDefaultEd25519WebBundleId()),
+                                      um_future.GetCallback());
+
+  auto um_result = um_future.Take();
+  ASSERT_TRUE(um_result->is_update_manifest());
+
+  const auto& update_manifest = *um_result->get_update_manifest();
+
+  ASSERT_THAT(
+      update_manifest,
+      testing::Field(
+          &::mojom::UpdateManifest::versions,
+          testing::ElementsAre(testing::Pointee(testing::Field(
+              &::mojom::VersionEntry::version, testing::Eq("1.0.0"))))));
+
+  const GURL& web_bundle_url = update_manifest.versions[0]->web_bundle_url;
+
+  base::test::TestFuture<::mojom::InstallIsolatedWebAppResultPtr>
+      install_future;
+  auto params = ::mojom::InstallFromBundleUrlParams::New();
+  params->web_bundle_url = web_bundle_url;
+  handler->InstallIsolatedWebAppFromBundleUrl(std::move(params),
+                                              install_future.GetCallback());
+  ASSERT_TRUE(install_future.Take()->is_success());
+
+  EXPECT_THAT(
+      GetIsolatedWebAppById(provider().registrar_unsafe(),
+                            IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+                                test::GetDefaultEd25519WebBundleId())
+                                .app_id()),
+      base::test::HasValue());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
+                       ParseUpdateManifestFromUrlFailsWithIncorrectUrl) {
+  auto* handler = OpenWebAppInternals();
+
+  base::test::TestFuture<::mojom::ParseUpdateManifestFromUrlResultPtr>
+      um_future;
+
+  // Select some dummy URL that certainly doesn't host an update manifest.
+  handler->ParseUpdateManifestFromUrl(GURL("https://example.com"),
+                                      um_future.GetCallback());
+  ASSERT_TRUE(um_future.Take()->is_error());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppInternalsIwaInstallationBrowserTest,
+    InstallIsolatedWebAppFromBundleUrlFailsWithIncorrectUrl) {
+  auto* handler = OpenWebAppInternals();
+
+  base::test::TestFuture<::mojom::InstallIsolatedWebAppResultPtr>
+      install_future;
+  auto params = ::mojom::InstallFromBundleUrlParams::New();
+
+  // Select some dummy URL that certainly doesn't host a web bundle.
+  params->web_bundle_url = GURL("https://example.com");
+  handler->InstallIsolatedWebAppFromBundleUrl(std::move(params),
+                                              install_future.GetCallback());
+  ASSERT_TRUE(install_future.Take()->is_error());
 }
 
 }  // namespace web_app

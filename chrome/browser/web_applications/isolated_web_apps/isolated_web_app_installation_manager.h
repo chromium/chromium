@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/files/scoped_temp_file.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
@@ -75,6 +76,12 @@ class IsolatedWebAppInstallationManager {
       base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
           callback);
 
+  void InstallIsolatedWebAppFromDevModeBundle(
+      const base::ScopedTempFile* file,
+      InstallSurface install_surface,
+      base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
+          callback);
+
   void OnReportInstallationResultForTesting(
       base::RepeatingCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
           on_report_installation_result) {
@@ -110,7 +117,8 @@ class IsolatedWebAppInstallationManager {
                            NoInstallationWhenDevModePolicyDisabled);
 
   static IsolatedWebAppInstallSource CreateInstallSource(
-      absl::variant<base::FilePath, url::Origin> source,
+      absl::variant<base::FilePath, const base::ScopedTempFile*, url::Origin>
+          source,
       InstallSurface surface);
 
   // Install an IWA from command line, if the command line specifies the
