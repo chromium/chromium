@@ -483,6 +483,7 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
+    "freezing/freezing_browsertest.cc",
     "performance_manager_browsertest.cc",
     "prerendering_browsertest.cc",
     "render_process_host_proxy_browsertest.cc",
