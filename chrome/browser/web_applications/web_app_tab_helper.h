@@ -34,7 +34,8 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
 
   // Retrieves the WebAppTabHelper's app ID off |web_contents|, returns
   // nullptr if there is no tab helper or app ID.
-  static const webapps::AppId* GetAppId(content::WebContents* web_contents);
+  static const webapps::AppId* GetAppId(
+      const content::WebContents* web_contents);
 
 #if BUILDFLAG(IS_MAC)
   // Like the above method, but also checks if notification attribution should

@@ -29,13 +29,11 @@
 namespace web_app {
 
 const webapps::AppId* WebAppTabHelper::GetAppId(
-    content::WebContents* web_contents) {
+    const content::WebContents* web_contents) {
   auto* tab_helper = WebAppTabHelper::FromWebContents(web_contents);
-  if (!tab_helper) {
-    return nullptr;
-  }
-  return tab_helper->app_id_.has_value() ? &tab_helper->app_id_.value()
-                                         : nullptr;
+  return tab_helper && tab_helper->app_id_.has_value()
+             ? &tab_helper->app_id_.value()
+             : nullptr;
 }
 
 #if BUILDFLAG(IS_MAC)
