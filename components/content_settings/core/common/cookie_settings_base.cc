@@ -576,14 +576,6 @@ CookieSettingsBase::DecideAccess(
         ThirdPartyCookieAllowMechanism::kAllowBy3PCDHeuristics};
   }
 
-  if (IsAllowedByTopLevel3pcdTrialSettings(first_party_url, overrides)) {
-    return AllowAllCookies{
-        ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD};
-  }
-  if (IsAllowedBy3pcdTrialSettings(url, first_party_url, overrides)) {
-    return AllowAllCookies{ThirdPartyCookieAllowMechanism::kAllowBy3PCD};
-  }
-
   // Enterprise Policies:
   if (is_explicit_setting && setting_info.source == SettingSource::kPolicy) {
     return AllowAllCookies{ThirdPartyCookieAllowMechanism::
@@ -601,6 +593,19 @@ CookieSettingsBase::DecideAccess(
   if (is_explicit_setting) {
     return AllowAllCookies{
         ThirdPartyCookieAllowMechanism::kAllowByExplicitSetting};
+  }
+
+  // 3PCD 1P and 3P DTs
+  // New registrations are not supported for the deprecation trials, but the
+  // tokens are still valid until they expire.
+  // TODO(https://crbug.com/364917750): Remove this check once the trials are no
+  // longer relevant.
+  if (IsAllowedByTopLevel3pcdTrialSettings(first_party_url, overrides)) {
+    return AllowAllCookies{
+        ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD};
+  }
+  if (IsAllowedBy3pcdTrialSettings(url, first_party_url, overrides)) {
+    return AllowAllCookies{ThirdPartyCookieAllowMechanism::kAllowBy3PCD};
   }
 
   // Check for a TRACKING_PROTECTION exception, which should also disable 3PCB.

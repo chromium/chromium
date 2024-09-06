@@ -366,7 +366,7 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
 
     histogram_tester.ExpectUniqueSample(
         kThirdPartyCookieAllowMechanismHistogram,
-        ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD, 2);
+        ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSource1pDt, 2);
   }
 
   EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(
@@ -402,7 +402,9 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
 
     histogram_tester.ExpectUniqueSample(
         kThirdPartyCookieAllowMechanismHistogram,
-        ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD, 2);
+        ThirdPartyCookieAllowMechanism::
+            kAllowBy3PCDMetadataSourceCriticalSector,
+        2);
   }
 }
 
