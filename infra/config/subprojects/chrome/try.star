@@ -93,6 +93,16 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    branch_selector = branches.selector.ANDROID_BRANCHES,
+    builder = "android-arm-rel-ready",
+)
+
+chrome_internal_verifier(
+    branch_selector = branches.selector.ANDROID_BRANCHES,
+    builder = "android-x64-rel-ready",
+)
+
+chrome_internal_verifier(
     builder = "chromeos-betty-chrome",
 )
 
@@ -193,6 +203,11 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    branch_selector = branches.selector.IOS_BRANCHES,
+    builder = "ios-rel-ready",
+)
+
+chrome_internal_verifier(
     builder = "ipad-device",
 )
 
@@ -212,7 +227,22 @@ chrome_internal_verifier(
 
 chrome_internal_verifier(
     branch_selector = branches.selector.CROS_BRANCHES,
+    builder = "lacros-arm32-rel-ready",
+)
+
+chrome_internal_verifier(
+    branch_selector = branches.selector.CROS_BRANCHES,
     builder = "lacros-arm64-generic-chrome",
+)
+
+chrome_internal_verifier(
+    branch_selector = branches.selector.CROS_BRANCHES,
+    builder = "lacros-arm64-rel-ready",
+)
+
+chrome_internal_verifier(
+    branch_selector = branches.selector.CROS_BRANCHES,
+    builder = "lacros64-rel-ready",
 )
 
 chrome_internal_verifier(
@@ -250,6 +280,11 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    branch_selector = branches.selector.LINUX_BRANCHES,
+    builder = "linux64-rel-ready",
+)
+
+chrome_internal_verifier(
     branch_selector = branches.selector.MAC_BRANCHES,
     builder = "mac-chrome",
 )
@@ -266,6 +301,11 @@ chrome_internal_verifier(
 chrome_internal_verifier(
     branch_selector = branches.selector.MAC_BRANCHES,
     builder = "mac-pgo",
+)
+
+chrome_internal_verifier(
+    branch_selector = branches.selector.MAC_BRANCHES,
+    builder = "mac-rel-ready",
 )
 
 chrome_internal_verifier(
@@ -293,8 +333,18 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    branch_selector = branches.selector.ANDROID_BRANCHES,
+    builder = "webview-arm64-rel-ready",
+)
+
+chrome_internal_verifier(
     branch_selector = branches.selector.WINDOWS_BRANCHES,
     builder = "win-arm64-pgo",
+)
+
+chrome_internal_verifier(
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
+    builder = "win-arm64-rel-ready",
 )
 
 chrome_internal_verifier(
@@ -304,6 +354,11 @@ chrome_internal_verifier(
 
 chrome_internal_verifier(
     builder = "win-cft",
+)
+
+chrome_internal_verifier(
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
+    builder = "win-rel-ready",
 )
 
 chrome_internal_verifier(
@@ -319,4 +374,9 @@ chrome_internal_verifier(
 chrome_internal_verifier(
     branch_selector = branches.selector.WINDOWS_BRANCHES,
     builder = "win64-pgo",
+)
+
+chrome_internal_verifier(
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
+    builder = "win64-rel-ready",
 )
