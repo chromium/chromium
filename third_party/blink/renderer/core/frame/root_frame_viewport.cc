@@ -802,4 +802,9 @@ void RootFrameViewport::SetTargetedSnapAreaId(
   LayoutViewport().SetTargetedSnapAreaId(id);
 }
 
+void RootFrameViewport::SetSnappedQueryTargetIds(
+    std::optional<cc::TargetSnapAreaElementIds> new_target_ids) {
+  LayoutViewport().SetSnappedQueryTargetIds(new_target_ids);
+}
+
 }  // namespace blink

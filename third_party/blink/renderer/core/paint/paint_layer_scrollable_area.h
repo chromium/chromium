@@ -91,6 +91,10 @@ struct CORE_EXPORT PaintLayerScrollableAreaRareData final
   // The ids of the elements that were reported as the selected snap targets
   // along each axis during the last scrollsnapchange event that fired.
   std::optional<cc::TargetSnapAreaElementIds> scrollsnapchange_target_ids_;
+  // The ids of the elements that should match scroll-state(snapped) container
+  // queries. This is the latest pair of ids set for either snapchange or
+  // snapchanging.
+  std::optional<cc::TargetSnapAreaElementIds> snapped_query_target_ids_;
   // If this is a snap container, this represents the cc::ElementId of the snap
   // area (snapped to by this snap container) that is targeted[1] or contains a
   // targeted[1] element.
@@ -577,6 +581,10 @@ class CORE_EXPORT PaintLayerScrollableArea final
   void SetImplSnapStrategy(
       std::unique_ptr<cc::SnapSelectionStrategy> strategy) override;
   void EnqueueScrollSnapChangingEventFromImplIfNeeded() override;
+
+  // Functions related to scroll-state(snapped) queries.
+  void SetSnappedQueryTargetIds(
+      std::optional<cc::TargetSnapAreaElementIds>) override;
 
   void DisposeImpl() override;
 

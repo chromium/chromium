@@ -147,6 +147,8 @@ class CORE_EXPORT RootFrameViewport final
   void EnqueueScrollSnapChangingEventFromImplIfNeeded() override;
   void UpdateScrollSnapChangingTargetsAndEnqueueScrollSnapChanging(
       const cc::TargetSnapAreaElementIds& new_target_ids) override;
+  void SetSnappedQueryTargetIds(
+      std::optional<cc::TargetSnapAreaElementIds> new_target_ids) override;
 
   void SetPendingHistoryRestoreScrollOffset(
       const HistoryItem::ViewState& view_state,

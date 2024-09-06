@@ -3235,6 +3235,7 @@ void PaintLayerScrollableArea::
            : true);
   if (scrollsnapchange) {
     rare_data.scrollsnapchange_target_ids_ = new_target_ids;
+    rare_data.snapped_query_target_ids_ = new_target_ids;
     EnqueueScrollSnapChangeEvent();
   }
 }
@@ -3265,6 +3266,7 @@ void PaintLayerScrollableArea::
            : true);
   if (scrollsnapchanging) {
     rare_data.scrollsnapchanging_target_ids_ = new_target_ids;
+    rare_data.snapped_query_target_ids_ = new_target_ids;
     EnqueueScrollSnapChangingEvent();
   }
 }
@@ -3327,10 +3329,12 @@ Node* PaintLayerScrollableArea::GetSnapEventTargetAlongAxis(
 
 Element* PaintLayerScrollableArea::GetSnappedQueryTargetAlongAxis(
     cc::SnapAxis axis) const {
-  if (const cc::SnapContainerData* snap_container_data =
-          GetSnapContainerData()) {
-    return DynamicTo<Element>(GetSnapTargetAlongAxis(
-        snap_container_data->GetTargetSnapAreaElementIds(), axis));
+  if (RareData()) {
+    std::optional<cc::TargetSnapAreaElementIds> ids =
+        RareData()->snapped_query_target_ids_;
+    if (ids) {
+      return DynamicTo<Element>(GetSnapTargetAlongAxis(ids.value(), axis));
+    }
   }
   return nullptr;
 }
@@ -3377,6 +3381,11 @@ void PaintLayerScrollableArea::CreateAndSetSnappedQueryScrollSnapshotIfNeeded(
       }
     }
   }
+}
+
+void PaintLayerScrollableArea::SetSnappedQueryTargetIds(
+    std::optional<cc::TargetSnapAreaElementIds> ids) {
+  EnsureRareData().snapped_query_target_ids_ = ids;
 }
 
 }  // namespace blink
