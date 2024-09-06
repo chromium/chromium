@@ -1,15 +1,14 @@
 <style>
   #arrowRightIcon {
-    background-color: rgba(255, 237, 235, 0.6);
+    background-color: var(--color-surface-container-highest-dark);
     display: block;
-    height: 18px;
-    margin-block-start: 16px;
-    margin-block-end: 16px;
-    mask-image: url('arrow_right.svg');
+    height: 16px;
+    margin-block: auto;
+    mask-image: url('bidirectional_arrow.svg');
     mask-position: center;
     mask-repeat: no-repeat;
     mask-size: 100%;
-    width: 18px;
+    width: 20px;
   }
 
   .button {
@@ -18,7 +17,7 @@
   }
 
   .button-label {
-    color: var(--color-overlay-button-label);
+    color: var(--color-scrim);
     font-family: inherit;
     font-size: 13px;
     font-style: normal;
@@ -41,12 +40,12 @@
   }
 
   .language-picker-button {
-    background-color: rgba(var(--color-scrim-rgb), 1);
+    background-color: var(--color-selection-element);
     border-radius: 100px;
-    height: 34px;
+    height: 38px;
     gap: 0px;
-    margin-block-start: 8px;
-    margin-block-end: 8px;
+    margin-block-start: 5px;
+    margin-block-end: 5px;
     min-width: 77px;
   }
 
@@ -121,12 +120,10 @@
   }
 
   #languagePicker {
-    background-color: rgba(var(--color-scrim-rgb), 0.6);
     border-radius: 100px;
     display: flex;
-    gap: 4px;
-    height: 50px;
-    margin-inline-start: 9px;
+    gap: 6px;
+    height: 48px;
     pointer-events: all;
     position: relative;
   }
@@ -147,7 +144,7 @@
 
   #sourceLanguageButton {
     gap: 6px;
-    margin-inline-start: 8px;
+    margin-inline-start: 5px;
   }
 
   :host(:not([should-show-stars-icon])) #sourceLanguageButton {
@@ -159,7 +156,7 @@
   }
 
   #starsIcon {
-    background-color: var(--color-overlay-icon);
+    background-color: var(--color-scrim);
     display: block;
     height: 16px;
     margin-block-start: 9px;
@@ -173,7 +170,7 @@
   }
 
   #targetLanguageButton {
-    margin-inline-end: 8px;
+    margin-inline-end: 6px;
   }
 
   #targetLanguageLabel {
@@ -181,38 +178,49 @@
   }
 
   #translateButton {
-    background-color: rgba(var(--color-scrim-rgb), 0.6);
-    border-radius: 48px;
-    height: 50px;
+    background-color: var(--color-selection-element);
+    height: 48px;
     min-width: 50px;
     pointer-events: all;
-    width: 117px;
+    width: 164px;
   }
 
   :host([is-translate-mode-enabled]) #translateButton {
-    background-color: var(--color-primary);
+    background-color: var(--color-surface-container-highest-dark);
     gap: 0px;
-    width: 50px;
+    height: 38px;
+    margin-block-start: 5px;
+    margin-block-end: 5px;
+    margin-inline-end: 5px;
+    min-width: 38px;
+    width: 38px;
   }
 
   #translateButtonLabel {
+    color: var(--color-scrim);
     line-height: 50px;
   }
 
   #translateContainer {
+    background-color: white;
+    border-radius: 36px;
     display: flex;
     flex-direction: row;
   }
 
   #translateIcon {
-    background-color: var(--color-overlay-icon);
+    background-color: var(--color-primary);
     display: block;
-    height: 24px;
+    height: 20px;
     mask-image: url('translate.svg');
     mask-position: center;
     mask-repeat: no-repeat;
     mask-size: 100%;
-    width: 24px;
+    width: 20px;
+  }
+
+  :host([is-translate-mode-enabled]) #translateIcon {
+    background-color: var(--color-overlay-icon);
   }
 
   :host([is-translate-mode-enabled]) #translateButtonLabel,
@@ -228,11 +236,6 @@
   }
 </style>
 <div id="translateContainer">
-  <cr-button id="translateButton" class="button"
-      on-click="onTranslateButtonClick">
-    <span id="translateIcon" slot="prefix-icon"></span>
-    <span id="translateButtonLabel" class="button-label">$i18n{translate}</span>
-  </cr-button>
   <div id="languagePicker">
     <cr-button id="sourceLanguageButton" class="button language-picker-button"
         on-click="onSourceLanguageButtonClick">
@@ -315,4 +318,11 @@
       </div>
     </div>
   </div>
+  <cr-button id="translateButton" class="button"
+  on-click="onTranslateButtonClick">
+    <span id="translateIcon" slot="prefix-icon"></span>
+    <span id="translateButtonLabel" class="button-label">
+      $i18n{translateButtonLabel}
+    </span>
+  </cr-button>
 </div>

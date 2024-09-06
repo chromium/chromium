@@ -73,6 +73,8 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
       "cursorTooltipLivePageMessage",
       IDS_LENS_OVERLAY_CURSOR_TOOLTIP_LIVE_PAGE_MESSAGE);
   html_source->AddLocalizedString("translate", IDS_LENS_OVERLAY_TRANSLATE);
+  html_source->AddLocalizedString("translateButtonLabel",
+                                  IDS_LENS_OVERLAY_TRANSLATE_BUTTON_LABEL);
   html_source->AddLocalizedString("selectText", IDS_LENS_OVERLAY_SELECT_TEXT);
   html_source->AddLocalizedString(
       "networkErrorPageTopLine",
