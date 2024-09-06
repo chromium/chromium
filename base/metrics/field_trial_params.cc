@@ -14,11 +14,11 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/features.h"
+#include "base/logging.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
-#include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -37,13 +37,13 @@ bool IsCacheEnabled() {
 
 }  // namespace
 
-namespace field_trial_params_internal {
+namespace internal {
 
 bool IsFeatureParamWithCacheEnabled() {
   return IsCacheEnabled();
 }
 
-}  // namespace field_trial_params_internal
+}  // namespace internal
 
 void LogInvalidValue(const Feature& feature,
                      const char* type,
@@ -145,8 +145,9 @@ bool GetFieldTrialParams(const std::string& trial_name,
 
 bool GetFieldTrialParamsByFeature(const Feature& feature,
                                   FieldTrialParams* params) {
-  if (!FeatureList::IsEnabled(feature))
+  if (!FeatureList::IsEnabled(feature)) {
     return false;
+  }
 
   FieldTrial* trial = FeatureList::GetFieldTrial(feature);
   return FieldTrialParamAssociator::GetInstance()->GetFieldTrialParams(trial,
@@ -158,8 +159,9 @@ std::string GetFieldTrialParamValue(const std::string& trial_name,
   FieldTrialParams params;
   if (GetFieldTrialParams(trial_name, &params)) {
     auto it = params.find(param_name);
-    if (it != params.end())
+    if (it != params.end()) {
       return it->second;
+    }
   }
   return std::string();
 }
@@ -169,8 +171,9 @@ std::string GetFieldTrialParamValueByFeature(const Feature& feature,
   FieldTrialParams params;
   if (GetFieldTrialParamsByFeature(feature, &params)) {
     auto it = params.find(param_name);
-    if (it != params.end())
+    if (it != params.end()) {
       return it->second;
+    }
   }
   return std::string();
 }
@@ -227,10 +230,12 @@ bool GetFieldTrialParamByFeatureAsBool(const Feature& feature,
                                        bool default_value) {
   std::string value_as_string =
       GetFieldTrialParamValueByFeature(feature, param_name);
-  if (value_as_string == "true")
+  if (value_as_string == "true") {
     return true;
-  if (value_as_string == "false")
+  }
+  if (value_as_string == "false") {
     return false;
+  }
 
   if (!value_as_string.empty()) {
     LogInvalidValue(feature, "a bool", param_name, value_as_string,
@@ -246,8 +251,9 @@ base::TimeDelta GetFieldTrialParamByFeatureAsTimeDelta(
   std::string value_as_string =
       GetFieldTrialParamValueByFeature(feature, param_name);
 
-  if (value_as_string.empty())
+  if (value_as_string.empty()) {
     return default_value;
+  }
 
   std::optional<base::TimeDelta> ret = TimeDeltaFromString(value_as_string);
   if (!ret.has_value()) {
@@ -259,69 +265,33 @@ base::TimeDelta GetFieldTrialParamByFeatureAsTimeDelta(
   return ret.value();
 }
 
-std::string FeatureParam<std::string>::Get() const {
-  if (IsCacheEnabled() && cache_getter) {
-    return cache_getter(this);
-  }
-  return GetWithoutCache();
+template <>
+bool FeatureParam<bool>::GetWithoutCache() const {
+  return GetFieldTrialParamByFeatureAsBool(*feature, name, default_value);
 }
 
-std::string FeatureParam<std::string>::GetWithoutCache() const {
-  return GetFieldTrialParamByFeatureAsString(*feature, name, default_value);
-}
-
-double FeatureParam<double>::Get() const {
-  if (IsCacheEnabled() && cache_getter) {
-    return cache_getter(this);
-  }
-  return GetWithoutCache();
-}
-
-double FeatureParam<double>::GetWithoutCache() const {
-  return GetFieldTrialParamByFeatureAsDouble(*feature, name, default_value);
-}
-
-int FeatureParam<int>::Get() const {
-  if (IsCacheEnabled() && cache_getter) {
-    return cache_getter(this);
-  }
-  return GetWithoutCache();
-}
-
+template <>
 int FeatureParam<int>::GetWithoutCache() const {
   return GetFieldTrialParamByFeatureAsInt(*feature, name, default_value);
 }
 
-size_t FeatureParam<size_t>::Get() const {
-  if (IsCacheEnabled() && cache_getter) {
-    return cache_getter(this);
-  }
-  return GetWithoutCache();
-}
-
+template <>
 size_t FeatureParam<size_t>::GetWithoutCache() const {
   return checked_cast<size_t>(GetFieldTrialParamByFeatureAsInt(
       *feature, name, checked_cast<int>(default_value)));
 }
 
-bool FeatureParam<bool>::Get() const {
-  if (IsCacheEnabled() && cache_getter) {
-    return cache_getter(this);
-  }
-  return GetWithoutCache();
+template <>
+double FeatureParam<double>::GetWithoutCache() const {
+  return GetFieldTrialParamByFeatureAsDouble(*feature, name, default_value);
 }
 
-bool FeatureParam<bool>::GetWithoutCache() const {
-  return GetFieldTrialParamByFeatureAsBool(*feature, name, default_value);
+template <>
+std::string FeatureParam<std::string>::GetWithoutCache() const {
+  return GetFieldTrialParamByFeatureAsString(*feature, name, default_value);
 }
 
-base::TimeDelta FeatureParam<base::TimeDelta>::Get() const {
-  if (IsCacheEnabled() && cache_getter) {
-    return cache_getter(this);
-  }
-  return GetWithoutCache();
-}
-
+template <>
 base::TimeDelta FeatureParam<base::TimeDelta>::GetWithoutCache() const {
   return GetFieldTrialParamByFeatureAsTimeDelta(*feature, name, default_value);
 }
