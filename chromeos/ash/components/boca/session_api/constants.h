@@ -24,6 +24,8 @@ inline constexpr char kSchoolToolsAuthScope[] =
 inline constexpr char kGetSessionUrlTemplate[] =
     "v1/users/$1/sessions:getActive";
 
+inline constexpr char kUploadFCMTokenTemplate[] = "v1/users/$1";
+
 inline constexpr char kSessionId[] = "sessionId";
 inline constexpr char kTeacher[] = "teacher";
 inline constexpr char kRoster[] = "roster";
