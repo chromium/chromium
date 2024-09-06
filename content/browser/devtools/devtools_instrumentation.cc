@@ -95,7 +95,7 @@ void DispatchToAgents(FrameTreeNode* frame_tree_node,
 }
 
 template <typename Handler, typename... MethodArgs, typename... Args>
-void DispatchToAgents(int frame_tree_node_id,
+void DispatchToAgents(FrameTreeNodeId frame_tree_node_id,
                       void (Handler::*method)(MethodArgs...),
                       Args&&... args) {
   FrameTreeNode* ftn = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
@@ -754,7 +754,7 @@ void DidUpdatePrefetchStatus(
 }
 
 void DidUpdatePrerenderStatus(
-    int initiator_frame_tree_node_id,
+    FrameTreeNodeId initiator_frame_tree_node_id,
     const base::UnguessableToken& initiator_devtools_navigation_token,
     const GURL& prerender_url,
     std::optional<blink::mojom::SpeculationTargetHint> target_hint,
@@ -1504,7 +1504,7 @@ void OnPrefetchBodyDataReceived(FrameTreeNode* frame_tree_node,
 }
 
 void OnAuctionWorkletNetworkRequestWillBeSent(
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     const network::ResourceRequest& request,
     base::TimeTicks timestamp) {
   if (request.devtools_request_id->empty()) {
@@ -1520,7 +1520,7 @@ void OnAuctionWorkletNetworkRequestWillBeSent(
   }
   // if we cannot get the loader_id from the parent, use an empty string.
   std::string loader_id = "";
-  if (frame_tree_node_id != FrameTreeNode::kFrameTreeNodeInvalidId) {
+  if (frame_tree_node_id) {
     FrameTreeNode* ftn = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
 
     if (ftn == nullptr) {
@@ -1544,7 +1544,7 @@ void OnAuctionWorkletNetworkRequestWillBeSent(
 }
 
 void OnAuctionWorkletNetworkResponseReceived(
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     const std::string& request_id,
     const std::string& loader_id,
     const GURL& request_url,
@@ -1559,7 +1559,7 @@ void OnAuctionWorkletNetworkResponseReceived(
 }
 
 void OnAuctionWorkletNetworkRequestComplete(
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     const std::string& request_id,
     const network::URLLoaderCompletionStatus& status) {
   DispatchToAgents(frame_tree_node_id,
@@ -1568,7 +1568,7 @@ void OnAuctionWorkletNetworkRequestComplete(
                    status);
 }
 
-bool NeedInterestGroupAuctionEvents(int frame_tree_node_id) {
+bool NeedInterestGroupAuctionEvents(FrameTreeNodeId frame_tree_node_id) {
   FrameTreeNode* ftn = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
   if (!ftn) {
     return false;
@@ -1586,7 +1586,7 @@ bool NeedInterestGroupAuctionEvents(int frame_tree_node_id) {
 }
 
 void OnInterestGroupAuctionEventOccurred(
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     base::Time event_time,
     InterestGroupAuctionEventType type,
     const std::string& unique_auction_id,
@@ -1599,7 +1599,7 @@ void OnInterestGroupAuctionEventOccurred(
 }
 
 void OnInterestGroupAuctionNetworkRequestCreated(
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     content::InterestGroupAuctionFetchType type,
     const std::string& request_id,
     const std::vector<std::string>& devtools_auction_ids) {
@@ -2396,10 +2396,11 @@ void DidCloseFedCmDialog(RenderFrameHost& render_frame_host) {
   DispatchToAgents(ftn, &protocol::FedCmHandler::DidCloseDialog);
 }
 
-void OnFencedFrameReportRequestSent(int initiator_frame_tree_node_id,
-                                    const std::string& devtools_request_id,
-                                    network::ResourceRequest& request,
-                                    const std::string& event_data) {
+void OnFencedFrameReportRequestSent(
+    FrameTreeNodeId initiator_frame_tree_node_id,
+    const std::string& devtools_request_id,
+    network::ResourceRequest& request,
+    const std::string& event_data) {
   DispatchToAgents(initiator_frame_tree_node_id,
                    &protocol::NetworkHandler::FencedFrameReportRequestSent,
                    /*request_id=*/devtools_request_id, request, event_data,
@@ -2407,7 +2408,7 @@ void OnFencedFrameReportRequestSent(int initiator_frame_tree_node_id,
 }
 
 void OnFencedFrameReportResponseReceived(
-    int initiator_frame_tree_node_id,
+    FrameTreeNodeId initiator_frame_tree_node_id,
     const std::string& devtools_request_id,
     const GURL& final_url,
     scoped_refptr<net::HttpResponseHeaders> headers) {

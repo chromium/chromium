@@ -1489,8 +1489,8 @@ void StorageHandler::ResetSharedStorageBudget(
 
 namespace {
 
-std::string GetFrameTokenFromFrameTreeNodeId(int frame_id) {
-  if (frame_id == FrameTreeNode::kFrameTreeNodeInvalidId) {
+std::string GetFrameTokenFromFrameTreeNodeId(FrameTreeNodeId frame_id) {
+  if (frame_id.is_null()) {
     return std::string();
   }
   auto* frame_tree_node = FrameTreeNode::GloballyFindByID(frame_id);
@@ -1506,7 +1506,7 @@ void StorageHandler::NotifySharedStorageAccessed(
     const base::Time& access_time,
     SharedStorageWorkletHostManager::SharedStorageObserverInterface::AccessType
         type,
-    int main_frame_id,
+    FrameTreeNodeId main_frame_id,
     const std::string& owner_origin,
     const SharedStorageEventParams& params) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
