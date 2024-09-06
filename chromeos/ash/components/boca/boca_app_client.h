@@ -28,6 +28,8 @@ class BocaAppClient : public signin::IdentityManager::Observer {
 
   static BocaAppClient* Get();
 
+  static bool HasInstance();
+
   // Returns the IdentityManager for the active user profile.
   virtual signin::IdentityManager* GetIdentityManager() = 0;
 

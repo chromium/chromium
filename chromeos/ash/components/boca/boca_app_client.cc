@@ -21,6 +21,10 @@ BocaAppClient* BocaAppClient::Get() {
   return g_instance;
 }
 
+bool BocaAppClient::HasInstance() {
+  return g_instance;
+}
+
 BocaAppClient::BocaAppClient() {
   CHECK_EQ(g_instance, nullptr);
   g_instance = this;

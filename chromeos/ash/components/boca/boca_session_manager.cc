@@ -62,7 +62,9 @@ BocaSessionManager::BocaSessionManager(SessionClientImpl* session_client_impl,
       cros_network_config_observer_.BindNewPipeAndPassRemote());
   StartSessionPolling();
   // Register BocaSessionManager for the current profile.
-  BocaAppClient::Get()->AddSessionManager(this);
+  if (BocaAppClient::HasInstance()) {
+    BocaAppClient::Get()->AddSessionManager(this);
+  }
 }
 BocaSessionManager::~BocaSessionManager() {}
 
@@ -215,6 +217,11 @@ void BocaSessionManager::NotifyLocalCaptionEvents(
   for (auto& observer : observers_) {
     observer.OnLocalCaptionConfigUpdated(std::move(caption_config));
   }
+}
+
+base::ObserverList<BocaSessionManager::Observer>&
+BocaSessionManager::GetObserversForTesting() {
+  return observers_;
 }
 
 }  // namespace ash::boca

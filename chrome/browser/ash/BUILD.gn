@@ -1696,6 +1696,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/attestation:unit_tests",
     "//chrome/browser/ash/audio:unit_tests",
     "//chrome/browser/ash/bluetooth:unit_tests",
+    "//chrome/browser/ash/boca:unit_tests",
     "//chrome/browser/ash/boca/on_task:unit_tests",
     "//chrome/browser/ash/borealis:unit_tests",
     "//chrome/browser/ash/bruschetta:unit_tests",

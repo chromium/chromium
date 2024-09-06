@@ -116,6 +116,8 @@ class BocaSessionManager
   // Local events.
   virtual void NotifyLocalCaptionEvents(::boca::CaptionsConfig caption_config);
 
+  base::ObserverList<Observer>& GetObserversForTesting();
+
  private:
   bool IsProfileActive();
   void NotifySessionUpdate();
