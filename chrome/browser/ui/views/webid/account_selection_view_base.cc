@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/webid/account_selection_view_base.h"
 
 #include "base/functional/callback_forward.h"
+#include "base/i18n/message_formatter.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
@@ -50,6 +51,36 @@ int SelectDisclosureTextResourceId(const GURL& privacy_policy_url,
   return terms_of_service_url.is_empty()
              ? IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT_NO_TOS
              : IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT;
+}
+
+std::u16string GetPermissionFieldsString(
+    const std::vector<content::IdentityRequestDialogDisclosureField>& fields) {
+  std::vector<std::string> strings;
+  for (auto field : fields) {
+    switch (field) {
+      case content::IdentityRequestDialogDisclosureField::kName:
+        strings.push_back(
+            l10n_util::GetStringUTF8(IDS_ACCOUNT_SELECTION_DATA_SHARING_NAME));
+        break;
+      case content::IdentityRequestDialogDisclosureField::kEmail:
+        strings.push_back(
+            l10n_util::GetStringUTF8(IDS_ACCOUNT_SELECTION_DATA_SHARING_EMAIL));
+        break;
+      case content::IdentityRequestDialogDisclosureField::kPicture:
+        strings.push_back(l10n_util::GetStringUTF8(
+            IDS_ACCOUNT_SELECTION_DATA_SHARING_PICTURE));
+        break;
+    }
+  }
+  // Make sure we have at least 3 strings in the vector for the function call.
+  int num_strings = strings.size();
+  if (strings.size() < 3) {
+    strings.resize(3);
+  }
+  return base::i18n::MessageFormatter::FormatWithNamedArgs(
+      l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_DATA_SHARING_STRING),
+      "count", num_strings, "field_1", strings[0], "field_2", strings[1],
+      "field_3", strings[2]);
 }
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
@@ -628,7 +659,8 @@ AccountSelectionViewBase::CreateDisclosureLabel(
 
   // Each link has both <ph name="BEGIN_LINK"> and <ph name="END_LINK">.
   std::vector<std::u16string> replacements = {
-      base::UTF8ToUTF16(idp_display_data.idp_for_display)};
+      base::UTF8ToUTF16(idp_display_data.idp_for_display),
+      GetPermissionFieldsString(idp_display_data.disclosure_fields)};
   replacements.insert(replacements.end(), link_data.size() * 2,
                       std::u16string());
 
@@ -637,7 +669,7 @@ AccountSelectionViewBase::CreateDisclosureLabel(
       disclosure_resource_id, replacements, &offsets);
   disclosure_label->SetText(disclosure_text);
 
-  size_t offset_index = 1u;
+  size_t offset_index = 2u;
   for (const std::pair<LinkType, GURL>& link_data_item : link_data) {
     disclosure_label->AddStyleRange(
         gfx::Range(offsets[offset_index], offsets[offset_index + 1]),

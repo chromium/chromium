@@ -17609,17 +17609,32 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_ACCOUNT_SELECTION_CHOOSE_AN_ACCOUNT_BUTTON" desc="Title of the button that lets the user look at all account options. Used when we want to highlight a single returning account in the UI.">
       Choose an account
     </message>
+    <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_NAME" desc="A user's name, to be used in a list of items shared with a website">
+      name
+    </message>
+    <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_EMAIL" desc="A user's email address, to be used in a list of items shared with a website">
+      email address
+    </message>
+    <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_PICTURE" desc="A user's profile picture, to be used in a list of items shared with a website">
+      profile picture
+    </message>
+    <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_STRING" desc="A list of a number of items (that will be shared with a website), for example 'name and email address'.">
+      {count, plural,
+        =1 {{field_1}}
+        =2 {{field_1} and {field_2}}
+        other {{field_1}, {field_2}, and {field_3}}}
+    </message>
     <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT_NO_PP_OR_TOS" desc="The consent text shown to the user before sign up when there is no privacy policy or terms of service.">
-      To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.com</ex></ph> will share your name, email address, and profile picture with this site.
+      To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.com</ex></ph> will share your <ph name="FIELDS_STRING">$2<ex>name and email address</ex></ph> with this site.
     </message>
     <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT_NO_PP" desc="The consent text shown to the user before sign up when there is no privacy policy.">
-      To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.com</ex></ph> will share your name, email address, and profile picture with this site. See this site's <ph name="BEGIN_LINK">$2</ph>terms of service<ph name="END_LINK">$3</ph>.
+      To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.com</ex></ph> will share your <ph name="FIELDS_STRING">$2<ex>name and email address</ex></ph> with this site. See this site's <ph name="BEGIN_LINK">$3</ph>terms of service<ph name="END_LINK">$4</ph>.
     </message>
     <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT_NO_TOS" desc="The consent text shown to the user before sign up when there is no terms of service.">
-      To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.com</ex></ph> will share your name, email address, and profile picture with this site. See this site's <ph name="BEGIN_LINK">$2</ph>privacy policy<ph name="END_LINK">$3</ph>.
+      To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.com</ex></ph> will share your <ph name="FIELDS_STRING">$2<ex>name and email address</ex></ph> with this site. See this site's <ph name="BEGIN_LINK">$3</ph>privacy policy<ph name="END_LINK">$4</ph>.
     </message>
     <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT" desc="The consent text shown to the user before sign up.">
-      To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.com</ex></ph> will share your name, email address, and profile picture with this site. See this site's <ph name="BEGIN_LINK1">$2</ph>privacy policy<ph name="END_LINK1">$3</ph> and <ph name="BEGIN_LINK2">$4</ph>terms of service<ph name="END_LINK2">$5</ph>.
+      To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.com</ex></ph> will share your <ph name="FIELDS_STRING">$2<ex>name and email address</ex></ph> with this site. See this site's <ph name="BEGIN_LINK1">$3</ph>privacy policy<ph name="END_LINK1">$4</ph> and <ph name="BEGIN_LINK2">$5</ph>terms of service<ph name="END_LINK2">$6</ph>.
     </message>
     <message name="IDS_ACCOUNT_SELECTION_USE_OTHER_ACCOUNT" desc="Title of the button that lets the user log in to a different account.">
       Use a different account

@@ -501,6 +501,44 @@ TEST_F(AccountSelectionBubbleViewTest, SingleAccountNoTermsOfService) {
                       /*expect_privacy_policy=*/true);
 }
 
+TEST_F(AccountSelectionBubbleViewTest, SingleAccountOnlyTwoDisclosureFields) {
+  const std::string kAccountSuffix = "suffix";
+  content::IdentityRequestAccount account =
+      CreateTestIdentityRequestAccount(kAccountSuffix, LoginState::kSignUp);
+  std::vector<content::IdentityRequestDialogDisclosureField> fields = {
+      content::IdentityRequestDialogDisclosureField::kName,
+      content::IdentityRequestDialogDisclosureField::kEmail};
+  CreateAndShowSingleAccountPicker(
+      /*show_back_button=*/false, account, content::IdentityProviderMetadata(),
+      /*terms_of_service_url=*/"", fields);
+
+  std::vector<raw_ptr<views::View, VectorExperimental>> children =
+      dialog()->children();
+  ASSERT_EQ(children.size(), 3u);
+  PerformHeaderChecks(children[0], kTitleSignIn,
+                      /*expect_idp_brand_icon_in_header=*/true);
+  EXPECT_TRUE(IsViewClass<views::Separator>(children[1]));
+
+  views::View* single_account_chooser = children[2];
+  ASSERT_EQ(single_account_chooser->children().size(), 3u);
+
+  // Check the "Continue as" button.
+  views::MdTextButton* button =
+      static_cast<views::MdTextButton*>(single_account_chooser->children()[1]);
+  ASSERT_TRUE(button);
+  EXPECT_EQ(button->GetText(),
+            base::UTF8ToUTF16("Continue as " + std::string(kGivenNameBase) +
+                              kAccountSuffix));
+
+  constexpr char16_t kExpectedText[] =
+      u"To continue, idp-example.com will share your name and email address "
+      u"with this site. See this site's privacy policy.";
+
+  views::StyledLabel* disclosure_label =
+      static_cast<views::StyledLabel*>(single_account_chooser->children()[2]);
+  EXPECT_EQ(disclosure_label->GetText(), kExpectedText);
+}
+
 TEST_F(AccountSelectionBubbleViewTest, MultipleAccounts) {
   TestMultipleAccounts(kTitleSignIn,
                        /*expect_idp_brand_icon_in_header=*/true);
