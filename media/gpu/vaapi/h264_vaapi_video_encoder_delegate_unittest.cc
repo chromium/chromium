@@ -131,7 +131,8 @@ MATCHER_P5(MatchRtcConfigWithRates,
     }
     base::CheckedNumeric<size_t> buffer_size(layer_setting.avg_bitrate);
     buffer_size *= buffer_delay.InMilliseconds();
-    buffer_size /= base::Time::kMillisecondsPerSecond / 8;
+    buffer_size /= base::Seconds(8).InMilliseconds();
+
     if (layer_setting.hrd_buffer_size != buffer_size.ValueOrDie()) {
       return false;
     }

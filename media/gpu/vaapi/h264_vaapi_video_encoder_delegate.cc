@@ -243,7 +243,8 @@ std::optional<H264RateControlConfigRTC> CreateRateControlConfig(
 
     base::CheckedNumeric<size_t> buffer_size(layer_setting.avg_bitrate);
     buffer_size *= buffer_delay.InMilliseconds();
-    buffer_size /= base::Time::kMillisecondsPerSecond / 8;
+    buffer_size /= base::Seconds(8).InMilliseconds();
+
     if (!buffer_size.AssignIfValid(&layer_setting.hrd_buffer_size)) {
       DVLOGF(1) << "Invalid size for HRD buffer";
       return std::nullopt;
