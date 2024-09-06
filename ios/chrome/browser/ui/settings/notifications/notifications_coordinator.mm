@@ -9,7 +9,11 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/check_op.h"
+#import "base/feature_list.h"
+#import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/send_tab_to_self/features.h"
+#import "components/sync_device_info/device_info_sync_service.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -19,6 +23,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_alert_coordinator.h"
 #import "ios/chrome/browser/ui/settings/notifications/content_notifications/content_notifications_coordinator.h"
@@ -81,12 +86,17 @@
       authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   const std::string& gaiaID = base::SysNSStringToUTF8(identity.gaiaID);
   PrefService* prefService = self.browser->GetBrowserState()->GetPrefs();
+  syncer::DeviceInfoSyncService* deviceInfoSyncService =
+      DeviceInfoSyncServiceFactory::GetForBrowserState(
+          self.browser->GetProfile());
   _notificationsObserver = [[NotificationsSettingsObserver alloc]
       initWithPrefService:prefService
                localState:GetApplicationContext()->GetLocalState()];
 
-  self.mediator = [[NotificationsMediator alloc] initWithPrefService:prefService
-                                                              gaiaID:gaiaID];
+  self.mediator =
+      [[NotificationsMediator alloc] initWithPrefService:prefService
+                                                  gaiaID:gaiaID
+                                   deviceInfoSyncService:deviceInfoSyncService];
   self.mediator.handler = self;
   self.mediator.presenter = self;
   _notificationsObserver.delegate = self.mediator;
@@ -127,7 +137,10 @@
 
 - (void)presentPushNotificationPermissionAlertWithClientIds:
     (std::vector<PushNotificationClientId>)clientIds {
-  CHECK(IsIOSTipsNotificationsEnabled() || IsSafetyCheckNotificationsEnabled());
+  CHECK(IsIOSTipsNotificationsEnabled() ||
+        IsSafetyCheckNotificationsEnabled() ||
+        base::FeatureList::IsEnabled(
+            send_tab_to_self::kSendTabToSelfIOSPushNotifications));
 
   // Presents a push notification permission alert for the specified client in
   // `clientIds`. **For now, only ONE client ID should be provided in

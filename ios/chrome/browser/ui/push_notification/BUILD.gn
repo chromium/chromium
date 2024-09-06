@@ -17,6 +17,7 @@ source_set("opt_in_alert_coordinator") {
   ]
   deps = [
     ":metrics",
+    "//components/sync_device_info",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/push_notification/model:push_notification_client_id",
     "//ios/chrome/browser/push_notification/model:push_notification_service",
@@ -27,6 +28,7 @@ source_set("opt_in_alert_coordinator") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
     "//ui/base",
   ]
 }

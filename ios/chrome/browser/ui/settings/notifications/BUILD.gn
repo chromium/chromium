@@ -16,6 +16,7 @@ source_set("notifications") {
     "//base",
     "//components/prefs",
     "//components/send_tab_to_self",
+    "//components/sync_device_info",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_notification/model:util",
     "//ios/chrome/browser/push_notification/model:browser_state_service",
@@ -36,6 +37,7 @@ source_set("notifications") {
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui_util",
     "//ios/chrome/browser/ui/push_notification:notifications_opt_in_ui",
     "//ios/chrome/browser/ui/push_notification:opt_in_alert_coordinator",
@@ -58,6 +60,7 @@ source_set("notifications_ui") {
   ]
   deps = [
     ":constants",
+    "//components/send_tab_to_self",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/commerce/model/push_notification",
     "//ios/chrome/browser/shared/public/features",

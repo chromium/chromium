@@ -12,6 +12,10 @@
 #import "ios/chrome/browser/ui/settings/notifications/notifications_settings_observer.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_view_controller_delegate.h"
 
+namespace syncer {
+class DeviceInfoSyncService;
+}  // namespace syncer
+
 class PrefService;
 enum class PushNotificationClientId;
 @protocol NotificationsAlertPresenter;
@@ -27,6 +31,8 @@ enum class PushNotificationClientId;
 // manipulate their push notification permissions.
 - (instancetype)initWithPrefService:(PrefService*)prefs
                              gaiaID:(const std::string&)gaiaID
+              deviceInfoSyncService:
+                  (syncer::DeviceInfoSyncService*)deviceInfoSyncService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

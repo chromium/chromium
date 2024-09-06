@@ -5,9 +5,12 @@
 #import "ios/chrome/browser/ui/settings/notifications/notifications_mediator.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/feature_list.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
+#import "components/send_tab_to_self/features.h"
+#import "components/sync_device_info/device_info_sync_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_account_context_manager.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_profile_service.h"
@@ -48,6 +51,9 @@
 // Item for the Tips Notifications footer.
 @property(nonatomic, strong)
     TableViewLinkHeaderFooterItem* tipsNotificationsFooterItem;
+// Items for the Send Tab settings.
+@property(nonatomic, strong, readonly)
+    TableViewSwitchItem* sendTabNotificationsItem;
 // Pref Service object.
 @property(nonatomic, assign) PrefService* prefService;
 
@@ -56,20 +62,26 @@
 @implementation NotificationsMediator {
   // Identity object that contains the user's account details.
   std::string _gaiaID;
+  // Used to refresh Send Tab notifications enabled status in DeviceInfo.
+  syncer::DeviceInfoSyncService* _deviceInfoSyncService;
 }
 
 @synthesize priceTrackingItem = _priceTrackingItem;
 @synthesize contentNotificationsItem = _contentNotificationsItem;
 @synthesize tipsNotificationsItem = _tipsNotificationsItem;
 @synthesize safetyCheckItem = _safetyCheckItem;
+@synthesize sendTabNotificationsItem = _sendTabNotificationsItem;
 
 - (instancetype)initWithPrefService:(PrefService*)prefs
-                             gaiaID:(const std::string&)gaiaID {
+                             gaiaID:(const std::string&)gaiaID
+              deviceInfoSyncService:
+                  (syncer::DeviceInfoSyncService*)deviceInfoSyncService {
   self = [super init];
   if (self) {
     DCHECK(prefs);
     _prefService = prefs;
     _gaiaID = gaiaID;
+    _deviceInfoSyncService = deviceInfoSyncService;
   }
 
   return self;
@@ -187,6 +199,29 @@
   return _tipsNotificationsFooterItem;
 }
 
+- (TableViewSwitchItem*)sendTabNotificationsItem {
+  if (!_sendTabNotificationsItem) {
+    _sendTabNotificationsItem = [self
+             switchItemWithType:NotificationsItemIdentifier::
+                                    ItemIdentifierSendTab
+                           text:
+                               l10n_util::GetNSString(
+                                   IDS_IOS_SEND_TAB_TO_SELF_NOTIFICATION_SETTINGS_TITLE)
+                     detailText:
+                         l10n_util::GetNSString(
+                             IDS_IOS_SEND_TAB_TO_SELF_NOTIFICATION_SETTINGS_BODY)
+                         symbol:nil
+                     symbolTint:nil
+          symbolBackgroundColor:nil
+              symbolBorderWidth:1
+        accessibilityIdentifier:kSettingsNotificationsContentCellId];
+    _sendTabNotificationsItem.on = push_notification_settings::
+        GetMobileNotificationPermissionStatusForClient(
+            PushNotificationClientId::kSendTab, _gaiaID);
+  }
+  return _sendTabNotificationsItem;
+}
+
 - (void)setConsumer:(id<NotificationsConsumer>)consumer {
   if (_consumer == consumer) {
     return;
@@ -200,6 +235,10 @@
   }
   if (IsSafetyCheckNotificationsEnabled()) {
     [_consumer setSafetyCheckItem:self.safetyCheckItem];
+  }
+  if (base::FeatureList::IsEnabled(
+          send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
+    [_consumer setSendTabNotificationsItem:self.sendTabNotificationsItem];
   }
 }
 
@@ -321,6 +360,20 @@
       }
       break;
     }
+    case ItemIdentifierSendTab: {
+      if (value) {
+        [self.presenter presentPushNotificationPermissionAlertWithClientIds:
+                            std::vector{PushNotificationClientId::kSendTab}];
+      } else {
+        [self disablePreferenceFor:PushNotificationClientId::kSendTab];
+        self.sendTabNotificationsItem.on = push_notification_settings::
+            GetMobileNotificationPermissionStatusForClient(
+                PushNotificationClientId::kSendTab, _gaiaID);
+        // Refresh enabled status in DeviceInfo.
+        _deviceInfoSyncService->RefreshLocalDeviceInfo();
+      }
+      break;
+    }
     default:
       // Not a switch.
       NOTREACHED_IN_MIGRATION();
@@ -340,6 +393,7 @@
       break;
     case ItemIdentifierTips:
     case ItemIdentifierSafetyCheck:
+    case ItemIdentifierSendTab:
       break;
     default:
       NOTREACHED_IN_MIGRATION();
@@ -372,8 +426,11 @@
       break;
     }
     case PushNotificationClientId::kSendTab: {
-      // TODO(crbug.com/343492927): Create settings page entry for Send Tab
-      // Notifications.
+      self.sendTabNotificationsItem.on = push_notification_settings::
+          GetMobileNotificationPermissionStatusForClient(
+              PushNotificationClientId::kSendTab, _gaiaID);
+      [self.consumer
+          reconfigureCellsForItems:@[ self.sendTabNotificationsItem ]];
       break;
     }
     case PushNotificationClientId::kSafetyCheck:
@@ -403,6 +460,7 @@
     case PushNotificationClientId::kSafetyCheck:
       return _safetyCheckItem;
     case PushNotificationClientId::kSendTab:
+      return _sendTabNotificationsItem;
     case PushNotificationClientId::kCommerce:
     case PushNotificationClientId::kContent:
     case PushNotificationClientId::kSports:

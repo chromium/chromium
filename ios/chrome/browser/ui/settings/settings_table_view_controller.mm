@@ -31,6 +31,7 @@
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/search_engines/search_engines_pref_names.h"
 #import "components/search_engines/util.h"
+#import "components/send_tab_to_self/features.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -2112,7 +2113,9 @@ struct EnhancedSafeBrowsingActivePromoData
   return base::FeatureList::IsEnabled(kNotificationSettingsMenuItem) &&
          (IsPriceNotificationsEnabled() ||
           IsContentNotificationEnabled(_browserState) ||
-          IsIOSTipsNotificationsEnabled());
+          IsIOSTipsNotificationsEnabled() ||
+          base::FeatureList::IsEnabled(
+              send_tab_to_self::kSendTabToSelfIOSPushNotifications));
 }
 
 // Records that the user has reached the impression limit for the enhanced safe

@@ -31,6 +31,9 @@
 - (void)setTipsNotificationsFooterItem:
     (TableViewHeaderFooterItem*)tipsNotificationsFooterItem;
 
+// Initializes the send tab notifications item.
+- (void)setSendTabNotificationsItem:(TableViewItem*)sendTabNotificationsItem;
+
 // Called when an item is updated and needs to be reloaded.
 - (void)reloadData;
 

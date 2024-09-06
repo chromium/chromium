@@ -8,6 +8,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/sync_device_info/device_info_sync_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
@@ -22,6 +23,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/browser/ui/push_notification/metrics.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -144,6 +146,12 @@ NSString* GetGaiaIdForBrowserState(ChromeBrowserState* browser_state) {
   for (PushNotificationClientId clientID : clientIDs) {
     GetApplicationContext()->GetPushNotificationService()->SetPreference(
         gaiaID, clientID, true);
+    if (clientID == PushNotificationClientId::kSendTab) {
+      // Refresh enabled status in DeviceInfo.
+      DeviceInfoSyncServiceFactory::GetForBrowserState(
+          self.browser->GetProfile())
+          ->RefreshLocalDeviceInfo();
+    }
   }
 }
 
