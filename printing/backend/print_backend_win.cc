@@ -453,12 +453,14 @@ mojom::ResultCode PrintBackendWin::GetPrinterSemanticCapsAndDefaults(
           caps.duplex_default = mojom::DuplexMode::kShortEdge;
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
+          // Ignore invalid values to prevent a crash. See crbug.com/359253687
+          break;
       }
     }
 
-    if (user_settings->dmFields & DM_COLLATE)
+    if (user_settings->dmFields & DM_COLLATE) {
       caps.collate_default = (user_settings->dmCollate == DMCOLLATE_TRUE);
+    }
   } else {
     LOG(WARNING) << "Fallback to color/simplex mode.";
     caps.color_default = caps.color_changeable;
