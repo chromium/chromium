@@ -3594,6 +3594,10 @@ class PageLoadMetricsBrowserTestDiscardedPage
 
 IN_PROC_BROWSER_TEST_P(PageLoadMetricsBrowserTestDiscardedPage,
                        UkmIsRecordedForDiscardedTabPage) {
+  if (base::FeatureList::IsEnabled(features::kWebContentsDiscard)) {
+    GTEST_SKIP() << "Page load metrics are reported when the tab is closed.";
+  }
+
   // Open a new foreground tab and navigate.
   content::WebContents* contents = OpenTabAndNavigate();
 
