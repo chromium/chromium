@@ -1,41 +1,57 @@
 #ifndef XML_BUF_H_PRIVATE__
 #define XML_BUF_H_PRIVATE__
 
-#include <libxml/parser.h>
 #include <libxml/tree.h>
 
 XML_HIDDEN xmlBufPtr
-xmlBufCreate(size_t size);
+xmlBufCreate(void);
 XML_HIDDEN xmlBufPtr
-xmlBufCreateMem(const xmlChar *mem, size_t size, int isStatic);
+xmlBufCreateSize(size_t size);
+
+XML_HIDDEN int
+xmlBufSetAllocationScheme(xmlBufPtr buf, xmlBufferAllocationScheme scheme);
+XML_HIDDEN int
+xmlBufGetAllocationScheme(xmlBufPtr buf);
+
 XML_HIDDEN void
 xmlBufFree(xmlBufPtr buf);
-
 XML_HIDDEN void
 xmlBufEmpty(xmlBufPtr buf);
 
+/* size_t xmlBufShrink(xmlBufPtr buf, size_t len); */
 XML_HIDDEN int
-xmlBufGrow(xmlBufPtr buf, size_t len);
+xmlBufGrow(xmlBufPtr buf, int len);
+XML_HIDDEN int
+xmlBufResize(xmlBufPtr buf, size_t len);
 
 XML_HIDDEN int
-xmlBufAdd(xmlBufPtr buf, const xmlChar *str, size_t len);
+xmlBufAdd(xmlBufPtr buf, const xmlChar *str, int len);
 XML_HIDDEN int
 xmlBufCat(xmlBufPtr buf, const xmlChar *str);
 
 XML_HIDDEN size_t
 xmlBufAvail(const xmlBufPtr buf);
+XML_HIDDEN size_t
+xmlBufLength(const xmlBufPtr buf);
+/* size_t xmlBufUse(const xmlBufPtr buf); */
 XML_HIDDEN int
 xmlBufIsEmpty(const xmlBufPtr buf);
 XML_HIDDEN int
 xmlBufAddLen(xmlBufPtr buf, size_t len);
 
+/* const xmlChar * xmlBufContent(const xmlBuf *buf); */
+/* const xmlChar * xmlBufEnd(xmlBufPtr buf); */
+
 XML_HIDDEN xmlChar *
 xmlBufDetach(xmlBufPtr buf);
 
+XML_HIDDEN size_t
+xmlBufDump(FILE *file, xmlBufPtr buf);
+
 XML_HIDDEN xmlBufPtr
 xmlBufFromBuffer(xmlBufferPtr buffer);
-XML_HIDDEN int
-xmlBufBackToBuffer(xmlBufPtr buf, xmlBufferPtr ret);
+XML_HIDDEN xmlBufferPtr
+xmlBufBackToBuffer(xmlBufPtr buf);
 
 XML_HIDDEN int
 xmlBufResetInput(xmlBufPtr buf, xmlParserInputPtr input);

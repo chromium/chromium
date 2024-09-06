@@ -4,10 +4,6 @@
 #include <libxml/parser.h>
 #include <libxml/xmlversion.h>
 
-#define XML_INVALID_CHAR 0x200000
-
-#define XML_MAX_URI_LENGTH 2000
-
 /**
  * XML_VCTXT_DTD_VALIDATED:
  *
@@ -96,26 +92,26 @@ XML_HIDDEN xmlParserInputPtr
 xmlLoadResource(xmlParserCtxtPtr ctxt, const char *url, const char *publicId,
                 xmlResourceType type);
 XML_HIDDEN xmlParserInputPtr
-xmlCtxtNewInputFromUrl(xmlParserCtxtPtr ctxt, const char *url,
-                       const char *publicId, const char *encoding, int flags);
+xmlNewInputURL(xmlParserCtxtPtr ctxt, const char *url, const char *publicId,
+               const char *encoding, int flags);
 XML_HIDDEN xmlParserInputPtr
-xmlCtxtNewInputFromMemory(xmlParserCtxtPtr ctxt, const char *url,
-                          const void *mem, size_t size,
-                          const char *encoding, int flags);
+xmlNewInputMemory(xmlParserCtxtPtr ctxt, const char *url,
+                  const void *mem, size_t size,
+                  const char *encoding, int flags);
 XML_HIDDEN xmlParserInputPtr
-xmlCtxtNewInputFromString(xmlParserCtxtPtr ctxt, const char *url,
-                          const char *str, const char *encoding, int flags);
+xmlNewInputString(xmlParserCtxtPtr ctxt, const char *url, const char *str,
+                  const char *encoding, int flags);
 XML_HIDDEN xmlParserInputPtr
-xmlCtxtNewInputFromFd(xmlParserCtxtPtr ctxt, const char *filename, int fd,
-                      const char *encoding, int flags);
+xmlNewInputFd(xmlParserCtxtPtr ctxt, const char *filename, int fd,
+              const char *encoding, int flags);
 XML_HIDDEN xmlParserInputPtr
-xmlCtxtNewInputFromIO(xmlParserCtxtPtr ctxt, const char *url,
-                      xmlInputReadCallback ioRead,
-                      xmlInputCloseCallback ioClose,
-                      void *ioCtxt,
-                      const char *encoding, int flags);
+xmlNewInputIO(xmlParserCtxtPtr ctxt, const char *url,
+              xmlInputReadCallback ioRead,
+              xmlInputCloseCallback ioClose,
+              void *ioCtxt,
+              const char *encoding, int flags);
 XML_HIDDEN xmlParserInputPtr
-xmlNewPushInput(const char *url, const char *chunk, int size);
+xmlInputCreatePush(const char *url, const char *chunk, int size);
 
 XML_HIDDEN xmlChar *
 xmlExpandEntitiesInAttValue(xmlParserCtxtPtr ctxt, const xmlChar *str,

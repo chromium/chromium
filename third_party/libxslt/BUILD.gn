@@ -4,9 +4,7 @@
 
 config("libxslt_config") {
   defines = [ "LIBXSLT_STATIC" ]
-  # TODO(crbug.com/364568421): Consdier removing "src/libxslt" from this list
-  # if we can remove win32config.h
-  include_dirs = [ "src", "src/libxslt" ]
+  include_dirs = [ "src" ]
 }
 
 config("libxslt_warnings") {

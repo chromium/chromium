@@ -6,7 +6,7 @@
  * daniel@veillard.com
  */
 
-#include "libxml.h"
+#include "config.h"
 #include <stdio.h>
 #include <libxml/xmlversion.h>
 
@@ -545,7 +545,7 @@ main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED) {
     int ret = 0;
     int old_errors, old_tests, old_leaks;
 
-    logfile = fopen(LOGFILE, "wb");
+    logfile = fopen(LOGFILE, "w");
     if (logfile == NULL) {
         fprintf(stderr,
 	        "Could not open the log file, running in verbose mode\n");

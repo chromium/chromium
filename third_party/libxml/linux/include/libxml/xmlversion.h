@@ -67,9 +67,11 @@
 /**
  * LIBXML_TREE_ENABLED:
  *
- * Always enabled since 2.14.0
+ * Whether the DOM like tree manipulation API support is configured in
  */
+#if 1
 #define LIBXML_TREE_ENABLED
+#endif
 
 /**
  * LIBXML_OUTPUT_ENABLED:

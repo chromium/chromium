@@ -10,9 +10,7 @@
  * daniel@veillard.com
  */
 
-#define XML_DEPRECATED_MEMBER
-
-#include "libxml.h"
+#include "config.h"
 #include <stdio.h>
 
 #include <stdlib.h>
@@ -145,35 +143,9 @@ static void globfree(glob_t *pglob) {
     }
 }
 
-#elif HAVE_DECL_GLOB
-
+#else
 #include <glob.h>
-
-#else /* _WIN32, HAVE_DECL_GLOB */
-
-#define GLOB_DOOFFS 0
-
-typedef struct {
-      size_t gl_pathc;    /* Count of paths matched so far  */
-      char **gl_pathv;    /* List of matched pathnames.  */
-      size_t gl_offs;     /* Slots to reserve in 'gl_pathv'.  */
-} glob_t;
-
-static int
-glob(const char *pattern ATTRIBUTE_UNUSED, int flags ATTRIBUTE_UNUSED,
-     int errfunc(const char *epath, int eerrno) ATTRIBUTE_UNUSED,
-     glob_t *pglob) {
-    pglob->gl_pathc = 0;
-    pglob->gl_pathv = NULL;
-
-    return(0);
-}
-
-static void
-globfree(glob_t *pglob ATTRIBUTE_UNUSED) {
-}
-
-#endif /* _WIN32, HAVE_DECL_GLOB */
+#endif
 
 /************************************************************************
  *									*

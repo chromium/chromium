@@ -13,6 +13,7 @@
 #include <libxml/xmlversion.h>
 
 #ifdef LIBXML_REGEXP_ENABLED
+#ifdef LIBXML_AUTOMATA_ENABLED
 
 #include <libxml/xmlstring.h>
 
@@ -139,6 +140,7 @@ XMLPUBFUN int
 }
 #endif
 
+#endif /* LIBXML_AUTOMATA_ENABLED */
 #endif /* LIBXML_REGEXP_ENABLED */
 
 #endif /* __XML_AUTOMATA_H__ */

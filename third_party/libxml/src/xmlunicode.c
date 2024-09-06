@@ -954,8 +954,7 @@ static xmlIntFunc
     sptr = tptr->table;
     while (low <= high) {
 	mid = (low + high) / 2;
-	cmp = strcmp(tname, sptr[mid].rangename);
-	if (cmp == 0)
+	if ((cmp=strcmp(tname, sptr[mid].rangename)) == 0)
 	    return (sptr[mid].func);
 	if (cmp < 0)
 	    high = mid - 1;

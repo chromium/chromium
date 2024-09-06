@@ -20,7 +20,7 @@ else:
 # Modules we want to skip in API test
 #
 skipped_modules = [ "SAX", "xlink", "threads", "globals",
-  "xmlmemory", "xmlversion", "xmlexports", "xmlunicode", "nanoftp",
+  "xmlmemory", "xmlversion", "xmlexports", "nanoftp",
 ]
 
 #
@@ -79,6 +79,15 @@ function_defines = {
     "xmlAttrSerializeTxtContent": "LIBXML_OUTPUT_ENABLED",
     "xmlSAXParseFile": "LIBXML_SAX1_ENABLED",
     "xmlSAXParseEntity": "LIBXML_SAX1_ENABLED",
+    "xmlNewTextChild": "LIBXML_TREE_ENABLED",
+    "xmlNewDocRawNode": "LIBXML_TREE_ENABLED",
+    "xmlNewProp": "LIBXML_TREE_ENABLED",
+    "xmlReconciliateNs": "LIBXML_TREE_ENABLED",
+    "xmlValidateNCName": "LIBXML_TREE_ENABLED",
+    "xmlValidateNMToken": "LIBXML_TREE_ENABLED",
+    "xmlValidateName": "LIBXML_TREE_ENABLED",
+    "xmlNewChild": "LIBXML_TREE_ENABLED",
+    "xmlValidateQName": "LIBXML_TREE_ENABLED",
     "xmlSprintfElementContent": "LIBXML_OUTPUT_ENABLED",
     "xmlValidGetPotentialChildren" : "LIBXML_VALID_ENABLED",
     "xmlValidGetValidElements" : "LIBXML_VALID_ENABLED",
@@ -146,8 +155,6 @@ skipped_functions = [
 # Legacy
 "xmlCleanupPredefinedEntities", "xmlInitializePredefinedEntities",
 "xmlSetFeature", "xmlGetFeature", "xmlGetFeaturesList",
-# Shouldn't free result
-"xmlCtxtGetDict",
 ]
 
 #

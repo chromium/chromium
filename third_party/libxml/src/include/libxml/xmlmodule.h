@@ -37,19 +37,15 @@ typedef enum {
     XML_MODULE_LOCAL= 2		/* local binding */
 } xmlModuleOption;
 
-XML_DEPRECATED
 XMLPUBFUN xmlModulePtr xmlModuleOpen	(const char *filename,
 						 int options);
 
-XML_DEPRECATED
 XMLPUBFUN int xmlModuleSymbol		(xmlModulePtr module,
 						 const char* name,
 						 void **result);
 
-XML_DEPRECATED
 XMLPUBFUN int xmlModuleClose		(xmlModulePtr module);
 
-XML_DEPRECATED
 XMLPUBFUN int xmlModuleFree		(xmlModulePtr module);
 
 #ifdef __cplusplus

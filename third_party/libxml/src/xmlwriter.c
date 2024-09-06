@@ -123,14 +123,14 @@ static void
 xmlWriterErrMsg(xmlTextWriterPtr ctxt, xmlParserErrors error,
                const char *msg)
 {
-    xmlParserCtxtPtr pctxt = NULL;
-
-    if (ctxt != NULL)
-        pctxt = ctxt->ctxt;
-
-    xmlRaiseError(NULL, NULL, NULL, pctxt,
-                  NULL, XML_FROM_WRITER, error, XML_ERR_FATAL,
-                  NULL, 0, NULL, NULL, NULL, 0, 0, "%s", msg);
+    if (ctxt != NULL) {
+	__xmlRaiseError(NULL, NULL, NULL, ctxt->ctxt,
+	            NULL, XML_FROM_WRITER, error, XML_ERR_FATAL,
+		    NULL, 0, NULL, NULL, NULL, 0, 0, "%s", msg);
+    } else {
+	__xmlRaiseError(NULL, NULL, NULL, NULL, NULL, XML_FROM_WRITER, error,
+                    XML_ERR_FATAL, NULL, 0, NULL, NULL, NULL, 0, 0, "%s", msg);
+    }
 }
 
 /**
@@ -146,14 +146,14 @@ static void LIBXML_ATTR_FORMAT(3,0)
 xmlWriterErrMsgInt(xmlTextWriterPtr ctxt, xmlParserErrors error,
                const char *msg, int val)
 {
-    xmlParserCtxtPtr pctxt = NULL;
-
-    if (ctxt != NULL)
-        pctxt = ctxt->ctxt;
-
-    xmlRaiseError(NULL, NULL, NULL, pctxt,
-	          NULL, XML_FROM_WRITER, error, XML_ERR_FATAL,
-		  NULL, 0, NULL, NULL, NULL, val, 0, msg, val);
+    if (ctxt != NULL) {
+	__xmlRaiseError(NULL, NULL, NULL, ctxt->ctxt,
+	            NULL, XML_FROM_WRITER, error, XML_ERR_FATAL,
+		    NULL, 0, NULL, NULL, NULL, val, 0, msg, val);
+    } else {
+	__xmlRaiseError(NULL, NULL, NULL, NULL, NULL, XML_FROM_WRITER, error,
+                    XML_ERR_FATAL, NULL, 0, NULL, NULL, NULL, val, 0, msg, val);
+    }
 }
 
 /**
@@ -355,6 +355,8 @@ xmlNewTextWriterDoc(xmlDocPtr * doc, int compression)
     memset(&saxHandler, '\0', sizeof(saxHandler));
     xmlSAX2InitDefaultSAXHandler(&saxHandler, 1);
     saxHandler.startDocument = xmlTextWriterStartDocumentCallback;
+    saxHandler.startElement = xmlSAX2StartElement;
+    saxHandler.endElement = xmlSAX2EndElement;
 
     ctxt = xmlCreatePushParserCtxt(&saxHandler, NULL, NULL, 0, NULL);
     if (ctxt == NULL) {
@@ -422,6 +424,8 @@ xmlNewTextWriterTree(xmlDocPtr doc, xmlNodePtr node, int compression)
     memset(&saxHandler, '\0', sizeof(saxHandler));
     xmlSAX2InitDefaultSAXHandler(&saxHandler, 1);
     saxHandler.startDocument = xmlTextWriterStartDocumentCallback;
+    saxHandler.startElement = xmlSAX2StartElement;
+    saxHandler.endElement = xmlSAX2EndElement;
 
     ctxt = xmlCreatePushParserCtxt(&saxHandler, NULL, NULL, 0, NULL);
     if (ctxt == NULL) {
@@ -535,7 +539,7 @@ xmlTextWriterStartDocument(xmlTextWriterPtr writer, const char *version,
     writer->out->encoder = encoder;
     if (encoder != NULL) {
 	if (writer->out->conv == NULL) {
-	    writer->out->conv = xmlBufCreate(4000);
+	    writer->out->conv = xmlBufCreateSize(4000);
 	}
         xmlCharEncOutput(writer->out, 1);
         if ((writer->doc != NULL) && (writer->doc->encoding == NULL))
@@ -1484,9 +1488,10 @@ xmlTextWriterWriteString(xmlTextWriterPtr writer, const xmlChar * content)
             switch (p->state) {
                 case XML_TEXTWRITER_NAME:
                 case XML_TEXTWRITER_TEXT:
-                    /*
-                     * TODO: Use xmlSerializeText
-                     */
+#if 0
+                    buf = NULL;
+		    xmlOutputBufferWriteEscape(writer->out, content, NULL);
+#endif
                     buf = xmlEncodeSpecialChars(NULL, content);
                     break;
                 case XML_TEXTWRITER_ATTRIBUTE:
@@ -4438,8 +4443,7 @@ xmlTextWriterWriteDocCallback(void *context, const char *str, int len)
     xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) context;
     int rc;
 
-    rc = xmlParseChunk(ctxt, str, len, 0);
-    if (rc != 0) {
+    if ((rc = xmlParseChunk(ctxt, str, len, 0)) != 0) {
         xmlWriterErrMsgInt(NULL, XML_ERR_INTERNAL_ERROR,
                         "xmlTextWriterWriteDocCallback : XML error %d !\n",
                         rc);
@@ -4463,8 +4467,7 @@ xmlTextWriterCloseDocCallback(void *context)
     xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) context;
     int rc;
 
-    rc = xmlParseChunk(ctxt, NULL, 0, 1);
-    if (rc != 0) {
+    if ((rc = xmlParseChunk(ctxt, NULL, 0, 1)) != 0) {
         xmlWriterErrMsgInt(NULL, XML_ERR_INTERNAL_ERROR,
                         "xmlTextWriterCloseDocCallback : XML error %d !\n",
                         rc);
