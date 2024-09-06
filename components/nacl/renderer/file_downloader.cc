@@ -50,14 +50,13 @@ void FileDownloader::DidReceiveResponse(const blink::WebURLResponse& response) {
     progress_cb_.Run(total_bytes_received_, total_bytes_to_be_received_);
 }
 
-void FileDownloader::DidReceiveData(const char* data, int data_length) {
+void FileDownloader::DidReceiveData(base::span<const char> data) {
   if (status_ == SUCCESS) {
-    if (UNSAFE_TODO(file_.Write(total_bytes_received_, data, data_length)) ==
-        -1) {
+    if (file_.Write(total_bytes_received_, base::as_bytes(data)) == -1) {
       status_ = FAILED;
       return;
     }
-    total_bytes_received_ += data_length;
+    total_bytes_received_ += data.size();
     if (!progress_cb_.is_null())
       progress_cb_.Run(total_bytes_received_, total_bytes_to_be_received_);
   }

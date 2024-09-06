@@ -244,7 +244,7 @@ void PepperWebPluginImpl::DidReceiveData(base::span<const char> data) {
   blink::WebAssociatedURLLoaderClient* document_loader =
       instance_->document_loader();
   if (document_loader)
-    document_loader->DidReceiveData(data.data(), data.size());
+    document_loader->DidReceiveData(data);
 }
 
 void PepperWebPluginImpl::DidFinishLoading() {

@@ -259,7 +259,7 @@ void WebAssociatedURLLoaderImpl::ClientAdapter::DidReceiveData(
     return;
   }
 
-  client_->DidReceiveData(data.data(), base::checked_cast<int>(data.size()));
+  client_->DidReceiveData(data);
 }
 
 void WebAssociatedURLLoaderImpl::ClientAdapter::DidFinishLoading(

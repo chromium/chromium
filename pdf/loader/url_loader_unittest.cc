@@ -324,7 +324,7 @@ TEST_F(UrlLoaderTest, DidReceiveData) {
   loader_->ReadResponseBody(buffer, mock_callback_.Get());
   EXPECT_CALL(mock_callback_, Run(kFakeData.size()));
 
-  loader_->DidReceiveData(kFakeData.data(), kFakeData.size());
+  loader_->DidReceiveData(kFakeData);
 
   EXPECT_THAT(buffer, ElementsAreArray(kFakeData));
 }
@@ -336,7 +336,7 @@ TEST_F(UrlLoaderTest, DidReceiveDataWithZeroLength) {
   loader_->ReadResponseBody(buffer, mock_callback_.Get());
   EXPECT_CALL(mock_callback_, Run).Times(0);
 
-  loader_->DidReceiveData(kFakeData.data(), 0);
+  loader_->DidReceiveData(kFakeData.first(0u));
 
   EXPECT_THAT(buffer, Each(0));
 }
@@ -346,7 +346,7 @@ TEST_F(UrlLoaderTest, DidReceiveDataBelowUpperThreshold) {
   EXPECT_CALL(*mock_url_loader_, SetDefersLoading).Times(0);
 
   char buffer[3] = {};
-  loader_->DidReceiveData(buffer, sizeof(buffer));
+  loader_->DidReceiveData(buffer);
 }
 
 TEST_F(UrlLoaderTest, DidReceiveDataCrossUpperThreshold) {
@@ -361,23 +361,23 @@ TEST_F(UrlLoaderTest, DidReceiveDataCrossUpperThreshold) {
   }
 
   char buffer[4] = {};
-  loader_->DidReceiveData(buffer, sizeof(buffer));
+  loader_->DidReceiveData(buffer);
 }
 
 TEST_F(UrlLoaderTest, DidReceiveDataAboveUpperThreshold) {
   StartLoadWithThresholds(/*lower=*/2, /*upper=*/4);
 
   char buffer[4] = {};
-  loader_->DidReceiveData(buffer, sizeof(buffer));
+  loader_->DidReceiveData(buffer);
   EXPECT_CALL(*mock_url_loader_, SetDefersLoading).Times(0);
 
-  loader_->DidReceiveData(buffer, sizeof(buffer));
+  loader_->DidReceiveData(buffer);
 }
 
 TEST_F(UrlLoaderTest, ReadResponseBody) {
   loader_->Open(UrlRequest(), mock_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
-  loader_->DidReceiveData(kFakeData.data(), kFakeData.size());
+  loader_->DidReceiveData(kFakeData);
   EXPECT_CALL(mock_callback_, Run(kFakeData.size()));
 
   char buffer[kFakeData.size()] = {};
@@ -415,7 +415,7 @@ TEST_F(UrlLoaderTest, ReadResponseBodyWithSmallerBuffer) {
 
   loader_->Open(UrlRequest(), mock_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
-  loader_->DidReceiveData(kFakeData.data(), kFakeData.size());
+  loader_->DidReceiveData(kFakeData);
   EXPECT_CALL(mock_callback_, Run(kBufferSize));
 
   char buffer[kBufferSize] = {};
@@ -433,7 +433,7 @@ TEST_F(UrlLoaderTest, ReadResponseBodyWithSmallerBuffer) {
 TEST_F(UrlLoaderTest, ReadResponseBodyWithBiggerBuffer) {
   loader_->Open(UrlRequest(), mock_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
-  loader_->DidReceiveData(kFakeData.data(), kFakeData.size());
+  loader_->DidReceiveData(kFakeData);
   EXPECT_CALL(mock_callback_, Run(kFakeData.size()));
 
   char buffer[kFakeData.size() + 1] = {};
@@ -451,7 +451,7 @@ TEST_F(UrlLoaderTest, ReadResponseBodyWithBiggerBuffer) {
 TEST_F(UrlLoaderTest, ReadResponseBodyWhileLoadComplete) {
   loader_->Open(UrlRequest(), mock_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
-  loader_->DidReceiveData(kFakeData.data(), kFakeData.size());
+  loader_->DidReceiveData(kFakeData);
   loader_->DidFinishLoading();
   EXPECT_CALL(mock_callback_, Run(kFakeData.size()));
 
@@ -482,7 +482,7 @@ TEST_F(UrlLoaderTest, ReadResponseBodyWhileLoadCompleteWithoutData) {
 TEST_F(UrlLoaderTest, ReadResponseBodyWhileLoadCompleteWithError) {
   loader_->Open(UrlRequest(), mock_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
-  loader_->DidReceiveData(kFakeData.data(), kFakeData.size());
+  loader_->DidReceiveData(kFakeData);
   loader_->DidFail(MakeWebURLError(net::ERR_FAILED));
   EXPECT_CALL(mock_callback_, Run(Result::kErrorFailed));
 
@@ -496,7 +496,7 @@ TEST_F(UrlLoaderTest, ReadResponseBodyAboveLowerThreshold) {
   StartLoadWithThresholds(/*lower=*/2, /*upper=*/4);
 
   char write_buffer[5] = {};
-  loader_->DidReceiveData(write_buffer, sizeof(write_buffer));
+  loader_->DidReceiveData(write_buffer);
   EXPECT_CALL(*mock_url_loader_, SetDefersLoading).Times(0);
 
   char buffer[2] = {};
@@ -507,7 +507,7 @@ TEST_F(UrlLoaderTest, ReadResponseBodyCrossLowerThreshold) {
   StartLoadWithThresholds(/*lower=*/2, /*upper=*/4);
 
   char write_buffer[5] = {};
-  loader_->DidReceiveData(write_buffer, sizeof(write_buffer));
+  loader_->DidReceiveData(write_buffer);
   {
     InSequence resume_before_read_callback;
     EXPECT_CALL(*mock_url_loader_, SetDefersLoading(false));
@@ -522,7 +522,7 @@ TEST_F(UrlLoaderTest, ReadResponseBodyBelowLowerThreshold) {
   StartLoadWithThresholds(/*lower=*/2, /*upper=*/4);
 
   char write_buffer[5] = {};
-  loader_->DidReceiveData(write_buffer, sizeof(write_buffer));
+  loader_->DidReceiveData(write_buffer);
 
   char buffer[3] = {};
   loader_->ReadResponseBody(buffer, mock_callback_.Get());

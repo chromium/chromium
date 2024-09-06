@@ -41,14 +41,14 @@ void ManifestDownloader::DidReceiveResponse(
   status_code_ = response.HttpStatusCode();
 }
 
-void ManifestDownloader::DidReceiveData(const char* data, int data_length) {
-  if (buffer_.size() + data_length > kNaClManifestMaxFileBytes) {
+void ManifestDownloader::DidReceiveData(base::span<const char> data) {
+  if (buffer_.size() + data.size() > kNaClManifestMaxFileBytes) {
     pp_nacl_error_ = PP_NACL_ERROR_MANIFEST_TOO_LARGE;
     buffer_.clear();
   }
 
   if (pp_nacl_error_ == PP_NACL_ERROR_LOAD_SUCCESS)
-    buffer_.append(data, data_length);
+    buffer_.append(data.data(), data.size());
 }
 
 void ManifestDownloader::Close() {

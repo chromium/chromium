@@ -1633,12 +1633,11 @@ class PexeDownloader : public blink::WebAssociatedURLLoaderClient {
     url_loader_->SetDefersLoading(false);
   }
 
-  void DidReceiveData(const char* data, int data_length) override {
+  void DidReceiveData(base::span<const char> data) override {
     if (content::PepperPluginInstance::Get(instance_)) {
       // Stream the data we received to the stream callback.
-      stream_handler_->DidStreamData(stream_handler_user_data_,
-                                     data,
-                                     data_length);
+      stream_handler_->DidStreamData(stream_handler_user_data_, data.data(),
+                                     base::checked_cast<int32_t>(data.size()));
     }
   }
 

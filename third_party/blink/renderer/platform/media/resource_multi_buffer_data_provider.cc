@@ -379,26 +379,26 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
   }
 }
 
-void ResourceMultiBufferDataProvider::DidReceiveData(const char* data,
-                                                     int data_length) {
-  DVLOG(1) << "didReceiveData: " << data_length << " bytes";
+void ResourceMultiBufferDataProvider::DidReceiveData(
+    base::span<const char> data) {
+  DVLOG(1) << "didReceiveData: " << data.size() << " bytes";
   DCHECK(!Available());
   DCHECK(active_loader_);
-  DCHECK_GT(data_length, 0);
+  DCHECK_GT(data.size(), 0u);
 
   if (bytes_to_discard_) {
-    uint64_t tmp = std::min<uint64_t>(bytes_to_discard_, data_length);
-    data_length -= tmp;
-    data += tmp;
+    uint64_t tmp = std::min<uint64_t>(bytes_to_discard_, data.size());
+    data = data.subspan(static_cast<size_t>(tmp));
     bytes_to_discard_ -= tmp;
-    if (data_length == 0)
+    if (data.empty()) {
       return;
+    }
   }
 
   // When we receive data, we allow more retries.
   retries_ = 0;
 
-  while (data_length) {
+  while (!data.empty()) {
     if (fifo_.empty() || fifo_.back()->data_size() == block_size()) {
       fifo_.push_back(base::MakeRefCounted<media::DataBuffer>(
           static_cast<int>(block_size())));
@@ -406,13 +406,12 @@ void ResourceMultiBufferDataProvider::DidReceiveData(const char* data,
     }
     int last_block_size = fifo_.back()->data_size();
     auto to_append =
-        std::min<int64_t>(data_length, block_size() - last_block_size);
+        std::min<int64_t>(data.size(), block_size() - last_block_size);
     DCHECK_GT(to_append, 0);
-    memcpy(fifo_.back()->writable_data() + last_block_size, data,
+    memcpy(fifo_.back()->writable_data() + last_block_size, data.data(),
            static_cast<size_t>(to_append));
-    data += to_append;
+    data = data.subspan(static_cast<size_t>(to_append));
     fifo_.back()->set_data_size(static_cast<int>(last_block_size + to_append));
-    data_length -= to_append;
   }
 
   url_data_->multibuffer()->OnDataProviderEvent(this);
