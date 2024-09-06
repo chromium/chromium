@@ -16,6 +16,7 @@
 #include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/profile_value_source.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
@@ -42,22 +43,6 @@ enum class IsMostRecentSingleUsernameCandidate {
 
 class AutofillField : public FormFieldData {
  public:
-  // Stores the (possible) source of address profile values found in a field at
-  // submission time.
-  struct ProfileValueSource {
-    // The comparison operator will allow to easily remove duplicates.
-    friend bool operator==(const AutofillField::ProfileValueSource&,
-                           const AutofillField::ProfileValueSource&) = default;
-    // An identifier (GUID) of an address profile.
-    std::string identifier;
-    // The type of the value found in the Autofill entry.
-    FieldType value_type;
-  };
-
-  // A vector of `ProfileValueSource` that is used to store all possible value
-  // sources.
-  using PossibleProfileValueSources = std::vector<ProfileValueSource>;
-
   using FieldLogEventType = absl::variant<absl::monostate,
                                           AskForValuesToFillFieldLogEvent,
                                           TriggerFillFieldLogEvent,
@@ -126,9 +111,14 @@ class AutofillField : public FormFieldData {
 
   // Adds a profile `identifier` for `type` as a possible profile value source.
   // If `type` is not an address type the call will be a noop.
-  void AddPossibleProfileValueSource(std::string identifier, FieldType type);
-  const PossibleProfileValueSources& GetPossibleProfileValueSources() const;
-  void ClearPossibleProfileValueSources();
+  PossibleProfileValueSources* possible_profile_value_sources() {
+    return &possible_profile_value_sources_;
+  }
+
+  void set_possible_profile_value_sources(
+      PossibleProfileValueSources possible_profile_value_sources) {
+    possible_profile_value_sources_ = std::move(possible_profile_value_sources);
+  }
 
   void SetHtmlType(HtmlFieldType type, HtmlFieldMode mode);
 

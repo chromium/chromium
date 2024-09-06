@@ -14,7 +14,6 @@ namespace autofill {
 namespace {
 
 const char kGuidA[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44A";
-const char kGuidB[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44B";
 
 class AutofillFieldTest : public testing::Test {
  public:
@@ -106,78 +105,18 @@ TEST_F(AutofillFieldTest, IsFieldFillable) {
   EXPECT_TRUE(field.IsFieldFillable());
 }
 
-TEST_F(AutofillFieldTest, PossibleValueSources_AddingSources) {
+TEST_F(AutofillFieldTest, SetAndGetPossibleProfileValueSources) {
   AutofillField field;
 
-  // Initially, there should be no possible source
-  ASSERT_TRUE(field.GetPossibleProfileValueSources().empty());
+  PossibleProfileValueSources sources;
+  sources.AddPossibleValueSource(kGuidA, NAME_FIRST);
+  PossibleProfileValueSources copy = sources;
 
-  // Once we added a value this should change.
-  field.AddPossibleProfileValueSource(kGuidA, NAME_FULL);
-  EXPECT_FALSE(field.GetPossibleProfileValueSources().empty());
+  field.set_possible_profile_value_sources(sources);
 
-  EXPECT_THAT(field.GetPossibleProfileValueSources(),
-              testing::ElementsAre(
-                  AutofillField::ProfileValueSource{kGuidA, NAME_FULL}));
-}
-
-TEST_F(AutofillFieldTest, PossibleValueSources_AddingMultipleSources) {
-  AutofillField field;
-
-  // Initially, there should be no possible source
-  ASSERT_TRUE(field.GetPossibleProfileValueSources().empty());
-
-  // Once we added a value this should change.
-  field.AddPossibleProfileValueSource(kGuidA, NAME_FULL);
-  field.AddPossibleProfileValueSource(kGuidB, NAME_FIRST);
-
-  // We should be able to retrieve both sources.
-  EXPECT_THAT(field.GetPossibleProfileValueSources(),
-              testing::ElementsAre(
-                  AutofillField::ProfileValueSource{kGuidA, NAME_FULL},
-                  AutofillField::ProfileValueSource{kGuidB, NAME_FIRST}));
-}
-
-TEST_F(AutofillFieldTest, PossibleValueSources_IgnoreNonAddressTypes) {
-  AutofillField field;
-
-  // Initially, there should be no possible source
-  ASSERT_TRUE(field.GetPossibleProfileValueSources().empty());
-
-  // Add a non-address type and make sure it is not added.
-  field.AddPossibleProfileValueSource(kGuidA, CREDIT_CARD_NAME_FULL);
-  EXPECT_TRUE(field.GetPossibleProfileValueSources().empty());
-
-  // And make sure address types are accepted
-  field.AddPossibleProfileValueSource(kGuidA, NAME_FULL);
-  EXPECT_FALSE(field.GetPossibleProfileValueSources().empty());
-}
-
-TEST_F(AutofillFieldTest, PossibleValueSources_Clear) {
-  AutofillField field;
-
-  // Initially, there should be no possible source
-  ASSERT_TRUE(field.GetPossibleProfileValueSources().empty());
-
-  // Add an address and make sure there is data stored.
-  field.AddPossibleProfileValueSource(kGuidA, NAME_FULL);
-  EXPECT_FALSE(field.GetPossibleProfileValueSources().empty());
-
-  // Clear the value sources and verify that it actually becomes empty.
-  field.ClearPossibleProfileValueSources();
-  EXPECT_TRUE(field.GetPossibleProfileValueSources().empty());
-}
-
-TEST_F(AutofillFieldTest, PossibleValueSources_Equality) {
-  using ProfileValueSource = AutofillField::ProfileValueSource;
-  AutofillField field;
-
-  EXPECT_EQ(ProfileValueSource({kGuidA, NAME_FIRST}),
-            ProfileValueSource({kGuidA, NAME_FIRST}));
-  EXPECT_NE(ProfileValueSource({kGuidA, NAME_FIRST}),
-            ProfileValueSource({kGuidB, NAME_FIRST}));
-  EXPECT_NE(ProfileValueSource({kGuidA, NAME_FIRST}),
-            ProfileValueSource({kGuidB, ADDRESS_HOME_STREET_NAME}));
+  EXPECT_THAT(
+      field.possible_profile_value_sources()->GetAllPossibleValueSources(),
+      testing::ElementsAre(ProfileValueSource(kGuidA, NAME_FIRST)));
 }
 
 // Parameters for `PrecedenceOverAutocompleteTest`
