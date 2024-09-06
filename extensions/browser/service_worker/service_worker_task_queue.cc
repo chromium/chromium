@@ -443,6 +443,10 @@ void ServiceWorkerTaskQueue::AddPendingTask(
 void ServiceWorkerTaskQueue::ActivateExtension(const Extension* extension) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  // TODO(crbug.com/362791965): Enable this check once it is no longer possible
+  // to activate an extension when the browser context is shutting down.
+  // CHECK(!browser_context_shutting_down_);
+
   const ExtensionId extension_id = extension->id();
   base::UnguessableToken activation_token = base::UnguessableToken::Create();
   activation_tokens_[extension_id] = activation_token;
@@ -484,6 +488,10 @@ void ServiceWorkerTaskQueue::VerifyRegistration(
       scope, blink::StorageKey::CreateFirstParty(url::Origin::Create(scope)),
       base::BindOnce(&ServiceWorkerTaskQueue::DidVerifyRegistration,
                      weak_factory_.GetWeakPtr(), context_id));
+}
+
+void ServiceWorkerTaskQueue::Shutdown() {
+  browser_context_shutting_down_ = true;
 }
 
 void ServiceWorkerTaskQueue::RegisterServiceWorker(
