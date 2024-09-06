@@ -10804,7 +10804,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="8870413625673593573">Itxitako azkenak</translation>
 <translation id="8871043459130124414">Luzapena sakatu ondoren soilik exekutatzen da</translation>
 <translation id="8871551568777368300">Administratzaileak ainguratu du</translation>
-<translation id="8871696467337989339">Agindu-lerroko etengailu ez-onartu bat erabiltzen ari zara: <ph name="BAD_FLAG" />. Egonkortasunak eta segurtasunak okerrera egingo dute.</translation>
+<translation id="8871696467337989339">Agindu-lerroko onartzen ez den etengailu bat erabiltzen ari zara: <ph name="BAD_FLAG" />. Egonkortasunak eta segurtasunak okerrera egingo dute.</translation>
 <translation id="8871974300055371298">Edukiaren ezarpenak</translation>
 <translation id="8872155268274985541">Kiosk kanpoko eguneratze-manifestuaren fitxategi baliogabea aurkitu da. Ezin izan da eguneratu kiosko-aplikazioa. Kendu USB memoria.</translation>
 <translation id="8872506776304248286">Ireki aplikazioan</translation>

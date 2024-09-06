@@ -1107,7 +1107,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="177989070088644880">App (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Groep sluiten</translation>
 <translation id="1780273119488802839">Bookmarks importeren...</translation>
-<translation id="1780572199786401845">Melden als aanstootgevend/onveilig.</translation>
+<translation id="1780572199786401845">Melden als aanstootgevend/onveilig</translation>
 <translation id="178092663238929451">Stel Dichtbij delen in om bestanden te krijgen van en te sturen naar mensen bij jou in de buurt</translation>
 <translation id="1781291988450150470">Huidige pincode</translation>
 <translation id="1781502536226964113">De pagina 'Nieuw tabblad' openen</translation>
@@ -1673,7 +1673,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2180620921879609685">Content op elke pagina blokkeren</translation>
 <translation id="2181821976797666341">Beleid</translation>
 <translation id="2182058453334755893">Naar klembord gekopieerd</translation>
-<translation id="2182419606502127232">Mijn serverlogboeken toevoegen.</translation>
+<translation id="2182419606502127232">Mijn serverlogboeken toevoegen</translation>
 <translation id="2183570493397356669">Knop Doorgaan staat uit</translation>
 <translation id="2184272387334793084">Log in om onder andere je wachtwoorden op al je apparaten te gebruiken</translation>
 <translation id="2184515124301515068">Chrome laten kiezen wanneer sites geluid mogen afspelen (aanbevolen)</translation>
@@ -6512,7 +6512,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="572328651809341494">Recente tabbladen</translation>
 <translation id="5723508132121499792">Geen actieve achtergrondapps</translation>
 <translation id="5723967018671998714">Cookies van derden worden geblokkeerd in de incognitomodus</translation>
-<translation id="5725112283692663422">Feedback sturen voor Thema maken met AI</translation>
+<translation id="5725112283692663422">Stuur feedback voor Thema maken met AI</translation>
 <translation id="5727728807527375859">Extensies, applicaties en thema's kunnen schade toebrengen aan je computer. Weet je zeker dat je wilt doorgaan?</translation>
 <translation id="5728072125198221967">Gekoppelde Google-services</translation>
 <translation id="5728290366864286776">Deze extensie kan sitegegevens lezen en wijzigen of op de achtergrond worden uitgevoerd</translation>
@@ -7949,7 +7949,7 @@ Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je k
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
 <translation id="6803766346203101854">Deze site mag gegevens opslaan op je apparaat.</translation>
 <translation id="680488281839478944">VM <ph name="DEFAULT_VM_NAME" /> bestaat</translation>
-<translation id="6805478749741295868">Dit is een experimentele AI-functie die het niet altijd juist heeft.</translation>
+<translation id="6805478749741295868">Dit is een experimentele AI-functie en zit er weleens naast.</translation>
 <translation id="6805647936811177813">Log in bij <ph name="TOKEN_NAME" /> om het klantcertificaat van <ph name="HOST_NAME" /> te importeren.</translation>
 <translation id="680572642341004180">Bijhouden met RLZ aanzetten voor <ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="6806089545527108739">Niet toestaan, maar later vragen</translation>
