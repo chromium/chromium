@@ -1130,16 +1130,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("tbody-focus.html"));
 }
 
-#if BUILDFLAG(IS_WIN)
-// TODO(crbug.com/40693330) Flaky on Windows https://crbug.com/1084871#c33
-#define MAYBE_AccessibilityEventsVisibilityHiddenChanged \
-  DISABLED_AccessibilityEventsVisibilityHiddenChanged
-#else
-#define MAYBE_AccessibilityEventsVisibilityHiddenChanged \
-  AccessibilityEventsVisibilityHiddenChanged
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       MAYBE_AccessibilityEventsVisibilityHiddenChanged) {
+                       AccessibilityEventsVisibilityHiddenChanged) {
   RunEventTest(FILE_PATH_LITERAL("visibility-hidden-changed.html"));
 }
 
