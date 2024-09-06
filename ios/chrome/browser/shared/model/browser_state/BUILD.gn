@@ -39,10 +39,7 @@ source_set("incognito_session_tracker") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "chrome_browser_state_unittest.cc",
-    "incognito_session_tracker_unittest.mm",
-  ]
+  sources = [ "incognito_session_tracker_unittest.mm" ]
   deps = [
     ":browser_state",
     ":incognito_session_tracker",

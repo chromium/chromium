@@ -60,6 +60,7 @@ source_set("unit_tests") {
   sources = [
     "profile_attributes_ios_unittest.cc",
     "profile_attributes_storage_ios_unittest.cc",
+    "profile_ios_unittest.cc",
     "profile_keyed_service_factory_ios_unittest.cc",
     "profile_keyed_service_utils_unittest.cc",
     "refcounted_profile_keyed_service_factory_ios_unittest.cc",
@@ -71,7 +72,9 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/keyed_service/core",
     "//components/prefs:test_support",
+    "//components/variations/net",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/web/public/test",
     "//testing/gtest",
   ]
 }
