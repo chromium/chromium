@@ -37,13 +37,8 @@ GPUShaderModule* GPUShaderModule::Create(
   DCHECK(webgpu_desc);
 
   std::string wgsl_code;
-#ifdef WGPU_BREAKING_CHANGE_DROP_DESCRIPTOR
   wgpu::ShaderSourceWGSL wgsl_desc = {};
   wgpu::ShaderSourceSPIRV spirv_desc = {};
-#else
-  wgpu::ShaderModuleWGSLDescriptor wgsl_desc = {};
-  wgpu::ShaderModuleSPIRVDescriptor spirv_desc = {};
-#endif
   wgpu::ShaderModuleDescriptor dawn_desc = {};
 
   const auto* wgsl_or_spirv = webgpu_desc->code();

@@ -654,11 +654,7 @@ wgpu::ComputePipeline VideoEffectsProcessorWebGpu::CreateComputePipeline() {
   wgpu::PipelineLayout pipeline_layout =
       device_.CreatePipelineLayout(&pipeline_layout_descriptor);
 
-#ifdef WGPU_BREAKING_CHANGE_DROP_DESCRIPTOR
   wgpu::ShaderSourceWGSL compute_shader_wgsl_descriptor;
-#else
-  wgpu::ShaderModuleWGSLDescriptor compute_shader_wgsl_descriptor;
-#endif
   compute_shader_wgsl_descriptor.code = R"(
 struct Uniforms {
     // Valid range: [-1; -1].
