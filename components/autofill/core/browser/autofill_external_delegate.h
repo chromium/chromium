@@ -167,8 +167,8 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   // surface has changed between when this callback is created and when it is
   // run, running it is a no-op. The callback is also safe to call even if
   // `this` is no longer alive.
-  base::OnceCallback<void(std::vector<Suggestion>,
-                          AutofillSuggestionTriggerSource)>
+  base::RepeatingCallback<void(std::vector<Suggestion>,
+                               AutofillSuggestionTriggerSource)>
   CreateUpdateSuggestionsCallback();
 
   // Private handler for DidAcceptSuggestions for address related suggestions.

@@ -359,8 +359,8 @@ void AutofillExternalDelegate::AttemptToDisplayAutofillSuggestions(
   manager_->client().ShowAutofillSuggestions(open_args, GetWeakPtr());
 }
 
-base::OnceCallback<void(std::vector<Suggestion>,
-                        AutofillSuggestionTriggerSource)>
+base::RepeatingCallback<void(std::vector<Suggestion>,
+                             AutofillSuggestionTriggerSource)>
 AutofillExternalDelegate::CreateUpdateSuggestionsCallback() {
   using SessionId = AutofillClient::SuggestionUiSessionId;
   const std::optional<SessionId> session_id =
@@ -368,7 +368,7 @@ AutofillExternalDelegate::CreateUpdateSuggestionsCallback() {
   if (!session_id) {
     return base::DoNothing();
   }
-  return base::BindOnce(
+  return base::BindRepeating(
       [](base::WeakPtr<AutofillExternalDelegate> self, SessionId session_id,
          std::vector<Suggestion> suggestions,
          AutofillSuggestionTriggerSource trigger_source) {
