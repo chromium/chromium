@@ -239,12 +239,14 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   }
   // If the function has not returned yet. This cell contains only text.
 
-  TableViewTextItem* item = [[TableViewTextItem alloc] init];
-  item.textColor = [UIColor colorNamed:kBlueColor];
-  item.accessibilityTraits = UIAccessibilityTraitButton;
-  item.text = label;
   TableViewTextCell* cell = DequeueTableViewCell<TableViewTextCell>(tableView);
-  [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
+  cell.accessibilityTraits = UIAccessibilityTraitButton;
+  cell.isAccessibilityElement = YES;
+  cell.textLabel.text = label;
+  cell.accessibilityLabel = label;
+  cell.textLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  cell.textLabel.textColor = [UIColor colorNamed:kBlueColor];
+  cell.userInteractionEnabled = YES;
   cell.accessibilityIdentifier = accessibilityIdentifier;
   return cell;
 }
