@@ -63,7 +63,7 @@ class MockHatsNextWebDialog : public HatsNextWebDialog {
  public:
   MockHatsNextWebDialog(Browser* browser,
                         const std::string& trigger_id,
-                        const std::optional<std::string>& histogram_name,
+                        const std::optional<std::string>& hats_histogram_name,
                         const std::optional<uint64_t> hats_survey_ukm_id,
                         const GURL& hats_survey_url,
                         const base::TimeDelta& timeout,
@@ -73,7 +73,7 @@ class MockHatsNextWebDialog : public HatsNextWebDialog {
                         const SurveyStringData& product_specific_string_data)
       : HatsNextWebDialog(browser,
                           trigger_id,
-                          histogram_name,
+                          hats_histogram_name,
                           hats_survey_ukm_id,
                           hats_survey_url,
                           timeout,

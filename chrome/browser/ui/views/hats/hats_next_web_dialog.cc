@@ -57,21 +57,22 @@ constexpr gfx::Size HatsNextWebDialog::kMinSize;
 constexpr gfx::Size HatsNextWebDialog::kMaxSize;
 constexpr char kSurveyQuestionAnsweredRegex[] = "answer-(\\d+)-((?:\\d+,?)+)";
 constexpr char kSurveyQuestionAnsweredAnswerRegex[] = "(\\d+),?";
-constexpr char kHatsHistogramPrefix[] = "Feedback.HappinessTrackingSurvey.";
 constexpr char kHatsSurveyCompletedHistogram[] =
     "Feedback.HappinessTrackingSurvey.SurveyCompleted";
 
-void LogUmaHistogramSparse(const std::optional<std::string>& histogram_name,
-                           int enumeration) {
-  if (histogram_name.has_value()) {
-    base::UmaHistogramSparse(histogram_name.value(), enumeration);
+void LogUmaHistogramSparse(
+    const std::optional<std::string>& hats_histogram_name,
+    int enumeration) {
+  if (hats_histogram_name.has_value()) {
+    base::UmaHistogramSparse(hats_histogram_name.value(), enumeration);
   }
 }
 
 void LogUmaHistogramSparse(
-    const std::optional<std::string>& histogram_name,
+    const std::optional<std::string>& hats_histogram_name,
     HatsNextWebDialog::SurveyHistogramEnumeration enumeration) {
-  return LogUmaHistogramSparse(histogram_name, static_cast<int>(enumeration));
+  return LogUmaHistogramSparse(hats_histogram_name,
+                               static_cast<int>(enumeration));
 }
 
 // WebView which contains the WebContents displaying the HaTS Next survey.
@@ -152,7 +153,7 @@ END_METADATA
 HatsNextWebDialog::HatsNextWebDialog(
     Browser* browser,
     const std::string& trigger_id,
-    const std::optional<std::string>& histogram_name,
+    const std::optional<std::string>& hats_histogram_name,
     const std::optional<uint64_t> hats_survey_ukm_id,
     base::OnceClosure success_callback,
     base::OnceClosure failure_callback,
@@ -161,7 +162,7 @@ HatsNextWebDialog::HatsNextWebDialog(
     : HatsNextWebDialog(
           browser,
           trigger_id,
-          histogram_name,
+          hats_histogram_name,
           hats_survey_ukm_id,
           base::FeatureList::IsEnabled(features::kHaTSWebUI)
               ? GURL(chrome::kChromeUIUntrustedHatsURL)
@@ -216,7 +217,7 @@ base::Value::Dict HatsNextWebDialog::GetProductSpecificDataJson() {
 }
 
 std::optional<std::string> HatsNextWebDialog::GetHistogramName() {
-  return histogram_name_;
+  return hats_histogram_name_;
 }
 
 void HatsNextWebDialog::OnSurveyLoaded() {
@@ -232,7 +233,7 @@ void HatsNextWebDialog::OnSurveyLoaded() {
   service->RecordSurveyAsShown(trigger_id_);
   received_survey_loaded_ = true;
   ShowWidget();
-  LogUmaHistogramSparse(histogram_name_,
+  LogUmaHistogramSparse(hats_histogram_name_,
                         SurveyHistogramEnumeration::kSurveyLoadedEnumeration);
   if (hats_survey_ukm_id_.has_value()) {
     ukm_hats_builder_.SetSurveyLoaded(true);
@@ -243,7 +244,7 @@ void HatsNextWebDialog::OnSurveyLoaded() {
 void HatsNextWebDialog::OnSurveyCompleted() {
   base::UmaHistogramBoolean(kHatsSurveyCompletedHistogram, true);
   LogUmaHistogramSparse(
-      histogram_name_,
+      hats_histogram_name_,
       SurveyHistogramEnumeration::kSurveyCompletedEnumeration);
   if (hats_survey_ukm_id_.has_value()) {
     ukm_hats_builder_.SetSurveyCompleted(true);
@@ -269,7 +270,7 @@ void HatsNextWebDialog::OnSurveyClosed() {
 }
 
 void HatsNextWebDialog::OnSurveyQuestionAnswered(const std::string& state) {
-  if (!histogram_name_.has_value() && !hats_survey_ukm_id_.has_value()) {
+  if (!hats_histogram_name_.has_value() && !hats_survey_ukm_id_.has_value()) {
     return;
   }
 
@@ -277,7 +278,7 @@ void HatsNextWebDialog::OnSurveyQuestionAnswered(const std::string& state) {
   std::vector<int> question_answers;
   if (!ParseSurveyQuestionAnswer(state, &question, &question_answers)) {
     LogUmaHistogramSparse(
-        histogram_name_,
+        hats_histogram_name_,
         SurveyHistogramEnumeration::kSurveyQuestionAnswerParseError);
     return;
   }
@@ -316,9 +317,9 @@ void HatsNextWebDialog::OnSurveyQuestionAnswered(const std::string& state) {
     }
   }
 
-  if (histogram_name_.has_value()) {
+  if (hats_histogram_name_.has_value()) {
     for (int answer : question_answers) {
-      LogUmaHistogramSparse(histogram_name_,
+      LogUmaHistogramSparse(hats_histogram_name_,
                             GetHistogramBucket(question, answer));
     }
   }
@@ -370,7 +371,7 @@ uint64_t HatsNextWebDialog::EncodeUkmQuestionAnswers(
 HatsNextWebDialog::HatsNextWebDialog(
     Browser* browser,
     const std::string& trigger_id,
-    const std::optional<std::string>& histogram_name,
+    const std::optional<std::string>& hats_histogram_name,
     const std::optional<uint64_t> hats_survey_ukm_id,
     const GURL& hats_survey_url,
     const base::TimeDelta& timeout,
@@ -394,13 +395,8 @@ HatsNextWebDialog::HatsNextWebDialog(
           /*create_if_needed=*/true)),
       browser_(browser),
       trigger_id_(trigger_id),
-      histogram_name_(
-          // Sets histogram_name_ to std::nullopt if histogram_name_ is an
-          // invalid value.
-          histogram_name.has_value() && !histogram_name.value().empty() &&
-                  base::StartsWith(histogram_name.value(), kHatsHistogramPrefix)
-              ? histogram_name
-              : std::nullopt),
+      hats_histogram_name_(
+          hats::SurveyConfig::ValidateHatsHistogramName(hats_histogram_name)),
       hats_survey_ukm_id_(
           hats::SurveyConfig::ValidateHatsSurveyUkmId(hats_survey_ukm_id)),
       hats_survey_url_(hats_survey_url),
@@ -537,7 +533,7 @@ void HatsNextWebDialog::OnSurveyStateUpdateReceived(std::string state) {
     LOG(ERROR) << "Unknown state provided in URL fragment by HaTS survey:"
                << state;
     CloseWidget();
-    LogUmaHistogramSparse(histogram_name_,
+    LogUmaHistogramSparse(hats_histogram_name_,
                           SurveyHistogramEnumeration::kSurveyUnknownState);
     std::move(failure_callback_).Run();
   }

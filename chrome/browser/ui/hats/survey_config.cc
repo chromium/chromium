@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/features.h"
+#include "base/strings/string_util.h"
 #include "chrome/common/chrome_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/permissions/features.h"
@@ -137,6 +138,8 @@ constexpr char kHatsSurveyTriggerComposeAcceptance[] = "compose-acceptance";
 constexpr char kHatsSurveyTriggerComposeClose[] = "compose-close";
 constexpr char kHatsSurveyTriggerComposeNudgeClose[] = "compose-nudge-close";
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
+
+constexpr char kHatsHistogramPrefix[] = "Feedback.HappinessTrackingSurvey.";
 
 constexpr char kHatsSurveyTriggerTesting[] = "testing";
 constexpr char kHatsNextSurveyTriggerIDTesting[] =
@@ -641,9 +644,9 @@ SurveyConfig::SurveyConfig(
                                             .Get();
 
   if (log_responses_to_uma) {
-    histogram_name =
+    hats_histogram_name = ValidateHatsHistogramName(
         base::FeatureParam<std::string>(feature, kHatsSurveyHistogramName, "")
-            .Get();
+            .Get());
   }
 
   if (log_responses_to_ukm) {
@@ -653,6 +656,17 @@ SurveyConfig::SurveyConfig(
 
   user_prompted =
       base::FeatureParam<bool>(feature, "user_prompted", false).Get();
+}
+
+// static
+std::optional<std::string> SurveyConfig::ValidateHatsHistogramName(
+    const std::optional<std::string>& hats_histogram_name) {
+  return hats_histogram_name.has_value() &&
+                 !hats_histogram_name.value().empty() &&
+                 base::StartsWith(hats_histogram_name.value(),
+                                  kHatsHistogramPrefix)
+             ? hats_histogram_name
+             : std::nullopt;
 }
 
 // static

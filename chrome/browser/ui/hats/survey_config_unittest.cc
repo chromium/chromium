@@ -11,6 +11,19 @@ class SurveyConfigTest : public testing::Test {
   SurveyConfigTest() = default;
 };
 
+TEST_F(SurveyConfigTest, ValidateHatsHistogramName) {
+  EXPECT_EQ(std::nullopt,
+            hats::SurveyConfig::ValidateHatsHistogramName(std::nullopt));
+  EXPECT_EQ(std::nullopt, hats::SurveyConfig::ValidateHatsHistogramName(""));
+  EXPECT_EQ(std::nullopt,
+            hats::SurveyConfig::ValidateHatsHistogramName("ExampleSurvey"));
+
+  EXPECT_EQ(std::make_optional<std::string>(
+                "Feedback.HappinessTrackingSurvey.ExampleSurvey"),
+            hats::SurveyConfig::ValidateHatsHistogramName(
+                "Feedback.HappinessTrackingSurvey.ExampleSurvey"));
+}
+
 TEST_F(SurveyConfigTest, ValidateHatsSurveyUkmId) {
   EXPECT_EQ(std::nullopt, hats::SurveyConfig::ValidateHatsSurveyUkmId(0));
   EXPECT_EQ(std::nullopt,

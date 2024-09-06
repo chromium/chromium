@@ -42,7 +42,7 @@ class HatsNextWebDialog : public views::BubbleDialogDelegateView,
  public:
   HatsNextWebDialog(Browser* browser,
                     const std::string& trigger_id,
-                    const std::optional<std::string>& histogram_name,
+                    const std::optional<std::string>& hats_histogram_name,
                     const std::optional<uint64_t> hats_survey_ukm_id,
                     base::OnceClosure success_callback,
                     base::OnceClosure failure_callback,
@@ -109,7 +109,7 @@ class HatsNextWebDialog : public views::BubbleDialogDelegateView,
 
   HatsNextWebDialog(Browser* browser,
                     const std::string& trigger_id,
-                    const std::optional<std::string>& histogram_name,
+                    const std::optional<std::string>& hats_histogram_name,
                     const std::optional<uint64_t> hats_survey_ukm_id,
                     const GURL& hats_survey_url_,
                     const base::TimeDelta& timeout,
@@ -164,7 +164,7 @@ class HatsNextWebDialog : public views::BubbleDialogDelegateView,
   const std::string trigger_id_;
 
   // The UMA histogram name associated with the HaTS survey.
-  const std::optional<std::string> histogram_name_;
+  const std::optional<std::string> hats_histogram_name_;
 
   // The UKM id associated with the HaTS survey.
   const std::optional<uint64_t> hats_survey_ukm_id_;

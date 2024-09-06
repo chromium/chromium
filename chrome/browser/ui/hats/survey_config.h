@@ -133,7 +133,7 @@ struct SurveyConfig {
   std::string trigger_id;
 
   // Histogram name for the survey.
-  std::optional<std::string> histogram_name;
+  std::optional<std::string> hats_histogram_name;
 
   // ID that ties Chrome survey configuration to UKM. This ID can be configured
   // in Finch to any 64-bit unsigned integer. This ID should only be used to
@@ -151,6 +151,12 @@ struct SurveyConfig {
   // Product Specific String Data fields which are sent with the survey
   // response.
   std::vector<std::string> product_specific_string_data_fields;
+
+  // Returns |hats_histogram_name| if |hats_histogram_name| is an non-empty
+  // std::string that is prefixed with Feedback.HappinessTrackingSurvey.
+  // Otherwise, returns std::nullopt.
+  static std::optional<std::string> ValidateHatsHistogramName(
+      const std::optional<std::string>& hats_histogram_name);
 
   // Returns |hats_survey_ukm_id| if |hats_survey_ukm_id| is an non-empty
   // optional greater than 0. Otherwise, returns std::nullopt.

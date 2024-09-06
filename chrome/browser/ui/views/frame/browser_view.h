@@ -603,7 +603,7 @@ class BrowserView : public BrowserWindow,
   void MaybeShowProfileSwitchIPH() override;
   void ShowHatsDialog(
       const std::string& site_id,
-      const std::optional<std::string>& histogram_name,
+      const std::optional<std::string>& hats_histogram_name,
       const std::optional<uint64_t> hats_survey_ukm_id,
       base::OnceClosure success_callback,
       base::OnceClosure failure_callback,
