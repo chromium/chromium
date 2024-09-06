@@ -200,28 +200,15 @@ class PartitionRootEnumerator {
 
 #endif  // PA_USE_PARTITION_ROOT_ENUMERATOR
 
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if (PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+     PA_CONFIG(HAS_ATFORK_HANDLER)) ||              \
+    PA_CONFIG(ENABLE_SHADOW_METADATA)
 
 namespace {
-
-#if PA_CONFIG(HAS_ATFORK_HANDLER)
 
 void LockRoot(PartitionRoot* root, bool) PA_NO_THREAD_SAFETY_ANALYSIS {
   PA_DCHECK(root);
   internal::PartitionRootLock(root).Acquire();
-}
-
-// PA_NO_THREAD_SAFETY_ANALYSIS: acquires the lock and doesn't release it, by
-// design.
-void BeforeForkInParent() PA_NO_THREAD_SAFETY_ANALYSIS {
-  // PartitionRoot::GetLock() is private. So use
-  // g_root_enumerator_lock here.
-  g_root_enumerator_lock.Acquire();
-  internal::PartitionRootEnumerator::Instance().Enumerate(
-      LockRoot, false,
-      internal::PartitionRootEnumerator::EnumerateOrder::kNormal);
-
-  ThreadCacheRegistry::GetLock().Acquire();
 }
 
 template <typename T>
@@ -238,6 +225,30 @@ void UnlockOrReinit(T& lock, bool in_child) PA_NO_THREAD_SAFETY_ANALYSIS {
 void UnlockOrReinitRoot(PartitionRoot* root,
                         bool in_child) PA_NO_THREAD_SAFETY_ANALYSIS {
   UnlockOrReinit(internal::PartitionRootLock(root), in_child);
+}
+
+}  // namespace
+
+#endif  // (PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
+        // PA_CONFIG(HAS_ATFORK_HANDLER)) || PA_CONFIG(ENABLE_SHADOW_METADATA)
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+namespace {
+
+#if PA_CONFIG(HAS_ATFORK_HANDLER)
+
+// PA_NO_THREAD_SAFETY_ANALYSIS: acquires the lock and doesn't release it, by
+// design.
+void BeforeForkInParent() PA_NO_THREAD_SAFETY_ANALYSIS {
+  //  PartitionRoot::GetLock() is private. So use
+  //  g_root_enumerator_lock here.
+  g_root_enumerator_lock.Acquire();
+  internal::PartitionRootEnumerator::Instance().Enumerate(
+      LockRoot, false,
+      internal::PartitionRootEnumerator::EnumerateOrder::kNormal);
+
+  ThreadCacheRegistry::GetLock().Acquire();
 }
 
 void ReleaseLocks(bool in_child) PA_NO_THREAD_SAFETY_ANALYSIS {
@@ -332,6 +343,12 @@ void MakeSuperPageExtentEntriesShared(PartitionRoot* root,
                                       internal::PoolHandleMask mask)
     PA_NO_THREAD_SAFETY_ANALYSIS {
   PA_DCHECK(root);
+  // Regardless of root->ChoosePool(), no chance if shadow_pool_offset_ is
+  // non-zero.
+  if (root->settings.shadow_pool_offset_) {
+    return;
+  }
+
   switch (root->ChoosePool()) {
     case internal::kRegularPoolHandle:
       if (!ContainsFlags(mask, internal::PoolHandleMask::kRegular)) {

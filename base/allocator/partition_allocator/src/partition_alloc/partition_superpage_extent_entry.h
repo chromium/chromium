@@ -45,7 +45,7 @@ struct PartitionSuperPageExtentEntry<MetadataKind::kReadOnly>
     : public PartitionSuperPageExtentEntryBase<MetadataKind::kReadOnly> {
   PartitionSuperPageExtentEntry<MetadataKind::kWritable>* ToWritable(
       const PartitionRoot* partition_root) {
-    return ToWritableInternal(root);
+    return ToWritableInternal(partition_root);
   }
 
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)

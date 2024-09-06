@@ -321,7 +321,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   // reserved for the regular and brp shadow. However the result |true| doesn't
   // mean the given |ptr| is valid. Because we don't use the entire address
   // space for the shadow. We only use 2 SystemPageSize() / kSuperPageSize(%)
-  // of the space. See PoolShadowOffset().
+  // of the space.
   //
   // TODO(crbug.com/40238514) This is an unused function. Start using it in
   // tests and/or in production code.
