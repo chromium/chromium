@@ -2423,9 +2423,7 @@ void HTMLInputElement::showPicker(ExceptionState& exception_state) {
         "HTMLInputElement::showPicker() requires a user gesture.");
     return;
   }
-  if (RuntimeEnabledFeatures::ShowPickerConsumeUserActivationEnabled()) {
-    LocalFrame::ConsumeTransientUserActivation(frame);
-  }
+  LocalFrame::ConsumeTransientUserActivation(frame);
 
   input_type_view_->OpenPopupView();
 }

@@ -1596,9 +1596,7 @@ void HTMLSelectElement::showPicker(ExceptionState& exception_state) {
     return;
   }
 
-  if (RuntimeEnabledFeatures::ShowPickerConsumeUserActivationEnabled()) {
-    LocalFrame::ConsumeTransientUserActivation(frame);
-  }
+  LocalFrame::ConsumeTransientUserActivation(frame);
 
   select_type_->ShowPicker();
 }
