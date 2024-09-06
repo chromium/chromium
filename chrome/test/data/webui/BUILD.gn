@@ -180,6 +180,7 @@ source_set("browser_tests") {
   deps = [
     "//build/config/coverage:buildflags",
     "//chrome/app:command_ids",
+    "//chrome/browser/commerce",
     "//chrome/browser/devtools",
     "//chrome/browser/devtools:test_support",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",

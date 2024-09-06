@@ -432,6 +432,7 @@ static_library("ui") {
     "//chrome/browser/autofill",
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/breadcrumbs",
+    "//chrome/browser/commerce",
     "//chrome/browser/devtools",
     "//chrome/browser/favicon",
     "//chrome/browser/feedback:feedback_impl",

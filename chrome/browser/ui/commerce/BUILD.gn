@@ -17,6 +17,7 @@ source_set("commerce") {
   public_deps = [
     "//base",
     "//chrome/browser/cart:mojo_bindings",
+    "//chrome/browser/commerce",
     "//chrome/browser/ui/page_action:icon_type",
     "//components/commerce/core:commerce_types",
     "//components/commerce/core:shopping_service",

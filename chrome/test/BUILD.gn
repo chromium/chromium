@@ -4643,6 +4643,7 @@ if (!is_android) {
       }
       deps += [
         ":test_support_ui",
+        "//chrome/browser/commerce",
         "//chrome/browser/lens/core/mojom:mojo_bindings",
         "//chrome/browser/ui/actions:actions",
         "//chrome/browser/ui/actions:actions_headers",
@@ -6067,7 +6068,6 @@ test("unit_tests") {
     "../browser/chrome_browser_field_trials_unittest.cc",
     "../browser/chrome_content_browser_client_unittest.cc",
     "../browser/command_updater_impl_unittest.cc",
-    "../browser/commerce/browser_utils_unittest.cc",
     "../browser/commerce/product_specifications/product_specifications_service_factory_unittest.cc",
     "../browser/complex_tasks/task_tab_helper_unittest.cc",
     "../browser/component_updater/afp_blocked_domain_list_component_installer_unittest.cc",
@@ -6620,6 +6620,8 @@ test("unit_tests") {
     "//chrome/browser/breadcrumbs",
     "//chrome/browser/breadcrumbs:unit_tests",
     "//chrome/browser/browsing_data:constants",
+    "//chrome/browser/commerce",
+    "//chrome/browser/commerce:unit_tests",
     "//chrome/browser/crash_upload_list:unit_tests",
     "//chrome/browser/devtools",
     "//chrome/browser/dips:unit_tests",
@@ -11377,6 +11379,7 @@ if (!is_android && !is_chromeos_device) {
       ]
       deps += [
         "//chrome/app/vector_icons:vector_icons",
+        "//chrome/browser/commerce",
         "//chrome/browser/image_fetcher",
         "//chrome/browser/ui/actions:actions",
         "//chrome/browser/ui/commerce",
