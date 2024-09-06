@@ -284,7 +284,8 @@
     ],
     "matches": [
       "chrome://camera-app/*",
-      "chrome://media-app/*"
+      "chrome://media-app/*",
+      "chrome://recorder-app/*"
     ]
   },
   {

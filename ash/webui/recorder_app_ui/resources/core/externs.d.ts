@@ -35,3 +35,18 @@ interface AudioContextOptions {
  */
 
 type RenderResult = unknown;
+
+// Chrome private API for crash report.
+declare namespace chrome.crashReportPrivate {
+  export interface ErrorInfo {
+    message: string;
+    url: string;
+    columnNumber?: number;
+    debugId?: string;
+    lineNumber?: number;
+    product?: string;
+    stackTrace?: string;
+    version?: string;
+  }
+  export const reportError: (info: ErrorInfo, callback: () => void) => void;
+}

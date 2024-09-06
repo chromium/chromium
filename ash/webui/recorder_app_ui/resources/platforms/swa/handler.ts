@@ -24,6 +24,8 @@ import {
 } from '../../core/platform_handler.js';
 import {computed, Signal, signal} from '../../core/reactive/signal.js';
 import {SodaSession} from '../../core/soda/types.js';
+import {assertInstanceof} from '../../core/utils/assert.js';
+import {parseTopFrameInfo} from '../../core/utils/errors.js';
 
 import {
   mojoModelStateToModelState,
@@ -39,6 +41,8 @@ import {
   SodaClientReceiver,
   SodaRecognizerRemote,
 } from './types.js';
+
+const CRASH_SERVER_PRODUCT_NAME = 'ChromeOS_RecorderApp';
 
 export class PlatformHandler extends PlatformHandlerBase {
   private readonly remote = MojoPageHandler.getRemote();
@@ -141,8 +145,26 @@ export class PlatformHandler extends PlatformHandlerBase {
     return nothing;
   }
 
-  override handleUncaughtError(_error: unknown): void {
-    // TODO: b/327537749 - Integrate with error reporting.
+  override handleUncaughtError(errorRaw: unknown): void {
+    const error = assertInstanceof(errorRaw, Error);
+
+    // TODO: b/327538011 - Hook the error handling with the integration tests so
+    // that it can properly fail the test when an error is thrown.
+
+    const stackStr = error.stack ?? '';
+    const {lineNo, colNo} = parseTopFrameInfo(stackStr);
+
+    chrome.crashReportPrivate.reportError(
+      {
+        product: CRASH_SERVER_PRODUCT_NAME,
+        url: self.location.href,
+        message: `${error.name}: ${error.message}`,
+        lineNumber: lineNo,
+        stackTrace: stackStr,
+        columnNumber: colNo,
+      },
+      /* callback= */ () => {}
+    );
   }
 
   override showAiFeedbackDialog(description: string): void {

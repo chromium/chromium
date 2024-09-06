@@ -16,16 +16,14 @@ import {init as initSettings} from './state/settings.js';
 export async function init(platformHandler: PlatformHandler): Promise<void> {
   let dataDir: DataDir|null = null;
 
-  function handleError(e: unknown) {
-    console.error(e);
-    platformHandler.handleUncaughtError(e);
-  }
-
   window.addEventListener('unhandledrejection', (rejection) => {
-    handleError(rejection.reason);
+    // Browser will print the unhandled rejection to the console so no need to
+    // print it ourselves.
+    platformHandler.handleUncaughtError(rejection.reason);
   });
   window.addEventListener('error', (errorEvent) => {
-    handleError(errorEvent.error);
+    console.error(errorEvent.error);
+    platformHandler.handleUncaughtError(errorEvent.error);
   });
 
   installRouter();

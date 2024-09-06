@@ -30,6 +30,7 @@ core_files = [
   "utils/async_job_queue.ts",
   "utils/datetime.ts",
   "utils/draft.ts",
+  "utils/errors.ts",
   "utils/event_handler.ts",
   "utils/interior_mutable_array.ts",
   "utils/iterable_weak_set.ts",
