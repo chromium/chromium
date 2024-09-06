@@ -63,6 +63,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "restriction_schedule/device_restriction_schedule_controller_unittest.cc",
     "weekly_time/checked_util_unittest.cc",
     "weekly_time/time_utils_unittest.cc",
     "weekly_time/weekly_time_checked_unittest.cc",
@@ -77,7 +78,9 @@ source_set("unit_tests") {
     "//base",
     "//base:i18n",
     "//base/test:test_support",
+    "//chromeos/constants",
     "//components/policy/proto",
+    "//components/prefs:test_support",
     "//testing/gtest",
     "//third_party/icu",
   ]
