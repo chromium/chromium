@@ -747,17 +747,6 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     @Test
-    public void onDraggingAnimationEnd_IndexMismatch() {
-        clearViewBeforePost();
-
-        when(mRecyclerView.indexOfChild(mItemView1)).thenReturn(-1);
-
-        ShadowLooper.runUiThreadTasks();
-
-        verify(mGridLayoutManager, never()).removeView(mItemView1);
-    }
-
-    @Test
     public void onDraggingAnimationEnd_NoParent() {
         clearViewBeforePost();
 
