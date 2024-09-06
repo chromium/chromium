@@ -567,7 +567,8 @@ std::unique_ptr<PopupRowWithButtonView> CreateAutocompleteRowWithDeleteButton(
   return std::make_unique<PopupRowWithButtonView>(
       a11y_selection_delegate, selection_delegate, controller, line_number,
       std::move(view), std::move(button),
-      PopupRowWithButtonView::ButtonBehavior::kShowOnHoverOrSelect);
+      PopupRowWithButtonView::ButtonVisibility::kShowOnHoverOrSelect,
+      PopupRowWithButtonView::ButtonSelectBehavior::kUnselectSuggestion);
 }
 
 // Creates the row for creating a plus address inline.
@@ -617,7 +618,8 @@ std::unique_ptr<PopupRowWithButtonView> CreateNewPlusAddressInlineSuggestion(
   return std::make_unique<PopupRowWithButtonView>(
       a11y_selection_delegate, selection_delegate, controller, line_number,
       std::move(view), std::move(button),
-      PopupRowWithButtonView::ButtonBehavior::kShowOnHoverOrSelect);
+      PopupRowWithButtonView::ButtonVisibility::kShowOnHoverOrSelect,
+      PopupRowWithButtonView::ButtonSelectBehavior::kSelectSuggestion);
 }
 
 // Creates the row for the `SuggestionType::kPredictionImprovementsFeedback`
