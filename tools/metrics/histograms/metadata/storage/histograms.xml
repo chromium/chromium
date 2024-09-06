@@ -557,6 +557,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.FileSystemAccess.AttemptToObserveSymlinkOrJunction"
+    enum="Boolean" expires_after="2025-09-01">
+  <owner>memmott@chromium.org</owner>
+  <owner>dslee@chromium.org</owner>
+  <owner>christinesm@chromium.org</owner>
+  <owner>src/content/browser/file_system_access/OWNERS</owner>
+  <summary>
+    Records whether a site attempted to observe a symlink or a junction using
+    the File System Observer API. Recorded on every observe() call after
+    validating the handle and ensuring that read permissions on the handle are
+    granted. This is always reported as false on Android, Fuchsia, and iOS.
+    Symlinks for File System Observer are not supported on these platforms.
+  </summary>
+</histogram>
+
 <histogram name="Storage.FileSystemAccess.FilePathWatcherCallbackError"
     enum="FileSystemAccessWatchWithChangeInfoResult" expires_after="2025-06-27">
   <owner>memmott@chromium.org</owner>
