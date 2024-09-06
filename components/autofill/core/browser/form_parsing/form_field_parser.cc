@@ -88,10 +88,12 @@ void RegexMatchesCache::Put(RegexMatchesCache::Key key, bool value) {
 ParsingContext::ParsingContext(GeoIpCountryCode client_country,
                                LanguageCode page_language,
                                PatternSource pattern_source,
+                               DenseSet<RegexFeature> active_features,
                                LogManager* log_manager)
     : client_country(std::move(client_country)),
       page_language(std::move(page_language)),
       pattern_source(pattern_source),
+      active_features(active_features),
       regex_cache(GetAutofillRegexCache()),
       log_manager(log_manager) {
   if (base::FeatureList::IsEnabled(
@@ -379,6 +381,9 @@ bool FormFieldParser::FieldMatchesMatchPatternRef(
     }
     if (!MatchesFormControlType(field.form_control_type(),
                                 match_params.field_types)) {
+      continue;
+    }
+    if (!pattern.IsActive(context.active_features)) {
       continue;
     }
 

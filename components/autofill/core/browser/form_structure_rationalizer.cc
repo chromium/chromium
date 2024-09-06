@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_parsing/credit_card_field_parser.h"
 #include "components/autofill/core/browser/form_structure_rationalization_engine.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
@@ -1041,7 +1042,8 @@ void FormStructureRationalizer::RationalizeByRationalizationEngine(
     pattern_source = PatternSource::kLegacy;
   }
 
-  ParsingContext context(client_country, language_code, *pattern_source);
+  ParsingContext context(client_country, language_code, *pattern_source,
+                         GetActiveRegexFeatures());
 
   rationalization::ApplyRationalizationEngineRules(context, *fields_,
                                                    log_manager);

@@ -216,6 +216,7 @@ static_library("browser") {
     "form_parsing/address_field_parser.h",
     "form_parsing/address_field_parser_ng.cc",
     "form_parsing/address_field_parser_ng.h",
+    "form_parsing/autofill_parsing_utils.cc",
     "form_parsing/autofill_parsing_utils.h",
     "form_parsing/autofill_scanner.cc",
     "form_parsing/autofill_scanner.h",

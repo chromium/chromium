@@ -42,6 +42,7 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/browser/form_processing/label_processing_util.h"
@@ -194,7 +195,7 @@ void FormStructure::DetermineHeuristicTypes(
           ? current_page_language_
           : LanguageCode();
   ParsingContext context(client_country_, page_language, PatternSource::kLegacy,
-                         log_manager);
+                         GetActiveRegexFeatures(), log_manager);
 
   // The active heuristic source might not be a pattern source.
   std::optional<FieldCandidatesMap> active_predictions;

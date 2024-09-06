@@ -89,30 +89,41 @@ constexpr auto kPatterns = std::to_array<MatchingPattern>({
   .positive_score = 1.0,
   .match_field_attributes = DenseSet<MatchAttribute>{MatchAttribute::kLabel,MatchAttribute::kName},
   .form_control_types = DenseSet<FormControlType>{FormControlType::kInputText,FormControlType::kInputNumber},
+  .feature = OptionalRegexFeatureWithState{RegexFeature::kSomeFeatureFlag, false},
 },
 /*[1]=*/MatchingPattern{
+  .positive_pattern = u"something updated german",
+  .negative_pattern = u"negative pattern",
+  .positive_score = 1.0,
+  .match_field_attributes = DenseSet<MatchAttribute>{MatchAttribute::kLabel,MatchAttribute::kName},
+  .form_control_types = DenseSet<FormControlType>{FormControlType::kInputText,FormControlType::kInputNumber},
+  .feature = OptionalRegexFeatureWithState{RegexFeature::kSomeFeatureFlag, true},
+},
+/*[2]=*/MatchingPattern{
   .positive_pattern = u"english",
   .negative_pattern = u"",
   .positive_score = 1.0,
   .match_field_attributes = DenseSet<MatchAttribute>{MatchAttribute::kLabel,MatchAttribute::kName},
   .form_control_types = DenseSet<FormControlType>{FormControlType::kInputText,FormControlType::kInputNumber},
+  .feature = OptionalRegexFeatureWithState(),
 },
-/*[2]=*/MatchingPattern{
+/*[3]=*/MatchingPattern{
   .positive_pattern = u"pattern 2's regex",
   .negative_pattern = u"",
   .positive_score = 2.3,
   .match_field_attributes = DenseSet<MatchAttribute>{MatchAttribute::kLabel},
   .form_control_types = DenseSet<FormControlType>{FormControlType::kInputText},
+  .feature = OptionalRegexFeatureWithState(),
 },
 });
 
 // The patterns for field types and languages.
 // They are sorted by the patterns MatchingPattern::positive_score.
-constexpr MatchPatternRef kPatterns__0__PATTERN_1[] {MakeMatchPatternRef(false, 0), MakeMatchPatternRef(false, 1)};
-constexpr MatchPatternRef kPatterns__0__PATTERN_1__de[] {MakeMatchPatternRef(false, 0), MakeMatchPatternRef(true, 1)};
-constexpr MatchPatternRef kPatterns__0__PATTERN_1__en[] {MakeMatchPatternRef(false, 1)};
-constexpr MatchPatternRef kPatterns__0__PATTERN_2[] {MakeMatchPatternRef(false, 2)};
-constexpr MatchPatternRef kPatterns__0__PATTERN_2__en[] {MakeMatchPatternRef(false, 2)};
+constexpr MatchPatternRef kPatterns__0__PATTERN_1[] {MakeMatchPatternRef(false, 0), MakeMatchPatternRef(false, 1), MakeMatchPatternRef(false, 2)};
+constexpr MatchPatternRef kPatterns__0__PATTERN_1__de[] {MakeMatchPatternRef(false, 0), MakeMatchPatternRef(false, 1), MakeMatchPatternRef(true, 2)};
+constexpr MatchPatternRef kPatterns__0__PATTERN_1__en[] {MakeMatchPatternRef(false, 2)};
+constexpr MatchPatternRef kPatterns__0__PATTERN_2[] {MakeMatchPatternRef(false, 3)};
+constexpr MatchPatternRef kPatterns__0__PATTERN_2__en[] {MakeMatchPatternRef(false, 3)};
 
 // The lookup map for field types and langs.
 //
