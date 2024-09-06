@@ -137,6 +137,14 @@ class LaunchApplicationTest : public testing::Test {
         destination_executable_path.Append(asan_library_path.BaseName())));
 #endif
 
+#if defined(UNDEFINED_SANITIZER)
+    const base::FilePath ubsan_library_path =
+        data_root.AppendASCII("libclang_rt.ubsan_osx_dynamic.dylib");
+    ASSERT_TRUE(base::CopyFile(
+        ubsan_library_path,
+        destination_executable_path.Append(ubsan_library_path.BaseName())));
+#endif
+
     // Generate the Plist file
     NSDictionary* plist = @{
       @"CFBundleExecutable" :
