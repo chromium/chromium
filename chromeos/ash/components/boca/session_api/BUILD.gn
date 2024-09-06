@@ -7,8 +7,6 @@ assert(is_chromeos_ash)
 
 source_set("session_api") {
   sources = [
-    "//chromeos/ash/components/boca/boca_app_client.cc",
-    "//chromeos/ash/components/boca/boca_app_client.h",
     "constants.h",
     "create_session_request.cc",
     "create_session_request.h",

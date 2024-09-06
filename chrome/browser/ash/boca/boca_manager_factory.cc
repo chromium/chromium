@@ -41,7 +41,8 @@ BocaManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   CHECK(boca_util::IsEnabled());
   Profile* profile = Profile::FromBrowserContext(context);
-  return std::make_unique<BocaManager>(profile);
+  auto service = std::make_unique<BocaManager>(profile);
+  return service;
 }
 
 }  // namespace ash

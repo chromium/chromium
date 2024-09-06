@@ -43,7 +43,7 @@ BocaAppHandler::BocaAppHandler(
       remote_(std::move(remote)),
       boca_ui_(boca_ui) {
   user_identity_ =
-      ash::Shell::Get()->session_controller()->GetActiveAccountId();
+      user_manager::UserManager::Get()->GetActiveUser()->GetAccountId();
 }
 
 BocaAppHandler::~BocaAppHandler() = default;
@@ -124,6 +124,18 @@ void BocaAppHandler::CreateSession(mojom::ConfigPtr config,
   }
 
   session_client_impl_->CreateSession(std::move(request));
+  NotifyLocalConfigUpdate(std::move(config));
+}
+
+void BocaAppHandler::NotifyLocalConfigUpdate(mojom::ConfigPtr config) {
+  if (auto caption_config = std::move(config->caption_config)) {
+    ::boca::CaptionsConfig local_caption_config;
+    // TODO(b/362291997):Update mojom to rename 'local_only' to be 'local'.
+    local_caption_config.set_captions_enabled(caption_config->local_only);
+    local_caption_config.set_translations_enabled(caption_config->local_only);
+    BocaAppClient::Get()->GetSessionManager()->NotifyLocalCaptionEvents(
+        std::move(local_caption_config));
+  }
 }
 
 }  // namespace ash::boca

@@ -12,6 +12,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/boca/boca_app_client.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
@@ -52,18 +53,16 @@ google::protobuf::RepeatedPtrField<::boca::UserIdentity> GetStudentGroupsSafe(
 
 }  // namespace
 
-BocaSessionManager::BocaSessionManager(AccountId account_id)
-    : BocaSessionManager(std::make_unique<SessionClientImpl>(),
-                         std::move(account_id)) {}
-BocaSessionManager::BocaSessionManager(
-    std::unique_ptr<SessionClientImpl> session_client_impl,
-    AccountId account_id)
+BocaSessionManager::BocaSessionManager(SessionClientImpl* session_client_impl,
+                                       AccountId account_id)
     : account_id_(std::move(account_id)),
       session_client_impl_(std::move(session_client_impl)) {
   GetNetworkConfigService(cros_network_config_.BindNewPipeAndPassReceiver());
   cros_network_config_->AddObserver(
       cros_network_config_observer_.BindNewPipeAndPassRemote());
   StartSessionPolling();
+  // Register BocaSessionManager for the current profile.
+  BocaAppClient::Get()->AddSessionManager(this);
 }
 BocaSessionManager::~BocaSessionManager() {}
 
@@ -208,6 +207,13 @@ void BocaSessionManager::NotifyRosterUpdate() {
           kMainStudentGroupName, std::vector<::boca::UserIdentity>(
                                      student_list.begin(), student_list.end()));
     }
+  }
+}
+
+void BocaSessionManager::NotifyLocalCaptionEvents(
+    ::boca::CaptionsConfig caption_config) {
+  for (auto& observer : observers_) {
+    observer.OnLocalCaptionConfigUpdated(std::move(caption_config));
   }
 }
 

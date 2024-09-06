@@ -21,7 +21,11 @@ static_library("boca") {
     "//chromeos/ash/components/boca/proto",
     "//chromeos/ash/components/boca/session_api",
     "//chromeos/ash/components/network",
+    "//components/signin/public/identity_manager",
   ]
+
+  allow_circular_includes_from =
+      [ "//chromeos/ash/components/boca/session_api" ]
 }
 
 source_set("unit_tests") {
@@ -37,6 +41,8 @@ source_set("unit_tests") {
     "//chromeos/ash/components/boca/proto",
     "//chromeos/ash/components/boca/session_api",
     "//chromeos/ash/components/network",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
     "//components/user_manager",
     "//components/user_manager:test_support",
     "//content/test:test_support",

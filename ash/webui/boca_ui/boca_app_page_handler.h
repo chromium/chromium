@@ -43,6 +43,8 @@ class BocaAppHandler : public mojom::PageHandler {
   void CreateSession(mojom::ConfigPtr config,
                      CreateSessionCallback callback) override;
 
+  void NotifyLocalConfigUpdate(mojom::ConfigPtr config);
+
  private:
   TabInfoCollector tab_info_collector_;
   std::unique_ptr<ClassroomPageHandlerImpl> class_room_page_handler_;

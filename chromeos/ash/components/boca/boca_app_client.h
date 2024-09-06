@@ -5,23 +5,23 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_BOCA_BOCA_APP_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_BOCA_BOCA_APP_CLIENT_H_
 
+#include <map>
+
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace network {
 class SharedURLLoaderFactory;
 }
 
-namespace signin {
-class IdentityManager;
-}  // namespace signin
-
 namespace ash::boca {
 
 // Defines the interface for sub features to access hub Events
-class BocaAppClient {
+class BocaAppClient : public signin::IdentityManager::Observer {
  public:
   BocaAppClient(const BocaAppClient&) = delete;
   BocaAppClient& operator=(const BocaAppClient&) = delete;
@@ -35,10 +35,22 @@ class BocaAppClient {
   virtual scoped_refptr<network::SharedURLLoaderFactory>
   GetURLLoaderFactory() = 0;
 
+  // Add `BocaSessionManager` instance for the current profile.
+  virtual void AddSessionManager(BocaSessionManager* session_manager);
+
+  // Get `BocaSessionManager` instance for the current profile.
+  virtual BocaSessionManager* GetSessionManager();
+
+  // IdentityManager overrides.
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
+
  protected:
   BocaAppClient();
-  virtual ~BocaAppClient();
+  ~BocaAppClient() override;
 
+ private:
+  std::map<signin::IdentityManager*, BocaSessionManager*> session_manager_map_;
 };
 
 }  // namespace ash::boca

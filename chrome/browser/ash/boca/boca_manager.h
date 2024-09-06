@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_BOCA_BOCA_MANAGER_H_
 #define CHROME_BROWSER_ASH_BOCA_BOCA_MANAGER_H_
 
+#include "chrome/browser/ash/boca/boca_app_client_impl.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
+#include "chromeos/ash/components/boca/session_api/session_client_impl.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -20,6 +22,7 @@ class BocaManager : public KeyedService {
   ~BocaManager() override;
 
  private:
+  std::unique_ptr<boca::SessionClientImpl> session_client_impl_;
   std::unique_ptr<boca::BocaSessionManager> boca_session_manager_;
 };
 }  // namespace ash

@@ -9,10 +9,13 @@
 
 #include "ash/test/ash_test_base.h"
 #include "base/types/expected.h"
+#include "chromeos/ash/components/boca/boca_app_client.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "chromeos/ash/components/boca/session_api/get_session_request.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -20,7 +23,6 @@
 #include "google_apis/common/request_sender.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 using ::testing::_;
 using ::testing::DoAll;
@@ -74,6 +76,15 @@ class MockObserver : public BocaSessionManager::Observer {
               (override));
 };
 
+class MockBocaAppClient : public BocaAppClient {
+ public:
+  MOCK_METHOD(signin::IdentityManager*, GetIdentityManager, (), (override));
+  MOCK_METHOD(scoped_refptr<network::SharedURLLoaderFactory>,
+              GetURLLoaderFactory,
+              (),
+              (override));
+};
+
 constexpr char kTestGaiaId[] = "123";
 constexpr char kTestUserEmail[] = "cat@gmail.com";
 }  // namespace
@@ -96,20 +107,24 @@ class BocaSessionManagerTest : public testing::Test {
         cros_network_config_helper_.network_state_helper().ConfigureWiFi(
             shill::kStateIdle);
 
-    auto session_client_impl =
+    session_client_impl_ =
         std::make_unique<StrictMock<MockSessionClientImpl>>(nullptr);
-    session_client_impl_ = session_client_impl.get();
 
     observer_ = std::make_unique<StrictMock<MockObserver>>();
 
+    boca_app_client_ = std::make_unique<StrictMock<MockBocaAppClient>>();
     // Start with empty session
     EXPECT_CALL(*session_client_impl_, GetSession(_))
         .WillOnce(testing::InvokeWithoutArgs([&]() {
           boca_session_manager()->ParseSessionResponse(base::ok(nullptr));
         }));
+
+    // Expect to have registered session manager for current profile.
+    EXPECT_CALL(*boca_app_client_, GetIdentityManager())
+        .WillOnce(Return(identity_test_env_.identity_manager()));
+
     boca_session_manager_ = std::make_unique<BocaSessionManager>(
-        std::move(session_client_impl),
-        AccountId::FromUserEmail(kTestUserEmail));
+        session_client_impl_.get(), AccountId::FromUserEmail(kTestUserEmail));
     boca_session_manager_->AddObserver(observer_.get());
     ToggleOffline();
     ToggleOnline();
@@ -132,7 +147,9 @@ class BocaSessionManagerTest : public testing::Test {
         base::Value(shill::kStateDisconnecting));
   }
 
-  MockSessionClientImpl* session_client_impl() { return session_client_impl_; }
+  MockSessionClientImpl* session_client_impl() {
+    return session_client_impl_.get();
+  }
   MockObserver* observer() { return observer_.get(); }
   BocaSessionManager* boca_session_manager() {
     return boca_session_manager_.get();
@@ -140,6 +157,10 @@ class BocaSessionManagerTest : public testing::Test {
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>&
   fake_user_manager() {
     return fake_user_manager_;
+  }
+  MockBocaAppClient* boca_app_client() { return boca_app_client_.get(); }
+  signin::IdentityManager* identity_manager() {
+    return identity_test_env_.identity_manager();
   }
   content::BrowserTaskEnvironment* task_environment() {
     return &task_environment_;
@@ -150,12 +171,15 @@ class BocaSessionManagerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::string wifi_device_path_;
   network_config::CrosNetworkConfigTestHelper cros_network_config_helper_;
-  std::unique_ptr<BocaSessionManager> boca_session_manager_;
+  // BocaAppClient should destruct after identity env.
+  std::unique_ptr<StrictMock<MockBocaAppClient>> boca_app_client_;
+  signin::IdentityTestEnvironment identity_test_env_;
   // Owned by BocaSessionManager, destructed before it.
-  raw_ptr<StrictMock<MockSessionClientImpl>> session_client_impl_;
+  std::unique_ptr<StrictMock<MockSessionClientImpl>> session_client_impl_;
   std::unique_ptr<StrictMock<MockObserver>> observer_;
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
       fake_user_manager_;
+  std::unique_ptr<BocaSessionManager> boca_session_manager_;
 };
 
 TEST_F(BocaSessionManagerTest, DoNothingIfSessionUpdateFailed) {
@@ -614,6 +638,15 @@ TEST_F(BocaSessionManagerTest, DoNotPollSessionWhenUserNotActive) {
 
   task_environment()->FastForwardBy(BocaSessionManager::kPollingInterval * 1 +
                                     base::Seconds(1));
+}
+
+TEST_F(BocaSessionManagerTest, NotifyLocalCaptionConfigWhenLocalChange) {
+  EXPECT_CALL(*boca_app_client(), GetIdentityManager())
+      .WillOnce(Return(identity_manager()));
+  EXPECT_CALL(*observer(), OnLocalCaptionConfigUpdated(_)).Times(1);
+
+  ::boca::CaptionsConfig config;
+  BocaAppClient::Get()->GetSessionManager()->NotifyLocalCaptionEvents(config);
 }
 
 }  // namespace ash::boca

@@ -6,20 +6,22 @@
 
 #include <memory>
 
-#include "ash/test/ash_test_base.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom-forward.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom-shared.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/boca/boca_app_client.h"
+#include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/session_api/create_session_request.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
-#include "chromeos/ash/components/test/ash_test_suite.h"
 #include "components/account_id/account_id.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
@@ -51,22 +53,48 @@ class MockSessionClientImpl : public SessionClientImpl {
               (override));
 };
 
-class BocaAppPageHandlerTest : public AshTestBase {
+class MockBocaAppClient : public BocaAppClient {
+ public:
+  MOCK_METHOD(BocaSessionManager*, GetSessionManager, (), (override));
+  MOCK_METHOD(void, AddSessionManager, (BocaSessionManager*), (override));
+  MOCK_METHOD(signin::IdentityManager*, GetIdentityManager, (), (override));
+  MOCK_METHOD(scoped_refptr<network::SharedURLLoaderFactory>,
+              GetURLLoaderFactory,
+              (),
+              (override));
+};
+
+class MockSessionManager : public BocaSessionManager {
+ public:
+  explicit MockSessionManager(SessionClientImpl* session_client_impl)
+      : BocaSessionManager(session_client_impl,
+                           AccountId::FromUserEmail(kUserEmail)) {}
+  MOCK_METHOD(void,
+              NotifyLocalCaptionEvents,
+              (::boca::CaptionsConfig config),
+              (override));
+  ~MockSessionManager() override = default;
+};
+
+class BocaAppPageHandlerTest : public testing::Test {
  public:
   BocaAppPageHandlerTest() = default;
   void SetUp() override {
+    // Sign in test user.
+    auto account_id = AccountId::FromUserEmailGaiaId(kUserEmail, kGaiaId);
+    fake_user_manager_.Reset(std::make_unique<user_manager::FakeUserManager>());
+    fake_user_manager_->AddUser(account_id);
+
     auto session_client_impl =
         std::make_unique<StrictMock<MockSessionClientImpl>>(nullptr);
     session_client_impl_ = session_client_impl.get();
 
-    // Ash test base setup.
-    ui::ResourceBundle::CleanupSharedInstance();
-    AshTestSuite::LoadTestResources();
-    AshTestBase::SetUp();
+    boca_app_client_ = std::make_unique<StrictMock<MockBocaAppClient>>();
+    EXPECT_CALL(*boca_app_client_, AddSessionManager(_)).Times(1);
 
-    // Sign in test user.
-    AshTestBase::SimulateUserLogin(
-        AccountId::FromUserEmailGaiaId(kUserEmail, kGaiaId));
+    session_manager_ =
+        std::make_unique<StrictMock<MockSessionManager>>(session_client_impl_);
+
     boca_app_handler_ = std::make_unique<BocaAppHandler>(
         nullptr, remote_.BindNewPipeAndPassReceiver(),
         // TODO(b/359929870):Setting nullptr for other dependencies for now.
@@ -77,12 +105,21 @@ class BocaAppPageHandlerTest : public AshTestBase {
 
  protected:
   MockSessionClientImpl* session_client_impl() { return session_client_impl_; }
+  MockBocaAppClient* boca_app_client() { return boca_app_client_.get(); }
+  MockSessionManager* session_manager() { return session_manager_.get(); }
+
   std::unique_ptr<BocaAppHandler> boca_app_handler_;
 
  private:
+  base::test::TaskEnvironment task_environment_;
   mojo::Remote<mojom::PageHandler> remote_;
   mojo::PendingReceiver<mojom::Page> receiver_;
   raw_ptr<StrictMock<MockSessionClientImpl>> session_client_impl_;
+  std::unique_ptr<StrictMock<MockBocaAppClient>> boca_app_client_;
+  std::unique_ptr<StrictMock<MockSessionManager>> session_manager_;
+  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
+      fake_user_manager_;
+  signin::IdentityTestEnvironment identity_test_env_;
 };
 
 TEST_F(BocaAppPageHandlerTest, CreateSessionWithFullInput) {
@@ -194,6 +231,12 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithFullInput) {
             EXPECT_TRUE(request->captions_config()->translations_enabled());
             request->callback().Run("success");
           })));
+
+  // Verify local events dispatched
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .WillOnce(Return(session_manager()));
+  EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
+
   boca_app_handler_->CreateSession(config->Clone(), future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
   EXPECT_TRUE(future_1.Get());
@@ -233,6 +276,10 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithCritialInputOnly) {
 
             request->callback().Run("success");
           })));
+
+  // Verify local events not dispatched
+  EXPECT_CALL(*boca_app_client(), GetSessionManager()).Times(0);
+  EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(0);
 
   boca_app_handler_->CreateSession(config.Clone(), future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());

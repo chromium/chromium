@@ -59,10 +59,8 @@ class BocaSessionManager
     const std::string error_message;
   };
 
-  explicit BocaSessionManager(AccountId account_id);
-  explicit BocaSessionManager(
-      std::unique_ptr<SessionClientImpl> session_client_impl,
-      AccountId account_id);
+  BocaSessionManager(SessionClientImpl* session_client_impl,
+                     AccountId account_id);
   BocaSessionManager(const BocaSessionManager&) = delete;
   BocaSessionManager& operator=(const BocaSessionManager&) = delete;
   ~BocaSessionManager() override;
@@ -115,6 +113,9 @@ class BocaSessionManager
   void ParseSessionResponse(base::expected<std::unique_ptr<::boca::Session>,
                                            google_apis::ApiErrorCode> result);
 
+  // Local events.
+  virtual void NotifyLocalCaptionEvents(::boca::CaptionsConfig caption_config);
+
  private:
   bool IsProfileActive();
   void NotifySessionUpdate();
@@ -134,7 +135,7 @@ class BocaSessionManager
   mojo::Receiver<chromeos::network_config::mojom::CrosNetworkConfigObserver>
       cros_network_config_observer_{this};
   AccountId account_id_;
-  std::unique_ptr<SessionClientImpl> session_client_impl_;
+  raw_ptr<SessionClientImpl> session_client_impl_;
   base::WeakPtrFactory<BocaSessionManager> weak_factory_{this};
 };
 }  // namespace ash::boca

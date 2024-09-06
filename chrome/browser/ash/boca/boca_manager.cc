@@ -9,6 +9,7 @@
 #include "chrome/browser/ash/boca/boca_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
+#include "chromeos/ash/components/boca/session_api/session_client_impl.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/user_manager/user.h"
 
@@ -20,10 +21,11 @@ BocaManager* BocaManager::GetForProfile(Profile* profile) {
 }
 
 BocaManager::BocaManager(Profile* profile) {
+  session_client_impl_ = std::make_unique<boca::SessionClientImpl>();
   boca_session_manager_ = std::make_unique<boca::BocaSessionManager>(
-      ash::BrowserContextHelper::Get()
-          ->GetUserByBrowserContext(profile)
-          ->GetAccountId());
+      session_client_impl_.get(), ash::BrowserContextHelper::Get()
+                                      ->GetUserByBrowserContext(profile)
+                                      ->GetAccountId());
 }
 
 BocaManager::~BocaManager() = default;
