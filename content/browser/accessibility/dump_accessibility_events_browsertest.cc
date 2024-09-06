@@ -968,16 +968,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("role-changed.html"));
 }
 
-// TODO(aboxhall): Fix flakiness on Windows and Mac
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#define MAYBE_AccessibilityEventsReportValidityInvalidField \
-  DISABLED_AccessibilityEventsReportValidityInvalidField
-#else
-#define MAYBE_AccessibilityEventsReportValidityInvalidField \
-  AccessibilityEventsReportValidityInvalidField
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       MAYBE_AccessibilityEventsReportValidityInvalidField) {
+                       AccessibilityEventsReportValidityInvalidField) {
   RunEventTest(FILE_PATH_LITERAL("report-validity-invalid-field.html"));
 }
 
