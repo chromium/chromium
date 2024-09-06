@@ -1032,7 +1032,7 @@ class _AvdInstance:
       avd_type = self._avd_name.split('_')[1]
       logging.info('Emulator Type: %s', avd_type)
 
-      if avd_type in ('car', '32', '34'):
+      if avd_type in ('car', '32', '34', '35'):
         logging.info('Emulator will start slow')
         is_slow_start = True
 
