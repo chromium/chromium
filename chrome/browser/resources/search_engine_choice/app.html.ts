@@ -44,7 +44,9 @@ export function getHtml(this: AppElement) {
   </cr-radio-group>
 </div>
 <div id="buttonContainer">
-  <cr-checkbox ?hidden="${!this.showGuestCheckbox_}">
+  <cr-checkbox ?hidden="${!this.showGuestCheckbox_}"
+      ?checked="${this.saveGuestModeSearchEngineChoice_}"
+      @checked-changed="${this.onCheckboxStateChange_}">
     $i18n{guestCheckboxText}
   </cr-checkbox>
   <cr-button class="action-button" id="actionButton"
@@ -57,7 +59,8 @@ export function getHtml(this: AppElement) {
   </cr-button>
 </div>
 
-${this.showInfoDialog_ ? html`
+${
+      this.showInfoDialog_ ? html`
   <cr-dialog id="infoDialog" show-on-attach>
     <div slot="title">
       <img class="info-dialog-illustration" alt="">
@@ -75,6 +78,7 @@ ${this.showInfoDialog_ ? html`
       </cr-button>
     </div>
   </cr-dialog>
-` : ''}
+` :
+                             ''}
 <!--_html_template_end_-->`;
 }

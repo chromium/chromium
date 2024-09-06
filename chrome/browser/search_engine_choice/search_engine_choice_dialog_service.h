@@ -73,9 +73,13 @@ class SearchEngineChoiceDialogService : public KeyedService {
   // corresponding preferences.
   // `prepopulate_id` is the `prepopulate_id` of the search engine found in
   // `components/search_engines/template_url_data.h`. It will always be > 0.
-  // `entry_point` is the view in which the UI is rendered.
-  // Virtual to be able to mock in tests.
-  virtual void NotifyChoiceMade(int prepopulate_id, EntryPoint entry_point);
+  // `save_guest_mode_selection` will save the guest mode selection so that the
+  // users are not prompted at every guest session launch.
+  // `entry_point` is the view in which the UI is rendered. Virtual to be able
+  // to mock in tests.
+  virtual void NotifyChoiceMade(int prepopulate_id,
+                                bool save_guest_mode_selection,
+                                EntryPoint entry_point);
 
   // Informs the service that the learn more link was clicked. This is used to
   // record histograms. `entry_point` is the view in which the UI is rendered.

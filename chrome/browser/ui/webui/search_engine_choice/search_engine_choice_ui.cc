@@ -162,7 +162,9 @@ void SearchEngineChoiceUI::Initialize(
   }
 }
 
-void SearchEngineChoiceUI::HandleSearchEngineChoiceMade(int prepopulate_id) {
+void SearchEngineChoiceUI::HandleSearchEngineChoiceMade(
+    int prepopulate_id,
+    bool save_guest_mode_selection) {
   if (entry_point_ != SearchEngineChoiceDialogService::EntryPoint::kDialog) {
     // If this callback is null, then this method has already been called, which
     // is a bug. (Or the initialization was skipped, but that would point to
@@ -173,8 +175,8 @@ void SearchEngineChoiceUI::HandleSearchEngineChoiceMade(int prepopulate_id) {
 
   SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
       SearchEngineChoiceDialogServiceFactory::GetForProfile(&profile_.get());
-  search_engine_choice_dialog_service->NotifyChoiceMade(prepopulate_id,
-                                                        entry_point_);
+  search_engine_choice_dialog_service->NotifyChoiceMade(
+      prepopulate_id, save_guest_mode_selection, entry_point_);
 
   // Notify that the choice was made.
   if (on_choice_made_callback_) {

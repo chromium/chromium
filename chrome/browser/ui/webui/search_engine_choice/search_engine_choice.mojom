@@ -21,17 +21,19 @@ interface PageHandler {
     kAtTheBottomWithErrorMargin = 1,
     kNotAtTheBottom = 2,
   };
-// LINT.ThenChange(/tools/metrics/histograms/enums.xml:SearchEngineChoiceScrollState)
+
+  // LINT.ThenChange(/tools/metrics/histograms/enums.xml:SearchEngineChoiceScrollState)
 
   // Displays the Search Engine Choice dialog.
   // Triggered by the `displayDialog()` call in
   // `chrome/browser/resources/search_engine_choice/app.ts`
   DisplayDialog();
 
-  // Changes the search engine based on the user's choice.
-  // Triggered by the `handleSearchEngineChoiceSelected()` call in
-  // `chrome/browser/resources/search_engine_choice/app.ts`
-  HandleSearchEngineChoiceSelected(int32 prepopulate_id);
+  // Updates the search engine based on the user's selection.
+  // If `save_guest_mode_selection` is true, also saves the search engine
+  // preference for future guest mode sessions.
+  HandleSearchEngineChoiceSelected(
+      int32 prepopulate_id, bool save_guest_mode_selection);
 
   // Notifies the `SearchEngineChoiceDialogService` that the learn more link was
   // clicked.

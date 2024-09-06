@@ -4,6 +4,7 @@
 
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
@@ -77,6 +78,7 @@ export class AppElement extends AppElementBase {
   protected actionButtonText_: string = '';
   protected showGuestCheckbox_: boolean =
       loadTimeData.getBoolean('showGuestCheckbox');
+  protected saveGuestModeSearchEngineChoice_: boolean = false;
 
   private resizeObserver_: ResizeObserver|null = null;
   private pageHandler_: PageHandlerRemote =
@@ -193,9 +195,15 @@ export class AppElement extends AppElementBase {
     this.pageHandler_.handleLearnMoreLinkClicked();
   }
 
+  protected onCheckboxStateChange_(e: CustomEvent<{value: boolean}>) {
+    this.saveGuestModeSearchEngineChoice_ = e.detail.value;
+  }
+
   protected onActionButtonClicked_() {
     if (this.hasUserScrolledToTheBottom_) {
-      this.pageHandler_.handleSearchEngineChoiceSelected(this.selectedChoice_);
+      this.pageHandler_.handleSearchEngineChoiceSelected(
+          this.selectedChoice_,
+          this.showGuestCheckbox_ && this.saveGuestModeSearchEngineChoice_);
       return;
     }
 

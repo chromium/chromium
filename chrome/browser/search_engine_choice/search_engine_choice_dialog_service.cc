@@ -133,8 +133,10 @@ SearchEngineChoiceDialogService::SearchEngineChoiceDialogService(
       search_engine_choice_service_(search_engine_choice_service),
       template_url_service_(template_url_service) {}
 
-void SearchEngineChoiceDialogService::NotifyChoiceMade(int prepopulate_id,
-                                                       EntryPoint entry_point) {
+void SearchEngineChoiceDialogService::NotifyChoiceMade(
+    int prepopulate_id,
+    bool save_guest_mode_selection,
+    EntryPoint entry_point) {
   int country_id = search_engine_choice_service_->GetCountryId();
   SCOPED_CRASH_KEY_STRING32(
       "ChoiceService", "choice_country",
@@ -193,6 +195,12 @@ void SearchEngineChoiceDialogService::NotifyChoiceMade(int prepopulate_id,
 
     NOTREACHED(base::NotFatalUntil::M127);
   } else {
+    if (base::FeatureList::IsEnabled(
+            switches::kSearchEngineChoiceGuestExperience) &&
+        profile_->IsGuestSession() && save_guest_mode_selection) {
+      g_browser_process->local_state()->SetInt64(
+          prefs::kDefaultSearchProviderGuestModePrepopulatedId, prepopulate_id);
+    }
     template_url_service_->SetUserSelectedDefaultSearchProvider(
         selected_engine, search_engines::ChoiceMadeLocation::kChoiceScreen);
   }

@@ -22,6 +22,7 @@ namespace variations {
 class VariationsService;
 }
 
+class PrefRegistrySimple;
 class PrefService;
 class TemplateURLService;
 
@@ -94,6 +95,9 @@ class SearchEngineChoiceService : public KeyedService {
   // Clears the country id cache to be able to change countries multiple times
   // in tests.
   void ClearCountryIdCacheForTesting();
+
+  // Register Local state preferences in `registry`.
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
  private:
   // Checks if the search engine choice should be prompted again, based on

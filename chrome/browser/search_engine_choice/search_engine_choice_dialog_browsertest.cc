@@ -85,10 +85,12 @@ class MockSearchEngineChoiceDialogService
         });
 
     ON_CALL(*this, NotifyChoiceMade)
-        .WillByDefault([this](int prepopulate_id, EntryPoint entry_point) {
+        .WillByDefault([this](int prepopulate_id,
+                              bool save_guest_mode_selection,
+                              EntryPoint entry_point) {
           number_of_browsers_with_dialogs_open_ = 0;
-          SearchEngineChoiceDialogService::NotifyChoiceMade(prepopulate_id,
-                                                            entry_point);
+          SearchEngineChoiceDialogService::NotifyChoiceMade(
+              prepopulate_id, save_guest_mode_selection, entry_point);
         });
   }
   ~MockSearchEngineChoiceDialogService() override = default;
@@ -111,7 +113,7 @@ class MockSearchEngineChoiceDialogService
   }
 
   MOCK_METHOD(bool, RegisterDialog, (Browser&, base::OnceClosure), (override));
-  MOCK_METHOD(void, NotifyChoiceMade, (int, EntryPoint), (override));
+  MOCK_METHOD(void, NotifyChoiceMade, (int, bool, EntryPoint), (override));
 
  private:
   unsigned int number_of_browsers_with_dialogs_open_ = 0;
@@ -411,7 +413,8 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
   // Simulate a dialog closing event for the first profile and test that the
   // dialogs for that profile are closed.
   first_profile_service->NotifyChoiceMade(
-      /*prepopulate_id=*/1, EntryPoint::kDialog);
+      /*prepopulate_id=*/1, /*save_guest_mode_selection=*/false,
+      EntryPoint::kDialog);
   CheckDefaultWasSetRecorded();
   EXPECT_FALSE(first_profile_service->IsShowingDialog(
       *first_browser_with_first_profile));
@@ -499,6 +502,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
   // Choose the first search engine to close the dialog.
   TemplateURL* first_search_engine = service->GetSearchEngines().at(0);
   service->NotifyChoiceMade(first_search_engine->prepopulate_id(),
+                            /*save_guest_mode_selection=*/false,
                             EntryPoint::kDialog);
 }
 
@@ -656,7 +660,8 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
 
   EXPECT_NE(default_search_engine_id, kBingId);
   // Set the pref and simulate a dialog closing event.
-  service->NotifyChoiceMade(kBingId, EntryPoint::kDialog);
+  service->NotifyChoiceMade(kBingId, /*save_guest_mode_selection=*/false,
+                            EntryPoint::kDialog);
   EXPECT_FALSE(service->IsShowingDialog(*browser()));
   histogram_tester().ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
@@ -679,7 +684,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
 
   // Complete the choice for the first guest profile.
   first_service->NotifyChoiceMade(
-      TemplateURLPrepopulateData::bing.id,
+      TemplateURLPrepopulateData::bing.id, /*save_guest_mode_selection=*/false,
       SearchEngineChoiceDialogService::EntryPoint::kDialog);
   EXPECT_FALSE(first_service->IsShowingDialog(*first_guest_session));
 
@@ -778,7 +783,8 @@ IN_PROC_BROWSER_TEST_P(SearchEngineRepromptBrowserTest, PRE_Reprompt) {
     // The first item was Google, pick the second then.
     prepopulate_id = service->GetSearchEngines().at(1)->prepopulate_id();
   }
-  service->NotifyChoiceMade(prepopulate_id, EntryPoint::kDialog);
+  service->NotifyChoiceMade(prepopulate_id, /*save_guest_mode_selection=*/false,
+                            EntryPoint::kDialog);
 
   // Choice prefs have been written.
   ASSERT_NE(profile->GetPrefs()->GetInt64(

@@ -603,7 +603,7 @@ IN_PROC_BROWSER_TEST_P(
       SearchEngineChoiceDialogServiceFactory::GetForProfile(
           browser()->profile());
   search_engine_choice_dialog_service->NotifyChoiceMade(
-      /*prepopulate_id=*/1,
+      /*prepopulate_id=*/1, /*save_guest_mode_selection=*/false,
       SearchEngineChoiceDialogService::EntryPoint::kDialog);
 
   // Make sure that the Privacy Sandbox prompt doesn't get displayed on the next
