@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.os.Bundle;
 import android.view.View;
 
 import androidx.lifecycle.Lifecycle.State;
@@ -29,11 +30,15 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -78,6 +83,7 @@ public class SettingsActivityUnitTest {
     }
 
     @Test
+    @DisableFeatures({ChromeFeatureList.SETTINGS_SINGLE_ACTIVITY})
     public void testDefaultLaunchProcess() {
         launchSettingsActivity(TestSettingsFragment.class.getName());
         mActivityScenario.moveToState(State.CREATED);
@@ -88,11 +94,46 @@ public class SettingsActivityUnitTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.SETTINGS_SINGLE_ACTIVITY})
+    public void testDefaultLaunchProcessSingleActivity() {
+        launchSettingsActivity(TestSettingsFragment.class.getName());
+        mActivityScenario.moveToState(State.CREATED);
+
+        assertTrue(
+                "SettingsActivity is using a wrong fragment.",
+                mSettingsActivity.getMainFragment() instanceof TestSettingsFragment);
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.SETTINGS_SINGLE_ACTIVITY})
     public void testUpdateTitle() {
         launchSettingsActivity(TestSettingsFragment.class.getName());
         mActivityScenario.moveToState(State.RESUMED);
 
         assertEquals("Activity title is not set.", "test title", mSettingsActivity.getTitle());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SETTINGS_SINGLE_ACTIVITY})
+    public void testUpdateTitleSingleActivity() {
+        launchSettingsActivity(TestSettingsFragment.class.getName());
+        mActivityScenario.moveToState(State.RESUMED);
+
+        // Simulate opening a new fragment.
+        mActivityScenario.onActivity(
+                (activity) -> {
+                    Bundle args = new Bundle();
+                    args.putString(TestSettingsFragment.EXTRA_TITLE, "new title");
+                    Intent intent =
+                            SettingsIntentUtil.createIntent(
+                                    activity, TestSettingsFragment.class.getName(), args);
+                    activity.onNewIntent(intent);
+                });
+
+        // Wait for the UI update.
+        ShadowLooper.runUiThreadTasks();
+
+        assertEquals("Activity title is not updated.", "new title", mSettingsActivity.getTitle());
     }
 
     @Test

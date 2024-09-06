@@ -18,13 +18,14 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 /** A TestSettingsFragment that has several preference inside. */
 public class TestSettingsFragment extends PreferenceFragmentCompat
         implements SettingsPage, BackPressHandler {
+    public static final String EXTRA_TITLE = "title";
+
     private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
             new ObservableSupplierImpl<>();
 
     private final CallbackHelper mBackPressCallback = new CallbackHelper();
 
-    private static final ObservableSupplier<String> sPageTitle =
-            new ObservableSupplierImpl<>("test title");
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     public CallbackHelper getBackPressCallback() {
         return mBackPressCallback;
@@ -33,11 +34,21 @@ public class TestSettingsFragment extends PreferenceFragmentCompat
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         addPreferencesFromResource(R.xml.test_settings_fragment);
+
+        String title = "test title";
+        Bundle args = getArguments();
+        if (args != null) {
+            String extraTitle = args.getString(EXTRA_TITLE);
+            if (extraTitle != null) {
+                title = extraTitle;
+            }
+        }
+        mPageTitle.set(title);
     }
 
     @Override
     public ObservableSupplier<String> getPageTitle() {
-        return sPageTitle;
+        return mPageTitle;
     }
 
     @Override

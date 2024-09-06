@@ -12,6 +12,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+
 public class SettingsIntentUtil {
     private SettingsIntentUtil() {}
 
@@ -30,6 +32,9 @@ public class SettingsIntentUtil {
             @Nullable Bundle fragmentArgs) {
         Intent intent = new Intent();
         intent.setClass(context, SettingsActivity.class);
+        if (ChromeFeatureList.sSettingsSingleActivity.isEnabled()) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        }
         if (!(context instanceof Activity)) {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

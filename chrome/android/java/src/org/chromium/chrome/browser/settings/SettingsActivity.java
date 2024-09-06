@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -154,15 +155,10 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
         mIsNewlyCreated = savedInstanceState == null;
 
-        String initialFragment = getIntent().getStringExtra(EXTRA_SHOW_FRAGMENT);
-        Bundle initialArguments = getIntent().getBundleExtra(EXTRA_SHOW_FRAGMENT_ARGUMENTS);
-
         // If savedInstanceState is non-null, then the activity is being
         // recreated and super.onCreate() has already recreated the fragment.
         if (savedInstanceState == null) {
-            if (initialFragment == null) initialFragment = MainSettings.class.getName();
-
-            Fragment fragment = Fragment.instantiate(this, initialFragment, initialArguments);
+            Fragment fragment = instantiateMainFragment(getIntent());
             fragmentManager
                     .beginTransaction()
                     .replace(R.id.content, fragment, MAIN_FRAGMENT_TAG)
@@ -174,6 +170,34 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
         mSnackbarManagerSupplier.set(
                 new SnackbarManager(this, findViewById(android.R.id.content), null));
+    }
+
+    @Override
+    public void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        // This callback is called only when the settings UI is operating in the single activity
+        // mode.
+        assert ChromeFeatureList.sSettingsSingleActivity.isEnabled();
+
+        Fragment fragment = instantiateMainFragment(intent);
+        // TODO(b/356743945): Enable transition.
+        getSupportFragmentManager()
+                .beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(R.id.content, fragment, MAIN_FRAGMENT_TAG)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    private Fragment instantiateMainFragment(Intent intent) {
+        String fragmentName = intent.getStringExtra(EXTRA_SHOW_FRAGMENT);
+        if (fragmentName == null) {
+            fragmentName = MainSettings.class.getName();
+        }
+        Bundle arguments = intent.getBundleExtra(EXTRA_SHOW_FRAGMENT_ARGUMENTS);
+
+        return Fragment.instantiate(this, fragmentName, arguments);
     }
 
     /** Set up the bottom sheet for this activity. */
@@ -331,7 +355,16 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         }
 
         if (item.getItemId() == android.R.id.home) {
-            finish();
+            if (ChromeFeatureList.sSettingsSingleActivity.isEnabled()) {
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                if (fragmentManager.getBackStackEntryCount() == 0) {
+                    finish();
+                } else {
+                    fragmentManager.popBackStack();
+                }
+            } else {
+                finish();
+            }
             return true;
         } else if (item.getItemId() == R.id.menu_id_general_help) {
             HelpAndFeedbackLauncherImpl.getForProfile(mProfile)
