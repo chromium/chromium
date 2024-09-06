@@ -12,6 +12,8 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -135,22 +137,70 @@ bool TryAddBrokenAlternativeServiceFieldsToDictionaryValue(
   return true;
 }
 
-quic::QuicServerId QuicServerIdFromString(const std::string& str) {
-  GURL url(str);
-  if (!url.is_valid()) {
-    return quic::QuicServerId();
+static constexpr std::string_view kPrivacyModeDisabledPath = "/";
+static constexpr std::string_view kPrivacyModeEnabledPath = "/private";
+static constexpr std::string_view kPrivacyModeEnabledWithoutClientCertsPath =
+    "/private_without_client_certs";
+static constexpr std::string_view
+    kPrivacyModeEnabledPartitionedStateAllowedPath =
+        "/private_partitioned_state_allowed";
+
+std::string_view PrivacyModeToPathString(PrivacyMode privacy_mode) {
+  switch (privacy_mode) {
+    case PRIVACY_MODE_DISABLED:
+      NOTREACHED_NORETURN();
+    case PRIVACY_MODE_ENABLED:
+      return kPrivacyModeEnabledPath;
+    case PRIVACY_MODE_ENABLED_WITHOUT_CLIENT_CERTS:
+      return kPrivacyModeEnabledWithoutClientCertsPath;
+    case PRIVACY_MODE_ENABLED_PARTITIONED_STATE_ALLOWED:
+      return kPrivacyModeEnabledPartitionedStateAllowedPath;
   }
-  HostPortPair host_port_pair = HostPortPair::FromURL(url);
-  return quic::QuicServerId(host_port_pair.host(), host_port_pair.port(),
-                            url.path_piece() == "/private"
-                                ? PRIVACY_MODE_ENABLED
-                                : PRIVACY_MODE_DISABLED);
 }
 
-std::string QuicServerIdToString(const quic::QuicServerId& server_id) {
-  HostPortPair host_port_pair(server_id.host(), server_id.port());
-  return "https://" + host_port_pair.ToString() +
-         (server_id.privacy_mode_enabled() ? "/private" : "");
+std::optional<PrivacyMode> PrivacyModeFromPathString(std::string_view path) {
+  if (path == kPrivacyModeDisabledPath) {
+    return PRIVACY_MODE_DISABLED;
+  } else if (path == kPrivacyModeEnabledPath) {
+    return PRIVACY_MODE_ENABLED;
+  } else if (path == kPrivacyModeEnabledWithoutClientCertsPath) {
+    return PRIVACY_MODE_ENABLED_WITHOUT_CLIENT_CERTS;
+  } else if (path == kPrivacyModeEnabledPartitionedStateAllowedPath) {
+    return PRIVACY_MODE_ENABLED_PARTITIONED_STATE_ALLOWED;
+  }
+  return std::nullopt;
+}
+
+struct QuicServerIdAndPrivacyMode {
+  quic::QuicServerId server_id;
+  PrivacyMode privacy_mode = PRIVACY_MODE_DISABLED;
+};
+
+std::optional<QuicServerIdAndPrivacyMode> QuicServerIdFromString(
+    const std::string& str) {
+  GURL url(str);
+  if (!url.is_valid()) {
+    return std::nullopt;
+  }
+  std::optional<PrivacyMode> privacy_mode =
+      PrivacyModeFromPathString(url.path_piece());
+  if (!privacy_mode.has_value()) {
+    return std::nullopt;
+  }
+
+  HostPortPair host_port_pair = HostPortPair::FromURL(url);
+
+  return QuicServerIdAndPrivacyMode{
+      quic::QuicServerId(host_port_pair.host(), host_port_pair.port()),
+      *privacy_mode};
+}
+
+std::string QuicServerIdToString(const quic::QuicServerId& server_id,
+                                 PrivacyMode privacy_mode) {
+  return base::StrCat({"https://", server_id.ToHostPortString(),
+                       privacy_mode == PRIVACY_MODE_DISABLED
+                           ? ""
+                           : PrivacyModeToPathString(privacy_mode)});
 }
 
 // Takes in a base::Value::Dict, and whether NetworkAnonymizationKeys are
@@ -653,13 +703,14 @@ void HttpServerPropertiesManager::AddToQuicServerInfoMap(
     if (!quic_server_id_str || quic_server_id_str->empty())
       continue;
 
-    quic::QuicServerId quic_server_id =
+    std::optional<QuicServerIdAndPrivacyMode> result =
         QuicServerIdFromString(*quic_server_id_str);
-    if (quic_server_id.host().empty()) {
+    if (!result.has_value()) {
       DVLOG(1) << "Malformed http_server_properties for quic server: "
                << quic_server_id_str;
       continue;
     }
+    auto [quic_server_id, privacy_mode] = *result;
 
     NetworkAnonymizationKey network_anonymization_key;
     if (!GetNetworkAnonymizationKeyFromDict(*quic_server_info_dict,
@@ -677,10 +728,11 @@ void HttpServerPropertiesManager::AddToQuicServerInfoMap(
                << *quic_server_id_str;
       continue;
     }
-    quic_server_info_map->Put(HttpServerProperties::QuicServerInfoMapKey(
-                                  quic_server_id, network_anonymization_key,
-                                  use_network_anonymization_key),
-                              *quic_server_info);
+    quic_server_info_map->Put(
+        HttpServerProperties::QuicServerInfoMapKey(
+            quic_server_id, privacy_mode, network_anonymization_key,
+            use_network_anonymization_key),
+        *quic_server_info);
   }
 }
 
@@ -843,8 +895,9 @@ void HttpServerPropertiesManager::SaveQuicServerInfoMapToServerPrefs(
     }
 
     base::Value::Dict quic_server_pref_dict;
-    quic_server_pref_dict.Set(kQuicServerIdKey,
-                              QuicServerIdToString(key.server_id));
+    quic_server_pref_dict.Set(
+        kQuicServerIdKey,
+        QuicServerIdToString(key.server_id, key.privacy_mode));
     quic_server_pref_dict.Set(kNetworkAnonymizationKey,
                               std::move(network_anonymization_key_value));
     quic_server_pref_dict.Set(kServerInfoKey, server_info);

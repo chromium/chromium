@@ -93,9 +93,11 @@ bool HttpServerProperties::ServerInfoMapKey::operator<(
 
 HttpServerProperties::QuicServerInfoMapKey::QuicServerInfoMapKey(
     const quic::QuicServerId& server_id,
+    PrivacyMode privacy_mode,
     const NetworkAnonymizationKey& network_anonymization_key,
     bool use_network_anonymization_key)
     : server_id(server_id),
+      privacy_mode(privacy_mode),
       network_anonymization_key(use_network_anonymization_key
                                     ? network_anonymization_key
                                     : NetworkAnonymizationKey()) {}
@@ -104,15 +106,17 @@ HttpServerProperties::QuicServerInfoMapKey::~QuicServerInfoMapKey() = default;
 
 bool HttpServerProperties::QuicServerInfoMapKey::operator<(
     const QuicServerInfoMapKey& other) const {
-  return std::tie(server_id, network_anonymization_key) <
-         std::tie(other.server_id, other.network_anonymization_key);
+  return std::tie(server_id, privacy_mode, network_anonymization_key) <
+         std::tie(other.server_id, other.privacy_mode,
+                  other.network_anonymization_key);
 }
 
 // Used in tests.
 bool HttpServerProperties::QuicServerInfoMapKey::operator==(
     const QuicServerInfoMapKey& other) const {
-  return std::tie(server_id, network_anonymization_key) ==
-         std::tie(other.server_id, other.network_anonymization_key);
+  return std::tie(server_id, privacy_mode, network_anonymization_key) ==
+         std::tie(other.server_id, other.privacy_mode,
+                  other.network_anonymization_key);
 }
 
 HttpServerProperties::ServerInfoMap::ServerInfoMap()
@@ -490,10 +494,11 @@ const ServerNetworkStats* HttpServerProperties::GetServerNetworkStats(
 
 void HttpServerProperties::SetQuicServerInfo(
     const quic::QuicServerId& server_id,
+    PrivacyMode privacy_mode,
     const NetworkAnonymizationKey& network_anonymization_key,
     const std::string& server_info) {
-  QuicServerInfoMapKey key =
-      CreateQuicServerInfoKey(server_id, network_anonymization_key);
+  QuicServerInfoMapKey key = CreateQuicServerInfoKey(server_id, privacy_mode,
+                                                     network_anonymization_key);
   auto it = quic_server_info_map_.Peek(key);
   bool changed =
       (it == quic_server_info_map_.end() || it->second != server_info);
@@ -505,9 +510,10 @@ void HttpServerProperties::SetQuicServerInfo(
 
 const std::string* HttpServerProperties::GetQuicServerInfo(
     const quic::QuicServerId& server_id,
+    PrivacyMode privacy_mode,
     const NetworkAnonymizationKey& network_anonymization_key) {
-  QuicServerInfoMapKey key =
-      CreateQuicServerInfoKey(server_id, network_anonymization_key);
+  QuicServerInfoMapKey key = CreateQuicServerInfoKey(server_id, privacy_mode,
+                                                     network_anonymization_key);
   auto it = quic_server_info_map_.Get(key);
   if (it != quic_server_info_map_.end()) {
     // Since |canonical_server_info_map_| should always map to the most
@@ -526,7 +532,7 @@ const std::string* HttpServerProperties::GetQuicServerInfo(
 
   // When search in |quic_server_info_map_|, do not change the MRU order.
   it = quic_server_info_map_.Peek(CreateQuicServerInfoKey(
-      canonical_itr->second, network_anonymization_key));
+      canonical_itr->second, privacy_mode, network_anonymization_key));
   if (it != quic_server_info_map_.end())
     return &it->second;
 
@@ -963,8 +969,10 @@ const ServerNetworkStats* HttpServerProperties::GetServerNetworkStatsInternal(
 HttpServerProperties::QuicServerInfoMapKey
 HttpServerProperties::CreateQuicServerInfoKey(
     const quic::QuicServerId& server_id,
+    PrivacyMode privacy_mode,
     const NetworkAnonymizationKey& network_anonymization_key) const {
-  return QuicServerInfoMapKey(server_id, network_anonymization_key,
+  return QuicServerInfoMapKey(server_id, privacy_mode,
+                              network_anonymization_key,
                               use_network_anonymization_key_);
 }
 
@@ -1040,10 +1048,9 @@ HttpServerProperties::GetCanonicalServerInfoHost(
     return canonical_server_info_map_.end();
 
   quic::QuicServerId canonical_server_id(*canonical_suffix,
-                                         key.server_id.privacy_mode_enabled(),
                                          key.server_id.port());
   return canonical_server_info_map_.find(CreateQuicServerInfoKey(
-      canonical_server_id, key.network_anonymization_key));
+      canonical_server_id, key.privacy_mode, key.network_anonymization_key));
 }
 
 void HttpServerProperties::RemoveAltSvcCanonicalHost(
@@ -1061,11 +1068,11 @@ void HttpServerProperties::UpdateCanonicalServerInfoMap(
   const std::string* suffix = GetCanonicalSuffix(key.server_id.host());
   if (!suffix)
     return;
-  quic::QuicServerId canonical_server(
-      *suffix, key.server_id.privacy_mode_enabled(), key.server_id.port());
+  quic::QuicServerId canonical_server(*suffix, key.server_id.port());
 
   canonical_server_info_map_[CreateQuicServerInfoKey(
-      canonical_server, key.network_anonymization_key)] = key.server_id;
+      canonical_server, key.privacy_mode, key.network_anonymization_key)] =
+      key.server_id;
 }
 
 const std::string* HttpServerProperties::GetCanonicalSuffix(

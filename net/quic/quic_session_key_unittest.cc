@@ -5,6 +5,7 @@
 #include "net/quic/quic_session_key.h"
 
 #include "net/base/network_anonymization_key.h"
+#include "net/base/privacy_mode.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/schemeful_site.h"
@@ -12,9 +13,8 @@
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/socket/socket_tag.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_server_id.h"
-#include "url/gurl.h"
-
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace net {
 
@@ -35,12 +35,12 @@ TEST(QuicSessionKeyTest, Equality) {
                            SocketTag(), NetworkAnonymizationKey(),
                            SecureDnsPolicy::kAllow,
                            /*require_dns_https_alpn=*/false));
-  EXPECT_EQ(
-      key, QuicSessionKey(
-               quic::QuicServerId("www.example.org", 80, PRIVACY_MODE_DISABLED),
-               ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
-               NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-               /*require_dns_https_alpn=*/false));
+  EXPECT_EQ(key,
+            QuicSessionKey(quic::QuicServerId("www.example.org", 80),
+                           PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                           SessionUsage::kDestination, SocketTag(),
+                           NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                           /*require_dns_https_alpn=*/false));
   EXPECT_NE(
       key, QuicSessionKey(HostPortPair("otherproxy", 80), PRIVACY_MODE_DISABLED,
                           ProxyChain::Direct(), SessionUsage::kDestination,
@@ -110,6 +110,12 @@ TEST(QuicSessionKeyTest, Set) {
                      SecureDnsPolicy::kAllow,
                      /*require_dns_https_alpn=*/false),
       QuicSessionKey(HostPortPair("www.example.org", 80), PRIVACY_MODE_ENABLED,
+                     ProxyChain::Direct(), SessionUsage::kDestination,
+                     SocketTag(), NetworkAnonymizationKey(),
+                     SecureDnsPolicy::kAllow,
+                     /*require_dns_https_alpn=*/false),
+      QuicSessionKey(HostPortPair("www.example.org", 80),
+                     PRIVACY_MODE_ENABLED_WITHOUT_CLIENT_CERTS,
                      ProxyChain::Direct(), SessionUsage::kDestination,
                      SocketTag(), NetworkAnonymizationKey(),
                      SecureDnsPolicy::kAllow,

@@ -1639,8 +1639,8 @@ bool QuicSessionPool::CreateSessionHelper(
   std::unique_ptr<QuicServerInfo> server_info;
   if (params_.max_server_configs_stored_in_properties > 0) {
     server_info = std::make_unique<PropertiesBasedQuicServerInfo>(
-        server_id, key.session_key().network_anonymization_key(),
-        http_server_properties_);
+        server_id, key.session_key().privacy_mode(),
+        key.session_key().network_anonymization_key(), http_server_properties_);
   }
   std::unique_ptr<CryptoClientConfigHandle> crypto_config_handle =
       CreateCryptoConfigHandle(key.session_key().network_anonymization_key());

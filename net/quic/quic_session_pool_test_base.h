@@ -21,6 +21,7 @@
 #include "net/base/features.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "net/base/net_error_details.h"
+#include "net/base/privacy_mode.h"
 #include "net/base/session_usage.h"
 #include "net/base/test_proxy_delegate.h"
 #include "net/cert/mock_cert_verifier.h"
@@ -136,6 +137,7 @@ class QuicSessionPoolTestBase : public WithTaskEnvironment {
 
   bool HasActiveSession(
       const url::SchemeHostPort& scheme_host_port,
+      PrivacyMode privacy_mode = PRIVACY_MODE_DISABLED,
       const NetworkAnonymizationKey& network_anonymization_key =
           NetworkAnonymizationKey(),
       const ProxyChain& proxy_chain = ProxyChain::Direct(),
@@ -150,6 +152,7 @@ class QuicSessionPoolTestBase : public WithTaskEnvironment {
       const url::SchemeHostPort& scheme_host_port);
   QuicChromiumClientSession* GetActiveSession(
       const url::SchemeHostPort& scheme_host_port,
+      PrivacyMode privacy_mode = PRIVACY_MODE_DISABLED,
       const NetworkAnonymizationKey& network_anonymization_key =
           NetworkAnonymizationKey(),
       const ProxyChain& proxy_chain = ProxyChain::Direct(),

@@ -353,8 +353,6 @@ base::Value::Dict NetLogQuicClientSessionParams(
           .Set("versions", ParsedQuicVersionVectorToString(supported_versions))
           .Set("require_confirmation", require_confirmation)
           .Set("cert_verify_flags", cert_verify_flags)
-          .Set("server_id_privacy_mode",
-               session_key->server_id().privacy_mode_enabled())
           .Set("privacy_mode",
                PrivacyModeToDebugString(session_key->privacy_mode()))
           .Set("proxy_chain", session_key->proxy_chain().ToDebugString())

@@ -6,6 +6,7 @@
 
 #include "base/strings/strcat.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/privacy_mode.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/session_usage.h"
@@ -123,7 +124,7 @@ TEST_P(QuicSessionPoolProxyJobTest, CreateProxiedQuicSession) {
   std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
   QuicChromiumClientSession* session =
-      GetActiveSession(origin, nak, proxy_chain);
+      GetActiveSession(origin, PRIVACY_MODE_DISABLED, nak, proxy_chain);
   ASSERT_TRUE(session);
 
   // The direct connection to the proxy has a max packet size 1350. The
@@ -139,8 +140,9 @@ TEST_P(QuicSessionPoolProxyJobTest, CreateProxiedQuicSession) {
 
   // Check that the session to the proxy is keyed by an empty NAK and always
   // uses RFCv1.
-  QuicChromiumClientSession* proxy_session = GetActiveSession(
-      proxy_origin, nak, ProxyChain::ForIpProtection({}), SessionUsage::kProxy);
+  QuicChromiumClientSession* proxy_session =
+      GetActiveSession(proxy_origin, PRIVACY_MODE_DISABLED, nak,
+                       ProxyChain::ForIpProtection({}), SessionUsage::kProxy);
   ASSERT_TRUE(proxy_session);
   EXPECT_EQ(proxy_session->GetQuicVersion(), quic::ParsedQuicVersion::RFCv1());
 
@@ -326,8 +328,8 @@ TEST_P(QuicSessionPoolProxyJobTest, DoubleProxiedQuicSession) {
   ASSERT_EQ(OK, callback_.WaitForResult());
   std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
-  QuicChromiumClientSession* session =
-      GetActiveSession(origin, endpoint_nak, proxy_chain);
+  QuicChromiumClientSession* session = GetActiveSession(
+      origin, PRIVACY_MODE_DISABLED, endpoint_nak, proxy_chain);
   ASSERT_TRUE(session);
 
   // The direct connection to the proxy has a max packet size 1350. The
@@ -345,7 +347,7 @@ TEST_P(QuicSessionPoolProxyJobTest, DoubleProxiedQuicSession) {
   // !kPartitionProxyChains) and RFCv1.
   auto proxy_nak = NetworkAnonymizationKey();
   QuicChromiumClientSession* proxy1_session =
-      GetActiveSession(proxy1_origin, proxy_nak,
+      GetActiveSession(proxy1_origin, PRIVACY_MODE_DISABLED, proxy_nak,
                        ProxyChain::ForIpProtection({}), SessionUsage::kProxy);
   ASSERT_TRUE(proxy1_session);
   EXPECT_EQ(proxy1_session->quic_session_key().network_anonymization_key(),
@@ -354,7 +356,7 @@ TEST_P(QuicSessionPoolProxyJobTest, DoubleProxiedQuicSession) {
 
   // Check that the session to proxy2 uses the endpoint NAK and RFCv1.
   QuicChromiumClientSession* proxy2_session = GetActiveSession(
-      proxy2_origin, endpoint_nak,
+      proxy2_origin, PRIVACY_MODE_DISABLED, endpoint_nak,
       ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
           ProxyServer::SCHEME_QUIC, proxy1_origin.host(), 443)}),
       SessionUsage::kProxy);
@@ -556,7 +558,7 @@ TEST_P(QuicSessionPoolProxyJobTest,
   std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
   QuicChromiumClientSession* session =
-      GetActiveSession(origin, nak, proxy_chain);
+      GetActiveSession(origin, PRIVACY_MODE_DISABLED, nak, proxy_chain);
   ASSERT_TRUE(session);
 
   // Ensure the session finishes creating before proceeding.
