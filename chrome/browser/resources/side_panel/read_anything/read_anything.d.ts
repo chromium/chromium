@@ -56,6 +56,11 @@ declare namespace chrome {
     let darkTheme: number;
     let yellowTheme: number;
     let blueTheme: number;
+    let autoHighlighting: number;
+    let wordHighlighting: number;
+    let phraseHighlighting: number;
+    let sentenceHighlighting: number;
+    let noHighlighting: number;
 
     // Whether the Read Aloud feature flag is enabled.
     let isReadAloudEnabled: boolean;
@@ -67,6 +72,9 @@ declare namespace chrome {
     let isLanguagePackDownloadingEnabled: boolean;
 
     let isAutomaticWordHighlightingEnabled: boolean;
+
+    // Whether the phrase highlighting feature flag is enabled.
+    let isPhraseHighlightingEnabled: boolean;
 
     // Indicates if this page is a Google doc.
     let isGoogleDocs: boolean;
@@ -186,6 +194,9 @@ declare namespace chrome {
 
     // Called when the voice used for speech is changed via the webui toolbar.
     function onVoiceChange(voice: string, lang: string): void;
+
+    // Called when the highlight granularity is changed via the webui toolbar.
+    function onHighlightGranularityChanged(value: number): void;
 
     // Called when a language is enabled/disabled for Read Aloud
     // via the webui language menu.

@@ -387,6 +387,8 @@ BASE_FEATURE(kReadAnythingReadAloudPhraseHighlighting,
 bool IsReadAnythingReadAloudPhraseHighlightingEnabled() {
   return base::FeatureList::IsEnabled(::features::kReadAnythingReadAloud) &&
          base::FeatureList::IsEnabled(
+             ::features::kReadAnythingReadAloudAutomaticWordHighlighting) &&
+         base::FeatureList::IsEnabled(
              ::features::kReadAnythingReadAloudPhraseHighlighting);
 }
 

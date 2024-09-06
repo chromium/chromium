@@ -818,6 +818,15 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("darkTheme", &ReadAnythingAppController::DarkTheme)
       .SetProperty("yellowTheme", &ReadAnythingAppController::YellowTheme)
       .SetProperty("blueTheme", &ReadAnythingAppController::BlueTheme)
+      .SetProperty("autoHighlighting",
+                   &ReadAnythingAppController::AutoHighlighting)
+      .SetProperty("wordHighlighting",
+                   &ReadAnythingAppController::WordHighlighting)
+      .SetProperty("phraseHighlighting",
+                   &ReadAnythingAppController::PhraseHighlighting)
+      .SetProperty("sentenceHighlighting",
+                   &ReadAnythingAppController::SentenceHighlighting)
+      .SetProperty("noHighlighting", &ReadAnythingAppController::NoHighlighting)
       .SetProperty("speechRate", &ReadAnythingAppController::SpeechRate)
       .SetProperty("isGoogleDocs", &ReadAnythingAppController::IsGoogleDocs)
       .SetProperty("isReadAloudEnabled",
@@ -836,6 +845,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                    &ReadAnythingAppController::RequiresDistillation)
       .SetProperty("defaultLanguageForSpeech",
                    &ReadAnythingAppController::GetDefaultLanguageCodeForSpeech)
+      .SetProperty("isPhraseHighlightingEnabled",
+                   &ReadAnythingAppController::IsPhraseHighlightingEnabled)
       .SetMethod("isHighlightOn", &ReadAnythingAppController::IsHighlightOn)
       .SetMethod("getChildren", &ReadAnythingAppController::GetChildren)
       .SetMethod("getDataFontCss", &ReadAnythingAppController::GetDataFontCss)
@@ -878,6 +889,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::TurnedHighlightOn)
       .SetMethod("turnedHighlightOff",
                  &ReadAnythingAppController::TurnedHighlightOff)
+      .SetMethod("onHighlightGranularityChanged",
+                 &ReadAnythingAppController::OnHighlightGranularityChanged)
       .SetMethod("getLineSpacingValue",
                  &ReadAnythingAppController::GetLineSpacingValue)
       .SetMethod("getLetterSpacingValue",
@@ -976,6 +989,10 @@ bool ReadAnythingAppController::ImagesFeatureEnabled() const {
   return features::IsReadAnythingImagesViaAlgorithmEnabled();
 }
 
+bool ReadAnythingAppController::IsPhraseHighlightingEnabled() const {
+  return features::IsReadAnythingReadAloudPhraseHighlightingEnabled();
+}
+
 int ReadAnythingAppController::LetterSpacing() const {
   return model_.letter_spacing();
 }
@@ -1067,6 +1084,27 @@ int ReadAnythingAppController::BlueTheme() const {
 
 bool ReadAnythingAppController::IsHighlightOn() {
   return read_aloud_model_.IsHighlightOn();
+}
+
+int ReadAnythingAppController::AutoHighlighting() const {
+  return static_cast<int>(read_anything::mojom::HighlightGranularity::kOn);
+}
+
+int ReadAnythingAppController::WordHighlighting() const {
+  return static_cast<int>(read_anything::mojom::HighlightGranularity::kWord);
+}
+
+int ReadAnythingAppController::PhraseHighlighting() const {
+  return static_cast<int>(read_anything::mojom::HighlightGranularity::kPhrase);
+}
+
+int ReadAnythingAppController::SentenceHighlighting() const {
+  return static_cast<int>(
+      read_anything::mojom::HighlightGranularity::kSentence);
+}
+
+int ReadAnythingAppController::NoHighlighting() const {
+  return static_cast<int>(read_anything::mojom::HighlightGranularity::kOff);
 }
 
 std::vector<ui::AXNodeID> ReadAnythingAppController::GetChildren(
@@ -1528,6 +1566,13 @@ void ReadAnythingAppController::TurnedHighlightOff() {
   auto granularity = read_anything::mojom::HighlightGranularity::kOff;
   page_handler_->OnHighlightGranularityChanged(granularity);
   read_aloud_model_.set_highlight_granularity((int)granularity);
+}
+
+void ReadAnythingAppController::OnHighlightGranularityChanged(
+    const int granularity) {
+  page_handler_->OnHighlightGranularityChanged(
+      static_cast<read_anything::mojom::HighlightGranularity>(granularity));
+  read_aloud_model_.set_highlight_granularity(granularity);
 }
 
 double ReadAnythingAppController::GetLineSpacingValue(int line_spacing) const {

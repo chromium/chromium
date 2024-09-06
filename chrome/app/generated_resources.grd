@@ -9453,6 +9453,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_WORD_HIGHLIGHT_LABEL" desc="Dropdown option for setting the word highlight granularity in Read Aloud.">
         Word
       </message>
+      <message name="IDS_READING_MODE_PHRASE_HIGHLIGHT_LABEL" desc="Dropdown option for setting the phrase highlight granularity in Read Aloud.">
+        Phrase
+      </message>
       <message name="IDS_READING_MODE_SENTENCE_HIGHLIGHT_LABEL" desc="Dropdown option for setting the sentence highlight granularity in Read Aloud.">
         Sentence
       </message>

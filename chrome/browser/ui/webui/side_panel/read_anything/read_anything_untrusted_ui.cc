@@ -64,6 +64,7 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       {"fontResetTitle", IDS_READING_MODE_FONT_RESET},
       {"autoHighlightTitle", IDS_READING_MODE_AUTO_HIGHLIGHT_LABEL},
       {"wordHighlightTitle", IDS_READING_MODE_WORD_HIGHLIGHT_LABEL},
+      {"phraseHighlightTitle", IDS_READING_MODE_PHRASE_HIGHLIGHT_LABEL},
       {"sentenceHighlightTitle", IDS_READING_MODE_SENTENCE_HIGHLIGHT_LABEL},
       {"noHighlightTitle", IDS_READING_MODE_OFF_HIGHLIGHT_LABEL},
       {"turnHighlightOff", IDS_READING_MODE_TURN_HIGHLIGHT_OFF},

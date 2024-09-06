@@ -170,6 +170,11 @@ class ReadAnythingAppController
   int DarkTheme() const;
   int YellowTheme() const;
   int BlueTheme() const;
+  int AutoHighlighting() const;
+  int WordHighlighting() const;
+  int PhraseHighlighting() const;
+  int SentenceHighlighting() const;
+  int NoHighlighting() const;
   std::string GetStoredVoice() const;
   std::vector<std::string> GetLanguagesEnabledInPref() const;
   std::vector<ui::AXNodeID> GetChildren(ui::AXNodeID ax_node_id) const;
@@ -204,6 +209,7 @@ class ReadAnythingAppController
   bool IsAutoVoiceSwitchingEnabled() const;
   bool IsLanguagePackDownloadingEnabled() const;
   bool IsAutomaticWordHighlightingEnabled() const;
+  bool IsPhraseHighlightingEnabled() const;
   void OnLetterSpacingChange(int value);
   void OnLineSpacingChange(int value);
   void OnThemeChange(int value);
@@ -214,6 +220,7 @@ class ReadAnythingAppController
   bool RequiresDistillation();
   void TurnedHighlightOn();
   void TurnedHighlightOff();
+  void OnHighlightGranularityChanged(int granularity);
   double GetLineSpacingValue(int line_spacing) const;
   double GetLetterSpacingValue(int letter_spacing) const;
   std::vector<std::string> GetSupportedFonts();

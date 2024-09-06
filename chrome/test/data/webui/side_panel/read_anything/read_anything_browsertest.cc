@@ -138,11 +138,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, PlayPause) {
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, HighlightToggle) {
-  RunSidePanelTest("side_panel/read_anything/highlight_toggle_test.js",
-                   "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, NextPrevious) {
   RunSidePanelTest("side_panel/read_anything/next_previous_granularity_test.js",
                    "mocha.run()");
@@ -306,4 +301,31 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudWordHighlightingDisabledMochaTest,
   RunSidePanelTest(
       "side_panel/read_anything/word_highlighting_disabled_test.js",
       "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudWordHighlightingDisabledMochaTest,
+                       HighlightToggle) {
+  RunSidePanelTest("side_panel/read_anything/highlight_toggle_test.js",
+                   "mocha.run()");
+}
+
+class ReadAnythingReadAloudPhraseHighlightingMochaTest
+    : public ReadAnythingMochaBrowserTest {
+ protected:
+  ReadAnythingReadAloudPhraseHighlightingMochaTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kReadAnythingReadAloud,
+         features::kReadAnythingReadAloudAutomaticWordHighlighting,
+         features::kReadAnythingReadAloudPhraseHighlighting},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudPhraseHighlightingMochaTest,
+                       HighlightMenu) {
+  RunSidePanelTest("side_panel/read_anything/highlight_menu_test.js",
+                   "mocha.run()");
 }

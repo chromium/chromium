@@ -21,6 +21,7 @@ build_webui("build") {
     "voice_selection_menu.ts",
     "menus/simple_action_menu.ts",
     "menus/color_menu.ts",
+    "menus/highlight_menu.ts",
     "menus/line_spacing_menu.ts",
     "menus/letter_spacing_menu.ts",
   ]

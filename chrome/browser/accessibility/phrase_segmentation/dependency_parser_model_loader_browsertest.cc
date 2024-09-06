@@ -111,6 +111,7 @@ class DependencyParserModelLoaderBrowserTest
   DependencyParserModelLoaderBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kReadAnythingReadAloud,
+         features::kReadAnythingReadAloudAutomaticWordHighlighting,
          features::kReadAnythingReadAloudPhraseHighlighting},
         {});
   }

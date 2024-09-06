@@ -44,8 +44,8 @@ void ReadAloudAppModel::SetLanguageEnabled(const std::string& lang,
 }
 
 bool ReadAloudAppModel::IsHighlightOn() {
-  return highlight_granularity_ ==
-         static_cast<int>(read_anything::mojom::HighlightGranularity::kOn);
+  return highlight_granularity_ !=
+         static_cast<int>(read_anything::mojom::HighlightGranularity::kOff);
 }
 
 void ReadAloudAppModel::ResetGranularityIndex() {

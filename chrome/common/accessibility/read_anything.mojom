@@ -91,8 +91,17 @@ enum LineSpacing {
 [Extensible, Stable, Uuid="b8c27619-fe28-44a6-bb89-f4eda846b0f8"]
 // Granularity used for highlighting text as it's spoken.
 enum HighlightGranularity {
+  // Automatically selects highlighting granularity based on voice speed.
   [Default]kOn = 0,
+  // Turns off all highlighting.
   kOff = 1,
+  // Attempt to select a particular granularity, regardless of voice speed.
+  // Note that if the TTS engine doesn't support word callbacks, we'll fall back
+  // to sentence granularity, and if phrases aren't supported, we fall back to
+  // auto.
+  [MinVersion=1] kWord = 2,
+  [MinVersion=1] kPhrase = 3,
+  [MinVersion=1] kSentence = 4
 };
 
 // Browser-side handler for requests from untrusted WebUI page.

@@ -8,6 +8,7 @@ import './menus/simple_action_menu.js';
 import './menus/color_menu.js';
 import './menus/line_spacing_menu.js';
 import './menus/letter_spacing_menu.js';
+import './menus/highlight_menu.js';
 import './read_anything_toolbar.css.js';
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
@@ -32,6 +33,7 @@ import {Debouncer, PolymerElement, timeOut} from '//resources/polymer/v3_0/polym
 import {emitEvent, getCurrentSpeechRate, minOverflowLengthToScroll, openMenu, spinnerDebounceTimeout, ToolbarEvent} from './common.js';
 import type {SettingsPrefs} from './common.js';
 import type {ColorMenu} from './menus/color_menu.js';
+import type {HighlightMenu} from './menus/highlight_menu.js';
 import type {LetterSpacingMenu} from './menus/letter_spacing_menu.js';
 import type {LineSpacingMenu} from './menus/line_spacing_menu.js';
 import type {MenuStateItem} from './menus/menu_util.js';
@@ -50,6 +52,7 @@ export interface ReadAnythingToolbarElement {
     fontSizeMenu: CrLazyRenderElement<CrActionMenuElement>,
     moreOptionsMenu: CrLazyRenderElement<CrActionMenuElement>,
     voiceSelectionMenu: VoiceSelectionMenuElement,
+    highlightMenu: HighlightMenu,
     toolbarContainer: HTMLElement,
     more: CrIconButtonElement,
   };
@@ -353,6 +356,16 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         });
   }
 
+  private getHighlightButtonLabel_(): string {
+    if (chrome.readingMode.isPhraseHighlightingEnabled) {
+      return loadTimeData.getString('voiceHighlightLabel');
+    } else {
+      return chrome.readingMode.isHighlightOn() ?
+          loadTimeData.getString('turnHighlightOff') :
+          loadTimeData.getString('turnHighlightOn');
+    }
+  }
+
   // Loading the fonts stylesheet can take a while, especially with slow
   // Internet connections. Since we don't want this to block the rest of
   // Reading Mode from loading, we load this stylesheet asynchronously
@@ -447,7 +460,10 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       this.setCheckMarkForMenu_(
           this.$.rateMenu.getIfExists(), this.rateOptions.indexOf(speechRate));
 
-      this.setHighlightState_(chrome.readingMode.isHighlightOn());
+      if (!chrome.readingMode.isPhraseHighlightingEnabled) {
+        // Only update the toggle state if the highlight menu is disabled.
+        this.setHighlightState_(chrome.readingMode.isHighlightOn());
+      }
     }
   }
 
@@ -534,7 +550,16 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     openMenu(menu, event.target as HTMLElement);
   }
 
-  private onHighlightClick_() {
+  private onHighlightClick_(event: MouseEvent) {
+    if (chrome.readingMode.isPhraseHighlightingEnabled) {
+      this.$.highlightMenu.open(event.target as HTMLElement);
+    } else {
+      // Don't show the highlight menu if phrase highlighting is disabled.
+      this.onHighlightToggleClick_();
+    }
+  }
+
+  private onHighlightToggleClick_() {
     this.logger_.logSpeechSettingsChange(
         ReadAloudSettingsChange.HIGHLIGHT_CHANGE);
     const isHighlightOn = chrome.readingMode.isHighlightOn();
@@ -561,7 +586,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
     emitEvent(this, ToolbarEvent.HIGHLIGHT_TOGGLE);
   }
-
 
   private onFontClick_(event: DomRepeatEvent<string>) {
     this.logger_.logTextSettingsChange(ReadAnythingSettingsChange.FONT_CHANGE);
