@@ -12,6 +12,8 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinator of the plus address creation UI. */
 public class PlusAddressCreationCoordinator {
@@ -26,16 +28,24 @@ public class PlusAddressCreationCoordinator {
             PlusAddressCreationViewBridge bridge,
             PlusAddressCreationNormalStateInfo info,
             boolean refreshSupported) {
+        PropertyModel model = PlusAddressCreationProperties.createDefaultModel();
         PlusAddressCreationBottomSheetContent bottomSheetContent =
-                new PlusAddressCreationBottomSheetContent(activity, info, refreshSupported);
+                new PlusAddressCreationBottomSheetContent(
+                        activity, bottomSheetController, info, refreshSupported);
         mMediator =
                 new PlusAddressCreationMediator(
+                        model,
                         bottomSheetContent,
                         bottomSheetController,
                         layoutStateProvider,
                         tabModel,
                         tabModelSelector,
                         bridge);
+
+        PropertyModelChangeProcessor.create(
+                model,
+                bottomSheetContent,
+                PlusAddressCreationViewBinder::bindPlusAddressCreationBottomSheet);
     }
 
     public void requestShowContent() {

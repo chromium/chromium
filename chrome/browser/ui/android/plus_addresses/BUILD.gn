@@ -31,6 +31,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationErrorStateInfo.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationMediator.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationNormalStateInfo.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationProperties.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationViewBinder.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationViewBridge.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusProfile.java",
   ]

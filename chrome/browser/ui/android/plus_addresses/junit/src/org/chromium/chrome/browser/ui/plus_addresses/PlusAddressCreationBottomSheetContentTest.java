@@ -37,6 +37,7 @@ import org.robolectric.shadows.ShadowView;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.ContentPriority;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.widget.LoadingView;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
@@ -80,6 +81,7 @@ public class PlusAddressCreationBottomSheetContentTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private PlusAddressCreationDelegate mDelegate;
+    @Mock private BottomSheetController mBottomSheetController;
 
     private Activity mActivity;
     private PlusAddressCreationBottomSheetContent mBottomSheetContent;
@@ -92,7 +94,10 @@ public class PlusAddressCreationBottomSheetContentTest {
         LoadingView.setDisableAnimationForTest(true);
         mBottomSheetContent =
                 new PlusAddressCreationBottomSheetContent(
-                        mActivity, FIRST_TIME_USAGE_INFO, REFRESH_SUPPORTED);
+                        mActivity,
+                        mBottomSheetController,
+                        FIRST_TIME_USAGE_INFO,
+                        REFRESH_SUPPORTED);
         mBottomSheetContent.setDelegate(mDelegate);
     }
 
@@ -139,7 +144,10 @@ public class PlusAddressCreationBottomSheetContentTest {
     public void testRefreshButton_RefreshNotSupported() {
         PlusAddressCreationBottomSheetContent bottomSheetContent =
                 new PlusAddressCreationBottomSheetContent(
-                        mActivity, FIRST_TIME_USAGE_INFO, /* refreshSupported= */ false);
+                        mActivity,
+                        mBottomSheetController,
+                        FIRST_TIME_USAGE_INFO,
+                        /* refreshSupported= */ false);
         ImageView refreshIcon =
                 bottomSheetContent.getContentView().findViewById(R.id.refresh_plus_address_icon);
         assertEquals(refreshIcon.getVisibility(), View.GONE);
@@ -166,7 +174,7 @@ public class PlusAddressCreationBottomSheetContentTest {
     public void testSecondTimeUsage() {
         PlusAddressCreationBottomSheetContent bottomSheetContent =
                 new PlusAddressCreationBottomSheetContent(
-                        mActivity, INFO, /* refreshSupported= */ false);
+                        mActivity, mBottomSheetController, INFO, /* refreshSupported= */ false);
         TextView firstTimeNotice =
                 bottomSheetContent
                         .getContentView()

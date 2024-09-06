@@ -1,0 +1,27 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.ui.plus_addresses;
+
+import static org.chromium.chrome.browser.ui.plus_addresses.PlusAddressCreationProperties.VISIBLE;
+
+import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
+
+/** Binds the {@code PlusAddressCreationProperties} to the {@PlusAddressCreationView}. */
+class PlusAddressCreationViewBinder {
+
+    static void bindPlusAddressCreationBottomSheet(
+            PropertyModel model,
+            PlusAddressCreationBottomSheetContent view,
+            PropertyKey propertyKey) {
+        if (propertyKey == VISIBLE) {
+            view.setVisible(model.get(VISIBLE));
+        } else {
+            assert false : "Every possible property update needs to be handled!";
+        }
+    }
+
+    private PlusAddressCreationViewBinder() {}
+}
