@@ -40,7 +40,7 @@ export function getHtml(this: ViewerSidePanelElement) {
           <label class="color-item">
             <input type="radio" class="color-chip"
                 name="${this.getColorName_()}" .value="${item.color}"
-                .style="--item-color: ${item.color}"
+                .style="--item-color: ${this.getVisibleColor_(item.color)}"
                 @click="${this.onColorClick_}"
                 ?checked="${this.isCurrentColor_(item.color)}">
           </label>`)}

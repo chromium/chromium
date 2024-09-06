@@ -91,6 +91,10 @@ const PEN_SIZES: SizeOption[] = [
   {icon: 'pen-size-5', name: 'sizeExtraThick', size: 8},
 ];
 
+// LINT.IfChange(HighlighterOpacity)
+const HIGHLIGHTER_OPACITY: number = 0.4;
+// LINT.ThenChange(//pdf/pdf_ink_brush.cc:HighlighterOpacity)
+
 /**
  * @param hex A hex-coded color string, formatted as '#ffffff'.
  * @returns The `Color` in RGB values.
@@ -103,6 +107,28 @@ function hexToColor(hex: string): Color {
     g: Number.parseInt(hex.substring(3, 5), 16),
     b: Number.parseInt(hex.substring(5, 7), 16),
   };
+}
+
+/**
+ * @param color The `Color` in RGB values.
+ * @returns A hex-coded color string, formatted as '#ffffff'.
+ */
+function colorToHex(color: Color): string {
+  const rgb = [color.r, color.g, color.b]
+                  .map(value => value.toString(16).padStart(2, '0'))
+                  .join('');
+  return `#${rgb}`;
+}
+
+/**
+ * Blends `colorValue` with highlighter opacity on a white background.
+ * @param colorValue The red, green, or blue value of a color.
+ * @returns The new respective red, green, or blue value of a color that has
+ * been transformed using the highlighter transparency on a white background.
+ */
+function blendHighlighterColorValue(colorValue: number): number {
+  return Math.round(
+      colorValue * HIGHLIGHTER_OPACITY + 255 * (1 - HIGHLIGHTER_OPACITY));
 }
 
 /**
@@ -258,6 +284,22 @@ export class ViewerSidePanelElement extends CrLitElement {
     return this.currentType_ === AnnotationBrushType.HIGHLIGHTER ?
         'highlighterColors' :
         'penColors';
+  }
+
+  protected getVisibleColor_(hex: string): string {
+    if (this.currentType_ !== AnnotationBrushType.HIGHLIGHTER) {
+      return hex;
+    }
+
+    // Highlighter colors are transparent, but the side panel background is
+    // dark. Instead of setting the alpha value, calculate the RGB of the
+    // highlighter color with transparency on a white background.
+    const color = hexToColor(hex);
+    color.r = blendHighlighterColorValue(color.r);
+    color.g = blendHighlighterColorValue(color.g);
+    color.b = blendHighlighterColorValue(color.b);
+
+    return colorToHex(color);
   }
 
   protected getCurrentBrushSizes_(): SizeOption[] {

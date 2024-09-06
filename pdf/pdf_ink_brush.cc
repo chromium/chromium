@@ -39,7 +39,9 @@ float GetCornerRounding(PdfInkBrush::Type type) {
 float GetOpacity(PdfInkBrush::Type type) {
   switch (type) {
     case PdfInkBrush::Type::kHighlighter:
+      // LINT.IfChange(HighlighterOpacity)
       return 0.4f;
+      // LINT.ThenChange(//chrome/browser/resources/pdf/elements/viewer_side_panel.ts:HighlighterOpacity)
     case PdfInkBrush::Type::kPen:
       return 1.0f;
   }
