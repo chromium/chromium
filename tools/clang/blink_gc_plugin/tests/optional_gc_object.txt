@@ -10,88 +10,100 @@ optional_gc_object.cpp:16:3: warning: [blink-gc] Disallowed optional field or va
 optional_gc_object.cpp:18:3: warning: [blink-gc] Disallowed optional field or variable of type 'optional<blink::Traceable>' found; 'Traceable' is a garbage-collected or traceable type. Optional fields and variables cannot hold garbage-collected or traceable objects.
   std::optional<Traceable> optional_field4_;
   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-optional_gc_object.cpp:19:3: warning: [blink-gc] Disallowed raw_ptr or raw_ref field or variable of type 'raw_ptr<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Raw_ptr and raw_ref field and variable cannot hold garbage-collected or traceable objects.
+optional_gc_object.cpp:19:3: warning: [blink-gc] Disallowed optional field of type 'optional<cppgc::internal::BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>>' found; 'BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a Member/WeakMember type. Optional fields and variables cannot hold Members.
+  absl::optional<Member<Base>> optional_field5_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+optional_gc_object.cpp:20:3: warning: [blink-gc] Disallowed optional field of type 'optional<cppgc::internal::BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>>' found; 'BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a Member/WeakMember type. Optional fields and variables cannot hold Members.
+  std::optional<Member<Base>> optional_field6_;
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+optional_gc_object.cpp:21:3: warning: [blink-gc] Disallowed raw_ptr or raw_ref field or variable of type 'raw_ptr<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Raw_ptr and raw_ref field and variable cannot hold garbage-collected or traceable objects.
   base::raw_ptr<Base> raw_ptr_field_;
   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-optional_gc_object.cpp:20:3: warning: [blink-gc] Disallowed raw_ptr or raw_ref field or variable of type 'raw_ptr<blink::Traceable>' found; 'Traceable' is a garbage-collected or traceable type. Raw_ptr and raw_ref field and variable cannot hold garbage-collected or traceable objects.
+optional_gc_object.cpp:22:3: warning: [blink-gc] Disallowed raw_ptr or raw_ref field or variable of type 'raw_ptr<blink::Traceable>' found; 'Traceable' is a garbage-collected or traceable type. Raw_ptr and raw_ref field and variable cannot hold garbage-collected or traceable objects.
   base::raw_ptr<Traceable> raw_ptr_field2_;
   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-optional_gc_object.cpp:21:3: warning: [blink-gc] Disallowed raw_ptr or raw_ref field or variable of type 'raw_ref<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Raw_ptr and raw_ref field and variable cannot hold garbage-collected or traceable objects.
+optional_gc_object.cpp:23:3: warning: [blink-gc] Disallowed raw_ptr or raw_ref field or variable of type 'raw_ref<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Raw_ptr and raw_ref field and variable cannot hold garbage-collected or traceable objects.
   base::raw_ref<Base> raw_ref_field_;
   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-optional_gc_object.cpp:22:3: warning: [blink-gc] Disallowed raw_ptr or raw_ref field or variable of type 'raw_ref<blink::Traceable>' found; 'Traceable' is a garbage-collected or traceable type. Raw_ptr and raw_ref field and variable cannot hold garbage-collected or traceable objects.
+optional_gc_object.cpp:24:3: warning: [blink-gc] Disallowed raw_ptr or raw_ref field or variable of type 'raw_ref<blink::Traceable>' found; 'Traceable' is a garbage-collected or traceable type. Raw_ptr and raw_ref field and variable cannot hold garbage-collected or traceable objects.
   base::raw_ref<Traceable> raw_ref_field2_;
   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-optional_gc_object.cpp:36:5: warning: [blink-gc] Disallowed new-expression of 'optional<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Optional fields cannot hold garbage-collected or traceable objects.
+optional_gc_object.cpp:41:5: warning: [blink-gc] Disallowed new-expression of 'optional<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Optional fields cannot hold garbage-collected or traceable objects.
     new absl::optional<Base>;  // New expression with gced optionals are not
     ^~~~~~~~~~~~~~~~~~~~~~~~
-optional_gc_object.cpp:39:5: warning: [blink-gc] Disallowed new-expression of 'optional<blink::Traceable>' found; 'Traceable' is a garbage-collected or traceable type. Optional fields cannot hold garbage-collected or traceable objects.
+optional_gc_object.cpp:44:5: warning: [blink-gc] Disallowed new-expression of 'optional<blink::Traceable>' found; 'Traceable' is a garbage-collected or traceable type. Optional fields cannot hold garbage-collected or traceable objects.
     new absl::optional<Traceable>;  // New expression with traceable optionals
     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-optional_gc_object.cpp:27:5: warning: [blink-gc] Disallowed optional field or variable of type 'optional<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Optional fields and variables cannot hold garbage-collected or traceable objects.
+optional_gc_object.cpp:47:5: warning: [blink-gc] Disallowed new-expression of 'optional<cppgc::internal::BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>>' found; 'BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a Member/WeakMember type. Optional fields cannot hold Members.
+    new absl::optional<Member<Base>>;
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+optional_gc_object.cpp:29:5: warning: [blink-gc] Disallowed optional field or variable of type 'optional<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Optional fields and variables cannot hold garbage-collected or traceable objects.
     absl::optional<Base> optional_base;
     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-optional_gc_object.cpp:30:5: warning: [blink-gc] Disallowed optional field or variable of type 'optional<blink::Derived>' found; 'Derived' is a garbage-collected or traceable type. Optional fields and variables cannot hold garbage-collected or traceable objects.
+optional_gc_object.cpp:32:5: warning: [blink-gc] Disallowed optional field or variable of type 'optional<blink::Derived>' found; 'Derived' is a garbage-collected or traceable type. Optional fields and variables cannot hold garbage-collected or traceable objects.
     absl::optional<Derived> optional_derived;
     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-optional_gc_object.cpp:53:5: warning: [blink-gc] Disallowed new-expression of 'optional<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Optional fields cannot hold garbage-collected or traceable objects.
+optional_gc_object.cpp:63:5: warning: [blink-gc] Disallowed new-expression of 'optional<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Optional fields cannot hold garbage-collected or traceable objects.
     new std::optional<Base>;  // New expression with gced optionals are not
     ^~~~~~~~~~~~~~~~~~~~~~~
-optional_gc_object.cpp:56:5: warning: [blink-gc] Disallowed new-expression of 'optional<blink::Traceable>' found; 'Traceable' is a garbage-collected or traceable type. Optional fields cannot hold garbage-collected or traceable objects.
+optional_gc_object.cpp:66:5: warning: [blink-gc] Disallowed new-expression of 'optional<blink::Traceable>' found; 'Traceable' is a garbage-collected or traceable type. Optional fields cannot hold garbage-collected or traceable objects.
     new std::optional<Traceable>;  // New expression with traceable optionals
     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-optional_gc_object.cpp:44:5: warning: [blink-gc] Disallowed optional field or variable of type 'optional<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Optional fields and variables cannot hold garbage-collected or traceable objects.
+optional_gc_object.cpp:69:5: warning: [blink-gc] Disallowed new-expression of 'optional<cppgc::internal::BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>>' found; 'BasicMember<blink::Base, cppgc::internal::StrongMemberTag, cppgc::internal::WriteBarrierPolicyImpl, cppgc::internal::CheckingPolicyImpl, cppgc::internal::StorateTypeImpl>' is a Member/WeakMember type. Optional fields cannot hold Members.
+    new std::optional<Member<Base>>;
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+optional_gc_object.cpp:51:5: warning: [blink-gc] Disallowed optional field or variable of type 'optional<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Optional fields and variables cannot hold garbage-collected or traceable objects.
     std::optional<Base> optional_base;
     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-optional_gc_object.cpp:47:5: warning: [blink-gc] Disallowed optional field or variable of type 'optional<blink::Derived>' found; 'Derived' is a garbage-collected or traceable type. Optional fields and variables cannot hold garbage-collected or traceable objects.
+optional_gc_object.cpp:54:5: warning: [blink-gc] Disallowed optional field or variable of type 'optional<blink::Derived>' found; 'Derived' is a garbage-collected or traceable type. Optional fields and variables cannot hold garbage-collected or traceable objects.
     std::optional<Derived> optional_derived;
     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-optional_gc_object.cpp:70:5: warning: [blink-gc] Disallowed new-expression of 'raw_ptr<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Raw_ptr and raw_ref fields cannot hold garbage-collected or traceable objects.
+optional_gc_object.cpp:82:5: warning: [blink-gc] Disallowed new-expression of 'raw_ptr<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Raw_ptr and raw_ref fields cannot hold garbage-collected or traceable objects.
     new base::raw_ptr<Base>;  // New expression with gced raw_ptrs are not
     ^~~~~~~~~~~~~~~~~~~~~~~
-optional_gc_object.cpp:73:5: warning: [blink-gc] Disallowed new-expression of 'raw_ptr<blink::Traceable>' found; 'Traceable' is a garbage-collected or traceable type. Raw_ptr and raw_ref fields cannot hold garbage-collected or traceable objects.
+optional_gc_object.cpp:85:5: warning: [blink-gc] Disallowed new-expression of 'raw_ptr<blink::Traceable>' found; 'Traceable' is a garbage-collected or traceable type. Raw_ptr and raw_ref fields cannot hold garbage-collected or traceable objects.
     new base::raw_ptr<Traceable>;  // New expression with traceable raw_ptrs
     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-optional_gc_object.cpp:61:5: warning: [blink-gc] Disallowed raw_ptr or raw_ref field or variable of type 'raw_ptr<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Raw_ptr and raw_ref field and variable cannot hold garbage-collected or traceable objects.
+optional_gc_object.cpp:73:5: warning: [blink-gc] Disallowed raw_ptr or raw_ref field or variable of type 'raw_ptr<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Raw_ptr and raw_ref field and variable cannot hold garbage-collected or traceable objects.
     base::raw_ptr<Base> raw_ptr_base;
     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-optional_gc_object.cpp:64:5: warning: [blink-gc] Disallowed raw_ptr or raw_ref field or variable of type 'raw_ptr<blink::Derived>' found; 'Derived' is a garbage-collected or traceable type. Raw_ptr and raw_ref field and variable cannot hold garbage-collected or traceable objects.
+optional_gc_object.cpp:76:5: warning: [blink-gc] Disallowed raw_ptr or raw_ref field or variable of type 'raw_ptr<blink::Derived>' found; 'Derived' is a garbage-collected or traceable type. Raw_ptr and raw_ref field and variable cannot hold garbage-collected or traceable objects.
     base::raw_ptr<Derived> raw_ptr_derived;
     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-optional_gc_object.cpp:67:5: warning: [blink-gc] Disallowed raw_ptr or raw_ref field or variable of type 'raw_ptr<blink::Traceable>' found; 'Traceable' is a garbage-collected or traceable type. Raw_ptr and raw_ref field and variable cannot hold garbage-collected or traceable objects.
+optional_gc_object.cpp:79:5: warning: [blink-gc] Disallowed raw_ptr or raw_ref field or variable of type 'raw_ptr<blink::Traceable>' found; 'Traceable' is a garbage-collected or traceable type. Raw_ptr and raw_ref field and variable cannot hold garbage-collected or traceable objects.
     base::raw_ptr<Traceable> raw_ptr_traceable;
     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-optional_gc_object.cpp:87:5: warning: [blink-gc] Disallowed new-expression of 'raw_ref<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Raw_ptr and raw_ref fields cannot hold garbage-collected or traceable objects.
+optional_gc_object.cpp:99:5: warning: [blink-gc] Disallowed new-expression of 'raw_ref<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Raw_ptr and raw_ref fields cannot hold garbage-collected or traceable objects.
     new base::raw_ref<Base>;  // New expression with gced raw_refs are not
     ^~~~~~~~~~~~~~~~~~~~~~~
-optional_gc_object.cpp:90:5: warning: [blink-gc] Disallowed new-expression of 'raw_ref<blink::Traceable>' found; 'Traceable' is a garbage-collected or traceable type. Raw_ptr and raw_ref fields cannot hold garbage-collected or traceable objects.
+optional_gc_object.cpp:102:5: warning: [blink-gc] Disallowed new-expression of 'raw_ref<blink::Traceable>' found; 'Traceable' is a garbage-collected or traceable type. Raw_ptr and raw_ref fields cannot hold garbage-collected or traceable objects.
     new base::raw_ref<Traceable>;  // New expression with traceable raw_refs
     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-optional_gc_object.cpp:78:5: warning: [blink-gc] Disallowed raw_ptr or raw_ref field or variable of type 'raw_ref<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Raw_ptr and raw_ref field and variable cannot hold garbage-collected or traceable objects.
+optional_gc_object.cpp:90:5: warning: [blink-gc] Disallowed raw_ptr or raw_ref field or variable of type 'raw_ref<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Raw_ptr and raw_ref field and variable cannot hold garbage-collected or traceable objects.
     base::raw_ref<Base> raw_ref_base;
     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-optional_gc_object.cpp:81:5: warning: [blink-gc] Disallowed raw_ptr or raw_ref field or variable of type 'raw_ref<blink::Derived>' found; 'Derived' is a garbage-collected or traceable type. Raw_ptr and raw_ref field and variable cannot hold garbage-collected or traceable objects.
+optional_gc_object.cpp:93:5: warning: [blink-gc] Disallowed raw_ptr or raw_ref field or variable of type 'raw_ref<blink::Derived>' found; 'Derived' is a garbage-collected or traceable type. Raw_ptr and raw_ref field and variable cannot hold garbage-collected or traceable objects.
     base::raw_ref<Derived> raw_ref_derived;
     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-optional_gc_object.cpp:84:5: warning: [blink-gc] Disallowed raw_ptr or raw_ref field or variable of type 'raw_ref<blink::Traceable>' found; 'Traceable' is a garbage-collected or traceable type. Raw_ptr and raw_ref field and variable cannot hold garbage-collected or traceable objects.
+optional_gc_object.cpp:96:5: warning: [blink-gc] Disallowed raw_ptr or raw_ref field or variable of type 'raw_ref<blink::Traceable>' found; 'Traceable' is a garbage-collected or traceable type. Raw_ptr and raw_ref field and variable cannot hold garbage-collected or traceable objects.
     base::raw_ref<Traceable> raw_ref_traceable;
     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-optional_gc_object.cpp:112:3: warning: [blink-gc] Disallowed optional field or variable of type 'optional<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Optional fields and variables cannot hold garbage-collected or traceable objects.
+optional_gc_object.cpp:126:3: warning: [blink-gc] Disallowed optional field or variable of type 'optional<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Optional fields and variables cannot hold garbage-collected or traceable objects.
   absl::optional<Base> optional_field_;
   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-optional_gc_object.cpp:113:3: warning: [blink-gc] Disallowed optional field or variable of type 'optional<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Optional fields and variables cannot hold garbage-collected or traceable objects.
+optional_gc_object.cpp:127:3: warning: [blink-gc] Disallowed optional field or variable of type 'optional<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Optional fields and variables cannot hold garbage-collected or traceable objects.
   std::optional<Base> optional_field2_;
   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-optional_gc_object.cpp:116:3: warning: [blink-gc] Disallowed raw_ptr or raw_ref field or variable of type 'raw_ptr<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Raw_ptr and raw_ref field and variable cannot hold garbage-collected or traceable objects.
+optional_gc_object.cpp:132:3: warning: [blink-gc] Disallowed raw_ptr or raw_ref field or variable of type 'raw_ptr<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Raw_ptr and raw_ref field and variable cannot hold garbage-collected or traceable objects.
   base::raw_ptr<Base> raw_ptr_field_;
   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-optional_gc_object.cpp:117:3: warning: [blink-gc] Disallowed raw_ptr or raw_ref field or variable of type 'raw_ptr<blink::Traceable>' found; 'Traceable' is a garbage-collected or traceable type. Raw_ptr and raw_ref field and variable cannot hold garbage-collected or traceable objects.
+optional_gc_object.cpp:133:3: warning: [blink-gc] Disallowed raw_ptr or raw_ref field or variable of type 'raw_ptr<blink::Traceable>' found; 'Traceable' is a garbage-collected or traceable type. Raw_ptr and raw_ref field and variable cannot hold garbage-collected or traceable objects.
   base::raw_ptr<Traceable> raw_ptr_field2_;
   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-optional_gc_object.cpp:118:3: warning: [blink-gc] Disallowed raw_ptr or raw_ref field or variable of type 'raw_ref<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Raw_ptr and raw_ref field and variable cannot hold garbage-collected or traceable objects.
+optional_gc_object.cpp:134:3: warning: [blink-gc] Disallowed raw_ptr or raw_ref field or variable of type 'raw_ref<blink::Base>' found; 'Base' is a garbage-collected or traceable type. Raw_ptr and raw_ref field and variable cannot hold garbage-collected or traceable objects.
   base::raw_ref<Base> raw_ref_field_;
   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-optional_gc_object.cpp:119:3: warning: [blink-gc] Disallowed raw_ptr or raw_ref field or variable of type 'raw_ref<blink::Traceable>' found; 'Traceable' is a garbage-collected or traceable type. Raw_ptr and raw_ref field and variable cannot hold garbage-collected or traceable objects.
+optional_gc_object.cpp:135:3: warning: [blink-gc] Disallowed raw_ptr or raw_ref field or variable of type 'raw_ref<blink::Traceable>' found; 'Traceable' is a garbage-collected or traceable type. Raw_ptr and raw_ref field and variable cannot hold garbage-collected or traceable objects.
   base::raw_ref<Traceable> raw_ref_field2_;
   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-32 warnings generated.
+36 warnings generated.

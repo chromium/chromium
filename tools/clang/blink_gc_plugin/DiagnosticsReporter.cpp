@@ -228,6 +228,15 @@ const char kOptionalNewExprUsedWithGC[] =
     "garbage-collected or traceable "
     "type. Optional fields cannot hold garbage-collected or traceable objects.";
 
+const char kOptionalDeclUsedWithMember[] =
+    "[blink-gc] Disallowed optional field of type %0 found; %1 is "
+    "a Member/WeakMember type. Optional fields and variables cannot hold "
+    "Members.";
+
+const char kOptionalNewExprUsedWithMember[] =
+    "[blink-gc] Disallowed new-expression of %0 found; %1 is a "
+    "Member/WeakMember type. Optional fields cannot hold Members.";
+
 const char kRawPtrOrRefDeclUsedWithGC[] =
     "[blink-gc] Disallowed raw_ptr or raw_ref field or variable of type %0 "
     "found; %1 is a "
@@ -393,6 +402,10 @@ DiagnosticsReporter::DiagnosticsReporter(
       diagnostic_.getCustomDiagID(getErrorLevel(), kOptionalDeclUsedWithGC);
   diag_optional_new_expr_used_with_gc_ =
       diagnostic_.getCustomDiagID(getErrorLevel(), kOptionalNewExprUsedWithGC);
+  diag_optional_decl_used_with_member_ =
+      diagnostic_.getCustomDiagID(getErrorLevel(), kOptionalDeclUsedWithMember);
+  diag_optional_new_expr_used_with_member_ = diagnostic_.getCustomDiagID(
+      getErrorLevel(), kOptionalNewExprUsedWithMember);
   diag_raw_ptr_or_ref_decl_used_with_gc_ =
       diagnostic_.getCustomDiagID(getErrorLevel(), kRawPtrOrRefDeclUsedWithGC);
   diag_raw_ptr_or_ref_new_expr_used_with_gc_ = diagnostic_.getCustomDiagID(
@@ -783,6 +796,23 @@ void DiagnosticsReporter::OptionalNewExprUsedWithGC(
     const clang::CXXRecordDecl* gc_type) {
   ReportDiagnostic(expr->getBeginLoc(), diag_optional_new_expr_used_with_gc_)
       << optional << gc_type << expr->getSourceRange();
+}
+
+void DiagnosticsReporter::OptionalDeclUsedWithMember(
+    const clang::Decl* decl,
+    const clang::CXXRecordDecl* optional,
+    const clang::CXXRecordDecl* member) {
+  ReportDiagnostic(decl->getBeginLoc(), diag_optional_decl_used_with_member_)
+      << optional << member << decl->getSourceRange();
+}
+
+void DiagnosticsReporter::OptionalNewExprUsedWithMember(
+    const clang::Expr* expr,
+    const clang::CXXRecordDecl* optional,
+    const clang::CXXRecordDecl* member) {
+  ReportDiagnostic(expr->getBeginLoc(),
+                   diag_optional_new_expr_used_with_member_)
+      << optional << member << expr->getSourceRange();
 }
 
 void DiagnosticsReporter::RawPtrOrRefDeclUsedWithGC(
