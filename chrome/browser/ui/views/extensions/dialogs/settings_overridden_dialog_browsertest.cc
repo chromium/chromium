@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/extensions/settings_overridden_dialog.h"
+#include "chrome/browser/ui/views/extensions/dialogs/settings_overridden_dialog.h"
 
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
@@ -109,8 +109,9 @@ class SettingsOverriddenDialogViewBrowserTest : public DialogBrowserTest {
         u"Settings overridden dialog title",
         u"Settings overriden dialog body, which is quite a bit "
         u"longer than the title alone"};
-    if (show_icon)
+    if (show_icon) {
       params.icon = &vector_icons::kProductIcon;
+    }
 
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                          kExtensionSettingsOverridenDialogName);
@@ -141,8 +142,9 @@ class SettingsOverriddenDialogViewBrowserTest : public DialogBrowserTest {
   }
 
   bool VerifyUi() override {
-    if (!DialogBrowserTest::VerifyUi())
+    if (!DialogBrowserTest::VerifyUi()) {
       return false;
+    }
 
     if (base::StartsWith(test_name_, "SearchOverriddenDialog",
                          base::CompareCase::SENSITIVE)) {
@@ -192,8 +194,9 @@ class SettingsOverriddenDialogViewBrowserTest : public DialogBrowserTest {
   }
 
   void SetNewSearchProvider(DefaultSearch search) {
-    if (search == DefaultSearch::kUseDefault)
+    if (search == DefaultSearch::kUseDefault) {
       return;
+    }
 
     TemplateURLService* const template_url_service =
         TemplateURLServiceFactory::GetForProfile(browser()->profile());
