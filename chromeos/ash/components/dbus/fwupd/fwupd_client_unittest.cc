@@ -832,7 +832,7 @@ TEST_F(FwupdClientTest, SetFeatureFlagsWithV2FlagEnabled) {
 
 struct FwupdClientTest_DeviceRequestParam {
   std::string device_request_id_key;
-  int expected_index_of_request_id;
+  uint32_t expected_index_of_request_id;
 };
 
 class FwupdClientTest_DeviceRequest
@@ -900,22 +900,11 @@ TEST_P(FwupdClientTest_DeviceRequest, OnDeviceRequestReceived) {
   writer.CloseContainer(&sub_writer);
 
   MockObserver observer;
-  auto GetRequestId = [](FwupdRequest request) -> std::optional<uint32_t> {
-    return request.id;
-  };
-  auto GetRequestKind = [](FwupdRequest request) -> std::optional<uint32_t> {
-    return request.kind;
-  };
-  EXPECT_CALL(
-      observer,
-      OnDeviceRequestResponse(testing::AllOf(
-          // Ensure that the resulting observer is triggered with the
-          // correctly-parsed DeviceRequestId.
-          testing::ResultOf(
-              "Request ID", GetRequestId,
-              testing::Eq(GetParam().expected_index_of_request_id)),
-          testing::ResultOf("Request Kind", GetRequestKind, testing::Eq(2)))))
-      .Times(1);
+  EXPECT_CALL(observer, OnDeviceRequestResponse(_))
+      .WillOnce(Invoke([&](FwupdRequest req) {
+        EXPECT_EQ(req.id, GetParam().expected_index_of_request_id);
+        EXPECT_EQ(req.kind, 2u);
+      }));
 
   fwupd_client_->AddObserver(&observer);
 
