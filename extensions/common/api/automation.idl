@@ -475,6 +475,7 @@
     attributeExplicitlyEmpty,
     caption,
     contents,
+    cssAltText,
     placeholder,
     popoverAttribute,
     prohibited,

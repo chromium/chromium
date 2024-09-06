@@ -4652,11 +4652,10 @@ String AXNodeObject::TextAlternative(
   if (GetLayoutObject()) {
     std::optional<String> text_alternative = GetCSSAltText(GetElement());
     if (text_alternative) {
-      // TODO(accessibility) Add NameFrom::CSSAltText.
-      name_from = ax::mojom::blink::NameFrom::kAttribute;
+      name_from = ax::mojom::blink::NameFrom::kCssAltText;
       if (name_sources) {
         name_sources->push_back(NameSource(false));
-        name_sources->back().type = ax::mojom::blink::NameFrom::kAttribute;
+        name_sources->back().type = name_from;
         name_sources->back().text = text_alternative.value();
       }
       return text_alternative.value();
@@ -4876,6 +4875,7 @@ static bool ShouldInsertSpaceBetweenObjectsIfNeeded(
       break;
     case ax::mojom::blink::NameFrom::kAttribute:
     case ax::mojom::blink::NameFrom::kCaption:
+    case ax::mojom::blink::NameFrom::kCssAltText:
     case ax::mojom::blink::NameFrom::kPlaceholder:
     case ax::mojom::blink::NameFrom::kRelatedElement:
     case ax::mojom::blink::NameFrom::kTitle:
@@ -4892,6 +4892,7 @@ static bool ShouldInsertSpaceBetweenObjectsIfNeeded(
       break;
     case ax::mojom::blink::NameFrom::kAttribute:
     case ax::mojom::blink::NameFrom::kCaption:
+    case ax::mojom::blink::NameFrom::kCssAltText:
     case ax::mojom::blink::NameFrom::kPlaceholder:
     case ax::mojom::blink::NameFrom::kRelatedElement:
     case ax::mojom::blink::NameFrom::kTitle:

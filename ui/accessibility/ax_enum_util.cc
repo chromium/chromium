@@ -2376,6 +2376,8 @@ const char* ToString(ax::mojom::NameFrom name_from) {
       return "caption";
     case ax::mojom::NameFrom::kContents:
       return "contents";
+    case ax::mojom::NameFrom::kCssAltText:
+      return "cssAltText";
     case ax::mojom::NameFrom::kPlaceholder:
       return "placeholder";
     case ax::mojom::NameFrom::kProhibited:

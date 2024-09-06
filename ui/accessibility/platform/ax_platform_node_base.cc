@@ -1311,6 +1311,10 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
       from = "contents";
       DCHECK(!GetName().empty());
       break;
+    case ax::mojom::NameFrom::kCssAltText:
+      from = "CSS alt text";
+      DCHECK(!GetName().empty());
+      break;
     case ax::mojom::NameFrom::kPlaceholder:
       from = "placeholder";
       DCHECK(!GetName().empty());

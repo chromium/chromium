@@ -1297,6 +1297,9 @@ enum NameFrom {
   // text fields.
   kContents,
 
+  // The name comes from CSS alt text.
+  kCssAltText,
+
   // The name of this text field comes from its placeholder.
   kPlaceholder,
 

@@ -430,6 +430,7 @@ declare namespace chrome {
       ATTRIBUTE_EXPLICITLY_EMPTY = 'attributeExplicitlyEmpty',
       CAPTION = 'caption',
       CONTENTS = 'contents',
+      CSSALTTEXT = 'cssAltText',
       PLACEHOLDER = 'placeholder',
       POPOVER_ATTRIBUTE = 'popoverAttribute',
       PROHIBITED = 'prohibited',
