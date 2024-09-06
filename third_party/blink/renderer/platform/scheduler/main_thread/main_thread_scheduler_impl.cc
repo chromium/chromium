@@ -1566,8 +1566,14 @@ RAILMode MainThreadSchedulerImpl::ComputeCurrentRAILMode(
 
   switch (use_case) {
     case UseCase::kTouchstart:
-    case UseCase::kDiscreteInputResponse:
       return RAILMode::kResponse;
+
+    case UseCase::kDiscreteInputResponse:
+      // TODO(crbug.com/350540984): This really should be `RAILMode::kResponse`,
+      // but switching out of the loading mode affects GC and causes some
+      // benchmark regressions. For now, don't change the `RAILMode` for this
+      // experimental `UseCase`.
+      return main_thread_only().current_policy.rail_mode;
 
     case UseCase::kCompositorGesture:
     case UseCase::kSynchronizedGesture:
