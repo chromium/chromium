@@ -49,13 +49,6 @@ constexpr char kObsoleteAutofillWalletImportEnabled[] =
 constexpr char kObsoleteAutofillWalletImportEnabledMigrated[] =
     "sync.autofill_wallet_import_enabled_migrated";
 
-// State of the migration done by
-// MaybeMigratePrefsForSyncToSigninPart1() and
-// MaybeMigratePrefsForSyncToSigninPart2(). Should be cleaned up
-// after those migration methods are gone.
-constexpr char kSyncToSigninMigrationState[] =
-    "sync.sync_to_signin_migration_state";
-
 // State of the migration done by MaybeMigrateCustomPassphrasePref().
 constexpr char kSyncEncryptionBootstrapTokenPerAccountMigrationDone[] =
     "sync.encryption_bootstrap_token_per_account_migration_done";
@@ -179,7 +172,8 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterBooleanPref(kObsoleteAutofillWalletImportEnabledMigrated,
                                 false);
-  registry->RegisterIntegerPref(kSyncToSigninMigrationState, kNotMigrated);
+  registry->RegisterIntegerPref(prefs::internal::kSyncToSigninMigrationState,
+                                kNotMigrated);
   registry->RegisterBooleanPref(
       prefs::internal::kMigrateReadingListFromLocalToAccount, false);
 
@@ -823,12 +817,13 @@ bool SyncPrefs::MaybeMigratePrefsForSyncToSigninPart1(
     const signin::GaiaIdHash& gaia_id_hash) {
   if (!base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos)) {
     // Ensure that the migration runs again when the feature gets enabled.
-    pref_service_->ClearPref(kSyncToSigninMigrationState);
+    pref_service_->ClearPref(prefs::internal::kSyncToSigninMigrationState);
     return false;
   }
 
   // Don't migrate again if this profile was previously migrated.
-  if (pref_service_->GetInteger(kSyncToSigninMigrationState) != kNotMigrated) {
+  if (pref_service_->GetInteger(prefs::internal::kSyncToSigninMigrationState) !=
+      kNotMigrated) {
     return false;
   }
 
@@ -836,7 +831,7 @@ bool SyncPrefs::MaybeMigratePrefsForSyncToSigninPart1(
     // Special case for local sync: There isn't necessarily a signed-in user
     // (even if the SyncAccountState is kSyncing), so just mark the migration as
     // done.
-    pref_service_->SetInteger(kSyncToSigninMigrationState,
+    pref_service_->SetInteger(prefs::internal::kSyncToSigninMigrationState,
                               kMigratedPart2AndFullyDone);
     return false;
   }
@@ -847,12 +842,12 @@ bool SyncPrefs::MaybeMigratePrefsForSyncToSigninPart1(
       // Nothing to migrate for signed-out or syncing users. Also make sure the
       // second part of the migration does *not* run if a signed-out user does
       // later sign in / turn on sync.
-      pref_service_->SetInteger(kSyncToSigninMigrationState,
+      pref_service_->SetInteger(prefs::internal::kSyncToSigninMigrationState,
                                 kMigratedPart2AndFullyDone);
       return false;
     }
     case SyncAccountState::kSignedInNotSyncing: {
-      pref_service_->SetInteger(kSyncToSigninMigrationState,
+      pref_service_->SetInteger(prefs::internal::kSyncToSigninMigrationState,
                                 kMigratedPart1ButNot2);
       CHECK(gaia_id_hash.IsValid());
       ScopedDictPrefUpdate update_selected_types_dict(
@@ -896,17 +891,17 @@ bool SyncPrefs::MaybeMigratePrefsForSyncToSigninPart2(
   // somehow happened, do *not* run the migration, and clear the pref so that
   // the migration will get triggered again once the feature gets enabled again.
   if (!base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos)) {
-    pref_service_->ClearPref(kSyncToSigninMigrationState);
+    pref_service_->ClearPref(prefs::internal::kSyncToSigninMigrationState);
     return false;
   }
 
   // Only run part 2 of the migration if part 1 has run but part 2 hasn't yet.
   // This ensures that it only runs once.
-  if (pref_service_->GetInteger(kSyncToSigninMigrationState) !=
+  if (pref_service_->GetInteger(prefs::internal::kSyncToSigninMigrationState) !=
       kMigratedPart1ButNot2) {
     return false;
   }
-  pref_service_->SetInteger(kSyncToSigninMigrationState,
+  pref_service_->SetInteger(prefs::internal::kSyncToSigninMigrationState,
                             kMigratedPart2AndFullyDone);
 
   // The actual migration: For explicit-passphrase users, addresses sync gets
@@ -1056,7 +1051,7 @@ void SyncPrefs::MigrateGlobalDataTypePrefsToAccount(
   // previously. But just in case it hasn't, make sure it doesn't run in the
   // future - it's not neeced, and in fact it might mess up some of the things
   // that were just migrated here.
-  pref_service->SetInteger(kSyncToSigninMigrationState,
+  pref_service->SetInteger(prefs::internal::kSyncToSigninMigrationState,
                            kMigratedPart2AndFullyDone);
 }
 
@@ -1109,9 +1104,9 @@ void SyncPrefs::MarkPartialSyncToSigninMigrationFullyDone() {
   // there's no more need for any migration.
   // In all other cases (migration never even started, or completed fully),
   // nothing to be done here.
-  if (pref_service_->GetInteger(kSyncToSigninMigrationState) ==
+  if (pref_service_->GetInteger(prefs::internal::kSyncToSigninMigrationState) ==
       kMigratedPart1ButNot2) {
-    pref_service_->SetInteger(kSyncToSigninMigrationState,
+    pref_service_->SetInteger(prefs::internal::kSyncToSigninMigrationState,
                               kMigratedPart2AndFullyDone);
   }
 }

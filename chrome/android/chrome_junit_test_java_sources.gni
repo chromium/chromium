@@ -67,6 +67,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/background_sync/PeriodicBackgroundSyncChromeWakeUpTaskTest.java",
   "junit/src/org/chromium/chrome/browser/background_task_scheduler/NativeBackgroundTaskTest.java",
   "junit/src/org/chromium/chrome/browser/backup/ChromeBackupAgentTest.java",
+  "junit/src/org/chromium/chrome/browser/backup/IntPrefBackupSerializerTest.java",
   "junit/src/org/chromium/chrome/browser/base/DexFixerTest.java",
   "junit/src/org/chromium/chrome/browser/base/SplitPreloaderTest.java",
   "junit/src/org/chromium/chrome/browser/bookmarks/AddToBookmarksToolbarButtonControllerUnitTest.java",

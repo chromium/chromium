@@ -170,6 +170,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/backup/ChromeBackupAgentImpl.java",
   "java/src/org/chromium/chrome/browser/backup/ChromeBackupWatcher.java",
   "java/src/org/chromium/chrome/browser/backup/DictPrefBackupSerializer.java",
+  "java/src/org/chromium/chrome/browser/backup/IntPrefBackupSerializer.java",
   "java/src/org/chromium/chrome/browser/backup/PrefBackupSerializer.java",
   "java/src/org/chromium/chrome/browser/bookmarks/AddToBookmarksToolbarButtonController.java",
   "java/src/org/chromium/chrome/browser/bookmarks/BasicBookmarkQueryHandler.java",

@@ -133,7 +133,10 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
     // The supported PrefBackupSerializers, each responsible for allowlisting certain prefs for
     // backup & restore.
     static final List<PrefBackupSerializer> NATIVE_PREFS_SERIALIZERS =
-            List.of(new BoolPrefBackupSerializer(), new DictPrefBackupSerializer());
+            List.of(
+                    new BoolPrefBackupSerializer(),
+                    new DictPrefBackupSerializer(),
+                    new IntPrefBackupSerializer());
 
     // Key used to store the email of the syncing account. This email is obtained from
     // IdentityManager during the backup.
