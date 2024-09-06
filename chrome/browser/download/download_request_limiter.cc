@@ -523,7 +523,7 @@ void DownloadRequestLimiter::CanDownload(
   // OnCanDownloadDecided is invoked, we look it up by |render_process_host_id|
   // and |render_view_id|.
   base::OnceCallback<void(bool)> can_download_callback = base::BindOnce(
-      &DownloadRequestLimiter::OnCanDownloadDecided, factory_.GetWeakPtr(),
+      &DownloadRequestLimiter::OnCanDownloadDecided, factory_.GetWeakPtr(), url,
       web_contents_getter, request_method, std::move(request_initiator),
       from_download_cross_origin_redirect, std::move(callback));
 
@@ -532,6 +532,7 @@ void DownloadRequestLimiter::CanDownload(
 }
 
 void DownloadRequestLimiter::OnCanDownloadDecided(
+    const GURL& url,
     const content::WebContents::Getter& web_contents_getter,
     const std::string& request_method,
     std::optional<url::Origin> request_initiator,
@@ -546,7 +547,7 @@ void DownloadRequestLimiter::OnCanDownloadDecided(
   }
 
   CanDownloadImpl(
-      originating_contents, request_method, std::move(request_initiator),
+      url, originating_contents, request_method, std::move(request_initiator),
       from_download_cross_origin_redirect, std::move(orig_callback));
 }
 
@@ -570,6 +571,7 @@ ContentSetting DownloadRequestLimiter::GetAutoDownloadContentSetting(
 }
 
 void DownloadRequestLimiter::CanDownloadImpl(
+    const GURL& url,
     content::WebContents* originating_contents,
     const std::string& request_method,
     std::optional<url::Origin> request_initiator,
@@ -590,33 +592,23 @@ void DownloadRequestLimiter::CanDownloadImpl(
   state->set_download_seen();
   bool ret = true;
 
-  // |request_initiator| may come from another web_contents. Check the content
-  // settings first to see if the download needs to be blocked.
-  GURL initiator = request_initiator ? request_initiator->GetURL()
-                                     : originating_contents->GetVisibleURL();
-
-  // Use the origin of |originating_contents| as a back up, if it is non-opaque.
-  url::Origin origin =
-      url::Origin::Create(originating_contents->GetVisibleURL());
-
-  // If |request_initiator| has a non-opaque origin or if the origin from
-  // |originating_contents| is opaque, use the origin from |request_initiator|
-  // to make decisions so that it won't impact the download state of
-  // |originating_contents|.
-  if (request_initiator && (!request_initiator->opaque() || origin.opaque()))
-    origin = request_initiator.value();
+  // If `request_initiator` is empty, this is a browser initiated request.
+  // Get the origin from `url` as visible URL of the current tab may not
+  // represent the correct WebContents that triggers the download.
+  url::Origin origin = request_initiator
+                           ? request_initiator.value()
+                           : url::Origin::Resolve(url, url::Origin());
 
   DownloadStatus status = state->GetDownloadStatus(origin);
-
-  bool is_opaque_initiator = request_initiator && request_initiator->opaque();
+  bool is_opaque_initiator = origin.opaque();
 
   // Always check for the content setting first. Having an content setting
   // observer won't work as |request_initiator| might be different from the tab
   // URL.
-  ContentSetting setting =
-      is_opaque_initiator
-          ? CONTENT_SETTING_BLOCK
-          : GetAutoDownloadContentSetting(originating_contents, initiator);
+  ContentSetting setting = is_opaque_initiator
+                               ? CONTENT_SETTING_BLOCK
+                               : GetAutoDownloadContentSetting(
+                                     originating_contents, origin.GetURL());
   // Override the status if content setting is block or allow. If the content
   // setting is always allow, only reset the status if it is
   // DOWNLOADS_NOT_ALLOWED so unnecessary notifications will not be triggered.
