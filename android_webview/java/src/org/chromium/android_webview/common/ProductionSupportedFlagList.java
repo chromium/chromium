@@ -1046,7 +1046,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "UsePollForMessagePumpEpoll",
                 "Uses poll() instead of epoll() for MessagePumpEpoll"),
-
+        Flag.baseFeature(
+                "SqlWALModeOnWebDatabase",
+                "Enables Write-Ahead Logging (WAL) mode for the SQLite database used by the"
+                        + " Chromium components that WebView relies on"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
