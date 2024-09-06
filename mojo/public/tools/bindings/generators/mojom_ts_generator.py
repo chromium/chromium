@@ -245,6 +245,8 @@ class Generator(generator.Generator):
         "unions": self.module.unions,
         "generate_struct_deserializers": self.js_generate_struct_deserializers,
         "typemapped_structs": self._TypeMappedStructs(),
+        "typemap_imports": self._TypeMapImports(),
+        "converter_imports": self._ConverterImports(),
     }
 
   @staticmethod
@@ -685,3 +687,41 @@ class Generator(generator.Generator):
       if struct.qualified_name in self.typemap:
         mapped_structs[struct] = self.typemap[struct.qualified_name]
     return mapped_structs
+
+  # Returns a list of imports in the format:
+  #   {
+  #      <import path>: [list of types],
+  #      ...
+  #   }
+  def _TypeMapImports(self):
+    imports = {}
+    typemaps = self._TypeMappedStructs()
+
+    for typemap in typemaps.values():
+      type_import = typemap['type_import']
+      # The typemapping could just be a native type, in which case there would
+      # not be any import.
+      if not type_import:
+        continue
+
+      imports.setdefault(type_import, []).append(typemap['typename'])
+
+    return imports
+
+  def _ConverterImports(self):
+    imports = {}
+
+    # TODO(ffred): we also need to import types from other *-mojom-webui
+    # dependencies.
+    typemapped_structs = self._TypeMappedStructs()
+    for struct in typemapped_structs:
+      for field in struct.fields:
+        if mojom.IsStructKind(field.kind):
+          qualified = field.kind.qualified_name
+          if qualified in self.typemap:
+            typemap = self.typemap[qualified]
+            typemap_import = typemap['type_import']
+            if typemap_import:
+              imports.setdefault(typemap_import, []).append(typemap['typename'])
+
+    return imports

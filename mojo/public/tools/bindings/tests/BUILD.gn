@@ -11,7 +11,9 @@ mojom("test_mojom") {
       types = [
         {
           mojom = "bindings.tests.mojom.SimpleStruct"
-          ts = "string"
+          ts = "String16"
+          ts_import =
+              "//resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js"
           converter = "SimpleStructConverter"
           import = "test_converter.js"
         },

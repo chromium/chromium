@@ -105,6 +105,7 @@ def LoadTsTypemapConfig(path):
       for entry in config['types']:
         configs[entry['mojom']] = {
             'typename': entry['ts'],
+            'type_import': entry.get('ts_import', None),
             'converter_import': entry['import'],
             'converter': entry['converter'],
         }

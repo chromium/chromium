@@ -8,6 +8,15 @@ import type {
 } from './{{module_filename}}';
 {%- endfor %}
 
+{% for path, types in converter_imports.items()|sort -%}
+import type {
+{%- for type in types|sort %}
+  {{type}}
+{%- if not loop.last -%},{% endif -%}
+{%- endfor %}
+} from '{{path}}';
+{% endfor %}
+
 {%- for struct in typemapped_structs %}
 
 export class {{struct.name}}DataView {

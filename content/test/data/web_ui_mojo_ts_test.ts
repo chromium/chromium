@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestNode} from './web_ui_mojo_ts_test_node.js';
 import {OptionalNumericsStruct, TestEnum, WebUITsMojoTestCache} from './web_ui_ts_test.test-mojom-webui.js';
 
 const TEST_DATA: Array<{url: string, contents: string}> = [
@@ -76,7 +77,7 @@ async function doTest(): Promise<boolean> {
     } =
         await cache.echo(
             true, null, TestEnum.kOne, testStruct, [], [], [], {}, {}, {}, '',
-            {});
+            new TestNode());
     if (optionalBool !== false) {
       return false;
     }
@@ -130,7 +131,8 @@ async function doTest(): Promise<boolean> {
     } =
         await cache.echo(
             null, 1, null, testStruct, inOptionalBools, inOptionalInts,
-            inOptionalEnums, inBoolMap, inIntMap, inEnumMap, '', {});
+            inOptionalEnums, inBoolMap, inIntMap, inEnumMap, '',
+            new TestNode());
     if (optionalBool !== null) {
       return false;
     }
@@ -168,7 +170,7 @@ async function doTest(): Promise<boolean> {
   {
     const str = 'foobear';
     const result = await cache.echo(
-        null, 1, null, testStruct, [], [], [], {}, {}, {}, str, {});
+        null, 1, null, testStruct, [], [], [], {}, {}, {}, str, new TestNode());
 
     if (result.simpleMappedType !== str) {
       return false;
@@ -178,32 +180,30 @@ async function doTest(): Promise<boolean> {
   // Tests an empty nested struct to test basic encoding/decoding.
   {
     const result = await cache.echo(
-        null, 1, null, testStruct, [], [], [], {}, {}, {}, '', {});
+        null, 1, null, testStruct, [], [], [], {}, {}, {}, '', new TestNode());
 
     assertObjectEquals(
-        {}, result.nestedMappedType,
+        new TestNode(), result.nestedMappedType,
         'nested mappped type: got: ' + JSON.stringify(result.nestedMappedType) +
-            ', expected: {}');
+            ', expected: {next: null}');
   }
 
   // Tests a nested type where a struct includes itself.
   {
     const depth = 10;
-    const testNested: any = {};
-    let cursor = testNested;
+    const chain: TestNode = new TestNode();
+    let cursor = chain;
     for (let i = 0; i < depth; ++i) {
-      cursor.nested = {} as Object;
-      cursor = cursor.nested;
+      cursor = cursor!.next = new TestNode();
     }
     const result = await cache.echo(
-        null, 1, null, testStruct, [], [], [], {}, {}, {}, '', testNested);
+        null, 1, null, testStruct, [], [], [], {}, {}, {}, '', chain);
 
-    if (JSON.stringify(testNested) !==
-        JSON.stringify(result.nestedMappedType)) {
+    if (JSON.stringify(chain) !== JSON.stringify(result.nestedMappedType)) {
       throw new Error(
           'nested mappped type: got: ' +
           JSON.stringify(result.nestedMappedType) +
-          ', expected: ' + JSON.stringify(testNested));
+          ', expected: ' + JSON.stringify(chain));
     }
   }
 

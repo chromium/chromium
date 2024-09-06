@@ -3,18 +3,22 @@
 // found in the LICENSE file.
 
 import { SimpleStructDataView, SimpleStructTypeMapper } from './test.test-mojom-converters.js';
+import type {
+  String16
+} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 
-export class SimpleStructConverter implements SimpleStructTypeMapper<string> {
-  str(_: string): string {
+
+export class SimpleStructConverter implements SimpleStructTypeMapper<String16> {
+  str(_: String16): string {
     return '';
   }
 
-  number(_: string): number {
+  number(_: String16): number {
     return 888;
   }
 
-  convert(_: SimpleStructDataView): string {
-    return 'hihi';
+  convert(_: SimpleStructDataView): String16 {
+    return {data: []};
   }
 }
 

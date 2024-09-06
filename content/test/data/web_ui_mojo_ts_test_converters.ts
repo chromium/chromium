@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestNode} from './web_ui_mojo_ts_test_node.js';
 import {NestedMappedTypeDataView, NestedMappedTypeTypeMapper, SimpleMappedTypeDataView, SimpleMappedTypeTypeMapper,} from './web_ui_ts_test.test-mojom-converters.js';
 
 export class SimpleTypeConverter implements SimpleMappedTypeTypeMapper<string> {
@@ -14,12 +15,13 @@ export class SimpleTypeConverter implements SimpleMappedTypeTypeMapper<string> {
   }
 }
 
-export class NestedTypeConverter implements NestedMappedTypeTypeMapper<Object> {
-  nested(mappedType: any): Object|null {
-    return mappedType?.nested || null;
+export class NestedTypeConverter implements
+    NestedMappedTypeTypeMapper<TestNode> {
+  nested(mappedType: TestNode): TestNode|null {
+    return mappedType.next;
   }
 
-  convert(dataView: NestedMappedTypeDataView): Object {
-    return dataView.nested() ? {'nested': dataView.nested()} : {};
+  convert(dataView: NestedMappedTypeDataView): TestNode {
+    return new TestNode(dataView.nested());
   }
 }
