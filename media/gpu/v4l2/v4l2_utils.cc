@@ -50,6 +50,18 @@ namespace {
 int HandledIoctl(int fd, int request, void* arg) {
   return HANDLE_EINTR(ioctl(fd, request, arg));
 }
+
+std::string GetDriverName(const media::IoctlAsCallback& ioctl_cb) {
+  struct v4l2_capability caps;
+  memset(&caps, 0, sizeof(caps));
+  if (ioctl_cb.Run(VIDIOC_QUERYCAP, &caps) != 0) {
+    VPLOGF(1) << "ioctl() failed: VIDIOC_QUERYCAP" << ", caps check failed: 0x"
+              << std::hex << caps.capabilities;
+    return "";
+  }
+
+  return std::string(reinterpret_cast<const char*>(caps.driver));
+}
 }  // namespace
 namespace media {
 
@@ -630,6 +642,20 @@ bool IsV4L2DecoderStateful() {
                             kSupportedStatefulInputCodecs.begin(),
                             kSupportedStatefulInputCodecs.end()) !=
          v4l2_codecs.end();
+}
+
+bool IsVislDriver() {
+  constexpr char kVideoDeviceDriverPath[] = "/dev/video-dec0";
+  base::ScopedFD device_fd(HANDLE_EINTR(
+      open(kVideoDeviceDriverPath, O_RDWR | O_NONBLOCK | O_CLOEXEC)));
+  if (!device_fd.is_valid()) {
+    return false;
+  }
+
+  std::string v4l2_driver_name =
+      GetDriverName(base::BindRepeating(&HandledIoctl, device_fd.get()));
+
+  return v4l2_driver_name.compare("visl") == 0;
 }
 
 #ifndef NDEBUG

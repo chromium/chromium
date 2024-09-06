@@ -63,6 +63,9 @@ class VideoTestEnvironment : public ::testing::Environment {
   // Get the name of the test output file path (testsuitename/testname).
   base::FilePath GetTestOutputFilePath() const;
 
+  // Queries whether V4L2 virtual driver is used.
+  bool IsV4L2VirtualDriver() const;
+
  private:
   // An exit manager is required by the |task_environment_| to run callbacks
   // at shutdown. It must be declared before |task_environment_| to ensure that

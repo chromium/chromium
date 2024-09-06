@@ -167,6 +167,9 @@ std::optional<SupportedVideoDecoderConfigs> GetSupportedV4L2DecoderConfigs();
 // Queries the driver to see if it supports stateful decoding.
 bool IsV4L2DecoderStateful();
 
+// Queries whether V4L2 virtual driver (VISL) is used on VM.
+bool IsVislDriver();
+
 // Returns a readable description of |ctrls|.
 std::string V4L2ControlsToString(const struct v4l2_ext_controls* ctrls);
 

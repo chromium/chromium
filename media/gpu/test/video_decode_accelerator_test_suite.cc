@@ -343,6 +343,10 @@ bool VideoDecodeAcceleratorTestSuite::ValidVideoTestEnv() const {
   return !!video_test_env_;
 }
 
+bool VideoDecodeAcceleratorTestSuite::IsV4L2VirtualDriver() const {
+  return video_test_env_->IsV4L2VirtualDriver();
+}
+
 void VideoDecodeAcceleratorTestSuite::Initialize() {
   base::TestSuite::Initialize();
 
