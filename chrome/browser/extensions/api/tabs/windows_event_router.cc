@@ -15,7 +15,6 @@
 #include "chrome/browser/extensions/api/tabs/app_window_controller.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/api/tabs/windows_util.h"
-#include "chrome/browser/extensions/extension_browser_window.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/window_controller.h"
@@ -219,12 +218,11 @@ void WindowsEventRouter::OnWindowControllerAdded(
 
   base::Value::List args;
   // Since we don't populate tab info here, the context type doesn't matter.
-  constexpr ExtensionBrowserWindow::PopulateTabBehavior populate_behavior =
-      ExtensionBrowserWindow::kDontPopulateTabs;
+  constexpr WindowController::PopulateTabBehavior populate_behavior =
+      WindowController::kDontPopulateTabs;
   constexpr mojom::ContextType context_type = mojom::ContextType::kUnspecified;
-  args.Append(ExtensionTabUtil::CreateWindowValueForExtension(
-      *window_controller->GetBrowser(), nullptr, populate_behavior,
-      context_type));
+  args.Append(window_controller->CreateWindowValueForExtension(
+      nullptr, populate_behavior, context_type));
   DispatchEvent(events::WINDOWS_ON_CREATED, windows::OnCreated::kEventName,
                 window_controller, std::move(args));
 }
@@ -258,8 +256,8 @@ void WindowsEventRouter::OnWindowBoundsChanged(
 
   base::Value::List args;
   // Since we don't populate tab info here, the context type doesn't matter.
-  constexpr ExtensionBrowserWindow::PopulateTabBehavior populate_behavior =
-      ExtensionBrowserWindow::kDontPopulateTabs;
+  constexpr WindowController::PopulateTabBehavior populate_behavior =
+      WindowController::kDontPopulateTabs;
   constexpr mojom::ContextType context_type = mojom::ContextType::kUnspecified;
   args.Append(ExtensionTabUtil::CreateWindowValueForExtension(
       *window_controller->GetBrowser(), nullptr, populate_behavior,

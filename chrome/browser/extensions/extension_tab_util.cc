@@ -104,8 +104,8 @@ enum class NavigationScheme {
 //
 // Guaranteed non-null when the extensions system is still attached to the
 // Browser (callers shouldn't need to null check).
-ExtensionBrowserWindow* ExtensionWindowFromBrowser(const Browser* browser) {
-  return browser->extension_window();
+WindowController* WindowControllerFromBrowser(const Browser* browser) {
+  return browser->extension_window_controller();
 }
 
 Browser* CreateBrowser(Profile* profile, bool user_gesture) {
@@ -401,7 +401,7 @@ Browser* ExtensionTabUtil::GetBrowserInProfileWithId(
 }
 
 int ExtensionTabUtil::GetWindowId(const Browser* browser) {
-  return ExtensionWindowFromBrowser(browser)->GetWindowId();
+  return WindowControllerFromBrowser(browser)->GetWindowId();
 }
 
 int ExtensionTabUtil::GetWindowIdOfTabStripModel(
@@ -424,7 +424,7 @@ int ExtensionTabUtil::GetWindowIdOfTab(const WebContents* web_contents) {
 
 // static
 std::string ExtensionTabUtil::GetBrowserWindowTypeText(const Browser& browser) {
-  return ExtensionWindowFromBrowser(&browser)->GetBrowserWindowTypeText();
+  return WindowControllerFromBrowser(&browser)->GetWindowTypeText();
 }
 
 // static
@@ -516,16 +516,17 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
 base::Value::List ExtensionTabUtil::CreateTabList(const Browser* browser,
                                                   const Extension* extension,
                                                   mojom::ContextType context) {
-  return ExtensionWindowFromBrowser(browser)->CreateTabList(extension, context);
+  return WindowControllerFromBrowser(browser)->CreateTabList(extension,
+                                                             context);
 }
 
 // static
 base::Value::Dict ExtensionTabUtil::CreateWindowValueForExtension(
     const Browser& browser,
     const Extension* extension,
-    ExtensionBrowserWindow::PopulateTabBehavior populate_tab_behavior,
+    WindowController::PopulateTabBehavior populate_tab_behavior,
     mojom::ContextType context) {
-  return ExtensionWindowFromBrowser(&browser)->CreateWindowValueForExtension(
+  return WindowControllerFromBrowser(&browser)->CreateWindowValueForExtension(
       extension, populate_tab_behavior, context);
 }
 
@@ -642,8 +643,8 @@ bool ExtensionTabUtil::GetTabStripModel(const WebContents* web_contents,
 bool ExtensionTabUtil::GetActiveTab(Browser* browser,
                                     WebContents** contents,
                                     int* optional_tab_id) {
-  return ExtensionWindowFromBrowser(browser)->GetActiveTab(contents,
-                                                           optional_tab_id);
+  return WindowControllerFromBrowser(browser)->GetActiveTab(contents,
+                                                            optional_tab_id);
 }
 
 // static
@@ -994,7 +995,7 @@ bool ExtensionTabUtil::OpenOptionsPageFromAPI(
 
 bool ExtensionTabUtil::OpenOptionsPage(const Extension* extension,
                                        Browser* browser) {
-  return ExtensionWindowFromBrowser(browser)->OpenOptionsPage(extension);
+  return WindowControllerFromBrowser(browser)->OpenOptionsPage(extension);
 }
 
 // static

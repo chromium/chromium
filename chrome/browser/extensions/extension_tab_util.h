@@ -12,7 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/extension_browser_window.h"
+#include "chrome/browser/extensions/window_controller.h"
 #include "chrome/common/extensions/api/tabs.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "extensions/common/features/feature.h"
@@ -128,7 +128,7 @@ class ExtensionTabUtil {
   static base::Value::Dict CreateWindowValueForExtension(
       const Browser& browser,
       const Extension* extension,
-      ExtensionBrowserWindow::PopulateTabBehavior populate_tab_behavior,
+      WindowController::PopulateTabBehavior populate_tab_behavior,
       mojom::ContextType context);
 
   // Creates a tab MutedInfo object (see chrome/common/extensions/api/tabs.json)

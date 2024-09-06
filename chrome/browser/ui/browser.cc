@@ -53,7 +53,6 @@
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
-#include "chrome/browser/extensions/extension_browser_window_desktop.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/tab_helper.h"
@@ -640,8 +639,6 @@ Browser::Browser(const CreateParams& params)
     app_controller_->UpdateCustomTabBarVisibility(false);
 
   // Create the extension window controller before sending notifications.
-  extension_window_ =
-      std::make_unique<extensions::ExtensionBrowserWindowDesktop>(*this);
   extension_window_controller_ =
       std::make_unique<extensions::BrowserExtensionWindowController>(this);
 
@@ -727,9 +724,7 @@ Browser::~Browser() {
 
   // Destroy BrowserExtensionWindowController before the incognito profile
   // is destroyed to make sure the chrome.windows.onRemoved event is sent.
-  // The ExtensionWindow must outlive the controller.
   extension_window_controller_.reset();
-  extension_window_.reset();
 
   // Destroy BrowserInstantController before the incognito profile is destroyed,
   // because its destructor depends on this profile.

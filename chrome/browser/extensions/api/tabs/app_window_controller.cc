@@ -41,6 +41,11 @@ std::string AppWindowController::GetWindowTypeText() const {
   return tabs_constants::kWindowTypeValueApp;
 }
 
+void AppWindowController::SetFullscreenMode(bool is_fullscreen,
+                                            const GURL& extension_url) const {
+  // Full screen not supported by app windows.
+}
+
 bool AppWindowController::CanClose(Reason* reason) const {
   return true;
 }
@@ -49,11 +54,47 @@ Browser* AppWindowController::GetBrowser() const {
   return nullptr;
 }
 
+bool AppWindowController::GetActiveTab(content::WebContents** contents,
+                                       int* optional_tab_id) const {
+  DCHECK(contents);
+
+  *contents = app_window_->web_contents();
+  if (*contents) {
+    if (optional_tab_id) {
+      *optional_tab_id = -1;
+    }
+    return true;
+  }
+
+  return false;
+}
+
 bool AppWindowController::IsVisibleToTabsAPIForExtension(
     const Extension* extension,
     bool allow_dev_tools_windows) const {
   DCHECK(extension);
   return extension->id() == app_window_->extension_id();
+}
+
+base::Value::Dict AppWindowController::CreateWindowValueForExtension(
+    const Extension* extension,
+    PopulateTabBehavior populate_tab_behavior,
+    mojom::ContextType context) const {
+  return base::Value::Dict();
+}
+
+base::Value::List AppWindowController::CreateTabList(
+    const Extension* extension,
+    mojom::ContextType context) const {
+  return base::Value::List();
+}
+
+bool AppWindowController::OpenOptionsPage(const Extension* extension) {
+  return false;
+}
+
+bool AppWindowController::SupportsTabs() {
+  return false;
 }
 
 }  // namespace extensions
