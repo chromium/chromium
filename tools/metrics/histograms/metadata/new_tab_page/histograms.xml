@@ -599,7 +599,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.GoogleCalendar.EventClientIndex" units="count"
+<histogram name="NewTabPage.GoogleCalendar.EventClickIndex" units="count"
     expires_after="2025-08-06">
   <owner>rtatum@google.com</owner>
   <owner>tiborg@chromium.org</owner>
@@ -637,8 +637,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.GoogleCalendar.UserActions"
-    enum="NTPCalendarAction" expires_after="2025-08-06">
+<histogram name="NewTabPage.GoogleCalendar.UserAction" enum="NTPCalendarAction"
+    expires_after="2025-08-06">
   <owner>rtatum@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
