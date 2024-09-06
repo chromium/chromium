@@ -272,6 +272,12 @@ void MessagePumpEpoll::Run(Delegate* delegate) {
     }
     if (timeout > next_metrics_delay) {
       timeout = next_metrics_delay;
+      // Ensure we never get a negative timeout from the next_metrics_delay as
+      // this will cause epoll to block indefinitely if no fds are signaled,
+      // preventing existing non-fd tasks from running.
+      if (timeout < base::Milliseconds(0)) {
+        timeout = base::Milliseconds(0);
+      }
     }
     delegate->BeforeWait();
     WaitForEpollEvents(timeout);
