@@ -661,6 +661,7 @@
   },
   {
     "prefix": "display-compositor-pixel-dump",
+    "owners": ["fserb@chromium.org", "ansung@google.com"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [],
     "args": ["--enable-display-compositor-pixel-dump",
