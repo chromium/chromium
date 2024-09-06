@@ -260,6 +260,11 @@ extern const char kEnableFamilyLinkControlsDescription[];
 extern const char kCredentialProviderExtensionPromoName[];
 extern const char kCredentialProviderExtensionPromoDescription[];
 
+// Title and description for the flag to enable data sharing feature. The
+// feature flag is shared across other platforms (kOsAll).
+extern const char kDataSharingName[];
+extern const char kDataSharingDescription[];
+
 // Title and description for the flag to show the default browser tutorial from
 // an external app.
 extern const char kDefaultBrowserIntentsShowSettingsName[];

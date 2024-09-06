@@ -324,6 +324,10 @@ const char kCredentialProviderExtensionPromoDescription[] =
     "When enabled, Credential Provider Extension promo will be "
     "presented to eligible users.";
 
+const char kDataSharingName[] = "Data Sharing";
+const char kDataSharingDescription[] =
+    "Enabled Data Sharing related UI and features.";
+
 const char kDefaultBrowserIntentsShowSettingsName[] =
     "Default Browser Intents show settings";
 const char kDefaultBrowserIntentsShowSettingsDescription[] =

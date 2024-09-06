@@ -21,6 +21,7 @@ source_set("flags") {
     "//components/bookmarks/common",
     "//components/browser_sync:switches",
     "//components/commerce/core:feature_list",
+    "//components/data_sharing/public",
     "//components/dom_distiller/core",
     "//components/download/public/background_service:public",
     "//components/enterprise",
