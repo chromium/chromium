@@ -7231,7 +7231,7 @@ TEST_F(BrowserAutofillManagerTest, FillFormWithPredictionImprovements) {
   AutofillPredictionImprovementsDelegate::FillPredictionsCallback fill_callback;
   EXPECT_CALL(delegate, ExtractImprovedPredictionsForFormFields)
       .WillOnce(
-          [&](const FormData& form,
+          [&](const FormData& form, const FormFieldData& trigger_field,
               AutofillPredictionImprovementsDelegate::FillPredictionsCallback
                   callback) { fill_callback = std::move(callback); });
 
@@ -7241,16 +7241,20 @@ TEST_F(BrowserAutofillManagerTest, FillFormWithPredictionImprovements) {
 
   FormFieldData* field = form.FindFieldByNameForTest(u"firstname");
   ASSERT_TRUE(field);
-  field->set_value(u"John");
 
-  EXPECT_CALL(*autofill_driver_,
-              ApplyFieldAction(autofill::mojom::FieldActionType::kReplaceAll,
-                               autofill::mojom::ActionPersistence::kFill,
-                               field->global_id(), field->value()));
-  fill_callback.Run(autofill::mojom::ActionPersistence::kFill,
-                    autofill::mojom::FieldActionType::kReplaceAll, form, *field,
-                    field->value(),
-                    autofill::SuggestionType::kAutocompleteEntry, std::nullopt);
+  std::vector<FormFieldData> filled_fields;
+  std::vector<FieldGlobalId> filled_global_ids = {field->global_id()};
+
+  EXPECT_CALL(*autofill_driver_, ApplyFormAction)
+      .WillOnce(DoAll(SaveArgElementsTo<2>(&filled_fields),
+                      Return(filled_global_ids)));
+  std::move(fill_callback)
+      .Run(autofill::mojom::ActionPersistence::kFill,
+           autofill::FillingProduct::kPredictionImprovements, kAllFieldTypes,
+           {}, form, *field, {{field->global_id(), u"John"}});
+
+  EXPECT_THAT(filled_fields,
+              ElementsAre(Property(&FormFieldData::value, Eq(u"John"))));
 }
 
 // Test param indicates if there is an active screen reader.

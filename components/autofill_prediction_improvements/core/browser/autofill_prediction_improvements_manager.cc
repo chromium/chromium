@@ -7,8 +7,11 @@
 #include "base/check_deref.h"
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
+#include "components/autofill/core/browser/field_type_utils.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_client.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
@@ -20,6 +23,29 @@
 namespace autofill_prediction_improvements {
 
 namespace {
+
+// Define `field_types_to_fill` as Autofill address types +
+// `IMPROVED_PREDICTION`.
+// TODO(crbug.com/364808228): Remove `UNKNOWN_TYPE` from `field_types_to_fill`.
+// Also see TODO below.
+autofill::FieldTypeSet GetFieldTypesToFill() {
+  autofill::FieldTypeSet field_types_to_fill = {autofill::UNKNOWN_TYPE,
+                                                autofill::IMPROVED_PREDICTION};
+  for (autofill::FieldType field_type : autofill::kAllFieldTypes) {
+    if (IsAddressType(field_type)) {
+      field_types_to_fill.insert(field_type);
+    }
+  }
+  return field_types_to_fill;
+}
+
+// Ignore `FieldFillingSkipReason::kNoFillableGroup` during filling because
+// `kFieldTypesToFill` contains `UNKNOWN_TYPE` which would result in false
+// positives.
+// TODO(crbug.com/364808228): Remove.
+constexpr autofill::DenseSet<autofill::FieldFillingSkipReason>
+    kIgnoreableSkipReasons = {
+        autofill::FieldFillingSkipReason::kNoFillableGroup};
 
 // Returns a field-by-field filling suggestion for `filled_field`, meant to be
 // added to another suggestion's `autofill::Suggestion::children`.
@@ -134,42 +160,50 @@ bool AutofillPredictionImprovementsManager::UsedImprovedPredictionsForField(
 void AutofillPredictionImprovementsManager::
     ExtractImprovedPredictionsForFormFields(
         const autofill::FormData& form,
+        const autofill::FormFieldData& trigger_field,
         FillPredictionsCallback fill_callback) {
+  cache_ = std::nullopt;
   if (!ShouldProvidePredictionImprovements(client_->GetLastCommittedURL())) {
     return;
   }
-  client_->GetAXTree(base::BindOnce(
-      &AutofillPredictionImprovementsManager::OnReceivedAXTree,
-      weak_ptr_factory_.GetWeakPtr(), form, std::move(fill_callback)));
+  client_->GetAXTree(
+      base::BindOnce(&AutofillPredictionImprovementsManager::OnReceivedAXTree,
+                     weak_ptr_factory_.GetWeakPtr(), form, trigger_field,
+                     std::move(fill_callback)));
 }
 
 void AutofillPredictionImprovementsManager::OnReceivedAXTree(
     const autofill::FormData& form,
+    const autofill::FormFieldData& trigger_field,
     FillPredictionsCallback fill_callback,
     optimization_guide::proto::AXTreeUpdate ax_tree_update) {
   client_->GetFillingEngine()->GetPredictions(
       form, std::move(ax_tree_update),
       base::BindOnce(
           &AutofillPredictionImprovementsManager::OnReceivedPredictions,
-          weak_ptr_factory_.GetWeakPtr(), std::move(fill_callback)));
+          weak_ptr_factory_.GetWeakPtr(), form, trigger_field,
+          std::move(fill_callback)));
 }
 
 void AutofillPredictionImprovementsManager::OnReceivedPredictions(
+    const autofill::FormData& form,
+    const autofill::FormFieldData& trigger_field,
     FillPredictionsCallback fill_callback,
-    base::expected<autofill::FormData, bool> filled_form) {
-  if (!filled_form.has_value()) {
+    base::expected<autofill::FormData, bool> improved_predictions) {
+  if (!improved_predictions.has_value()) {
     // TODO(crbug.com/359440030): Add error handling.
     return;
   }
 
-  for (const autofill::FormFieldData& field : filled_form.value().fields()) {
-    fill_callback.Run(autofill::mojom::ActionPersistence::kFill,
-                      autofill::mojom::FieldActionType::kReplaceAll,
-                      filled_form.value(), field, field.value(),
-                      autofill::SuggestionType::kAutocompleteEntry,
-                      std::nullopt);
-  }
+  cache_ = improved_predictions.value();
+
+  std::move(fill_callback)
+      .Run(autofill::mojom::ActionPersistence::kFill,
+           autofill::FillingProduct::kPredictionImprovements,
+           GetFieldTypesToFill(), kIgnoreableSkipReasons, form, trigger_field,
+           GetValuesToFill());
 }
+
 void AutofillPredictionImprovementsManager::UserFeedbackReceived(
     autofill::AutofillPredictionImprovementsDelegate::UserFeedback feedback) {}
 
@@ -189,6 +223,19 @@ bool AutofillPredictionImprovementsManager::ShouldProvidePredictionImprovements(
           optimization_guide::proto::AUTOFILL_PREDICTION_IMPROVEMENTS_ALLOWLIST,
           /*optimization_metadata=*/nullptr);
   return decision == optimization_guide::OptimizationGuideDecision::kTrue;
+}
+
+base::flat_map<autofill::FieldGlobalId, std::u16string>
+AutofillPredictionImprovementsManager::GetValuesToFill() {
+  if (!cache_) {
+    return {};
+  }
+  std::vector<std::pair<autofill::FieldGlobalId, std::u16string>>
+      values_to_fill((*cache_).fields().size());
+  for (const autofill::FormFieldData& field : (*cache_).fields()) {
+    values_to_fill.emplace_back(field.global_id(), field.value());
+  }
+  return values_to_fill;
 }
 
 }  // namespace autofill_prediction_improvements

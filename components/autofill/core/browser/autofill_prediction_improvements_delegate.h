@@ -5,7 +5,10 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_PREDICTION_IMPROVEMENTS_DELEGATE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_PREDICTION_IMPROVEMENTS_DELEGATE_H_
 
+#include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/form_filler.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
 
@@ -19,14 +22,14 @@ class AutofillPredictionImprovementsDelegate {
   // Specifies the types of feedback users can give.
   enum class UserFeedback { kThumbsUp, kThumbsDown };
 
-  using FillPredictionsCallback =
-      base::RepeatingCallback<void(mojom::ActionPersistence action_persistence,
-                                   mojom::FieldActionType action_type,
-                                   const FormData& form,
-                                   const FormFieldData& field,
-                                   const std::u16string& value,
-                                   SuggestionType type,
-                                   std::optional<FieldType> field_type_used)>;
+  using FillPredictionsCallback = base::OnceCallback<void(
+      mojom::ActionPersistence action_persistence,
+      FillingProduct filling_product,
+      const FieldTypeSet& field_types_to_fill,
+      const DenseSet<autofill::FieldFillingSkipReason>& ignorable_skip_reasons,
+      const FormData& form,
+      const FormFieldData& trigger_field,
+      const base::flat_map<FieldGlobalId, std::u16string>& values_to_fill)>;
 
   virtual ~AutofillPredictionImprovementsDelegate() = default;
 
@@ -47,6 +50,7 @@ class AutofillPredictionImprovementsDelegate {
   // `fill_callback` on each field.
   virtual void ExtractImprovedPredictionsForFormFields(
       const FormData& form,
+      const FormFieldData& trigger_field,
       FillPredictionsCallback fill_callback) = 0;
 
   // Creates a suggestion shown while improved predictions are loaded.

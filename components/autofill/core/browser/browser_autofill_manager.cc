@@ -1319,8 +1319,9 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     if (AutofillPredictionImprovementsDelegate* delegate =
             client().GetAutofillPredictionImprovementsDelegate()) {
       delegate->ExtractImprovedPredictionsForFormFields(
-          form, base::BindRepeating(&BrowserAutofillManager::FillOrPreviewField,
-                                    weak_ptr_factory_.GetWeakPtr()));
+          form, field,
+          base::BindOnce(&BrowserAutofillManager::FillOrPreviewFormExperimental,
+                         weak_ptr_factory_.GetWeakPtr()));
     }
     return;
   }

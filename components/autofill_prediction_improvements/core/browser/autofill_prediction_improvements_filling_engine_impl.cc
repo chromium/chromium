@@ -50,7 +50,8 @@ void AutofillPredictionImprovementsFillingEngineImpl::
         optimization_guide::proto::AXTreeUpdate ax_tree_update,
         PredictionsReceivedCallback callback,
         user_annotations::UserAnnotationsEntries user_annotations) {
-  // If no user annotations, just return the callback with the original form.
+  // If there are no user annotations, just return the callback with the
+  // original form.
   if (user_annotations.empty()) {
     std::move(callback).Run(std::move(form_data));
     return;
@@ -105,8 +106,8 @@ void AutofillPredictionImprovementsFillingEngineImpl::FillFormDataWithResponse(
     const optimization_guide::proto::FilledFormData& form_data_proto) {
   std::vector<autofill::FormFieldData>& fields =
       form_data.mutable_fields(/*pass_key=*/{});
-  for (const auto& filled_form_field_proto :
-       form_data_proto.filled_form_field_data()) {
+  for (const optimization_guide::proto::FilledFormFieldData&
+           filled_form_field_proto : form_data_proto.filled_form_field_data()) {
     // TODO: b/357098401 - Change it to look by renderer ID which is unique
     // rather than label.
     if (auto it = base::ranges::find(

@@ -138,7 +138,8 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
       .WillOnce(MoveArg<2>(&predictions_received_callback));
 
   EXPECT_CALL(fill_callback, Run);
-  manager_->ExtractImprovedPredictionsForFormFields(form, fill_callback.Get());
+  manager_->ExtractImprovedPredictionsForFormFields(form, form.fields().front(),
+                                                    fill_callback.Get());
   std::move(axtree_received_callback).Run({});
   std::move(predictions_received_callback).Run(filled_form);
 }
@@ -148,6 +149,10 @@ class ShouldProvideAutofillPredictionImprovementsTest
  public:
   ShouldProvideAutofillPredictionImprovementsTest() {
     ON_CALL(client_, GetLastCommittedURL).WillByDefault(ReturnRef(url_));
+    autofill::test::FormDescription form_description = {
+        .fields = {{.role = autofill::NAME_FIRST,
+                    .heuristic_type = autofill::NAME_FIRST}}};
+    form_ = autofill::test::GetFormData(form_description);
   }
 
  protected:
@@ -159,7 +164,8 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
   feature_.InitAndDisableFeature(kAutofillPredictionImprovements);
   AutofillPredictionImprovementsManager manager{&client_, &decider_};
   EXPECT_CALL(client_, GetAXTree).Times(0);
-  manager.ExtractImprovedPredictionsForFormFields(form_, base::DoNothing());
+  manager.ExtractImprovedPredictionsForFormFields(form_, form_.fields().front(),
+                                                  base::DoNothing());
 }
 
 TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
@@ -168,7 +174,8 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
                                               {{"skip_allowlist", "true"}});
   AutofillPredictionImprovementsManager manager{&client_, nullptr};
   EXPECT_CALL(client_, GetAXTree).Times(0);
-  manager.ExtractImprovedPredictionsForFormFields(form_, base::DoNothing());
+  manager.ExtractImprovedPredictionsForFormFields(form_, form_.fields().front(),
+                                                  base::DoNothing());
 }
 
 TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
@@ -177,7 +184,8 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
                                               {{"skip_allowlist", "true"}});
   AutofillPredictionImprovementsManager manager{&client_, &decider_};
   EXPECT_CALL(client_, GetAXTree);
-  manager.ExtractImprovedPredictionsForFormFields(form_, base::DoNothing());
+  manager.ExtractImprovedPredictionsForFormFields(form_, form_.fields().front(),
+                                                  base::DoNothing());
 }
 
 TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
@@ -189,7 +197,8 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
       .WillByDefault(
           Return(optimization_guide::OptimizationGuideDecision::kFalse));
   EXPECT_CALL(client_, GetAXTree).Times(0);
-  manager.ExtractImprovedPredictionsForFormFields(form_, base::DoNothing());
+  manager.ExtractImprovedPredictionsForFormFields(form_, form_.fields().front(),
+                                                  base::DoNothing());
 }
 
 TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
@@ -201,7 +210,8 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
       .WillByDefault(
           Return(optimization_guide::OptimizationGuideDecision::kTrue));
   EXPECT_CALL(client_, GetAXTree);
-  manager.ExtractImprovedPredictionsForFormFields(form_, base::DoNothing());
+  manager.ExtractImprovedPredictionsForFormFields(form_, form_.fields().front(),
+                                                  base::DoNothing());
 }
 
 }  // namespace

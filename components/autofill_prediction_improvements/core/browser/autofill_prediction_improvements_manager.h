@@ -42,6 +42,7 @@ class AutofillPredictionImprovementsManager
       const autofill::FormFieldData& field) override;
   void ExtractImprovedPredictionsForFormFields(
       const autofill::FormData& form,
+      const autofill::FormFieldData& trigger_field,
       FillPredictionsCallback fill_callback) override;
   std::vector<autofill::Suggestion> CreateLoadingSuggestion() override;
   std::vector<autofill::Suggestion> CreateTriggerSuggestion(
@@ -54,13 +55,19 @@ class AutofillPredictionImprovementsManager
 
  private:
   void OnReceivedAXTree(const autofill::FormData& form,
+                        const autofill::FormFieldData& trigger_field,
                         FillPredictionsCallback fill_callback,
                         optimization_guide::proto::AXTreeUpdate);
 
   // The unexpected value is always `false` if there was an error retrieving
   // predictions.
-  void OnReceivedPredictions(FillPredictionsCallback fill_callback,
+  void OnReceivedPredictions(const autofill::FormData& form,
+                             const autofill::FormFieldData& trigger_field,
+                             FillPredictionsCallback fill_callback,
                              base::expected<autofill::FormData, bool>);
+
+  // Returns values to fill based on the `cache_`.
+  base::flat_map<autofill::FieldGlobalId, std::u16string> GetValuesToFill();
 
   // A raw reference to the client, which owns `this` and therefore outlives
   // it.
