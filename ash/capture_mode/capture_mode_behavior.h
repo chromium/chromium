@@ -82,6 +82,9 @@ class CaptureModeBehavior {
   virtual bool ShouldShowUserNudge() const;
   virtual bool ShouldAutoSelectFirstCamera() const;
   virtual bool RequiresCaptureFolderCreation() const;
+  // Returns true if the behavior should re-show after hiding of all the capture
+  // mode UIs while waiting for DLP confirmation.
+  virtual bool ShouldReShowUisAtPerformingCapture() const;
   // Returns the full path for the capture file. If the creation of the path
   // failed, the path provided will be empty.
   using OnCaptureFolderCreatedCallback =

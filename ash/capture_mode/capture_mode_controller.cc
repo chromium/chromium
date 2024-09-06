@@ -461,6 +461,29 @@ std::unique_ptr<BaseCaptureModeSession> CreateSession(
   NOTREACHED();
 }
 
+// Hides the cursor to avoid capturing it in the screenshot. Returns true if the
+// cursor is already locked, in which case there is no need to unlock it after.
+bool MaybeLockCursor() {
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+  bool was_cursor_originally_blocked = cursor_manager->IsCursorLocked();
+  if (!was_cursor_originally_blocked) {
+    cursor_manager->HideCursor();
+    cursor_manager->LockCursor();
+  }
+  return was_cursor_originally_blocked;
+}
+
+// Re-shows the cursor after the image capture, if the cursor was locked by us.
+void MaybeUnlockCursor(bool was_cursor_originally_blocked) {
+  if (!was_cursor_originally_blocked) {
+    auto* cursor_manager = Shell::Get()->cursor_manager();
+    if (!display::Screen::GetScreen()->InTabletMode()) {
+      cursor_manager->ShowCursor();
+    }
+    cursor_manager->UnlockCursor();
+  }
+}
+
 }  // namespace
 
 CaptureModeController::CaptureModeController(
@@ -845,18 +868,23 @@ void CaptureModeController::PerformCapture() {
 void CaptureModeController::PerformImageSearch() {
   DCHECK_EQ(capture_mode_session_->active_behavior()->behavior_type(),
             BehaviorType::kSunfish);
-  const std::optional<CaptureParams> capture_params = GetCaptureParams();
-  if (!capture_params) {
-    return;
-  }
+  DCHECK(delegate_->IsCaptureAllowedByPolicy());
 
-  // We capture the image as JPEG bytes to be sent to the backend.
-  // TODO(b/362285082): Investigate whether sending PNG bytes would work.
-  // TODO(b/359317857): Check DLP restrictions.
+  const std::optional<CaptureParams> capture_params = GetCaptureParams();
+  CHECK(capture_params);
+
+  const bool was_cursor_originally_blocked = MaybeLockCursor();
+
+  // Capture the image for search. We use JPEG bytes for low file size and fast
+  // compression speed.
   ui::GrabWindowSnapshotAsJPEG(
       capture_params->window, capture_params->bounds,
       base::BindOnce(&CaptureModeController::OnImageCapturedForSearch,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     was_cursor_originally_blocked));
+
+  delegate_->OnCaptureImageAttempted(capture_params->window,
+                                     capture_params->bounds);
 }
 
 void CaptureModeController::EndVideoRecording(EndRecordingReason reason) {
@@ -1544,12 +1572,7 @@ void CaptureModeController::CaptureImage(const CaptureParams& capture_params,
 
   CHECK(!capture_params.bounds.IsEmpty());
 
-  auto* cursor_manager = Shell::Get()->cursor_manager();
-  bool was_cursor_originally_blocked = cursor_manager->IsCursorLocked();
-  if (!was_cursor_originally_blocked) {
-    cursor_manager->HideCursor();
-    cursor_manager->LockCursor();
-  }
+  const bool was_cursor_originally_blocked = MaybeLockCursor();
 
   // Attempt the capture image. Note the callback `OnImageCaptured()` will only
   // be invoked if an image was successfully captured.
@@ -1596,13 +1619,7 @@ void CaptureModeController::OnImageCaptured(
     bool was_cursor_originally_blocked,
     const CaptureModeBehavior* behavior,
     scoped_refptr<base::RefCountedMemory> png_bytes) {
-  if (!was_cursor_originally_blocked) {
-    auto* cursor_manager = Shell::Get()->cursor_manager();
-    if (!display::Screen::GetScreen()->InTabletMode()) {
-      cursor_manager->ShowCursor();
-    }
-    cursor_manager->UnlockCursor();
-  }
+  MaybeUnlockCursor(was_cursor_originally_blocked);
 
   if (!png_bytes || !png_bytes->size()) {
     LOG(ERROR) << "Failed to capture image.";
@@ -1618,18 +1635,24 @@ void CaptureModeController::OnImageCaptured(
 }
 
 void CaptureModeController::OnImageCapturedForSearch(
+    bool was_cursor_originally_blocked,
     scoped_refptr<base::RefCountedMemory> jpeg_bytes) {
   // Capture mode session may end before the `jpeg_bytes` are received, no-op if
   // the session is no longer active.
   if (!IsActive()) {
     return;
   }
+  MaybeUnlockCursor(was_cursor_originally_blocked);
   // TODO(b/356878705): Send the image data to the backend. This currently shows
   // the results panel immediately for debugging purposes.
   const std::unique_ptr<SkBitmap> bitmap =
       gfx::JPEGCodec::Decode(jpeg_bytes->data(), jpeg_bytes->size());
   const gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(*bitmap);
   capture_mode_session_->ShowSearchResultsPanel(image);
+
+  if (on_image_captured_for_search_callback_for_test_) {
+    std::move(on_image_captured_for_search_callback_for_test_).Run();
+  }
 }
 
 void CaptureModeController::OnImageFileSaved(
@@ -2033,12 +2056,12 @@ void CaptureModeController::OnDlpRestrictionCheckedAtPerformingCapture(
   }
 
   // We don't need to bring capture mode UIs back if `proceed` is false or if
-  // `type_` is `CaptureModeType::kImage`, since the session is about to
-  // shutdown anyways at these use cases, so it's better to avoid any wasted
-  // effort. In the case of video recording, we need to reshow the UIs so that
-  // we can start the 3-second count down animation.
+  // the session is about to shutdown. See also
+  // `CaptureModeBehavior::ShouldReShowUisAtPerformingCapture()`.
+  auto* active_behavior = capture_mode_session_->active_behavior();
   capture_mode_session_->OnWaitingForDlpConfirmationEnded(
-      /*reshow_uis=*/proceed && type_ != CaptureModeType::kImage);
+      /*reshow_uis=*/proceed &&
+      active_behavior->ShouldReShowUisAtPerformingCapture());
 
   if (!proceed) {
     Stop();
@@ -2055,8 +2078,14 @@ void CaptureModeController::OnDlpRestrictionCheckedAtPerformingCapture(
   }
 
   if (type_ == CaptureModeType::kImage) {
-    CaptureImage(*capture_params, BuildImagePath(),
-                 capture_mode_session_->active_behavior());
+    if (active_behavior->behavior_type() == BehaviorType::kSunfish) {
+      // Sunfish behavior doesn't need the file path and does specific image
+      // capture handling.
+      PerformImageSearch();
+    } else {
+      CaptureImage(*capture_params, BuildImagePath(),
+                   capture_mode_session_->active_behavior());
+    }
   } else {
     // HDCP affects only video recording.
     if (ShouldBlockRecordingForContentProtection(capture_params->window)) {

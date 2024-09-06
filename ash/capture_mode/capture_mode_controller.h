@@ -474,6 +474,7 @@ class ASH_EXPORT CaptureModeController
   // Called back when an image has been captured to trigger a search request.
   // `jpeg_bytes` is the buffer containing the captured image in a JPEG format.
   void OnImageCapturedForSearch(
+      bool was_cursor_originally_blocked,
       scoped_refptr<base::RefCountedMemory> jpeg_bytes);
 
   // Called back when an attempt to save the image file has been completed, with
@@ -731,6 +732,8 @@ class ASH_EXPORT CaptureModeController
   base::OnceClosure on_countdown_finished_callback_for_test_;
 
   base::OnceClosure on_video_recording_started_callback_for_test_;
+
+  base::OnceClosure on_image_captured_for_search_callback_for_test_;
 
   // Timers used to schedule recording of the number of screenshots taken.
   base::RepeatingTimer num_screenshots_taken_in_last_day_scheduler_;

@@ -412,7 +412,8 @@ size_t WaitForCameraAvailabilityWithTimeout(base::TimeDelta time_out) {
 
 void SelectCaptureModeRegion(ui::test::EventGenerator* event_generator,
                              const gfx::Rect& region_in_screen,
-                             bool release_mouse) {
+                             bool release_mouse,
+                             bool verify_region) {
   auto* controller = CaptureModeController::Get();
   ASSERT_TRUE(controller->IsActive());
   ASSERT_EQ(CaptureModeSource::kRegion, controller->source());
@@ -422,10 +423,13 @@ void SelectCaptureModeRegion(ui::test::EventGenerator* event_generator,
   if (release_mouse) {
     event_generator->ReleaseLeftButton();
   }
-  auto capture_region_in_root = region_in_screen;
-  wm::ConvertRectFromScreen(controller->capture_mode_session()->current_root(),
-                            &capture_region_in_root);
-  EXPECT_EQ(capture_region_in_root, controller->user_capture_region());
+  if (verify_region) {
+    auto capture_region_in_root = region_in_screen;
+    wm::ConvertRectFromScreen(
+        controller->capture_mode_session()->current_root(),
+        &capture_region_in_root);
+    EXPECT_EQ(capture_region_in_root, controller->user_capture_region());
+  }
 }
 
 // -----------------------------------------------------------------------------

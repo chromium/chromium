@@ -170,10 +170,12 @@ void RemoveDefaultCamera();
 // found within the time limit.
 size_t WaitForCameraAvailabilityWithTimeout(base::TimeDelta time_out);
 
-// Select a region by pressing and dragging the mouse.
+// Selects a region by pressing and dragging the mouse. If `verify_region` is
+// true, verifies the user capture region.
 void SelectCaptureModeRegion(ui::test::EventGenerator* event_generator,
                              const gfx::Rect& region_in_screen,
-                             bool release_mouse = true);
+                             bool release_mouse = true,
+                             bool verify_region = true);
 
 // Defines a helper class to allow setting up and testing the Projector feature
 // in multiple test fixtures. Note that this helper initializes the Projector-

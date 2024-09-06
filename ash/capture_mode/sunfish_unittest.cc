@@ -14,10 +14,12 @@
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_ash_web_view_factory.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/image/image_skia.h"
@@ -25,6 +27,13 @@
 #include "ui/views/view_utils.h"
 
 namespace ash {
+
+void WaitForImageCapturedForSearch() {
+  base::RunLoop run_loop;
+  ash::CaptureModeTestApi().SetOnImageCapturedForSearchCallback(
+      run_loop.QuitClosure());
+  run_loop.Run();
+}
 
 class SunfishTest : public AshTestBase {
  public:
@@ -75,6 +84,28 @@ TEST_F(SunfishTest, PressEscapeKey) {
   EXPECT_FALSE(controller->capture_mode_session());
 }
 
+// Tests the session UI after a region is dragged and the results panel is
+// shown.
+TEST_F(SunfishTest, OnRegionSelected) {
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  ASSERT_TRUE(controller->IsActive());
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  CaptureModeSessionTestApi test_api(session);
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*proceed=*/true);
+  WaitForImageCapturedForSearch();
+  EXPECT_TRUE(session->search_results_panel_widget());
+
+  // Test that the region selection UI remains visible.
+  auto* session_layer = controller->capture_mode_session()->layer();
+  EXPECT_TRUE(session_layer->IsVisible());
+  EXPECT_EQ(session_layer->GetTargetOpacity(), 1.f);
+  EXPECT_TRUE(test_api.AreAllUisVisible());
+}
+
 // Tests the sunfish capture label view.
 TEST_F(SunfishTest, CaptureLabelView) {
   auto* controller = CaptureModeController::Get();
@@ -109,6 +140,45 @@ TEST_F(SunfishTest, CaptureLabelView) {
   event_generator->ReleaseLeftButton();
   EXPECT_FALSE(capture_button->GetVisible());
   EXPECT_FALSE(capture_label->GetVisible());
+}
+
+// Tests that sunfish checks DLP restrictions upon selecting a region.
+TEST_F(SunfishTest, CheckDlpRestrictions) {
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  auto* session = controller->capture_mode_session();
+  ASSERT_EQ(BehaviorType::kSunfish,
+            session->active_behavior()->behavior_type());
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  test_delegate->set_is_allowed_by_dlp(false);
+
+  // Tests after selecting a region, the session is ended.
+  auto* event_generator = GetEventGenerator();
+  SelectCaptureModeRegion(event_generator, gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*proceed=*/false);
+  EXPECT_FALSE(controller->IsActive());
+  test_delegate->set_is_allowed_by_dlp(true);
+}
+
+// Tests that a full screenshot can be taken while in sunfish session.
+TEST_F(SunfishTest, PerformFullScreenshot) {
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  ASSERT_TRUE(controller->IsActive());
+  EXPECT_EQ(
+      controller->capture_mode_session()->active_behavior()->behavior_type(),
+      BehaviorType::kSunfish);
+
+  PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_CONTROL_DOWN);
+  base::FilePath file_saved_path = WaitForCaptureFileToBeSaved();
+  ASSERT_TRUE(controller->IsActive());
+  EXPECT_EQ(
+      controller->capture_mode_session()->active_behavior()->behavior_type(),
+      BehaviorType::kSunfish);
+  const base::FilePath default_folder =
+      controller->delegate_for_testing()->GetUserDefaultDownloadsFolder();
+  EXPECT_EQ(file_saved_path.DirName(), default_folder);
 }
 
 // Tests the sunfish capture mode bar view.
