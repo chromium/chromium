@@ -998,7 +998,8 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
   const GURL prerendering_url =
       https_server()->GetURL("accounts.google.com", "/simple.html");
 
-  int host_id = prerender_helper().AddPrerender(prerendering_url);
+  content::FrameTreeNodeId host_id =
+      prerender_helper().AddPrerender(prerendering_url);
   content::RenderFrameHostWrapper prerendered_frame_host(
       prerender_helper().GetPrerenderedMainFrameHost(host_id));
 
