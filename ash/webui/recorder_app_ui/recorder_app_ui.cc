@@ -214,7 +214,7 @@ void RecorderAppUI::AddModelMonitor(
 
   if (!on_device_model_service_) {
     std::move(callback).Run(recorder_app::mojom::ModelState{
-        recorder_app::mojom::ModelStateType::kError, std::nullopt}
+        recorder_app::mojom::ModelStateType::kUnavailable, std::nullopt}
                                 .Clone());
     return;
   }
@@ -350,11 +350,6 @@ void RecorderAppUI::GetPlatformModelStateCallback(
           {recorder_app::mojom::ModelStateType::kNotInstalled, std::nullopt});
       break;
     case on_device_model::mojom::PlatformModelState::kInvalidDlcPackage:
-      // TODO(pihsun): Check the condition of when the model is unavailable.
-      UpdateModelState(
-          model_id,
-          {recorder_app::mojom::ModelStateType::kUnavailable, std::nullopt});
-      break;
     case on_device_model::mojom::PlatformModelState::kUnknownState:
     case on_device_model::mojom::PlatformModelState::kInvalidUuid:
     case on_device_model::mojom::PlatformModelState::kInvalidDlcClient:
@@ -363,8 +358,9 @@ void RecorderAppUI::GetPlatformModelStateCallback(
     case on_device_model::mojom::PlatformModelState::kInvalidModelDescriptor:
     case on_device_model::mojom::PlatformModelState::
         kInvalidBaseModelDescriptor:
-      UpdateModelState(model_id, {recorder_app::mojom::ModelStateType::kError,
-                                  std::nullopt});
+      UpdateModelState(
+          model_id,
+          {recorder_app::mojom::ModelStateType::kUnavailable, std::nullopt});
       break;
   }
 }
