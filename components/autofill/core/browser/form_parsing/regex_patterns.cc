@@ -88,6 +88,7 @@ MatchingPattern MatchPatternRef::operator*() const {
                                     ? DenseSet({MatchAttribute::kName})
                                     : p.match_field_attributes,
       .form_control_types = p.form_control_types,
+      .feature = p.feature,
   };
 }
 

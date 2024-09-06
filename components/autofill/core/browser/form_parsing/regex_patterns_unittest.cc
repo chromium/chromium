@@ -145,6 +145,7 @@ TEST_F(RegexPatternsTest, MatchPatternRefDereference) {
   EXPECT_EQ((*a).form_control_types, (*b).form_control_types);
   EXPECT_THAT((*a).match_field_attributes, Contains(MatchAttribute::kLabel));
   EXPECT_THAT((*b).match_field_attributes, ElementsAre(MatchAttribute::kName));
+  EXPECT_EQ((*a).feature.has_value(), (*b).feature.has_value());
 }
 
 TEST_F(RegexPatternsTest, IsSupportedLanguageCode) {
