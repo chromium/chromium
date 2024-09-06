@@ -90,6 +90,55 @@ std::u16string AXPlatformNodeDelegate::GetTextContentUTF16() const {
   return text_content;
 }
 
+// https://crbug.com/40889544 - to be removed once we gather some info on
+// the reason for the macOS exception being thrown.
+std::u16string AXPlatformNodeDelegate::GetTextContentUTF16WithInvisibles()
+    const {
+  if (node_) {
+    return node_->GetTextContentUTF16();
+  }
+
+  // Unlike in web content the "kValue" attribute always takes precedence,
+  // because we assume that users of the base impl, such as Views controls,
+  // are carefully crafted by hand, in contrast to HTML pages, where any content
+  // that might be present in the shadow DOM (AKA in the internal accessibility
+  // tree) is actually used by the renderer when assigning the "kValue"
+  // attribute, including any redundant white space.
+  std::u16string value =
+      GetString16Attribute(ax::mojom::StringAttribute::kValue);
+  if (!value.empty()) {
+    return value;
+  }
+
+  // The name of a leaf node in Views is displayed inside the View, i.e.
+  // `GetNameFrom` == `ax::mojom::NameFrom::kContents`, except in text fields,
+  // where the name attribute is the field's label and the value attribute is
+  // the field's text contents. For maximum compatibility with the Web code, we
+  // compute the text of a non-leaf text field from the text contents of its
+  // children, even though we currently know of no such text field in Views.
+  //
+  // TODO(crbug.com/40662009): The check for `IsInvisibleOrIgnored()`
+  // should not be needed. `ChildAtIndex()` and `GetChildCount()` are already
+  // supposed to skip over nodes that are invisible or ignored, but
+  // `ViewAXPlatformNodeDelegate` does not currently implement this behavior.
+  //  if (IsLeaf() && !GetData().IsTextField() && !IsInvisibleOrIgnored()) {
+  //    return GetString16Attribute(ax::mojom::StringAttribute::kName);
+  //  }
+
+  std::u16string text_content;
+  for (size_t i = 0; i < GetChildCount(); ++i) {
+    // TODO(nektar): Add const to all tree traversal methods and remove
+    // const_cast.
+    const AXPlatformNode* child = AXPlatformNode::FromNativeViewAccessible(
+        const_cast<AXPlatformNodeDelegate*>(this)->ChildAtIndex(i));
+    if (!child || !child->GetDelegate()) {
+      continue;
+    }
+    text_content += child->GetDelegate()->GetTextContentUTF16WithInvisibles();
+  }
+  return text_content;
+}
+
 int AXPlatformNodeDelegate::GetTextContentLengthUTF16() const {
   // TODO(accessibility): Simplify once ViewsAX is complete.
   if (node_) {
