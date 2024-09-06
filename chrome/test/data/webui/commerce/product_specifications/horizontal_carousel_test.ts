@@ -8,7 +8,7 @@ import 'chrome://compare/table.js';
 import type {TableColumn} from 'chrome://compare/app.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {$$, eventToPromise, hasStyle, isVisible, whenCheck} from 'chrome://webui-test/test_util.js';
+import {$$, eventToPromise, isVisible, whenCheck} from 'chrome://webui-test/test_util.js';
 
 suite('HorizontalCarouselTest', () => {
   async function setupColumns({numColumns}: {numColumns: number}) {
@@ -184,22 +184,5 @@ suite('HorizontalCarouselTest', () => {
         carouselElement.$.backButton,
         () => !isVisible(carouselElement.$.backButton));
     assertTrue(isVisible(carouselElement.$.forwardButton));
-  });
-
-  test('gradient layer is hidden when scrolled to the end', async () => {
-    await setupColumns({numColumns: 6});
-    const carouselElement = document.body.querySelector('horizontal-carousel')!;
-    const gradientElement =
-        $$<HTMLElement>(carouselElement, '#selectorGradient')!;
-
-    assertTrue(hasStyle(gradientElement, 'opacity', '1'));
-
-    const carouselContainer = carouselElement.$.carouselContainer;
-    const scrollEnd = eventToPromise('scrollend', carouselContainer);
-    const transitionEnd = eventToPromise('transitionend', gradientElement);
-    carouselContainer.scrollTo({left: carouselContainer.scrollWidth});
-    await Promise.all([scrollEnd, transitionEnd]);
-
-    assertTrue(hasStyle(gradientElement, 'opacity', '0'));
   });
 });

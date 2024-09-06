@@ -66,39 +66,24 @@
     scroll-snap-type: x mandatory;
   }
 
-  :host(:not([can-scroll])) #carouselContainer {
+  :host(:not([can-scroll_])) #carouselContainer {
     scrollbar-width: none;
   }
 
-  :host([can-scroll]) #carouselContainer::-webkit-scrollbar {
+  :host([can-scroll_]) #carouselContainer::-webkit-scrollbar {
     background: transparent;
     height: 6px;
+    width: 0;
   }
 
-  :host([can-scroll]) #carouselContainer::-webkit-scrollbar-thumb {
+  :host([can-scroll_]) #carouselContainer::-webkit-scrollbar-thumb {
     background:
         var(--color-product-specifications-horizontal-carousel-scrollbar-thumb);
     border-radius: 8px;
   }
 
-  #selectorGradient {
-    display: none;
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  :host([can-scroll]) #selectorGradient {
-    background: linear-gradient(270deg, white 10%, transparent 110%);
-    display: block;
-    height: 42px;
-    position: absolute;
-    right: 0;
+  #startProbe,
+  #endProbe {
+    position: sticky;
     top: 0;
-    transition: opacity 0.2s ease-out;
-    width: 134px;
-    z-index: 1;
-  }
-
-  :host([show-forward-button_]) #selectorGradient {
-    opacity: 1;
   }

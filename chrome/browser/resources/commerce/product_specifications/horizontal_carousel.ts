@@ -63,7 +63,7 @@ export class HorizontalCarouselElement extends CrLitElement {
        * True if slotted table is overflown, regardless of any elements that may
        * appear before or after it.
        */
-      canScroll: {
+      canScroll_: {
         type: Boolean,
         reflect: true,
       },
@@ -76,16 +76,16 @@ export class HorizontalCarouselElement extends CrLitElement {
       /**
          True if slotted table is overflown on the right side of the carousel.
        */
-      showForwardButton_: {
+      showForwardButton: {
         type: Boolean,
         reflect: true,
       },
     };
   }
 
-  canScroll: boolean = false;
+  showForwardButton: boolean = false;
+  protected canScroll_: boolean = false;
   protected showBackButton_: boolean = false;
-  protected showForwardButton_: boolean = false;
 
   private intersectionObserver_: IntersectionObserver|null = null;
   private scrolledToEnd_: boolean = false;
@@ -125,9 +125,9 @@ export class HorizontalCarouselElement extends CrLitElement {
           this.scrolledToEnd_ = intersectionRatio !== 0;
         }
       });
-      this.canScroll = tmpCanScroll;
+      this.canScroll_ = tmpCanScroll;
       this.showBackButton_ = tmpCanScroll && !this.scrolledToStart_;
-      this.showForwardButton_ = tmpCanScroll && !this.scrolledToEnd_;
+      this.showForwardButton = tmpCanScroll && !this.scrolledToEnd_;
       this.dispatchEvent(new CustomEvent(
           'intersection-observed', {bubbles: true, composed: true}));
     }, {root: this.$.carouselContainer});
