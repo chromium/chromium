@@ -1682,6 +1682,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter ondisconnect
 [Worker] interface SerialPort : EventTarget
 [Worker]     attribute @@toStringTag
+[Worker]     getter connected
 [Worker]     getter onconnect
 [Worker]     getter ondisconnect
 [Worker]     getter readable

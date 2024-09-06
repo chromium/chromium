@@ -32,7 +32,7 @@ BASE_FEATURE(kGeolocationDiagnosticsObserver,
 // changes.
 BASE_FEATURE(kSerialPortConnected,
              "SerialPortConnected",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #if BUILDFLAG(IS_WIN)
 // Enable integration with the Windows system-level location permission.
 BASE_FEATURE(kWinSystemLocationPermission,
