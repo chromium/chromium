@@ -25,6 +25,7 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
+import androidx.annotation.StringRes;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
@@ -592,6 +593,51 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
             }
         }
 
+        private void setContentDescription(
+                Resources res,
+                ViewHolder viewHolder,
+                String groupTitle,
+                @TabGroupColorId int colorId,
+                int tabCount) {
+            final @StringRes int colorDescRes =
+                    ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(colorId);
+            String colorDesc = res.getString(colorDescRes);
+            String contentDescription;
+
+            if (TextUtils.isEmpty(groupTitle)) {
+                if (!ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
+                    contentDescription =
+                            res.getQuantityString(
+                                    R.plurals.recent_tabs_group_closure_without_title_accessibility,
+                                    tabCount,
+                                    tabCount);
+                } else {
+                    contentDescription =
+                            res.getQuantityString(
+                                    R.plurals
+                                            .recent_tabs_group_closure_without_title_with_color_accessibility,
+                                    tabCount,
+                                    tabCount,
+                                    colorDesc);
+                }
+            } else {
+                if (!ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
+                    contentDescription =
+                            res.getString(
+                                    R.string.recent_tabs_group_closure_with_title_accessibility,
+                                    groupTitle);
+                } else {
+                    contentDescription =
+                            res.getString(
+                                    R.string
+                                            .recent_tabs_group_closure_with_title_with_color_accessibility,
+                                    groupTitle,
+                                    colorDesc);
+                }
+            }
+            viewHolder.textView.setContentDescription(contentDescription);
+        }
+
         @Override
         public RecentlyClosedEntry getChild(int childPosition) {
             if (isHistoryLink(childPosition)) return null;
@@ -608,33 +654,25 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
             viewHolder.textView.setContentDescription(null);
             // Reset the icon view.
             viewHolder.iconView.setVisibility(View.GONE);
+            Resources res = mActivity.getResources();
             if (isHistoryLink(childPosition)) {
                 viewHolder.textView.setText(R.string.show_full_history);
                 Bitmap historyIcon =
-                        BitmapFactory.decodeResource(
-                                mActivity.getResources(), R.drawable.ic_watch_later_24dp);
-                int size =
-                        mActivity
-                                .getResources()
-                                .getDimensionPixelSize(R.dimen.tile_view_icon_size_modern);
+                        BitmapFactory.decodeResource(res, R.drawable.ic_watch_later_24dp);
+                int size = res.getDimensionPixelSize(R.dimen.tile_view_icon_size_modern);
                 Drawable drawable =
                         FaviconUtils.createRoundedBitmapDrawable(
-                                mActivity.getResources(),
-                                Bitmap.createScaledBitmap(historyIcon, size, size, true));
+                                res, Bitmap.createScaledBitmap(historyIcon, size, size, true));
                 drawable.setColorFilter(
                         SemanticColorUtils.getDefaultIconColor(mActivity), PorterDuff.Mode.SRC_IN);
                 viewHolder.imageView.setImageDrawable(drawable);
                 viewHolder.itemLayout.setMinimumHeight(
-                        mActivity
-                                .getResources()
-                                .getDimensionPixelSize(R.dimen.recent_tabs_show_history_item_size));
+                        res.getDimensionPixelSize(R.dimen.recent_tabs_show_history_item_size));
                 return;
             }
             viewHolder.itemLayout.setMinimumHeight(
-                    mActivity
-                            .getResources()
-                            .getDimensionPixelSize(
-                                    R.dimen.recent_tabs_foreign_session_group_item_height));
+                    res.getDimensionPixelSize(
+                            R.dimen.recent_tabs_foreign_session_group_item_height));
             RecentlyClosedEntry entry = getChild(childPosition);
             if (!(entry instanceof RecentlyClosedTab)) {
                 int tabCount = 0;
@@ -643,37 +681,20 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                     tabCount = recentlyClosedGroup.getTabs().size();
 
                     String groupTitle = recentlyClosedGroup.getTitle();
+                    @TabGroupColorId int colorId = recentlyClosedGroup.getColor();
                     if (TextUtils.isEmpty(groupTitle)) {
                         viewHolder.textView.setText(
-                                mActivity
-                                        .getResources()
-                                        .getString(
-                                                R.string.recent_tabs_group_closure_without_title,
-                                                tabCount));
-                        String contentDescription =
-                                mActivity
-                                        .getResources()
-                                        .getString(
-                                                R.string
-                                                        .recent_tabs_group_closure_without_title_accessibility,
-                                                tabCount);
-                        viewHolder.textView.setContentDescription(contentDescription);
+                                res.getQuantityString(
+                                        R.plurals.recent_tabs_group_closure_without_title,
+                                        tabCount,
+                                        tabCount));
                     } else {
                         viewHolder.textView.setText(
-                                mActivity
-                                        .getResources()
-                                        .getString(
-                                                R.string.recent_tabs_group_closure_with_title,
-                                                groupTitle));
-                        viewHolder.textView.setContentDescription(
-                                mActivity
-                                        .getResources()
-                                        .getString(
-                                                R.string
-                                                        .recent_tabs_group_closure_with_title_accessibility,
-                                                groupTitle));
+                                res.getString(
+                                        R.string.recent_tabs_group_closure_with_title, groupTitle));
                     }
-                    setIconView(viewHolder, recentlyClosedGroup.getColor());
+                    setContentDescription(res, viewHolder, groupTitle, colorId, tabCount);
+                    setIconView(viewHolder, colorId);
                 }
                 if (entry instanceof RecentlyClosedBulkEvent) {
                     RecentlyClosedBulkEvent recentlyClosedBulkEvent =
@@ -681,15 +702,10 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                     tabCount = recentlyClosedBulkEvent.getTabs().size();
 
                     viewHolder.textView.setText(
-                            mActivity
-                                    .getResources()
-                                    .getString(R.string.recent_tabs_bulk_closure, tabCount));
+                            res.getString(R.string.recent_tabs_bulk_closure, tabCount));
                     viewHolder.textView.setContentDescription(
-                            mActivity
-                                    .getResources()
-                                    .getString(
-                                            R.string.recent_tabs_bulk_closure_accessibility,
-                                            tabCount));
+                            res.getString(
+                                    R.string.recent_tabs_bulk_closure_accessibility, tabCount));
                 }
 
                 // Entries without dates have a time of 0. TabRestoreService may not save timestamps

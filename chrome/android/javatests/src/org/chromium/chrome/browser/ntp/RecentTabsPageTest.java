@@ -21,10 +21,12 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 import android.app.Activity;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 import android.widget.ImageView;
 
+import androidx.annotation.StringRes;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -83,6 +85,7 @@ public class RecentTabsPageTest {
     private static final String EMAIL = "email@gmail.com";
     private static final String NAME = "Email Emailson";
     private static final int COLOR_ID = TabGroupColorId.YELLOW;
+    private static final int COLOR_ID_2 = TabGroupColorId.RED;
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -120,6 +123,107 @@ public class RecentTabsPageTest {
         leaveRecentTabsPage();
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RecentTabsPage"})
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
+    public void testRecentlyClosedGroupColorContentDescriptions() throws ExecutionException {
+        mPage = loadRecentTabsPage();
+        // Set a recently closed group with a title and confirm a view is rendered for it.
+        final RecentlyClosedGroup titleGroup =
+                new RecentlyClosedGroup(2, 0, "Group Title", COLOR_ID);
+        Token titleTabGroupId = new Token(27839L, 4789L);
+        titleGroup
+                .getTabs()
+                .add(
+                        new RecentlyClosedTab(
+                                0,
+                                0,
+                                "Tab Title 0",
+                                new GURL("https://www.example.com/url/0"),
+                                titleTabGroupId));
+        titleGroup
+                .getTabs()
+                .add(
+                        new RecentlyClosedTab(
+                                1,
+                                0,
+                                "Tab Title 1",
+                                new GURL("https://www.example.com/url/1"),
+                                titleTabGroupId));
+
+        // Set a recently closed group without a title and confirm a view is rendered for it.
+        final RecentlyClosedGroup noTitleGroup = new RecentlyClosedGroup(3, 0, null, COLOR_ID_2);
+        Token noTitleTabGroupId = new Token(798L, 4389L);
+        noTitleGroup
+                .getTabs()
+                .add(
+                        new RecentlyClosedTab(
+                                0,
+                                0,
+                                "Tab Title 0",
+                                new GURL("https://www.example.com/url/0"),
+                                noTitleTabGroupId));
+
+        List<RecentlyClosedEntry> entries = new ArrayList<>();
+        entries.add(titleGroup);
+        entries.add(noTitleGroup);
+        setRecentlyClosedEntries(entries);
+        assertEquals(2, mManager.getRecentlyClosedEntries(2).size());
+        final String titleGroupString =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return mActivity
+                                    .getResources()
+                                    .getString(
+                                            R.string.recent_tabs_group_closure_with_title,
+                                            titleGroup.getTitle());
+                        });
+        final String titleGroupAccessibilityString =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            Resources res = mActivity.getResources();
+                            final @StringRes int colorDesc =
+                                    ColorPickerUtils
+                                            .getTabGroupColorPickerItemColorAccessibilityString(
+                                                    titleGroup.getColor());
+                            return res.getString(
+                                    R.string
+                                            .recent_tabs_group_closure_with_title_with_color_accessibility,
+                                    titleGroup.getTitle(),
+                                    res.getString(colorDesc));
+                        });
+        final String noTitleGroupString =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return mActivity
+                                    .getResources()
+                                    .getQuantityString(
+                                            R.plurals.recent_tabs_group_closure_without_title,
+                                            noTitleGroup.getTabs().size(),
+                                            noTitleGroup.getTabs().size());
+                        });
+        final String noTitleGroupAccessibilityString =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            Resources res = mActivity.getResources();
+                            final @StringRes int colorDesc =
+                                    ColorPickerUtils
+                                            .getTabGroupColorPickerItemColorAccessibilityString(
+                                                    noTitleGroup.getColor());
+                            return res.getQuantityString(
+                                    R.plurals
+                                            .recent_tabs_group_closure_without_title_with_color_accessibility,
+                                    noTitleGroup.getTabs().size(),
+                                    noTitleGroup.getTabs().size(),
+                                    res.getString(colorDesc));
+                        });
+        final View titleGroupView = waitForView(titleGroupString);
+        final View noTitleGroupView = waitForView(noTitleGroupString);
+        assertEquals(titleGroupAccessibilityString, titleGroupView.getContentDescription());
+        assertEquals(noTitleGroupAccessibilityString, noTitleGroupView.getContentDescription());
     }
 
     @Test
@@ -263,7 +367,18 @@ public class RecentTabsPageTest {
                                             R.string.recent_tabs_group_closure_with_title,
                                             group.getTitle());
                         });
+        final String groupAccessibilityString =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return mActivity
+                                    .getResources()
+                                    .getString(
+                                            R.string
+                                                    .recent_tabs_group_closure_with_title_accessibility,
+                                            group.getTitle());
+                        });
         final View view = waitForView(groupString);
+        assertEquals(groupAccessibilityString, view.getContentDescription());
 
         mRenderTestRule.render(mPage.getView(), "recently_closed_group_with_title");
 
@@ -316,11 +431,24 @@ public class RecentTabsPageTest {
                         () -> {
                             return mActivity
                                     .getResources()
-                                    .getString(
-                                            R.string.recent_tabs_group_closure_without_title,
+                                    .getQuantityString(
+                                            R.plurals.recent_tabs_group_closure_without_title,
+                                            group.getTabs().size(),
+                                            group.getTabs().size());
+                        });
+        final String groupAccessibilityString =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return mActivity
+                                    .getResources()
+                                    .getQuantityString(
+                                            R.plurals
+                                                    .recent_tabs_group_closure_without_title_accessibility,
+                                            group.getTabs().size(),
                                             group.getTabs().size());
                         });
         final View view = waitForView(groupString);
+        assertEquals(groupAccessibilityString, view.getContentDescription());
 
         mRenderTestRule.render(mPage.getView(), "recently_closed_group_without_title");
 

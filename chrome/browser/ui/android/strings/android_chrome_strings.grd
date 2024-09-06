@@ -4104,7 +4104,10 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Tab group - <ph name="TITLE_OF_GROUP">%1$s<ex>shopping</ex></ph>
       </message>
       <message name="IDS_RECENT_TABS_GROUP_CLOSURE_WITHOUT_TITLE" desc="Text for a Recent Tabs Page > Recently Closed row item that represents a single group of tabs closed together that does not have a user specified title. TAB_COUNT is the total number of tabs closed in the group.">
-        Tab group - <ph name="TAB_COUNT">%1$s<ex>5</ex></ph> tabs
+        {TAB_COUNT, plural,
+          =1 {Tab group - <ph name="TAB_COUNT_ONE">%1$s<ex>1</ex></ph> tab}
+          other {Tab group - <ph name="TAB_COUNT_MANY">%1$s<ex>5</ex></ph> tabs}
+        }
       </message>
       <message name="IDS_RECENT_TABS_BULK_CLOSURE_ACCESSIBILITY" desc="Accessibility content description for a Recent Tabs Page > Recently closed row item that represents multiple tabs/groups closed together. TAB_COUNT is the total number of tabs closed in the action including grouped tabs.">
         Restore <ph name="TAB_COUNT">%1$s<ex>6</ex></ph> tabs as new background tabs.
@@ -4112,8 +4115,20 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_RECENT_TABS_GROUP_CLOSURE_WITH_TITLE_ACCESSIBILITY" desc="Accessibility content description for a Recent Tabs Page > Recently Closed row item that represents a single group of tabs closed together that had a user specified group title. TITLE_OF_GROUP is the user specified title of the group.">
         Restore tab group <ph name="TITLE_OF_GROUP">%1$s<ex>shopping</ex></ph> as a new background tab group.
       </message>
+      <message name="IDS_RECENT_TABS_GROUP_CLOSURE_WITH_TITLE_WITH_COLOR_ACCESSIBILITY" desc="Accessibility content description for a Recent Tabs Page > Recently Closed row item that represents a single group of tabs closed together that had a user specified group title, and has a group color. TITLE_OF_GROUP is the user specified title of the group.">
+        Restore tab group <ph name="TITLE_OF_GROUP">%1$s<ex>shopping</ex></ph>, color <ph name="COLOR_NAME">%2$s<ex>Blue</ex></ph>, as a new background tab group.
+      </message>
       <message name="IDS_RECENT_TABS_GROUP_CLOSURE_WITHOUT_TITLE_ACCESSIBILITY" desc="Accessibility content description for a Recent Tabs Page > Recently Closed row item that represents a single group of tabs closed together that did not have a user specified title. TAB_COUNT is the total number of tabs closed in the group.">
-        Restore tab group of <ph name="TAB_COUNT">%1$s<ex>5</ex></ph> tabs as a new background tab group.
+        {TAB_COUNT, plural,
+          =1 {Restore tab group of <ph name="TAB_COUNT_ONE">%1$s<ex>1</ex></ph> tab as a new background tab group.}
+          other {Restore tab group of <ph name="TAB_COUNT_MANY">%1$s<ex>5</ex></ph> tabs as a new background tab group.}
+        }
+      </message>
+      <message name="IDS_RECENT_TABS_GROUP_CLOSURE_WITHOUT_TITLE_WITH_COLOR_ACCESSIBILITY" desc="Accessibility content description for a Recent Tabs Page > Recently Closed row item that represents a single group of tabs closed together that did not have a user specified title, and has a group color. TAB_COUNT is the total number of tabs closed in the group.">
+        {TAB_COUNT, plural,
+          =1 {Restore tab group of <ph name="TAB_COUNT_ONE">%1$s<ex>1</ex></ph> tab, color <ph name="COLOR_NAME">%2$s<ex>Blue</ex></ph>, as a new background tab group.}
+          other {Restore tab group of <ph name="TAB_COUNT_MANY">%1$s<ex>5</ex></ph> tabs, color <ph name="COLOR_NAME">%2$s<ex>Blue</ex></ph>, as a new background tab group.}
+        }
       </message>
       <message name="IDS_WEB_FEED_AWARENESS" desc="Educating the user about the web feed.">
         Explore content to follow
