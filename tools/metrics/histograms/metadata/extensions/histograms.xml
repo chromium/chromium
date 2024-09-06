@@ -5061,6 +5061,22 @@ This is emitted for two scenarios when a worker may be unregistered:
   <summary>Uninstalls grouped by Extension::HistogramType.</summary>
 </histogram>
 
+<histogram name="Extensions.WAR.XOriginWebAccessible.{ManifestVersion}"
+    enum="Boolean" expires_after="2025-04-01">
+  <owner>solomonkinard@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Emitted each time a cross-origin extension navigation request occurs. Counts
+    whether or not the target url is a web accessible resource. It's possible
+    that the upstream origin and target are different but both for the same
+    extension (i.e. one for a static url and the other for its dynamic url).
+  </summary>
+  <token key="ManifestVersion">
+    <variant name="MV2" summary="At most MV2"/>
+    <variant name="MV3" summary="At least MV3"/>
+  </token>
+</histogram>
+
 <histogram
     name="Extensions.WebRequest.BeforeRequestDeclarativeNetRequestEvaluationTime"
     units="ms" expires_after="2025-06-30">

@@ -33,6 +33,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "ui/base/page_transition_types.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
 #include "components/guest_view/browser/guest_view_base.h"
@@ -278,6 +279,28 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
     return content::NavigationThrottle::BLOCK_REQUEST;
   }
 
+  // `redirect_chain` is the current page and each one before is an ancestor.
+  auto redirect_chain = navigation_handle()->GetRedirectChain();
+
+  // Record if the redirection is to an extension resource that isn't web
+  // accessible.
+  if (redirect_chain.size() > 1) {
+    // Looking back to the previous should be okay since this block is expected
+    // to be reached again if there are more redirects in the same navigation.
+    const GURL& upstream = redirect_chain[redirect_chain.size() - 2];
+    auto upstream_origin = url::Origin::Create(upstream);
+    // Cross-origin-redirects require that the `url` is in the
+    // "web_accessible_resources" section of the manifest.
+    if (!upstream_origin.opaque() && upstream_origin != target_origin) {
+      base::UmaHistogramBoolean(
+          target_extension->manifest_version() < 3
+              ? "Extensions.WAR.XOriginWebAccessible.MV2"
+              : "Extensions.WAR.XOriginWebAccessible.MV3",
+          WebAccessibleResourcesInfo::IsResourceWebAccessibleRedirect(
+              target_extension, url, target_origin, upstream));
+    }
+  }
+
   // Automatically trusted navigation:
   // * Browser-initiated navigations without an initiator origin happen when a
   //   user directly triggers a navigation (e.g. using the omnibox, or the
@@ -326,8 +349,6 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
 
   // Cross-origin-initiator navigations require that the `url` is in the
   // manifest's "web_accessible_resources" section. The last GURL in
-  // `redirect_chain` is the current page and each one before is an ancestor.
-  auto redirect_chain = navigation_handle()->GetRedirectChain();
   GURL upstream_url = redirect_chain.size() > 1
                           ? redirect_chain[redirect_chain.size() - 2]
                           : GURL();
