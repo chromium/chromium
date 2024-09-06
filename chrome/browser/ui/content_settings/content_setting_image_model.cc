@@ -572,18 +572,21 @@ bool ContentSettingBlockedImageModel::UpdateAndGetVisibility(
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile);
 
-  // For allowed cookies, don't show the cookie page action unless cookies are
-  // blocked by default.
-  if (!is_blocked && type == ContentSettingsType::COOKIES &&
-      map->GetDefaultContentSetting(type, nullptr) != CONTENT_SETTING_BLOCK) {
-    return false;
-  }
-
-  // TODO(crbug.com/40675739): Handle first-party blocking with new ui.
-  if (type == ContentSettingsType::COOKIES &&
-      CookieSettingsFactory::GetForProfile(profile)
-          ->ShouldBlockThirdPartyCookies()) {
-    return false;
+  if (type == ContentSettingsType::COOKIES) {
+    // Don't show the cookie page action if:
+    // 1. Cookies are allowed due to the default cookies content setting
+    // 2. Cookies are blocked due to a non-cookies content setting source
+    // 3. Third-party cookies are blocked
+    if ((is_allowed &&
+         map->GetDefaultContentSetting(type) != CONTENT_SETTING_BLOCK) ||
+        (is_blocked &&
+         map->GetContentSetting(web_contents->GetLastCommittedURL(),
+                                web_contents->GetLastCommittedURL(),
+                                type) != CONTENT_SETTING_BLOCK) ||
+        CookieSettingsFactory::GetForProfile(profile)
+            ->ShouldBlockThirdPartyCookies()) {
+      return false;
+    }
   }
 
   if (!is_blocked) {
