@@ -510,6 +510,10 @@ id<GREYMatcher> MigrateToAccountButton() {
   [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
       assertWithMatcher:grey_not(grey_enabled())];
 
+  // Exit edit mode.
+  [[EarlGrey selectElementWithMatcher:NavigationBarCancelButton()]
+      performAction:grey_tap()];
+
   // Go back to the list view page.
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
       performAction:grey_tap()];
