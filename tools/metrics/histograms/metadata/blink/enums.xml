@@ -532,7 +532,7 @@ chromium-metrics-reviews@google.com.
 <enum name="PermissionElementUserInteractionDeniedReason">
   <int value="0" label="Invalid type"/>
   <int value="1" label="Failed or has not been registered"/>
-  <int value="2" label="Recently attached to layout tree"/>
+  <int value="2" label="Recently inserted into DOM"/>
   <int value="3"
       label="Intersection visibility has recently become fully visible"/>
   <int value="4" label="Invalid style"/>
