@@ -78,6 +78,7 @@ BASE_DECLARE_FEATURE(kChromeSharePageInfo);
 BASE_DECLARE_FEATURE(kChromeShareScreenshot);
 BASE_DECLARE_FEATURE(kChromeSharingHubLaunchAdjacent);
 BASE_DECLARE_FEATURE(kChromeSurveyNextAndroid);
+BASE_DECLARE_FEATURE(kClankStartupLatencyInjection);
 BASE_DECLARE_FEATURE(kCommandLineOnNonRooted);
 BASE_DECLARE_FEATURE(kContextMenuSysUiMatchesActivity);
 BASE_DECLARE_FEATURE(kContextMenuTranslateWithGoogleLens);

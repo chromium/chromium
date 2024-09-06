@@ -747,6 +747,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/instantapps/InstantAppsHandler.java",
   "java/src/org/chromium/chrome/browser/invalidation/ResumableDelayedTaskRunner.java",
   "java/src/org/chromium/chrome/browser/invalidation/SessionsInvalidationManager.java",
+  "java/src/org/chromium/chrome/browser/latency_injection/StartupLatencyInjector.java",
   "java/src/org/chromium/chrome/browser/lens/LensDebugBridge.java",
   "java/src/org/chromium/chrome/browser/lens/LensPolicyUtils.java",
   "java/src/org/chromium/chrome/browser/login/ChromeHttpAuthHandler.java",

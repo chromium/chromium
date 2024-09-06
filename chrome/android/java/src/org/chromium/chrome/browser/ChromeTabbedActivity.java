@@ -129,6 +129,7 @@ import org.chromium.chrome.browser.incognito.IncognitoTabLauncher;
 import org.chromium.chrome.browser.incognito.IncognitoTabbedSnapshotController;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.init.ActivityProfileProvider;
+import org.chromium.chrome.browser.latency_injection.StartupLatencyInjector;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -1053,6 +1054,30 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                         getTabContentManagerSupplier());
                             });
         }
+    }
+
+    private boolean isMainIntentLaunch() {
+        assert !mFromResumption : "Method is correct only when it's a new Activity launch.";
+
+        Intent launchIntent = getIntent();
+        if (launchIntent == null) return false;
+
+        // Also ignore if launched from recents.
+        if (0 != (launchIntent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY)) {
+            return false;
+        }
+
+        if (IntentUtils.isMainIntentFromLauncher(launchIntent)) {
+            return true;
+        }
+
+        if (IntentUtils.safeGetBooleanExtra(
+                        launchIntent, IntentHandler.EXTRA_INVOKED_FROM_SHORTCUT, false)
+                && IntentHandler.wasIntentSenderChrome(launchIntent)) {
+            return true;
+        }
+
+        return false;
     }
 
     @Override
@@ -1989,6 +2014,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     @Override
     public void performPreInflationStartup() {
         super.performPreInflationStartup();
+
+        if (isMainIntentLaunch()) {
+            StartupLatencyInjector startupLatencyInjector = new StartupLatencyInjector();
+            startupLatencyInjector.maybeInjectLatency();
+        }
 
         // Android FrameMetrics allow tracking of java views and their deadline misses (frame
         // drops/janks).

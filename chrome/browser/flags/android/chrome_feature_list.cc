@@ -229,6 +229,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCacheDeprecatedSystemLocationSetting,
     &kChromeSharePageInfo,
     &kChromeSurveyNextAndroid,
+    &kClankStartupLatencyInjection,
     &kCommandLineOnNonRooted,
     &kContextMenuTranslateWithGoogleLens,
     &kContextMenuSysUiMatchesActivity,
@@ -640,6 +641,10 @@ BASE_FEATURE(kChromeSharePageInfo,
 BASE_FEATURE(kChromeSurveyNextAndroid,
              "ChromeSurveyNextAndroid",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kClankStartupLatencyInjection,
+             "ClankStartupLatencyInjection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCommandLineOnNonRooted,
              "CommandLineOnNonRooted",

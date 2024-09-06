@@ -564,6 +564,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Startup.Android.MainIconLaunchTotalWaitTime" units="ms"
+    expires_after="2025-03-03">
+  <owner>nafisabedin@google.com</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    The total time a user waits for the Clank startup ablation study. The
+    enabled arms of the study prescribes an amount of time to delay the launch
+    of Clank, and this histogram records the amount of time waited to verify
+    ablation and any additional delay.
+
+    Recorded only when the main Chrome launcher icon is used to start the app
+    (i.e. LaunchCauseType is MAIN_LAUNCHER_ICON or MAIN_LAUNCHER_ICON_SHORTCUT)
+    and after the ablation occurs.
+  </summary>
+</histogram>
+
 <histogram name="Startup.Android.MainIntentIsColdStart" enum="Boolean"
     expires_after="2025-02-08">
   <owner>nafisabedin@google.com</owner>
