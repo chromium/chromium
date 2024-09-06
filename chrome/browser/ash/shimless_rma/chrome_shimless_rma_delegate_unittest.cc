@@ -124,11 +124,11 @@ class FakeWebAppCommandScheduler : public web_app::WebAppCommandScheduler {
               webapps::WebappInstallSource::IWA_SHIMLESS_RMA);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            std::move(callback),
-            web_app::InstallIsolatedWebAppCommandSuccess(
-                base::Version{}, web_app::IwaStorageOwnedBundle{
-                                     "random_folder", /*dev_mode=*/false})));
+        base::BindOnce(std::move(callback),
+                       web_app::InstallIsolatedWebAppCommandSuccess(
+                           url_info, base::Version{},
+                           web_app::IwaStorageOwnedBundle{
+                               "random_folder", /*dev_mode=*/false})));
   }
 };
 

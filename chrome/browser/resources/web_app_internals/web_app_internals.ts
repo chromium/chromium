@@ -163,7 +163,8 @@ getRequiredElement('iwa-dev-install-bundle-selector')
               .result;
       if (result.success) {
         iwaInstallMessageDiv.innerText =
-            `Installing IWA: successfully installed.`;
+            `Installing IWA: successfully installed (Web Bundle ID: ${
+                result.success.webBundleId}).`;
         refreshDevModeAppList();
         return;
       }

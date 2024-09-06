@@ -221,7 +221,7 @@ void HandleInstallBasedOnId(
     }
 
     std::move(callback).Run(InstallIsolatedWebAppCommandSuccess(
-        expected_version,
+        url_info, expected_version,
         IwaStorageOwnedBundle{"random_folder", /*dev_mode=*/false}));
     return;
   }

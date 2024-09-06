@@ -741,6 +741,7 @@ void WebAppInternalsHandler::OnInstallIsolatedWebAppInDevMode(
   std::move(callback).Run([&] {
     if (result.has_value()) {
       auto success = mojom::InstallIsolatedWebAppSuccess::New();
+      success->web_bundle_id = result->url_info.web_bundle_id().id();
       return mojom::InstallIsolatedWebAppResult::NewSuccess(std::move(success));
     }
     return mojom::InstallIsolatedWebAppResult::NewError(result.error());

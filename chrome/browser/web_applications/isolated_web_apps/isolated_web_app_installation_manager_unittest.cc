@@ -83,7 +83,8 @@ class FakeWebAppCommandScheduler : public WebAppCommandScheduler {
     // behavior, so stub out the install command to avoid needing to
     // configure it correctly.
     std::move(callback).Run(InstallIsolatedWebAppCommandSuccess(
-        base::Version("0"), IwaStorageUnownedBundle(base::FilePath())));
+        url_info, base::Version("0"),
+        IwaStorageUnownedBundle(base::FilePath())));
   }
 };
 
