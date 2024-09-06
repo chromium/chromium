@@ -1371,7 +1371,7 @@ TEST_P(WindowPerformanceTest, EventTimingTraceEvents) {
   ASSERT_TRUE(event_name);
   EXPECT_EQ(*event_name, "pointerdown");
   std::string* frame_trace_value = arg_dict.FindString("frame");
-  EXPECT_EQ(*frame_trace_value, GetFrameIdForTracing(GetFrame()));
+  EXPECT_EQ(String(*frame_trace_value), GetFrameIdForTracing(GetFrame()));
   EXPECT_EQ(arg_dict.FindInt("nodeId"),
             DOMNodeIds::IdForNode(GetWindow()->document()));
   ASSERT_TRUE(pointerdown_begin->has_other_event());
@@ -1387,7 +1387,7 @@ TEST_P(WindowPerformanceTest, EventTimingTraceEvents) {
   ASSERT_TRUE(event_name);
   EXPECT_EQ(*event_name, "pointerup");
   frame_trace_value = arg_dict.FindString("frame");
-  EXPECT_EQ(*frame_trace_value, GetFrameIdForTracing(GetFrame()));
+  EXPECT_EQ(String(*frame_trace_value), GetFrameIdForTracing(GetFrame()));
   EXPECT_EQ(arg_dict.FindInt("nodeId"),
             DOMNodeIds::IdForNode(GetWindow()->document()));
   ASSERT_TRUE(pointerup_begin->has_other_event());
@@ -1402,7 +1402,7 @@ TEST_P(WindowPerformanceTest, EventTimingTraceEvents) {
   ASSERT_TRUE(event_name);
   EXPECT_EQ(*event_name, "click");
   frame_trace_value = arg_dict.FindString("frame");
-  EXPECT_EQ(*frame_trace_value, GetFrameIdForTracing(GetFrame()));
+  EXPECT_EQ(String(*frame_trace_value), GetFrameIdForTracing(GetFrame()));
   EXPECT_EQ(arg_dict.FindInt("nodeId"),
             DOMNodeIds::IdForNode(GetWindow()->document()));
   ASSERT_TRUE(click_begin->has_other_event());

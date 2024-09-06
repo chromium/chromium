@@ -892,7 +892,7 @@ String FrameSerializer::MarkOfTheWebDeclaration(const KURL& url) {
 // static
 String FrameSerializer::GetContentID(Frame* frame) {
   DCHECK(frame);
-  String frame_id = String(frame->GetFrameIdForTracing().data());
+  const String& frame_id = frame->GetFrameIdForTracing();
   return "<frame-" + frame_id + "@mhtml.blink>";
 }
 
