@@ -1,7 +1,7 @@
 # Autofill
 
 Autofill is a [layered
-component](https://sites.google.com/a/chromium.org/dev/developers/design-documents/layered-components-design).
+component](https://www.chromium.org/developers/design-documents/layered-components-design).
 It has the following structure:
 
 - [`core/`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core): Code shared by `content/` and `ios/`.
