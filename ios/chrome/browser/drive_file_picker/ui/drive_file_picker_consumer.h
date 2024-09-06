@@ -40,6 +40,10 @@
 // Sets which filter should appear as enabled.
 - (void)setFilter:(DriveFilePickerFilter)filter;
 
+// Sets which sorting criteria and direction appear as enabled.
+- (void)setSortingCriteria:(DriveItemsSortingType)criteria
+                 direction:(DriveItemsSortingOrder)direction;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_UI_DRIVE_FILE_PICKER_CONSUMER_H_

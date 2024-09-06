@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/drive/model/test_drive_service.h"
 
 #import "ios/chrome/browser/drive/model/test_drive_file_uploader.h"
+#import "ios/chrome/browser/drive/model/test_drive_list.h"
 
 namespace drive {
 
@@ -16,6 +17,10 @@ TestDriveService::~TestDriveService() = default;
 void TestDriveService::SetFileUploader(
     std::unique_ptr<DriveFileUploader> uploader) {
   file_uploader_ = std::move(uploader);
+}
+
+void TestDriveService::SetDriveList(std::unique_ptr<DriveList> list) {
+  drive_list_ = std::move(list);
 }
 
 #pragma mark - DriveService
@@ -42,9 +47,11 @@ std::unique_ptr<DriveFileDownloader> TestDriveService::CreateFileDownloader(
 
 std::unique_ptr<DriveList> TestDriveService::CreateList(
     id<SystemIdentity> identity) {
-  // TODO(crbug.com/344812969): Return a TestDriveList which fakes API requests,
-  // similarly to TestDriveFileUploader.
-  return nullptr;
+  std::unique_ptr<DriveList> result = std::move(drive_list_);
+  if (!result) {
+    result = std::make_unique<TestDriveList>(identity);
+  }
+  return result;
 }
 
 std::string TestDriveService::GetSuggestedFolderName() const {

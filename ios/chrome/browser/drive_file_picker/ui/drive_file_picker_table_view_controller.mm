@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_table_view_controller.h"
 
+#import "base/notreached.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_mutator.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_navigation_controller.h"
@@ -34,12 +35,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   // The status of file dowload.
   DriveFileDownloadStatus _status;
 
-  // The sorting order.
-  DriveItemsSortingOrder _sortingOrder;
-
-  // The sorting type.
-  DriveItemsSortingType _sortingType;
-
   // The filtering actions.
   UIAction* _ignoreAcceptedTypesAction;
   UIAction* _showArchiveFilesAction;
@@ -49,10 +44,14 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   UIAction* _showPDFFilesAction;
   UIAction* _showAllFilesAction;
 
-  // The Sorting actions
+  // The sorting actions
   UIAction* _sortByNameAction;
   UIAction* _sortByModificationTimeAction;
   UIAction* _sortByOpeningTimeAction;
+
+  // The symbols representing ascending/descending sorting directions.
+  UIImage* _sortAscendingSymbol;
+  UIImage* _sortDescendingSymbol;
 
   // The filter and sort button.
   UIBarButtonItem* _filterButton;
@@ -77,9 +76,9 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     _status = DriveFileDownloadStatus::kNotStarted;
-    _sortingOrder = DriveItemsSortingOrder::kDescending;
-    _sortingType = DriveItemsSortingType::kModificationTime;
-    [self setupFilterActions];
+    [self initFilterActions];
+    [self initSortActions];
+    [self initSortingDirectionSymbols];
   }
   return self;
 }
@@ -89,7 +88,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  [self configureSortButton];
   [self configureToolbar];
 
   self.navigationItem.rightBarButtonItem = [self configureRightBarButtonItem];
@@ -149,6 +147,40 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   [self.mutator submitFileSelection];
 }
 
+- (void)didSelectSortingCriteria:(DriveItemsSortingType)sortingCriteria {
+  UIAction* selectedSortingAction =
+      [self actionForSortingCriteria:sortingCriteria];
+  DriveItemsSortingOrder sortingDirection;
+  switch (selectedSortingAction.state) {
+    case UIMenuElementStateOn:
+      // Action was already selected. Inverting sort direction.
+      sortingDirection = selectedSortingAction.image == _sortAscendingSymbol
+                             ? DriveItemsSortingOrder::kDescending
+                             : DriveItemsSortingOrder::kAscending;
+      break;
+    case UIMenuElementStateOff:
+      // Action was not selected.
+      switch (sortingCriteria) {
+        case DriveItemsSortingType::kName:
+          // Default direction for sorting by name is ascending.
+          sortingDirection = DriveItemsSortingOrder::kAscending;
+          break;
+        case DriveItemsSortingType::kModificationTime:
+          // Default direction for sorting by modification time is descending.
+          sortingDirection = DriveItemsSortingOrder::kDescending;
+          break;
+        case DriveItemsSortingType::kOpeningTime:
+          // Default direction for sorting by opening time is descending.
+          sortingDirection = DriveItemsSortingOrder::kDescending;
+          break;
+      }
+      break;
+    default:
+      NOTREACHED();
+  }
+  [self.mutator setSortingCriteria:sortingCriteria direction:sortingDirection];
+}
+
 #pragma mark - Private
 
 // Configures the toolbar with 3 buttons, filterButton <---->
@@ -168,12 +200,9 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
       kSortSymbol, kSymbolAccessoryPointSize);
 
   // TODO(crbug.com/344812548): Add the action of the sort button.
-  _sortButton = [[UIBarButtonItem alloc]
-      initWithImage:sortIcon
-               menu:[UIMenu menuWithChildren:@[
-                 _sortByNameAction, _sortByOpeningTimeAction,
-                 _sortByModificationTimeAction
-               ]]];
+  UIMenu* sortButtonMenu = [self createSortButtonMenu];
+  _sortButton = [[UIBarButtonItem alloc] initWithImage:sortIcon
+                                                  menu:sortButtonMenu];
   _sortButton.enabled = YES;
 
   UIBarButtonItem* spaceButton = [[UIBarButtonItem alloc]
@@ -225,7 +254,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   return activityIndicatorButton;
 }
 
-- (void)setupFilterActions {
+// Initializes the filter actions.
+- (void)initFilterActions {
   __weak __typeof(self) weakSelf = self;
   _ignoreAcceptedTypesAction = [UIAction
       actionWithTitle:l10n_util::GetNSString(
@@ -297,115 +327,36 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
                         }];
 }
 
-// Configures the sort button by attaching a UIMenu of the actions to it.
-- (void)configureSortButton {
+// Initializes the sorting actions.
+- (void)initSortActions {
   ActionFactory* actionFactory = [[ActionFactory alloc]
       initWithScenario:kMenuScenarioHistogramSortDriveItemsEntry];
-
   __weak __typeof(self) weakSelf = self;
   _sortByNameAction = [actionFactory actionToSortDriveItemsByNameWithBlock:^{
-    [weakSelf turnOnSortByName];
-    // TODO(crbug.com/344812548): Add the sorting request.
+    [weakSelf didSelectSortingCriteria:DriveItemsSortingType::kName];
   }];
   _sortByModificationTimeAction =
       [actionFactory actionToSortDriveItemsByModificationTimeWithBlock:^{
-        [weakSelf turnOnSortByModificationTime];
-        // TODO(crbug.com/344812548): Add the sorting request.
+        [weakSelf
+            didSelectSortingCriteria:DriveItemsSortingType::kModificationTime];
       }];
-  _sortByModificationTimeAction.state = UIMenuElementStateOn;
-  _sortByModificationTimeAction.image =
-      DefaultSymbolWithPointSize(kChevronDownSymbol, kSymbolAccessoryPointSize);
   _sortByOpeningTimeAction =
       [actionFactory actionToSortDriveItemsByOpeningTimeWithBlock:^{
-        [weakSelf turnOnSortByOpeningTime];
-        // TODO(crbug.com/344812548): Add the sorting request.
+        [weakSelf didSelectSortingCriteria:DriveItemsSortingType::kOpeningTime];
       }];
 }
 
-// Turns on the state of `_sortByNameAction` if it was previously off, if not,
-// switches the sorting order.
-- (void)turnOnSortByName {
-  if (_sortingType == DriveItemsSortingType::kName) {
-    [self switchSortingOrderForType:DriveItemsSortingType::kName];
-  } else {
-    [self selectSortingType:DriveItemsSortingType::kName];
-  }
-  _sortButton.menu = [_sortButton.menu menuByReplacingChildren:@[
-    _sortByNameAction, _sortByOpeningTimeAction, _sortByModificationTimeAction
-  ]];
-  [self.mutator itemsUpdatedWithOrder:_sortingOrder type:_sortingType];
-}
-
-// Turns on the state of `_sortByModificationTimeAction` if it was previously
-// off, if not, switches the sorting order.
-- (void)turnOnSortByModificationTime {
-  if (_sortingType == DriveItemsSortingType::kModificationTime) {
-    [self switchSortingOrderForType:DriveItemsSortingType::kModificationTime];
-  } else {
-    [self selectSortingType:DriveItemsSortingType::kModificationTime];
-  }
-  _sortButton.menu = [_sortButton.menu menuByReplacingChildren:@[
-    _sortByNameAction, _sortByOpeningTimeAction, _sortByModificationTimeAction
-  ]];
-  [self.mutator itemsUpdatedWithOrder:_sortingOrder type:_sortingType];
-}
-
-// Turns on the state of `_sortByOpeningTimeAction` if it was previously off, if
-// not, switches the sorting order.
-- (void)turnOnSortByOpeningTime {
-  if (_sortingType == DriveItemsSortingType::kOpeningTime) {
-    [self switchSortingOrderForType:DriveItemsSortingType::kOpeningTime];
-  } else {
-    [self selectSortingType:DriveItemsSortingType::kOpeningTime];
-  }
-  _sortButton.menu = [_sortButton.menu menuByReplacingChildren:@[
-    _sortByNameAction, _sortByOpeningTimeAction, _sortByModificationTimeAction
-  ]];
-  [self.mutator itemsUpdatedWithOrder:_sortingOrder type:_sortingType];
-}
-
-// Switches the recent sorting order and updates the actions icons accordinly.
-- (void)switchSortingOrderForType:(DriveItemsSortingType)sortingType {
-  UIAction* sortingAction = [self actionForSortingType:sortingType];
-  switch (_sortingOrder) {
-    case DriveItemsSortingOrder::kAscending:
-      _sortingOrder = DriveItemsSortingOrder::kDescending;
-      sortingAction.image = DefaultSymbolWithPointSize(
-          kChevronDownSymbol, kSymbolAccessoryPointSize);
-      break;
-    case DriveItemsSortingOrder::kDescending:
-      _sortingOrder = DriveItemsSortingOrder::kAscending;
-      sortingAction.image = DefaultSymbolWithPointSize(
-          kChevronUpSymbol, kSymbolAccessoryPointSize);
-      break;
-  }
-}
-
-// Resets the states and icons of the sorting actions.
-- (void)resetSortingActionsStates {
-  _sortByNameAction.state = UIMenuElementStateOff;
-  _sortByNameAction.image = nil;
-  _sortByOpeningTimeAction.state = UIMenuElementStateOff;
-  _sortByOpeningTimeAction.image = nil;
-  _sortByModificationTimeAction.state = UIMenuElementStateOff;
-  _sortByModificationTimeAction.image = nil;
-}
-
-// Updates the status and icon of the action corresponding to a given sorting
-// type.
-- (void)selectSortingType:(DriveItemsSortingType)sortingType {
-  UIAction* sortingAction = [self actionForSortingType:sortingType];
-  [self resetSortingActionsStates];
-  sortingAction.state = UIMenuElementStateOn;
-  sortingAction.image =
+// Initializes the sorting direction symbols.
+- (void)initSortingDirectionSymbols {
+  _sortAscendingSymbol =
+      DefaultSymbolWithPointSize(kChevronUpSymbol, kSymbolAccessoryPointSize);
+  _sortDescendingSymbol =
       DefaultSymbolWithPointSize(kChevronDownSymbol, kSymbolAccessoryPointSize);
-  _sortingType = sortingType;
-  _sortingOrder = DriveItemsSortingOrder::kDescending;
 }
 
-// Returns the action corresponding to a given `sortingType`.
-- (UIAction*)actionForSortingType:(DriveItemsSortingType)sortingType {
-  switch (sortingType) {
+// Returns the action corresponding to a given `sortingCriteria`.
+- (UIAction*)actionForSortingCriteria:(DriveItemsSortingType)sortingCriteria {
+  switch (sortingCriteria) {
     case DriveItemsSortingType::kName:
       return _sortByNameAction;
     case DriveItemsSortingType::kModificationTime:
@@ -534,6 +485,23 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   _filterButton.menu = [self createFilterButtonMenu];
 }
 
+- (void)setSortingCriteria:(DriveItemsSortingType)criteria
+                 direction:(DriveItemsSortingOrder)direction {
+  _sortByNameAction.state = UIMenuElementStateOff;
+  _sortByNameAction.image = nil;
+  _sortByOpeningTimeAction.state = UIMenuElementStateOff;
+  _sortByOpeningTimeAction.image = nil;
+  _sortByModificationTimeAction.state = UIMenuElementStateOff;
+  _sortByModificationTimeAction.image = nil;
+  UIAction* enabledSortingAction = [self actionForSortingCriteria:criteria];
+  enabledSortingAction.image = direction == DriveItemsSortingOrder::kAscending
+                                   ? _sortAscendingSymbol
+                                   : _sortDescendingSymbol;
+  enabledSortingAction.state = UIMenuElementStateOn;
+  // The menu needs to be reset for the new state to appear.
+  _sortButton.menu = [self createSortButtonMenu];
+}
+
 #pragma mark - UI element creation helpers
 
 // Helper to create the menu presented by `_filterButton`.
@@ -553,6 +521,13 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
            ]];
   return [UIMenu menuWithChildren:@[
     moreOptionsMenu, showFileTypeMenu, _showAllFilesAction
+  ]];
+}
+
+// Helper to create the menu presented by `_sortButton`.
+- (UIMenu*)createSortButtonMenu {
+  return [UIMenu menuWithChildren:@[
+    _sortByNameAction, _sortByOpeningTimeAction, _sortByModificationTimeAction
   ]];
 }
 

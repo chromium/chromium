@@ -21,14 +21,14 @@
 // Ask the mutator to fetch the next drive items.
 - (void)fetchNextPage;
 
-// Notifies the mutator that the items order/sorting type was modified.
-- (void)itemsUpdatedWithOrder:(DriveItemsSortingOrder)order
-                         type:(DriveItemsSortingType)type;
+// Sets the current sorting criteria and direction.
+- (void)setSortingCriteria:(DriveItemsSortingType)criteria
+                 direction:(DriveItemsSortingOrder)direction;
 
-// Toggle whether to ignore the list of types accepted by the website.
+// Toggles whether to ignore the list of types accepted by the website.
 - (void)setAcceptedTypesIgnored:(BOOL)ignoreAcceptedTypes;
 
-// Set current filter, to only show items matching a given type.
+// Sets current filter, to only show items matching a given type.
 - (void)setFilter:(DriveFilePickerFilter)filter;
 
 - (void)fetchIconForDriveItem:(DriveItemIdentifier*)driveItem;

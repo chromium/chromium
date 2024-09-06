@@ -303,4 +303,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 - (void)setFilter:(DriveFilePickerFilter)filter {
 }
 
+- (void)setSortingCriteria:(DriveItemsSortingType)criteria
+                 direction:(DriveItemsSortingOrder)direction {
+}
+
 @end

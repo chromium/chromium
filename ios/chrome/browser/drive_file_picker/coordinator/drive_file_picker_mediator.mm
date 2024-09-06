@@ -359,6 +359,7 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
   [_consumer setCurrentDriveFolderTitle:_title];
   [_consumer setFilter:_filter];
   [_consumer setAllFilesEnabled:_ignoreAcceptedTypes];
+  [_consumer setSortingCriteria:_sortingCriteria direction:_sortingDirection];
 }
 
 - (void)updateSelectedIdentity:(id<SystemIdentity>)selectedIdentity {
@@ -440,12 +441,15 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
   [self fetchItemsAppending:YES];
 }
 
-- (void)itemsUpdatedWithOrder:(DriveItemsSortingOrder)order
-                         type:(DriveItemsSortingType)type {
-  // TODO(crbug.com/344812396): Update and move the sorting logic to the
-  // mediator.
-  _sortingDirection = order;
-  _sortingCriteria = type;
+- (void)setSortingCriteria:(DriveItemsSortingType)criteria
+                 direction:(DriveItemsSortingOrder)direction {
+  if (_sortingCriteria == criteria && _sortingDirection == direction) {
+    // If no sorting parameter changed, do nothing.
+    return;
+  }
+  _sortingCriteria = criteria;
+  _sortingDirection = direction;
+  [self.consumer setSortingCriteria:criteria direction:direction];
   [self fetchItemsAppending:NO];
 }
 

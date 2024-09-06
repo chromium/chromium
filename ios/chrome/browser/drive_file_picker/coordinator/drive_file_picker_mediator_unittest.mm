@@ -4,15 +4,21 @@
 
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator.h"
 
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/image_fetcher/core/cached_image_fetcher.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "ios/chrome/browser/drive/model/drive_list.h"
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
+#import "ios/chrome/browser/drive/model/test_drive_list.h"
+#import "ios/chrome/browser/drive/model/test_drive_service.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator_delegate.h"
+#import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
+#import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_consumer.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_item_identifier.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -27,15 +33,10 @@
     : NSObject <DriveFilePickerMediatorDelegate>
 
 @property(nonatomic, copy) NSString* titleOfBrowsedCollection;
-
 @property(nonatomic, assign) DriveListQuery queryOfBrowsedCollection;
-
 @property(nonatomic, assign) DriveFilePickerFilter filter;
-
 @property(nonatomic, assign) BOOL ignoreAcceptedTypes;
-
 @property(nonatomic, assign) DriveItemsSortingType sortingCriteria;
-
 @property(nonatomic, assign) DriveItemsSortingOrder sortingDirection;
 
 @end
@@ -61,11 +62,60 @@
 
 @end
 
+// Fake consumer for `DriveFilePickerMediator`.
+@interface FakeDriveFilePickerConsumer : NSObject <DriveFilePickerConsumer>
+
+@property(nonatomic, assign) DriveItemsSortingType sortingCriteria;
+
+@property(nonatomic, assign) DriveItemsSortingOrder sortingDirection;
+
+@property(nonatomic, strong) NSArray<DriveItemIdentifier*>* driveItems;
+
+@end
+
+@implementation FakeDriveFilePickerConsumer
+
+- (void)setSelectedUserIdentityEmail:(NSString*)selectedUserIdentityEmail {
+}
+
+- (void)setCurrentDriveFolderTitle:(NSString*)currentDriveFolderTitle {
+}
+
+- (void)populateItems:(NSArray<DriveItemIdentifier*>*)driveItems {
+  self.driveItems = driveItems;
+}
+
+- (void)setEmailsMenu:(UIMenu*)emailsMenu {
+}
+
+- (void)reconfigureDriveItem:(DriveItemIdentifier*)driveItem {
+}
+
+- (void)setDownloadStatus:(DriveFileDownloadStatus)downloadStatus {
+}
+
+- (void)setEnabledItems:(NSSet<NSString*>*)identifiers {
+}
+
+- (void)setAllFilesEnabled:(BOOL)allFilesEnabled {
+}
+
+- (void)setFilter:(DriveFilePickerFilter)filter {
+}
+
+- (void)setSortingCriteria:(DriveItemsSortingType)criteria
+                 direction:(DriveItemsSortingOrder)direction {
+  self.sortingCriteria = criteria;
+  self.sortingDirection = direction;
+}
+@end
+
 // Test fixture for testing DriveFilePickerMediator class.
 class DriveFilePickerMediatorTest : public PlatformTest {
  protected:
   void SetUp() final {
     PlatformTest::SetUp();
+    scoped_feature_list_.InitAndEnableFeature(kIOSSaveToDrive);
     browser_state_ = TestChromeBrowserState::Builder().Build();
     drive_service_ =
         drive::DriveServiceFactory::GetForBrowserState(browser_state_.get());
@@ -97,6 +147,12 @@ class DriveFilePickerMediatorTest : public PlatformTest {
     choose_file_tab_helper_->StartChoosingFiles(std::move(controller));
     fake_delegate_ = [[FakeDriveFilePickerMediatorDelegate alloc] init];
     mediator_.delegate = fake_delegate_;
+    fake_consumer_ = [[FakeDriveFilePickerConsumer alloc] init];
+    mediator_.consumer = fake_consumer_;
+    std::unique_ptr<TestDriveList> drive_list =
+        std::make_unique<TestDriveList>([FakeSystemIdentity fakeIdentity1]);
+    drive_list_ = drive_list.get();
+    GetTestDriveService()->SetDriveList(std::move(drive_list));
   }
 
   // Starts file selection in the WebState.
@@ -109,13 +165,21 @@ class DriveFilePickerMediatorTest : public PlatformTest {
     tab_helper->StartChoosingFiles(std::move(controller));
   }
 
+  // Returns the testing Drive service.
+  drive::TestDriveService* GetTestDriveService() {
+    return static_cast<drive::TestDriveService*>(
+        drive::DriveServiceFactory::GetForBrowserState(browser_state_.get()));
+  }
+
   void TearDown() final {
     [mediator_ disconnect];
     mediator_ = nil;
     PlatformTest::TearDown();
   }
 
-  base::test::TaskEnvironment task_environment_;
+  using TaskEnvironment = base::test::TaskEnvironment;
+  TaskEnvironment task_environment_{TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::ScopedFeatureList scoped_feature_list_;
   DriveFilePickerMediator* mediator_;
   std::unique_ptr<web::FakeWebState> web_state_;
   raw_ptr<ChooseFileTabHelper> choose_file_tab_helper_;
@@ -124,6 +188,8 @@ class DriveFilePickerMediatorTest : public PlatformTest {
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
   std::unique_ptr<image_fetcher::ImageDataFetcher> image_fetcher_;
   FakeDriveFilePickerMediatorDelegate* fake_delegate_;
+  FakeDriveFilePickerConsumer* fake_consumer_;
+  raw_ptr<TestDriveList> drive_list_;
 };
 
 // Tests that disconnecting the mediator stops the file selection.
@@ -176,4 +242,29 @@ TEST_F(DriveFilePickerMediatorTest, SelectCollectionItemBrowsesCollection) {
   [mediator_ selectDriveItem:anyFolderIdentifier];
   EXPECT_NSEQ(@"fake_folder_identifier",
               fake_delegate_.queryOfBrowsedCollection.folder_identifier);
+}
+
+// Tests that setting the sorting criteria and direction updates the consumer
+// and fetches new items, unless they have not changed.
+TEST_F(DriveFilePickerMediatorTest, SelectSortingCriteria) {
+  // Setting to the same criteria and direction should not fetch new items.
+  [mediator_ setSortingCriteria:DriveItemsSortingType::kName
+                      direction:DriveItemsSortingOrder::kAscending];
+  EXPECT_EQ(DriveItemsSortingType::kName, fake_consumer_.sortingCriteria);
+  EXPECT_EQ(DriveItemsSortingOrder::kAscending,
+            fake_consumer_.sortingDirection);
+  EXPECT_EQ(nil, fake_consumer_.driveItems);
+  // Changing either criteria or direction should update consumer and fetch new
+  // items.
+  drive_list_->SetListItemsCompletionQuitClosure(
+      task_environment_.QuitClosure());
+  [mediator_ setSortingCriteria:DriveItemsSortingType::kModificationTime
+                      direction:DriveItemsSortingOrder::kDescending];
+  EXPECT_EQ(DriveItemsSortingType::kModificationTime,
+            fake_consumer_.sortingCriteria);
+  EXPECT_EQ(DriveItemsSortingOrder::kDescending,
+            fake_consumer_.sortingDirection);
+  task_environment_.RunUntilQuit();
+  EXPECT_NE(nil, fake_consumer_.driveItems);
+  fake_consumer_.driveItems = nil;
 }
