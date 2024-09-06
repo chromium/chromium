@@ -91,7 +91,7 @@ base::FilePath GetSpareFilePath(const base::FilePath& metrics_dir) {
   return base::GlobalHistogramAllocator::ConstructFilePath(
       metrics_dir, kBrowserMetricsName + std::string("-spare"));
 }
-// LINT.ThenChange(/chrome/android/java/src/org/chromium/chrome/browser/ChromeBackupAgentImpl.java)
+// LINT.ThenChange(/chrome/android/java/src/org/chromium/chrome/browser/backup/ChromeBackupAgentImpl.java)
 
 // Logged to UMA - keep in sync with enums.xml.
 enum InitResult {
