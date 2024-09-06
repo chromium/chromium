@@ -4,6 +4,8 @@
 
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/timer/elapsed_timer.h"
+#include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/chrome_prefetch_manager.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -12,6 +14,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prefetch_test_util.h"
+#include "content/public/test/preloading_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,6 +48,12 @@ class PrefetchBrowserTest : public PlatformBrowserTest {
     ssl_server_.ServeFilesFromDirectory(
         base::PathService::CheckedGet(chrome::DIR_TEST_DATA));
     ASSERT_TRUE(ssl_server_.Start());
+
+    test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+    attempt_entry_builder_ =
+        std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
+            PredictorToExpectInUkm());
+    test_timer_ = std::make_unique<base::ScopedMockElapsedTimersForTest>();
   }
 
   void TearDownOnMainThread() override {
@@ -64,10 +73,30 @@ class PrefetchBrowserTest : public PlatformBrowserTest {
     return content::NavigateToURL(GetActiveWebContents(), url);
   }
 
+  ukm::TestAutoSetUkmRecorder* test_ukm_recorder() {
+    return test_ukm_recorder_.get();
+  }
+
+  const content::test::PreloadingAttemptUkmEntryBuilder&
+  attempt_entry_builder() {
+    return *attempt_entry_builder_;
+  }
+
+ protected:
+  // Used when creating `test_ukm_recorder_`.
+  content::PreloadingPredictor PredictorToExpectInUkm() {
+    return chrome_preloading_predictor::kChromeCustomTabs;
+  }
+
  private:
   net::test_server::EmbeddedTestServer ssl_server_{
       net::test_server::EmbeddedTestServer::TYPE_HTTPS};
   base::test::ScopedFeatureList feature_list_;
+
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
+  std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
+      attempt_entry_builder_;
+  std::unique_ptr<base::ScopedMockElapsedTimersForTest> test_timer_;
 };
 
 #if BUILDFLAG(IS_ANDROID)
@@ -93,6 +122,24 @@ IN_PROC_BROWSER_TEST_F(PrefetchBrowserTest, CCTPrefetch) {
   EXPECT_EQ(
       test_prefetch_watcher.GetPrefetchContainerIdForTestingInLastNavigation(),
       prefetch_container_id);
+
+  auto cct_attempt_entry_builder =
+      std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
+          chrome_preloading_predictor::kChromeCustomTabs);
+
+  ukm::SourceId ukm_source_id =
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  content::test::ExpectPreloadingAttemptUkm(
+      *test_ukm_recorder(),
+      {cct_attempt_entry_builder->BuildEntry(
+          ukm_source_id, content::PreloadingType::kPrefetch,
+          content::PreloadingEligibility::kEligible,
+          content::PreloadingHoldbackStatus::kAllowed,
+          content::PreloadingTriggeringOutcome::kSuccess,
+          content::PreloadingFailureReason::kUnspecified,
+          /*accurate=*/true,
+          /*ready_time=*/
+          base::ScopedMockElapsedTimersForTest::kMockElapsedTime)});
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

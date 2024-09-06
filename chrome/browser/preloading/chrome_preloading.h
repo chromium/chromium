@@ -125,6 +125,11 @@ static constexpr content::PreloadingPredictor
 static constexpr content::PreloadingPredictor kTouchOnNewTabPage(
     114,
     "TouchOnNewTabPage");
+
+// When a certain CCT prefetch API is triggered.
+static constexpr content::PreloadingPredictor kChromeCustomTabs(
+    115,
+    "ChromeCustomTabs");
 }  // namespace chrome_preloading_predictor
 // LINT.ThenChange()
 

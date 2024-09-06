@@ -4,6 +4,7 @@
 
 #include "chrome/browser/preloading/prefetch/chrome_prefetch_manager.h"
 
+#include "chrome/browser/preloading/chrome_preloading.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 
@@ -35,13 +36,31 @@ void ChromePrefetchManager::StartPrefetchFromCCT(
   CHECK(
       base::FeatureList::IsEnabled(chrome::android::kCCTNavigationalPrefetch));
 
-  // TODO(crbug.com/40288091): Prepare PreloadingPredictor / PreloadingAttempt
-  // for CCT prefetches.
+  auto* preloading_data =
+      content::PreloadingData::GetOrCreateForWebContents(&GetWebContents());
+
+  // Normally, prefetch uses `PrefetchServiceMatcher` for the NVS-aware matching
+  // for `is_accurate_triggering_` performed on
+  // `PreloadingDataImpl::DidStartNavigation`, but since CCT prefetch doesn't
+  // support NVS, `SameURLMatcher` is sufficient here.
+  content::PreloadingURLMatchCallback matcher =
+      content::PreloadingData::GetSameURLMatcher(prefetch_url);
+
+  // Regarding `triggering_primary_page_source_id`: Since the CCT prefetch's
+  // trigger is Android App, it should be `ukm::kInvalidSourceId` (And if so,
+  // `Preloading.Attempt.PreviousPrimaryPage` will not be recorded).
+  content::PreloadingAttempt* preloading_attempt =
+      preloading_data->AddPreloadingAttempt(
+          chrome_preloading_predictor::kChromeCustomTabs,
+          content::PreloadingType::kPrefetch, std::move(matcher),
+          /*planned_max_preloading_type=*/std::nullopt,
+          /*triggering_primary_page_source_id=*/ukm::kInvalidSourceId);
+
   // TODO(crbug.com/40288091): Specify appropriate referrer value that comes
   // from CCT.
   GetWebContents().StartPrefetch(prefetch_url, use_prefetch_proxy,
                                  blink::mojom::Referrer(), referring_origin,
-                                 /*attempt=*/nullptr);
+                                 preloading_attempt->GetWeakPtr());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
