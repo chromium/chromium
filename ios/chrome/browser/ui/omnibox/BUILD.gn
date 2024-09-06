@@ -121,6 +121,7 @@ source_set("omnibox_internal") {
     "//components/favicon/ios",
     "//components/feature_engagement/public",
     "//components/open_from_clipboard:",
+    "//components/open_from_clipboard:open_from_clipboard_impl",
     "//components/resources",
     "//components/search_engines",
     "//components/security_state/core",
