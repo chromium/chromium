@@ -260,10 +260,6 @@ crbug.com/949003 http/tests/printing/cross-site-frame.html [ Failure Pass ]
 
 crbug.com/1494899 virtual/oopr-canvas2d/fast/canvas/canvas-ellipse-zero-lineto.html [ Failure Pass ]
 
-# Temporary disable to land http://review.skia.org/895197
-crbug.com/359049360 [ Linux ] css3/blending/background-blend-mode-multiple-background-layers.html [ Failure Pass ]
-crbug.com/359049360 [ Linux ] css3/blending/mix-blend-mode-isolated-group-3.html [ Failure Pass ]
-
 # --- END Skia roll test suppresions
 
 
