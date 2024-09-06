@@ -4,6 +4,7 @@
 <link rel="author" href="https://mozilla.org" title="Mozilla">
 <link rel="help" href="https://drafts.csswg.org/css-viewport/#zoom-property">
 <link rel="help" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1899695">
+<link rel="help" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1916111">
 <link rel="match" href="svg-ref.html">
 <style>
   :root {
@@ -21,6 +22,9 @@
     stroke-width: 10px;
     stroke: lime;
   }
+  polygon, polyline {
+    fill: lime;
+  }
   svg {
     background-color: red;
   }
@@ -34,6 +38,8 @@
       <line y1=20 y2=20 x1=0 x2=5rem  />
       <line y1=30 y2=30 x1=0 x2=50%   />
       <line y1=40 y2=40 x1=0 x2=1vw   />
+      <polygon points="0,50 50,50 50,60 0,60"/>
+      <polyline points="0,60 50,60 50,70 0,70"/>
     </svg>
   </div>
 </div>

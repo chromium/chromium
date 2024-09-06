@@ -20879,6 +20879,71 @@
        {}
       ]
      ],
+     "basic-pagination-001-print.html": [
+      "4bdf2ac6fdbca53e19769f1ccb6cba5f829fb4c0",
+      [
+       null,
+       [
+        [
+         "/css/css-page/basic-pagination-001-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "basic-pagination-002-print.html": [
+      "4cf0de750daedc6695cc9a0e9cb291c3db67f8e7",
+      [
+       null,
+       [
+        [
+         "/css/css-page/basic-pagination-002-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "basic-pagination-003-print.html": [
+      "56f10d2dc72224f964dad96d526c133d39e549f8",
+      [
+       null,
+       [
+        [
+         "/css/css-page/basic-pagination-003-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "basic-pagination-004-print.html": [
+      "0d6f989b185b8d8ade7f1b8c3a03a45ce0787015",
+      [
+       null,
+       [
+        [
+         "/css/css-page/basic-pagination-004-print-ref.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "basic-pagination-005-print.html": [
+      "03c04a41c4d423bb005d833435c9055219445836",
+      [
+       null,
+       [
+        [
+         "/css/css-page/basic-pagination-004-print-ref.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
      "cssom": {
       "dynamic-001-print.html": [
        "90799d3a721bdab9c11bba84cfd276e5c18f8ef3",
@@ -165779,6 +165844,19 @@
         {}
        ]
       ],
+      "webkit-line-clamp-048.html": [
+       "e4a01af252782a5506c4345e84aa8e7bc235bbda",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "webkit-line-clamp-block-in-inline-001.html": [
        "75d1de3bf5bcf5d00d6980de4a70845e9f7ae8e4",
        [
@@ -209292,6 +209370,19 @@
        {}
       ]
      ],
+     "text-emphasis-position-default-001.html": [
+      "072a0058423e0cf2195eea17a59560be35f5605a",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/text-emphasis-position-default-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "text-emphasis-position-over-left-001.xht": [
       "94a2a8c3db16072b4d9c1de0de6b1a1807c774b9",
       [
@@ -245437,7 +245528,7 @@
        ]
       ],
       "svg.html": [
-       "826ce5a80a3b9c06b3c14678704daffd3e2faf7b",
+       "b5aad837fd807293788c79781fcffd84dedcaa4d",
        [
         null,
         [
@@ -337450,6 +337541,22 @@
       "c3e5d8d1c5ed202868602e8fdea57225be448dbf",
       []
      ],
+     "basic-pagination-001-print-ref.html": [
+      "3487aa6eabb456eda6d342e4bc5200d0d9c28509",
+      []
+     ],
+     "basic-pagination-002-print-ref.html": [
+      "90e0e26502b067d3f82cbaf7fb0ee0faf3e915aa",
+      []
+     ],
+     "basic-pagination-003-print-ref.html": [
+      "6fd7ef2d45344ae131728a9ede3f7896bbd3bc98",
+      []
+     ],
+     "basic-pagination-004-print-ref.html": [
+      "3487aa6eabb456eda6d342e4bc5200d0d9c28509",
+      []
+     ],
      "cssom": {
       "dynamic-001-print-ref.html": [
        "e697d8e23dbc1459775426316a11919881fbf11e",
@@ -347714,6 +347821,10 @@
       "b88ca7c3a35a8e6d2e12e38ef8eef4dccbdf5b9d",
       []
      ],
+     "text-emphasis-position-default-001-ref.html": [
+      "c177fbcb080bc1d6a2b8be92d04fc11346c2a62f",
+      []
+     ],
      "text-emphasis-position-property-001-ref.html": [
       "1121e1602f4a3973d1fd1d2a6348be90d8d53492",
       []
@@ -353346,7 +353457,7 @@
        []
       ],
       "svg-ref.html": [
-       "10bf2decaa74ae0108c86d5b97ad0480f85bf307",
+       "8959a01f20186a9775436d49e04dfd36fa5d22cd",
        []
       ],
       "svg-transform-ref.html": [
@@ -373916,7 +374027,7 @@
        []
       ],
       "gentestutilsunion.py": [
-       "7541876475317fe5d7261e7be3c3b8e93291d908",
+       "3a58f81a10fb77927a47a9cb60cfb6025c76aa64",
        []
       ],
       "name2dir-canvas.yaml": [
@@ -471782,6 +471893,13 @@
       ],
       "text-overflow-valid.html": [
        "df77dffd6d8bb89334bd676302842e7483851647",
+       [
+        null,
+        {}
+       ]
+      ],
+      "webkit-box-computed.html": [
+       "b78342ad0fae6dbc37669f0623e9b9056ab7b593",
        [
         null,
         {}
