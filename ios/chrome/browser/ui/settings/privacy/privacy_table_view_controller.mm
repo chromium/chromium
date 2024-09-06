@@ -831,7 +831,8 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 
 - (void)enhancedSafeBrowsingInlinePromoTriggerCriteriaMet {
   if (!base::FeatureList::IsEnabled(
-          feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature)) {
+          feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature) ||
+      !_browserState) {
     return;
   }
   feature_engagement::Tracker* tracker =
