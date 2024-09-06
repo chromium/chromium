@@ -14,7 +14,8 @@ To facilitate a code review please:
 
 * For each new or modified `unsafe` block, function, `impl`, etc.,
   add an unresolved "TODO: `unsafe` review" comment in Gerrit.
-    - TODO(https://crbug.com/328789397): Automate this via Tricium or AyeAye.
+  You can consider using `tools/crates/create_draft_comments.py` to streamline
+  creating such comments.
 
 Note that changes _anywhere_ in a crate that uses `unsafe` blocks may violate
 the internal invariants on which those `unsafe` blocks rely. It is unrealistic
