@@ -358,10 +358,13 @@ class OzonePlatformWayland : public OzonePlatform,
   }
 
   const PlatformRuntimeProperties& GetPlatformRuntimeProperties() override {
-    using SupportsSsdForTest =
-        OzonePlatform::PlatformRuntimeProperties::SupportsSsdForTest;
+    using SupportsForTest =
+        OzonePlatform::PlatformRuntimeProperties::SupportsForTest;
     const auto& override_supports_ssd_for_test = OzonePlatform::
         PlatformRuntimeProperties::override_supports_ssd_for_test;
+    const auto& override_supports_per_window_scaling_for_test =
+        OzonePlatform::PlatformRuntimeProperties::
+            override_supports_per_window_scaling_for_test;
 
     static OzonePlatform::PlatformRuntimeProperties properties;
     if (connection_) {
@@ -370,8 +373,8 @@ class OzonePlatformWayland : public OzonePlatform,
       // the browser process side.
       properties.supports_server_side_window_decorations =
           (connection_->xdg_decoration_manager_v1() != nullptr &&
-          override_supports_ssd_for_test == SupportsSsdForTest::kNotSet) ||
-          override_supports_ssd_for_test == SupportsSsdForTest::kYes;
+           override_supports_ssd_for_test == SupportsForTest::kNotSet) ||
+          override_supports_ssd_for_test == SupportsForTest::kYes;
       properties.supports_overlays =
           connection_->ShouldUseOverlayDelegation() &&
           connection_->viewporter();
@@ -400,7 +403,11 @@ class OzonePlatformWayland : public OzonePlatform,
                         ->SupportsCompositingOnlySurface()
               : true;
       properties.supports_per_window_scaling =
-          connection_->UsePerSurfaceScaling();
+          (connection_->UsePerSurfaceScaling() &&
+           override_supports_per_window_scaling_for_test ==
+               SupportsForTest::kNotSet) ||
+          (override_supports_per_window_scaling_for_test ==
+           SupportsForTest::kYes);
 
       if (surface_factory_) {
         DCHECK(has_initialized_gpu());

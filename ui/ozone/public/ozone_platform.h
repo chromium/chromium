@@ -160,9 +160,8 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
   struct PlatformRuntimeProperties {
     PlatformRuntimeProperties();
 
-    // Values to override the value of the
-    // supports_server_side_window_decorations property in tests.
-    enum class SupportsSsdForTest {
+    // Values to override the value of a property in tests.
+    enum class SupportsForTest {
       kNotSet,  // The property is not overridden.
       kYes,     // The platform should return true.
       kNo,      // The plafrorm should return false.
@@ -179,7 +178,7 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // this parameter allows setting the desired state in tests.  The platform
     // must have the appropriate logic in its GetPlatformRuntimeProperties()
     // method.
-    static SupportsSsdForTest override_supports_ssd_for_test;
+    static SupportsForTest override_supports_ssd_for_test;
 
     // Wayland only: determines whether solid color overlays can be delegated
     // without a backing image via a wayland protocol.
@@ -225,6 +224,9 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // Indicates whether the platform supports system-controlled per-window
     // scaling.
     bool supports_per_window_scaling = false;
+
+    // Allows overriding whether per window scaling is enabled in tests.
+    static SupportsForTest override_supports_per_window_scaling_for_test;
   };
 
   // Corresponds to chrome_browser_main_extra_parts.h.
