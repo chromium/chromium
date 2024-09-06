@@ -35,6 +35,12 @@
 
 namespace blink {
 
+template <class T>
+class LayoutUnitTypedTest : public testing::Test {};
+using LayoutUnitTypes =
+    ::testing::Types<LayoutUnit, TextRunLayoutUnit, InlineLayoutUnit>;
+TYPED_TEST_SUITE(LayoutUnitTypedTest, LayoutUnitTypes);
+
 TEST(LayoutUnitTest, LayoutUnitInt) {
   EXPECT_EQ(LayoutUnit::kIntMin, LayoutUnit(INT_MIN).ToInt());
   EXPECT_EQ(LayoutUnit::kIntMin, LayoutUnit(INT_MIN / 2).ToInt());
@@ -325,6 +331,14 @@ TEST(LayoutUnitTest, LayoutUnitMultiplication) {
     updated *= 1.0f;
     EXPECT_NE(source, updated);
   }
+}
+
+TYPED_TEST(LayoutUnitTypedTest, MultiplicationByInt) {
+  const auto quarter_max = TypeParam::kIntMax / 4;
+  EXPECT_EQ(TypeParam(quarter_max * 2), TypeParam(quarter_max) * 2);
+  EXPECT_EQ(TypeParam(quarter_max * 3), TypeParam(quarter_max) * 3);
+  EXPECT_EQ(TypeParam(quarter_max * 4), TypeParam(quarter_max) * 4);
+  EXPECT_EQ(TypeParam::Max(), TypeParam(quarter_max) * 5);
 }
 
 TEST(LayoutUnitTest, LayoutUnitDivision) {
