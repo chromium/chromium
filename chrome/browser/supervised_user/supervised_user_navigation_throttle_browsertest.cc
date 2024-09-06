@@ -125,7 +125,7 @@ class RenderFrameTracker : public content::WebContentsObserver {
                               content::RenderFrameHost* new_host) override;
   void FrameDeleted(content::FrameTreeNodeId frame_tree_node_id) override;
 
-  content::RenderFrameHost* GetHost(int frame_id) {
+  content::RenderFrameHost* GetHost(content::FrameTreeNodeId frame_id) {
     if (!base::Contains(render_frame_hosts_, frame_id)) {
       return nullptr;
     }
@@ -133,7 +133,8 @@ class RenderFrameTracker : public content::WebContentsObserver {
   }
 
  private:
-  std::map<int, content::RenderFrameHost*> render_frame_hosts_;
+  std::map<content::FrameTreeNodeId, content::RenderFrameHost*>
+      render_frame_hosts_;
 };
 
 void RenderFrameTracker::RenderFrameHostChanged(
@@ -191,7 +192,7 @@ void InnerWebContentsAttachedWaiter::WaitForInnerWebContentsAttached() {
 class NavigationFinishedWaiter : public content::WebContentsObserver {
  public:
   NavigationFinishedWaiter(content::WebContents* web_contents,
-                           int frame_id,
+                           content::FrameTreeNodeId frame_id,
                            const GURL& url);
   NavigationFinishedWaiter(const NavigationFinishedWaiter&) = delete;
   NavigationFinishedWaiter& operator=(const NavigationFinishedWaiter&) = delete;
@@ -204,7 +205,7 @@ class NavigationFinishedWaiter : public content::WebContentsObserver {
       content::NavigationHandle* navigation_handle) override;
 
  private:
-  int frame_id_;
+  content::FrameTreeNodeId frame_id_;
   GURL url_;
   bool did_finish_ = false;
   base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
@@ -212,7 +213,7 @@ class NavigationFinishedWaiter : public content::WebContentsObserver {
 
 NavigationFinishedWaiter::NavigationFinishedWaiter(
     content::WebContents* web_contents,
-    int frame_id,
+    content::FrameTreeNodeId frame_id,
     const GURL& url)
     : content::WebContentsObserver(web_contents),
       frame_id_(frame_id),
@@ -379,7 +380,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserNavigationThrottleWithPrerenderingTest,
   content::test::PrerenderHostCreationWaiter host_creation_waiter;
   prerender_helper().AddPrerendersAsync(
       {allowed_url}, /*eagerness=*/std::nullopt, GetTargetHint());
-  int host_id = host_creation_waiter.Wait();
+  content::FrameTreeNodeId host_id = host_creation_waiter.Wait();
   auto* prerender_web_contents =
       content::WebContents::FromFrameTreeNodeId(host_id);
   content::test::PrerenderHostObserver host_observer(*prerender_web_contents,
@@ -505,17 +506,20 @@ class SupervisedUserIframeFilterTest
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
 
-  std::vector<int> GetBlockedFrames();
-  const GURL& GetBlockedFrameURL(int frame_id);
-  bool IsInterstitialBeingShownInFrame(int frame_id);
-  bool IsRemoteApprovalsButtonBeingShown(int frame_id);
-  bool IsLocalApprovalsButtonBeingShown(int frame_id);
-  bool IsBlockReasonBeingShown(int frame_id);
-  bool IsDetailsLinkBeingShown(int frame_id);
-  void CheckPreferredApprovalButton(int frame_id);
-  bool IsLocalApprovalsInsteadButtonBeingShown(int frame_id);
-  void SendCommandToFrame(const std::string& command_name, int frame_id);
-  void WaitForNavigationFinished(int frame_id, const GURL& url);
+  std::vector<content::FrameTreeNodeId> GetBlockedFrames();
+  const GURL& GetBlockedFrameURL(content::FrameTreeNodeId frame_id);
+  bool IsInterstitialBeingShownInFrame(content::FrameTreeNodeId frame_id);
+  bool IsRemoteApprovalsButtonBeingShown(content::FrameTreeNodeId frame_id);
+  bool IsLocalApprovalsButtonBeingShown(content::FrameTreeNodeId frame_id);
+  bool IsBlockReasonBeingShown(content::FrameTreeNodeId frame_id);
+  bool IsDetailsLinkBeingShown(content::FrameTreeNodeId frame_id);
+  void CheckPreferredApprovalButton(content::FrameTreeNodeId frame_id);
+  bool IsLocalApprovalsInsteadButtonBeingShown(
+      content::FrameTreeNodeId frame_id);
+  void SendCommandToFrame(const std::string& command_name,
+                          content::FrameTreeNodeId frame_id);
+  void WaitForNavigationFinished(content::FrameTreeNodeId frame_id,
+                                 const GURL& url);
   bool IsLocalWebApprovalsEnabled() const;
 
   supervised_user::PermissionRequestCreatorMock* permission_creator() {
@@ -531,7 +535,7 @@ class SupervisedUserIframeFilterTest
   }
 
  private:
-  bool RunCommandAndGetBooleanFromFrame(int frame_id,
+  bool RunCommandAndGetBooleanFromFrame(content::FrameTreeNodeId frame_id,
                                         const std::string& command);
 
   std::unique_ptr<RenderFrameTracker> tracker_;
@@ -574,13 +578,14 @@ void SupervisedUserIframeFilterTest::TearDownOnMainThread() {
   SupervisedUserNavigationThrottleTestBase::TearDownOnMainThread();
 }
 
-std::vector<int> SupervisedUserIframeFilterTest::GetBlockedFrames() {
+std::vector<content::FrameTreeNodeId>
+SupervisedUserIframeFilterTest::GetBlockedFrames() {
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   auto* navigation_observer =
       SupervisedUserNavigationObserver::FromWebContents(tab);
   const auto& interstitials = navigation_observer->interstitials_for_test();
 
-  std::vector<int> blocked_frames;
+  std::vector<content::FrameTreeNodeId> blocked_frames;
   blocked_frames.reserve(interstitials.size());
 
   for (const auto& elem : interstitials) {
@@ -590,7 +595,8 @@ std::vector<int> SupervisedUserIframeFilterTest::GetBlockedFrames() {
   return blocked_frames;
 }
 
-const GURL& SupervisedUserIframeFilterTest::GetBlockedFrameURL(int frame_id) {
+const GURL& SupervisedUserIframeFilterTest::GetBlockedFrameURL(
+    content::FrameTreeNodeId frame_id) {
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   auto* navigation_observer =
       SupervisedUserNavigationObserver::FromWebContents(tab);
@@ -600,20 +606,22 @@ const GURL& SupervisedUserIframeFilterTest::GetBlockedFrameURL(int frame_id) {
 }
 
 bool SupervisedUserIframeFilterTest::IsInterstitialBeingShownInFrame(
-    int frame_id) {
+    content::FrameTreeNodeId frame_id) {
   std::string command =
       "document.getElementsByClassName('supervised-user-block') != null";
   return RunCommandAndGetBooleanFromFrame(frame_id, command);
 }
 
-bool SupervisedUserIframeFilterTest::IsBlockReasonBeingShown(int frame_id) {
+bool SupervisedUserIframeFilterTest::IsBlockReasonBeingShown(
+    content::FrameTreeNodeId frame_id) {
   std::string command =
       "getComputedStyle(document.getElementById('block-reason')).display !== "
       "\"none\"";
   return RunCommandAndGetBooleanFromFrame(frame_id, command);
 }
 
-bool SupervisedUserIframeFilterTest::IsDetailsLinkBeingShown(int frame_id) {
+bool SupervisedUserIframeFilterTest::IsDetailsLinkBeingShown(
+    content::FrameTreeNodeId frame_id) {
   std::string command =
       "getComputedStyle(document.getElementById('block-reason-show-details-"
       "link')).display !== \"none\"";
@@ -621,35 +629,35 @@ bool SupervisedUserIframeFilterTest::IsDetailsLinkBeingShown(int frame_id) {
 }
 
 bool SupervisedUserIframeFilterTest::IsRemoteApprovalsButtonBeingShown(
-    int frame_id) {
+    content::FrameTreeNodeId frame_id) {
   std::string command =
       "!document.getElementById('remote-approvals-button').hidden";
   return RunCommandAndGetBooleanFromFrame(frame_id, command);
 }
 
 bool SupervisedUserIframeFilterTest::IsLocalApprovalsButtonBeingShown(
-    int frame_id) {
+    content::FrameTreeNodeId frame_id) {
   std::string command =
       "!document.getElementById('local-approvals-button').hidden";
   return RunCommandAndGetBooleanFromFrame(frame_id, command);
 }
 
 void SupervisedUserIframeFilterTest::CheckPreferredApprovalButton(
-    int frame_id) {
-    std::string command =
-        "document.getElementById('local-approvals-button').classList.contains("
-        "'primary-button') &&"
-        " !document.getElementById('local-approvals-button').classList."
-        "contains('secondary-button') &&"
-        " document.getElementById('remote-approvals-button').classList."
-        "contains('secondary-button') &&"
-        " !document.getElementById('remote-approvals-button').classList."
-        "contains('primary-button');";
-    ASSERT_TRUE(RunCommandAndGetBooleanFromFrame(frame_id, command));
+    content::FrameTreeNodeId frame_id) {
+  std::string command =
+      "document.getElementById('local-approvals-button').classList.contains("
+      "'primary-button') &&"
+      " !document.getElementById('local-approvals-button').classList."
+      "contains('secondary-button') &&"
+      " document.getElementById('remote-approvals-button').classList."
+      "contains('secondary-button') &&"
+      " !document.getElementById('remote-approvals-button').classList."
+      "contains('primary-button');";
+  ASSERT_TRUE(RunCommandAndGetBooleanFromFrame(frame_id, command));
 }
 
 bool SupervisedUserIframeFilterTest::IsLocalApprovalsInsteadButtonBeingShown(
-    int frame_id) {
+    content::FrameTreeNodeId frame_id) {
   std::string command =
       "!document.getElementById('local-approvals-remote-request-sent-button')."
       "hidden";
@@ -658,7 +666,7 @@ bool SupervisedUserIframeFilterTest::IsLocalApprovalsInsteadButtonBeingShown(
 
 void SupervisedUserIframeFilterTest::SendCommandToFrame(
     const std::string& command_name,
-    int frame_id) {
+    content::FrameTreeNodeId frame_id) {
   auto* render_frame_host = tracker()->GetHost(frame_id);
   DCHECK(render_frame_host);
   DCHECK(render_frame_host->IsRenderFrameLive());
@@ -668,7 +676,7 @@ void SupervisedUserIframeFilterTest::SendCommandToFrame(
 }
 
 void SupervisedUserIframeFilterTest::WaitForNavigationFinished(
-    int frame_id,
+    content::FrameTreeNodeId frame_id,
     const GURL& url) {
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   NavigationFinishedWaiter waiter(tab, frame_id, url);
@@ -676,7 +684,7 @@ void SupervisedUserIframeFilterTest::WaitForNavigationFinished(
 }
 
 bool SupervisedUserIframeFilterTest::RunCommandAndGetBooleanFromFrame(
-    int frame_id,
+    content::FrameTreeNodeId frame_id,
     const std::string& command) {
   // First check that SupervisedUserNavigationObserver believes that there is
   // an error page in the frame with frame tree node id |frame_id|.
@@ -736,7 +744,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest, BlockSubFrame) {
   auto blocked = GetBlockedFrames();
   EXPECT_EQ(blocked.size(), 1u);
 
-  int blocked_frame_id = blocked[0];
+  content::FrameTreeNodeId blocked_frame_id = blocked[0];
 
   EXPECT_TRUE(IsInterstitialBeingShownInFrame(blocked_frame_id));
 
@@ -781,10 +789,10 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest, BlockMultipleSubFrames) {
   auto blocked = GetBlockedFrames();
   EXPECT_EQ(blocked.size(), 2u);
 
-  int blocked_frame_id_1 = blocked[0];
+  content::FrameTreeNodeId blocked_frame_id_1 = blocked[0];
   GURL blocked_frame_url_1 = GetBlockedFrameURL(blocked_frame_id_1);
 
-  int blocked_frame_id_2 = blocked[1];
+  content::FrameTreeNodeId blocked_frame_id_2 = blocked[1];
   GURL blocked_frame_url_2 = GetBlockedFrameURL(blocked_frame_id_2);
 
   EXPECT_TRUE(IsInterstitialBeingShownInFrame(blocked_frame_id_1));
@@ -899,7 +907,7 @@ IN_PROC_BROWSER_TEST_P(
 
   auto blocked = GetBlockedFrames();
   EXPECT_EQ(blocked.size(), 1u);
-  int blocked_frame_id = blocked[0];
+  content::FrameTreeNodeId blocked_frame_id = blocked[0];
   GURL blocked_frame_url = GetBlockedFrameURL(blocked_frame_id);
   EXPECT_TRUE(IsInterstitialBeingShownInFrame(blocked_frame_id));
 
@@ -932,7 +940,7 @@ IN_PROC_BROWSER_TEST_P(
 
   auto blocked = GetBlockedFrames();
   EXPECT_EQ(blocked.size(), 1u);
-  int blocked_frame_id = blocked[0];
+  content::FrameTreeNodeId blocked_frame_id = blocked[0];
   GURL blocked_frame_url = GetBlockedFrameURL(blocked_frame_id);
   EXPECT_TRUE(IsInterstitialBeingShownInFrame(blocked_frame_id));
 
@@ -965,7 +973,7 @@ IN_PROC_BROWSER_TEST_P(
 
   auto blocked = GetBlockedFrames();
   EXPECT_EQ(blocked.size(), 1u);
-  int blocked_frame_id = blocked[0];
+  content::FrameTreeNodeId blocked_frame_id = blocked[0];
   GURL blocked_frame_url = GetBlockedFrameURL(blocked_frame_id);
   EXPECT_TRUE(IsInterstitialBeingShownInFrame(blocked_frame_id));
 
@@ -1235,7 +1243,8 @@ IN_PROC_BROWSER_TEST_P(ChromeOSLocalWebApprovalsTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), blocked_url));
   EXPECT_TRUE(IsInterstitialBeingShownInMainFrame(browser()));
 
-  const std::vector<int> blocked_frames = GetBlockedFrames();
+  const std::vector<content::FrameTreeNodeId> blocked_frames =
+      GetBlockedFrames();
   ASSERT_EQ(blocked_frames.size(), 1u);
   const int blocked_frame = blocked_frames[0];
   EXPECT_TRUE(IsLocalApprovalsButtonBeingShown(blocked_frame));
@@ -1283,7 +1292,8 @@ IN_PROC_BROWSER_TEST_P(ChromeOSLocalWebApprovalsTest,
       ui_test_utils::NavigateToURL(browser(), allowed_url_with_iframes));
   EXPECT_FALSE(IsInterstitialBeingShownInMainFrame(browser()));
 
-  const std::vector<int> blocked_frames = GetBlockedFrames();
+  const std::vector<content::FrameTreeNodeId> blocked_frames =
+      GetBlockedFrames();
   ASSERT_EQ(blocked_frames.size(), 1u);
   const int blocked_frame = blocked_frames[0];
   EXPECT_TRUE(IsInterstitialBeingShownInFrame(blocked_frame));
@@ -1329,7 +1339,8 @@ IN_PROC_BROWSER_TEST_P(ChromeOSLocalWebApprovalsTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), blocked_url));
   EXPECT_TRUE(IsInterstitialBeingShownInMainFrame(browser()));
 
-  const std::vector<int> blocked_frames = GetBlockedFrames();
+  const std::vector<content::FrameTreeNodeId> blocked_frames =
+      GetBlockedFrames();
   ASSERT_EQ(blocked_frames.size(), 1u);
   const int blocked_frame = blocked_frames[0];
   EXPECT_TRUE(IsLocalApprovalsButtonBeingShown(blocked_frame));

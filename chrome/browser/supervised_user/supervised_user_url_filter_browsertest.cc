@@ -711,7 +711,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterPrerenderingTest, OnURLChecked) {
   // Ensure that prerendering has started.
   registry_observer.WaitForTrigger(prerender_url);
   auto prerender_id = prerender_helper().GetHostForUrl(prerender_url);
-  EXPECT_NE(content::RenderFrameHost::kNoFrameTreeNodeId, prerender_id);
+  EXPECT_TRUE(prerender_id);
   content::test::PrerenderHostObserver host_observer(*GetWebContents(),
                                                      prerender_id);
   // Prerendering is canceled.
