@@ -1052,13 +1052,16 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Permissions.Prompt.{PermissionType}.{Disposition}.IgnoredReason"
-    enum="PermissionRequestIgnoredReason" expires_after="2024-02-20">
+    enum="PermissionRequestIgnoredReason" expires_after="2025-09-05">
   <owner>fjacky@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     Permission requests are categorized as ignored when the user failed to take
     action. This metric captures more detailed information on why a permission
     request was ignored.
+
+    Warning: this histogram was expired from 2024-02-20 to 2024-09-06; data may
+    be missing.
   </summary>
   <token key="PermissionType" variants="AllPermissionTypes"/>
   <token key="Disposition" variants="PromptDisposition"/>
