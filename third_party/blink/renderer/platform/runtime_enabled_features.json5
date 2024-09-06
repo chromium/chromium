@@ -3524,6 +3524,10 @@
       }
     },
     {
+      name: "ResetInputTypeToNoneBeforeCharacterInput",
+      status: "stable",
+    },
+    {
       name: "ResourceTimingContentType",
       status: "experimental",
     },
