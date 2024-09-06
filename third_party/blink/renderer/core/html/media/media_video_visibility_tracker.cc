@@ -709,6 +709,7 @@ void MediaVideoVisibilityTracker::MaybeComputeVisibility(
     ShouldReportVisibility should_report_visibility) {
   if (!tracker_attached_to_document_ ||
       !tracker_attached_to_document_->GetFrame()->View() ||
+      !tracker_attached_to_document_->GetFrame()->IsOutermostMainFrame() ||
       !VideoElement().GetLayoutObject()) {
     if (request_visibility_callback_) {
       RecordVideoOcclusionState(VideoElement(), occlusion_state_, false,

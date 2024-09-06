@@ -582,6 +582,34 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   SwitchToNewTabAndDontExpectAutopip();
 }
 
+IN_PROC_BROWSER_TEST_F(
+    AutoPictureInPictureWithVideoPlaybackBrowserTest,
+    DoesNotDocumentAutopip_VideoSufficientlyVisibleInIframe) {
+  // Load a page that registers for autopip and start video playback.
+  LoadAutoDocumentVideoVisibilityPipPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Move the video element into an iframe.
+  EXPECT_TRUE(ExecJs(web_contents->GetPrimaryMainFrame(), R"(
+      const iframe = document.createElement("iframe");
+      iframe.style.width = "100%";
+      iframe.style.height = "100%";
+      iframe.style.position = "absolute";
+
+      document.body.appendChild(iframe);
+      iframe.contentDocument.body.appendChild(video);
+  )"));
+
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+
+  // There should not be a picture-in-picture window, since the video element is
+  // inside an iframe.
+  ForceLifecycleUpdate(web_contents);
+  SwitchToNewTabAndDontExpectAutopip();
+}
+
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
                        OpensAndClosesVideoAutopip_VideoSufficientlyVisible) {
   // Load a page that registers for autopip and start video playback.
