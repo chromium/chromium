@@ -1303,10 +1303,11 @@ BASE_FEATURE(kEnableArmHwdrm10bitOverlays,
 #if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 // Enable use of HW based L1 Widevine DRM via the cdm-oemcrypto daemon on
 // ChromeOS. This flag is temporary while we finish development.
-// Expiry: M128
+// Expiry: M133
+// TODO(b/364969273): Remove this flag later.
 BASE_FEATURE(kEnableArmHwdrm,
              "EnableArmHwdrm",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
