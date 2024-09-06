@@ -306,6 +306,8 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
         browser_params.trusted_source = params.trusted_source;
         browser_params.initial_bounds = params.window_features.bounds;
         browser_params.initial_origin_specified = GetOriginSpecified(params);
+        browser_params.can_maximize = !params.is_tab_modal_popup;
+        browser_params.can_fullscreen = !params.is_tab_modal_popup;
         return {Browser::Create(browser_params), -1};
       }
       Browser::CreateParams browser_params =
