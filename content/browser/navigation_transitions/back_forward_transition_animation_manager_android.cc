@@ -24,6 +24,8 @@ using NavigationDirection =
 
 using AnimationStage = BackForwardTransitionAnimationManager::AnimationStage;
 using SwipeEdge = ui::BackGestureEventSwipeEdge;
+using AnimationAbortReason =
+    BackForwardTransitionAnimator::AnimationAbortReason;
 
 }  // namespace
 
@@ -67,7 +69,7 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureStarted(
     // reclaim all the resources).
     //
     // TODO(crbug.com/40261105): We need a proper UX to support this.
-    animator_->AbortAnimation();
+    animator_->AbortAnimation(AnimationAbortReason::kChainedBack);
     DestroyAnimator();
   }
 
@@ -154,7 +156,7 @@ void BackForwardTransitionAnimationManagerAndroid::OnDetachedFromWindow() {
   // The WebContentsViewAndroid's native view is detached from the top level
   // window. We must abort the transition.
   CHECK(animator_);
-  animator_->AbortAnimation();
+  animator_->AbortAnimation(AnimationAbortReason::kDetachedFromWindow);
   DestroyAnimator();
 }
 
@@ -162,14 +164,15 @@ void BackForwardTransitionAnimationManagerAndroid::
     OnRootWindowVisibilityChanged(bool visible) {
   CHECK(animator_);
   if (!visible) {
-    animator_->AbortAnimation();
+    animator_->AbortAnimation(
+        AnimationAbortReason::kRootWindowVisibilityChanged);
     DestroyAnimator();
   }
 }
 
 void BackForwardTransitionAnimationManagerAndroid::OnDetachCompositor() {
   CHECK(animator_);
-  animator_->AbortAnimation();
+  animator_->AbortAnimation(AnimationAbortReason::kCompositorDetached);
   DestroyAnimator();
 }
 

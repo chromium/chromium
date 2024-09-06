@@ -130,6 +130,47 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   };
   static std::string ToString(State state);
 
+  // Indicates the animation abort reason for UMA metrics.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused. Upon adding a new value, add it
+  // to `enums.xml` as well.
+  enum class AnimationAbortReason {
+    // The subscribed `RenderWidgetHost` was destroyed.
+    kRenderWidgetHostDestroyed = 0,
+
+    kMainCommitOnSubframeTransition = 1,
+    kNewCommitInPrimaryMainFrame = 2,
+    kCrossOriginRedirect = 3,
+    kNewCommitWhileDisplayingInvokeAnimation = 4,
+    kNewCommitWhileDisplayingCanceledAnimation = 5,
+    kNewCommitWhileWaitingForNewRendererToDraw = 6,
+    kNewCommitWhileWaitingForContentForNavigationEntryShown = 7,
+    kNewCommitWhileDisplayingCrossFadeAnimation = 8,
+    kNewCommitWhileWaitingForBeforeUnloadResponse = 9,
+    kMultipleNavigationRequestsCreated = 10,
+
+    // The navigation entry was deleted when the navigation was ready to commit.
+    kNavigationEntryDeletedBeforeCommit = 11,
+
+    // The new frame is not activated in time.
+    kPostNavigationFirstFrameTimeout = 12,
+
+    // The user started a new gesture while the first one is still on-going.
+    kChainedBack = 13,
+
+    // Set when the native view is detached from the native window. Clank can
+    // sometimes detach the view without detaching the compositor first. See
+    // https://crbug.com/344761329.
+    kDetachedFromWindow = 14,
+
+    // Set when the native window becomes invisible.
+    kRootWindowVisibilityChanged = 15,
+
+    kCompositorDetached = 16,
+
+    kMaxValue = kCompositorDetached
+  };
+
   // To create the `BackForwardTransitionAnimator`. Tests can override this
   // factory to supply a customized version of `BackForwardTransitionAnimator`.
   class Factory {
@@ -179,7 +220,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   void MaybeRecordIgnoredInput(const blink::WebInputEvent& event);
 
   // Notifies when the transition needs to be aborted.
-  void AbortAnimation();
+  void AbortAnimation(AnimationAbortReason abort_reason);
 
   [[nodiscard]] bool IsTerminalState();
 

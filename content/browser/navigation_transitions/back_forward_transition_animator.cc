@@ -530,7 +530,7 @@ void BackForwardTransitionAnimator::OnRenderWidgetHostDestroyed(
   // where Viz never activates a frame from the committed renderer.
   CHECK_EQ(state_, State::kWaitingForNewRendererToDraw);
   CHECK_EQ(navigation_state_, NavigationState::kCommitted);
-  AbortAnimation();
+  AbortAnimation(AnimationAbortReason::kRenderWidgetHostDestroyed);
 }
 
 // This is only called after we subscribe to the new `RenderWidgetHost` when the
@@ -732,13 +732,13 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
   // If a navigation commits in the primary main frame while we are tracking the
   // subframe requests, abort the animation immediately.
   if (tracked_request_ && !tracked_request_->is_primary_main_frame) {
-    AbortAnimation();
+    AbortAnimation(AnimationAbortReason::kMainCommitOnSubframeTransition);
     return;
   }
 
   CHECK(navigation_request->IsInPrimaryMainFrame());
 
-  bool skip_all_animations = false;
+  std::optional<AnimationAbortReason> abort_reason;
 
   switch (state_) {
     case State::kStarted:
@@ -747,7 +747,7 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
       // A new navigation finished in the primary main frame while the user is
       // swiping across the screen. For simplicity, destroy this class if the
       // new navigation was from the primary main frame.
-      skip_all_animations = true;
+      abort_reason = AnimationAbortReason::kNewCommitInPrimaryMainFrame;
       break;
     case State::kDisplayingInvokeAnimation: {
       // We can only get to `kDisplayingInvokeAnimation` if we have started
@@ -792,7 +792,7 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
         }
 
         if (!land_on_error_page && different_commit_origin) {
-          skip_all_animations = true;
+          abort_reason = AnimationAbortReason::kCrossOriginRedirect;
           break;
         }
 
@@ -820,7 +820,8 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
         // commit-pending invoke animation to bring B.com's screenshot to the
         // center of the viewport.
         CHECK_EQ(navigation_state_, NavigationState::kCommitted);
-        skip_all_animations = true;
+        abort_reason =
+            AnimationAbortReason::kNewCommitWhileDisplayingInvokeAnimation;
       }
       break;
     }
@@ -838,7 +839,8 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
 
       // A navigation finished while we are displaying the cancel animation.
       // For simplicity, destroy `this` and reset everything.
-      skip_all_animations = true;
+      abort_reason =
+          AnimationAbortReason::kNewCommitWhileDisplayingCanceledAnimation;
       break;
     }
     case State::kWaitingForNewRendererToDraw:
@@ -847,14 +849,16 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
       // redirects to C.com, before B.com's renderer even submits a new frame.
       CHECK_EQ(navigation_state_, NavigationState::kCommitted);
       CHECK(tracked_request_);
-      skip_all_animations = true;
+      abort_reason =
+          AnimationAbortReason::kNewCommitWhileWaitingForNewRendererToDraw;
       break;
     case State::kWaitingForContentForNavigationEntryShown:
       // Our navigation has already committed while waiting for a native
       // entry to be finished drawing by the embedder.
       CHECK_EQ(navigation_state_, NavigationState::kCommitted);
       CHECK(tracked_request_);
-      skip_all_animations = true;
+      abort_reason = AnimationAbortReason::
+          kNewCommitWhileWaitingForContentForNavigationEntryShown;
       break;
     case State::kDisplayingCrossFadeAnimation: {
       // Our navigation has already committed while a second navigation commits.
@@ -863,11 +867,13 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
       // to whatever is underneath the screenshot.
       CHECK_EQ(navigation_state_, NavigationState::kCommitted);
       CHECK(tracked_request_);
-      skip_all_animations = true;
+      abort_reason =
+          AnimationAbortReason::kNewCommitWhileDisplayingCrossFadeAnimation;
       break;
     }
     case State::kWaitingForBeforeUnloadResponse:
-      skip_all_animations = true;
+      abort_reason =
+          AnimationAbortReason::kNewCommitWhileWaitingForBeforeUnloadResponse;
       break;
     case State::kAnimationFinished:
     case State::kAnimationAborted:
@@ -877,8 +883,8 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
       break;
   }
 
-  if (skip_all_animations) {
-    AbortAnimation();
+  if (abort_reason) {
+    AbortAnimation(abort_reason.value());
   }
 }
 
@@ -977,7 +983,10 @@ void BackForwardTransitionAnimator::MaybeRecordIgnoredInput(
   }
 }
 
-void BackForwardTransitionAnimator::AbortAnimation() {
+void BackForwardTransitionAnimator::AbortAnimation(
+    AnimationAbortReason abort_reason) {
+  base::UmaHistogramEnumeration(
+      "Navigation.GestureTransition.AnimationAbortReason", abort_reason);
   AdvanceAndProcessState(State::kAnimationAborted);
 }
 
@@ -1462,7 +1471,7 @@ bool BackForwardTransitionAnimator::StartNavigationAndTrackRequest() {
   }
 
   if (requests.size() > 1U) {
-    AbortAnimation();
+    AbortAnimation(AnimationAbortReason::kMultipleNavigationRequestsCreated);
     return false;
   }
 
@@ -1661,7 +1670,7 @@ void BackForwardTransitionAnimator::SubscribeToNewRenderWidgetHost(
   if (!navigation_request->GetNavigationEntry()) {
     // Error case: The navigation entry is deleted when the navigation is ready
     // to commit. Abort the transition.
-    AbortAnimation();
+    AbortAnimation(AnimationAbortReason::kNavigationEntryDeletedBeforeCommit);
     return;
   }
 
@@ -1827,7 +1836,7 @@ void BackForwardTransitionAnimator::InsertLayersInOrder() {
 void BackForwardTransitionAnimator::OnPostNavigationFirstFrameTimeout() {
   CHECK_EQ(state_, State::kWaitingForNewRendererToDraw);
   CHECK_EQ(navigation_state_, NavigationState::kCommitted);
-  AbortAnimation();
+  AbortAnimation(AnimationAbortReason::kPostNavigationFirstFrameTimeout);
   animation_manager_->OnPostNavigationFirstFrameTimeout();
 }
 
