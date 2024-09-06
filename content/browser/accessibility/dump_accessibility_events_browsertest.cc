@@ -766,27 +766,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("input-type-text-value-changed.html"));
 }
 
-// Flaky on Windows: https://crbug.com/1078490.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_AccessibilityEventsListboxFocus \
-  DISABLED_AccessibilityEventsListboxFocus
-#else
-#define MAYBE_AccessibilityEventsListboxFocus AccessibilityEventsListboxFocus
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       MAYBE_AccessibilityEventsListboxFocus) {
+                       AccessibilityEventsListboxFocus) {
   RunEventTest(FILE_PATH_LITERAL("listbox-focus.html"));
 }
 
-// TODO(crbug.com/40844027): Flaky on win
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_AccessibilityEventsListboxNext \
-  DISABLED_AccessibilityEventsListboxNext
-#else
-#define MAYBE_AccessibilityEventsListboxNext AccessibilityEventsListboxNext
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       MAYBE_AccessibilityEventsListboxNext) {
+                       AccessibilityEventsListboxNext) {
   RunEventTest(FILE_PATH_LITERAL("listbox-next.html"));
 }
 
