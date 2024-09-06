@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_components/history_clusters/infinite_list.js';
+import 'chrome://resources/cr_elements/cr_infinite_list/cr_infinite_list.js';
 
-import type {InfiniteListElement} from 'chrome://resources/cr_components/history_clusters/infinite_list.js';
+import type {CrInfiniteListElement} from 'chrome://resources/cr_elements/cr_infinite_list/cr_infinite_list.js';
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertEquals, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -59,18 +59,18 @@ class TestApp extends CrLitElement {
 
   override render() {
     return html`
-    <infinite-list .items="${this.listItems}" .scrollTarget="${this}"
+    <cr-infinite-list .items="${this.listItems}" .scrollTarget="${this}"
         .template=${(item: {name: string}, idx: number, tabidx: number) => html`
             <test-item name="${item.name}" id="item-${idx}"
                 tabindex="${tabidx}">
             </test-item>`}>
-    </infinite-list>`;
+    </cr-infinite-list>`;
   }
 }
 
 customElements.define('test-app', TestApp);
 
-function queryItems(infiniteList: InfiniteListElement): NodeListOf<TestItem> {
+function queryItems(infiniteList: CrInfiniteListElement): NodeListOf<TestItem> {
   return infiniteList.querySelectorAll<TestItem>('test-item');
 }
 
@@ -92,7 +92,8 @@ function getTestItems(count: number): Array<{name: string}> {
   return items.slice(0, count);
 }
 
-function getKeyboardFocusableItem(infiniteList: InfiniteListElement): TestItem {
+function getKeyboardFocusableItem(infiniteList: CrInfiniteListElement):
+    TestItem {
   const item = infiniteList.querySelector<TestItem>('test-item[tabindex="0"]');
   assertTrue(!!item);
   return item;
@@ -110,7 +111,7 @@ function createTestApp(): TestApp {
 }
 
 suite('InfiniteListTest', () => {
-  let infiniteList: InfiniteListElement;
+  let infiniteList: CrInfiniteListElement;
   let testApp: TestApp;
   let innerList: HTMLElement;
 
@@ -119,7 +120,7 @@ suite('InfiniteListTest', () => {
     testApp = createTestApp();
     testApp.listItems = sampleData;
 
-    infiniteList = testApp.shadowRoot!.querySelector('infinite-list')!;
+    infiniteList = testApp.shadowRoot!.querySelector('cr-infinite-list')!;
     const lazyList = infiniteList.querySelector('cr-lazy-list');
     assertTrue(!!lazyList);
     innerList = lazyList;
@@ -188,7 +189,7 @@ suite('InfiniteListTest', () => {
 });
 
 suite('InfiniteListFocusTest', () => {
-  let infiniteList: InfiniteListElement;
+  let infiniteList: CrInfiniteListElement;
   let testApp: TestApp;
   let innerList: HTMLElement;
 
@@ -197,7 +198,7 @@ suite('InfiniteListFocusTest', () => {
     testApp = createTestApp();
     testApp.listItems = sampleData;
 
-    infiniteList = testApp.shadowRoot!.querySelector('infinite-list')!;
+    infiniteList = testApp.shadowRoot!.querySelector('cr-infinite-list')!;
     const lazyList = infiniteList.querySelector('cr-lazy-list');
     assertTrue(!!lazyList);
     innerList = lazyList;

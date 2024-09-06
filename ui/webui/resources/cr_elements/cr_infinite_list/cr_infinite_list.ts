@@ -3,21 +3,21 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview 'infinite-list' is a thin wrapper around 'cr-lazy-list' that
+ * @fileoverview 'cr-infinite-list' is a thin wrapper around 'cr-lazy-list' that
  * emulates some of the behavior of 'iron-list'.
  */
 
-import '//resources/cr_elements/cr_lazy_list/cr_lazy_list.js';
+import '../cr_lazy_list/cr_lazy_list.js';
 
 import {assert} from '//resources/js/assert.js';
 import {CrLitElement, html, render} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues, TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getCss} from './infinite_list.css.js';
+import {getCss} from './cr_infinite_list.css.js';
 
-export class InfiniteListElement<T = object> extends CrLitElement {
+export class CrInfiniteListElement<T = object> extends CrLitElement {
   static get is() {
-    return 'infinite-list';
+    return 'cr-infinite-list';
   }
 
   static override get styles() {
@@ -59,8 +59,8 @@ export class InfiniteListElement<T = object> extends CrLitElement {
   scrollOffset: number = 0;
   scrollTarget: HTMLElement = document.documentElement;
   items: T[] = [];
-  // Unlike cr-lazy-list, infinite-list provides a tabindex parameter for
-  // clients as is provided by iron-list. Like iron-list, infinite-list will
+  // Unlike cr-lazy-list, cr-infinite-list provides a tabindex parameter for
+  // clients as is provided by iron-list. Like iron-list, cr-infinite-list will
   // pass 0 for this parameter if the list item should be keyboard focusable,
   // and -1 otherwise.
   template:
@@ -135,8 +135,8 @@ export class InfiniteListElement<T = object> extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'infinite-list': InfiniteListElement;
+    'cr-infinite-list': CrInfiniteListElement;
   }
 }
 
-customElements.define(InfiniteListElement.is, InfiniteListElement);
+customElements.define(CrInfiniteListElement.is, CrInfiniteListElement);

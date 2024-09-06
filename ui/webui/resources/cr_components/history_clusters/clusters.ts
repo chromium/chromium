@@ -4,13 +4,14 @@
 
 import './cluster.js';
 import './history_clusters_shared_style.css.js';
-import './infinite_list.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_dialog/cr_dialog.js';
+import '//resources/cr_elements/cr_infinite_list/cr_infinite_list.js';
 import '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
 
 import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrInfiniteListElement} from '//resources/cr_elements/cr_infinite_list/cr_infinite_list.js';
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
@@ -26,7 +27,6 @@ import {getCss} from './clusters.css.js';
 import {getHtml} from './clusters.html.js';
 import type {Cluster, URLVisit} from './history_cluster_types.mojom-webui.js';
 import type {PageCallbackRouter, PageHandlerRemote, QueryResult} from './history_clusters.mojom-webui.js';
-import type {InfiniteListElement} from './infinite_list.js';
 
 function jsDateToMojoDate(date: Date): Time {
   const windowsEpoch = Date.UTC(1601, 0, 1, 0, 0, 0, 0);
@@ -52,7 +52,7 @@ const HistoryClustersElementBase = I18nMixinLit(CrLitElement);
 
 export interface HistoryClustersElement {
   $: {
-    clusters: InfiniteListElement,
+    clusters: CrInfiniteListElement,
     confirmationToast: CrToastElement,
   };
 }

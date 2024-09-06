@@ -12,8 +12,3 @@ IN_PROC_BROWSER_TEST_F(CrComponentsFocusTest, MostVisited) {
   set_test_loader_host(chrome::kChromeUINewTabPageHost);
   RunTest("cr_components/most_visited_focus_test.js", "mocha.run()");
 }
-
-IN_PROC_BROWSER_TEST_F(CrComponentsFocusTest, InfiniteList) {
-  RunTest("cr_components/history_clusters/infinite_list_test.js",
-          "runMochaSuite('InfiniteListFocusTest')");
-}

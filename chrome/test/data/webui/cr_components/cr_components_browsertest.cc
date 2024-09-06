@@ -41,11 +41,6 @@ IN_PROC_BROWSER_TEST_F(CrComponentsTest, HorizontalCarousel) {
           "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(CrComponentsTest, InfiniteList) {
-  RunTest("cr_components/history_clusters/infinite_list_test.js",
-          "runMochaSuite('InfiniteListTest')");
-}
-
 class CrComponentsHistoryEmbeddingsTest : public WebUIMochaBrowserTest {
  protected:
   CrComponentsHistoryEmbeddingsTest() {

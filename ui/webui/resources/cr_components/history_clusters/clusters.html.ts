@@ -12,7 +12,7 @@ export function getHtml(this: HistoryClustersElement) {
 <div id="placeholder" ?hidden="${!this.computePlaceholderText_()}">
   ${this.computePlaceholderText_()}
 </div>
-<infinite-list id="clusters"
+<cr-infinite-list id="clusters"
     .items="${this.clusters_}"
     @hide-visit="${this.onHideVisit_}" @hide-visits="${this.onHideVisits_}"
     @remove-visits="${this.onRemoveVisits_}"
@@ -24,7 +24,7 @@ export function getHtml(this: HistoryClustersElement) {
           @remove-cluster="${this.onRemoveCluster_}" ?is-first="${!index}"
           ?is-last="${this.isLastCluster_(index)}">
       </history-cluster>`}>
-</infinite-list>
+</cr-infinite-list>
 <div id="footer" ?hidden="${this.getLoadMoreButtonHidden_()}">
   <cr-button id="loadMoreButton" @click="${this.onLoadMoreButtonClick_}"
       ?hidden="${this.showSpinner_}">
