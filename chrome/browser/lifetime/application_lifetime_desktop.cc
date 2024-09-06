@@ -78,8 +78,9 @@ void AttemptRestartInternal(IgnoreUnloadHandlers ignore_unload_handlers) {
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
     auto* session_data_service =
         SessionDataServiceFactory::GetForProfile(browser->profile());
-    if (session_data_service)
+    if (session_data_service) {
       session_data_service->SetForceKeepSessionState();
+    }
 #endif  // BUILDFLAG(ENABLE_SESSION_SERVICE)
   }
 
@@ -124,16 +125,18 @@ void AttemptRestartInternal(IgnoreUnloadHandlers ignore_unload_handlers) {
   // Set the flag to restore state after the restart.
   pref_service->SetBoolean(prefs::kRestartLastSessionOnShutdown, true);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (ignore_unload_handlers)
+  if (ignore_unload_handlers) {
     ExitIgnoreUnloadHandlers();
-  else
+  } else {
     AttemptExit();
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ShutdownIfNoBrowsers() {
-  if (GetTotalBrowserCount() > 0)
+  if (GetTotalBrowserCount() > 0) {
     return;
+  }
 
   // Tell everyone that we are shutting down.
   browser_shutdown::SetTryingToQuit(true);
@@ -256,16 +259,18 @@ void SessionEnding() {
 }
 
 void ShutdownIfNeeded() {
-  if (browser_shutdown::IsTryingToQuit())
+  if (browser_shutdown::IsTryingToQuit()) {
     return;
+  }
 
   ShutdownIfNoBrowsers();
 }
 
 void OnAppExiting() {
   static bool notified = false;
-  if (notified)
+  if (notified) {
     return;
+  }
   notified = true;
   HandleAppExitingForPlatform();
 }
@@ -307,8 +312,9 @@ void MarkAsCleanShutdown() {
 }
 
 bool AreAllBrowsersCloseable() {
-  if (BrowserList::GetInstance()->empty())
+  if (BrowserList::GetInstance()->empty()) {
     return true;
+  }
 
   // If there are any downloads active, all browsers are not closeable.
   // However, this does not block for malicious downloads.
@@ -318,8 +324,9 @@ bool AreAllBrowsersCloseable() {
 
   // Check TabsNeedBeforeUnloadFired().
   for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->TabsNeedBeforeUnloadFired())
+    if (browser->TabsNeedBeforeUnloadFired()) {
       return false;
+    }
   }
   return true;
 }

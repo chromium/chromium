@@ -116,8 +116,9 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
 
 void OnShutdownStarting(ShutdownType type) {
   CheckAccessedOnCorrectThread();
-  if (g_shutdown_type != ShutdownType::kNotValid)
+  if (g_shutdown_type != ShutdownType::kNotValid) {
     return;
+  }
 
   static crash_reporter::CrashKeyString<11> shutdown_type_key("shutdown-type");
   shutdown_type_key.Set(ToShutdownTypeString(type));
@@ -150,8 +151,9 @@ void OnShutdownStarting(ShutdownType type) {
              content::RenderProcessHost::AllHostsIterator());
          !i.IsAtEnd(); i.Advance()) {
       ++g_shutdown_num_processes;
-      if (!i.GetCurrentValue()->FastShutdownIfPossible())
+      if (!i.GetCurrentValue()->FastShutdownIfPossible()) {
         ++g_shutdown_num_processes_slow;
+      }
     }
   }
 }
@@ -304,14 +306,16 @@ void ShutdownPostThreadsStop(RestartMode restart_mode) {
 
       case RestartMode::kRestartThisSession:
         // Copy URLs and other arguments to the new command line.
-        for (const auto& arg : old_cl.GetArgs())
+        for (const auto& arg : old_cl.GetArgs()) {
           new_cl.AppendArgNative(arg);
+        }
         break;
     }
 
     // Append the old switches to the new command line.
-    for (const auto& it : switches)
+    for (const auto& it : switches) {
       new_cl.AppendSwitchNative(it.first, it.second);
+    }
 
     if (restart_mode == RestartMode::kRestartLastSession ||
         restart_mode == RestartMode::kRestartThisSession) {
@@ -331,8 +335,9 @@ void SetTryingToQuit(bool quitting) {
   CheckAccessedOnCorrectThread();
   g_trying_to_quit = quitting;
 
-  if (quitting)
+  if (quitting) {
     return;
+  }
 
   // Reset the restart-related preferences. They get set unconditionally through
   // calls such as chrome::AttemptRestart(), and need to be reset if the restart

@@ -27,8 +27,9 @@ base::CallbackListSubscription AddAppTerminatingCallback(
 void NotifyAppTerminating() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   static bool notified = false;
-  if (notified)
+  if (notified) {
     return;
+  }
   notified = true;
   GetAppTerminatingCallbackList().Notify();
 }

@@ -26,7 +26,6 @@ void AttemptRestart() {
   AttemptExit();
 }
 
-
 void TerminateAndroid() {
   bool restart = false;
   PrefService* prefs = g_browser_process->local_state();
