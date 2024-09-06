@@ -4,7 +4,6 @@
 
 source_set("browser_state") {
   sources = [
-    "browser_state_info_cache.h",
     "browser_state_otr_helper.cc",
     "browser_state_otr_helper.h",
   ]
