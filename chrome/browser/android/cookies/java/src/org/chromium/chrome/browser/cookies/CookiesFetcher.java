@@ -53,6 +53,7 @@ public class CookiesFetcher implements Destroyable {
 
     private final ProfileProvider mProfileProvider;
     private final ProfileManager.Observer mProfileManagerObserver;
+    private final String mCookieDirPath;
 
     /**
      * Constructs a CookiesFetcher for a given {@link ProfileProvider}.
@@ -78,6 +79,10 @@ public class CookiesFetcher implements Destroyable {
                     }
                 };
         ProfileManager.addObserver(mProfileManagerObserver);
+
+        mCookieDirPath =
+                CookiesFetcherJni.get()
+                        .getCookieFileDirectory(mProfileProvider.getOriginalProfile());
     }
 
     @Override
@@ -85,17 +90,33 @@ public class CookiesFetcher implements Destroyable {
         ProfileManager.removeObserver(mProfileManagerObserver);
     }
 
+    /** Return the cookie file path for the appropriate Profile. */
+    @VisibleForTesting
+    String fetchFileName() {
+        ThreadUtils.assertOnBackgroundThread();
+        File directory = new File(mCookieDirPath);
+        if (!directory.exists() && !directory.mkdir()) {
+            Log.e(TAG, "Failed to create cookie directory");
+            return null;
+        }
+        return new File(mCookieDirPath, DEFAULT_COOKIE_FILE_NAME).getAbsolutePath();
+    }
+
     /**
-     * Fetches the cookie file's path on demand to prevent IO on the main thread.
-     *
-     * @return Path to the cookie file.
+     * Return the legacy cookie file path, and this should only be used for the initial Profile for
+     * migration purposes.
      */
     @VisibleForTesting
-    static String fetchFileName() {
+    static String fetchLegacyFileName() {
         ThreadUtils.assertOnBackgroundThread();
         return ContextUtils.getApplicationContext()
                 .getFileStreamPath(DEFAULT_COOKIE_FILE_NAME)
                 .getAbsolutePath();
+    }
+
+    private boolean isLegacyFileApplicable() {
+        ThreadUtils.assertOnUiThread();
+        return mProfileProvider.getOriginalProfile().isInitialProfile();
     }
 
     /** Asynchronously fetches cookies from the incognito profile and saves them to a file. */
@@ -107,7 +128,7 @@ public class CookiesFetcher implements Destroyable {
         Profile offTheRecordProfile = mProfileProvider.getOffTheRecordProfile(false);
         assert offTheRecordProfile.isPrimaryOTRProfile()
                 : "Only primary OTR profiles support serialized Cookies";
-        CookiesFetcherJni.get().persistCookies(offTheRecordProfile);
+        CookiesFetcherJni.get().persistCookies(offTheRecordProfile, this);
     }
 
     /**
@@ -125,6 +146,16 @@ public class CookiesFetcher implements Destroyable {
         assert offTheRecordProfile.isPrimaryOTRProfile()
                 : "Only primary OTR profiles support serialized Cookies";
         new AsyncTask<List<CanonicalCookie>>() {
+            private File getCookieFile() {
+                String fileName = fetchFileName();
+                if (fileName == null) {
+                    Log.e(TAG, "Failed to load cookie file, skipping restore.");
+                    return null;
+                }
+                File fileIn = new File(fileName);
+                return fileIn.exists() ? fileIn : null;
+            }
+
             @Override
             protected List<CanonicalCookie> doInBackground() {
                 // Read cookies from disk on a background thread to avoid strict mode violations.
@@ -136,17 +167,12 @@ public class CookiesFetcher implements Destroyable {
                         // Something is wrong. Can't encrypt, don't restore cookies.
                         return cookies;
                     }
-                    String fileName = fetchFileName();
-                    File fileIn = new File(fileName);
-                    if (!fileIn.exists()) return cookies; // Nothing to read
+                    File fileIn = getCookieFile();
+                    if (fileIn == null) return cookies; // Nothing to read
 
                     FileInputStream streamIn = new FileInputStream(fileIn);
                     in = new DataInputStream(new CipherInputStream(streamIn, cipher));
                     cookies = CanonicalCookie.readListFromStream(in);
-
-                    // The Cookie File should not be restored again. It'll be overwritten
-                    // on the next onPause.
-                    deleteCookeFileInBackground(fileName);
                 } catch (Throwable t) {
                     Log.w(TAG, "Error restoring cookies.", t);
                 } finally {
@@ -186,6 +212,10 @@ public class CookiesFetcher implements Destroyable {
                                     cookie.sourcePort(),
                                     cookie.sourceType());
                 }
+
+                // The Cookie File should not be restored again. It'll be overwritten on the next
+                // onPause.
+                scheduleDeleteCookies();
             }
         }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
@@ -193,10 +223,18 @@ public class CookiesFetcher implements Destroyable {
     /** Delete the cookies file. Called when we detect that all incognito tabs have been closed. */
     private void scheduleDeleteCookies() {
         ThreadUtils.assertOnUiThread();
+        boolean isLegacyFileApplicable = isLegacyFileApplicable();
         new BackgroundOnlyAsyncTask<Void>() {
             @Override
             protected Void doInBackground() {
-                deleteCookeFileInBackground(fetchFileName());
+                String fileName = fetchFileName();
+                if (fileName != null) {
+                    deleteCookeFileInBackground(fileName);
+                }
+
+                if (isLegacyFileApplicable) {
+                    deleteCookeFileInBackground(fetchLegacyFileName());
+                }
                 return null;
             }
         }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
@@ -251,20 +289,26 @@ public class CookiesFetcher implements Destroyable {
 
     @VisibleForTesting
     @CalledByNative
-    static void onCookieFetchFinished(final CanonicalCookie[] cookies) {
+    void onCookieFetchFinished(final CanonicalCookie[] cookies) {
         // Cookies fetching requires operations with the profile and must be
         // done in the main thread. Once that is done, do the save to disk
         // part in {@link BackgroundOnlyAsyncTask} to avoid strict mode violations.
         new BackgroundOnlyAsyncTask<Void>() {
             @Override
             protected Void doInBackground() {
-                saveFetchedCookiesToDisk(cookies);
+                String fileName = fetchFileName();
+                if (fileName == null) {
+                    Log.e(TAG, "Unable to save OTR cookies because file is null");
+                    return null;
+                }
+                saveFetchedCookiesToDisk(fileName, cookies);
                 return null;
             }
         }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
 
-    private static void saveFetchedCookiesToDisk(CanonicalCookie[] cookies) {
+    @VisibleForTesting
+    static void saveFetchedCookiesToDisk(String fileName, CanonicalCookie[] cookies) {
         DataOutputStream out = null;
         try {
             Cipher cipher = CipherFactory.getInstance().getCipher(Cipher.ENCRYPT_MODE);
@@ -278,7 +322,7 @@ public class CookiesFetcher implements Destroyable {
             out = new DataOutputStream(cipherOut);
             CanonicalCookie.saveListToStream(out, cookies);
             out.close();
-            ImportantFileWriterAndroid.writeFileAtomically(fetchFileName(), byteOut.toByteArray());
+            ImportantFileWriterAndroid.writeFileAtomically(fileName, byteOut.toByteArray());
             out = null;
         } catch (IOException e) {
             Log.w(TAG, "IOException during Cookie Fetch");
@@ -300,7 +344,10 @@ public class CookiesFetcher implements Destroyable {
 
     @NativeMethods
     interface Natives {
-        void persistCookies(@JniType("Profile*") Profile profile);
+        @JniType("std::string")
+        String getCookieFileDirectory(@JniType("Profile*") Profile profile);
+
+        void persistCookies(@JniType("Profile*") Profile profile, CookiesFetcher cookiesFetcher);
 
         void restoreCookies(
                 @JniType("Profile*") Profile profile,

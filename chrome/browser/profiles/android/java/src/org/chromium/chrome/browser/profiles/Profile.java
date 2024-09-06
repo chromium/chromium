@@ -65,6 +65,11 @@ public class Profile implements BrowserContextHandle {
         return ProfileJni.get().getOriginalProfile(mNativeProfile);
     }
 
+    /** Return whether this Profile represents the initially created "Default" Profile. */
+    public boolean isInitialProfile() {
+        return ProfileJni.get().isInitialProfile(mNativeProfile);
+    }
+
     /**
      * Returns the OffTheRecord profile with given OTRProfileiD. If the profile does not exist and
      * createIfNeeded is true, a new profile is created, otherwise returns null.
@@ -221,6 +226,8 @@ public class Profile implements BrowserContextHandle {
         Profile fromWebContents(WebContents webContents);
 
         Profile getOriginalProfile(long ptr);
+
+        boolean isInitialProfile(long ptr);
 
         Profile getOffTheRecordProfile(long ptr, OTRProfileID otrProfileID, boolean createIfNeeded);
 

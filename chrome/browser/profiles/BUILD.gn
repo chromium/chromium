@@ -29,6 +29,7 @@ source_set("profiles") {
   if (is_android) {
     deps += [
       "//chrome/browser/profiles/android:jni_headers",
+      "//chrome/common:constants",
       "//content/public/browser",
     ]
   }
