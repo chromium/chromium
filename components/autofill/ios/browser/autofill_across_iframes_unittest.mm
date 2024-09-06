@@ -8,7 +8,6 @@
 #import "base/containers/contains.h"
 #import "base/containers/flat_set.h"
 #import "base/strings/strcat.h"
-#import "base/strings/stringprintf.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
@@ -113,8 +112,9 @@ void SetFillDataForField(
   bool res = base::test::ios::WaitUntilConditionOrTimeout(
       kWaitForJSCompletionTimeout, ^() {
         if (execute_script) {
-          const std::u16string script = base::UTF8ToUTF16(base::StringPrintf(
-              "document.getElementById('%s').value;", field_id.c_str()));
+          const std::u16string script =
+              base::StrCat({u"document.getElementById('",
+                            base::UTF8ToUTF16(field_id), u"').value;"});
           execute_script = false;
           frame->ExecuteJavaScript(
               script, base::BindOnce(^(const base::Value* result) {
@@ -172,9 +172,9 @@ struct TestFieldInfo {
   // Parses the field info to a HTML <input> field element.
   std::string ToHtmlInput() const {
     CHECK(!id_attribute.empty() && !autocomplete_attribute.empty());
-    return base::StringPrintf(
-        R"(<input type="text" autocomplete="%s" id="%s">)",
-        autocomplete_attribute.c_str(), id_attribute.c_str());
+    return base::StrCat({"<input type=\"text\" autocomplete=\"",
+                         autocomplete_attribute, "\" id=\"", id_attribute,
+                         "\">"});
   }
 
   // Parses the field info to a HTML <form> element.
@@ -1638,12 +1638,11 @@ TEST_F(AutofillAcrossIframesTest, FrameDoubleRegistration_Notify) {
       .Times(1);
 
   {
-    std::string unformatted_script =
-        "__gCrWeb.common.sendWebKitMessage('FormHandlersMessage', "
-        "{'command': 'registerAsChildFrame', 'local_frame_id': "
-        "__gCrWeb.frameId, 'remote_frame_id':'%s'});";
-    std::u16string script = base::UTF8ToUTF16(base::StringPrintf(
-        unformatted_script.c_str(), stolen_remote_token.ToString().c_str()));
+    const std::u16string script = base::StrCat(
+        {u"__gCrWeb.common.sendWebKitMessage('FormHandlersMessage', "
+         u"{'command': 'registerAsChildFrame', 'local_frame_id': "
+         u"__gCrWeb.frameId, 'remote_frame_id':'",
+         base::UTF8ToUTF16(stolen_remote_token.ToString()), u"'});"});
     ASSERT_TRUE(ExecuteJavaScriptInFrame(spoofy_frame, script));
   }
 }
