@@ -1820,6 +1820,16 @@ def make_v8_set_return_value(cg_context):
     #
     # Note that the global object has its own context and there is no need to
     # pass the creation context to ToV8.
+    null_context_body = [
+        T("""\
+// Don't wrap the return value if its frame is in the process of detaching and
+// has already invalidated its v8::Context, as it is not safe to
+// re-initialize the v8::Context in that state. Return null instead.\
+"""),
+        T("bindings::V8SetReturnValue(${info}, nullptr);"),
+        T("return;")
+    ]
+
     if (cg_context.member_like.extended_attributes.value_of("CheckSecurity") ==
             "ReturnValue"):
         node = CxxBlockNode([
@@ -1830,22 +1840,14 @@ def make_v8_set_return_value(cg_context):
                 if cg_context.member_like.identifier == "frameElement" else
                 "${blink_receiver}->contentWindow()->GetFrame()"),
             T("DCHECK(IsA<LocalFrame>(blink_frame));"),
-            CxxUnlikelyIfNode(
-                cond=T("!blink_frame->IsAttached() && "
-                       "To<LocalFrame>(blink_frame)"
-                       "->WindowProxyMaybeUninitialized("
-                       "${script_state}->World())->ContextIfInitialized()"
-                       ".IsEmpty()"),
-                attribute="[[unlikely]]",
-                body=[
-                    T("""\
-// Don't wrap the return value if its frame is in the process of detaching and
-// has already invalidated its v8::Context, as it is not safe to
-// re-initialize the v8::Context in that state. Return null instead.\
-"""),
-                    T("bindings::V8SetReturnValue(${info}, nullptr);"),
-                    T("return;")
-                ]),
+            CxxUnlikelyIfNode(cond=T(
+                "!blink_frame->IsAttached() && "
+                "To<LocalFrame>(blink_frame)"
+                "->WindowProxyMaybeUninitialized("
+                "${script_state}->World())->ContextIfInitialized()"
+                ".IsEmpty()"),
+                              attribute="[[unlikely]]",
+                              body=null_context_body),
             F(
                 "v8::Local<v8::Value> v8_value = "
                 "ToV8Traits<{}>::ToV8("
@@ -1860,6 +1862,24 @@ def make_v8_set_return_value(cg_context):
                 "third_party/blink/renderer/core/frame/local_frame.h",
             ]))
         return node
+    if "NodeWrapInOwnContext" in cg_context.member_like.extended_attributes:
+        assert return_type.unwrap().identifier == "Node"
+        return CxxBlockNode([
+            T("ExecutionContext* node_execution_context = "
+              "${blink_receiver}->root()->GetExecutionContext();"),
+            T("ScriptState* node_script_state = node_execution_context ? "
+              "ToScriptState(node_execution_context, ${script_state}->World()) "
+              ": ${script_state};"),
+            CxxUnlikelyIfNode(cond=T("!node_script_state"),
+                              attribute="[[unlikely]]",
+                              body=null_context_body),
+            T("// [NodeWrapInOwnContext]"),
+            F(
+                "v8::Local<v8::Value> v8_value = "
+                "ToV8Traits<{}>::ToV8(node_script_state, ${return_value});",
+                native_value_tag(return_type)),
+            T("bindings::V8SetReturnValue(${info}, v8_value);")
+        ])
 
     return_type = return_type.unwrap(typedef=True)
     return_type_body = return_type.unwrap()

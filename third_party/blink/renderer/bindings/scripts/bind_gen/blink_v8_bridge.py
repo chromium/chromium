@@ -554,6 +554,14 @@ def make_blink_to_v8_value(
     T = TextNode
     F = FormatNode
 
+    if "NodeWrapInOwnContext" in idl_type.effective_annotations:
+        assert native_value_tag(idl_type, argument=argument) == "Node"
+        execution_context = blink_value_expr + "->GetExecutionContext()"
+        creation_context_script_state = _format(
+            "{_1} ? ToScriptState({_1}, {_2}->World()) : {_2}",
+            _1=execution_context,
+            _2=creation_context_script_state)
+
     def create_definition(symbol_node):
         binds = {
             "blink_value_expr": blink_value_expr,

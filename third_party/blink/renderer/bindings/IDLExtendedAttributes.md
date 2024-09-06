@@ -1323,6 +1323,14 @@ Summary: Indicates that an IDL `Promise` type should be implemented as `v8::Loca
 
 This is currently only used for the return types of `AsyncIteratorBase` methods. Consult with the bindings team before you use this extended attribute.
 
+### [NodeWrapInOwnContext]
+
+Summary: Forces a Node to be wrapped in its own context, rather than the receiver's context.
+
+In most cases, return values are wrapped in the receiver context (i.e., the context of the interface whose operation/attribute/etc. is being called). The bindings assert that `[NodeWrapInOwnContext]` is only used for `Node`s. When used, we find the correct `ScriptState` with the `Node`'s `ExecutionContext` and the current `DOMWrapperWorld`, and if it exists, wrap the `Node` using that `ScriptState`. If that `ScriptState` is not available (usually because the `Node` is detached), we fall back to the receiver `ScriptState`.
+
+`[NodeWrapInOwnContext]` is only necessary where a `Node` may be returned by an interface from a different context, *and* that interface does not use `[CheckSecurity=ReturnValue]` to enable cross-context security checks. The only interfaces that this applies to are ones that unnecessarily mix contexts (`NodeFilter`, `NodeIterator`, and `TreeWalker`), and new usage should not be introduced.
+
 ### [TargetOfExposed]
 
 Summary: Interfaces specified with `[Global]` expose top-level IDL constructs specified with `[Exposed]` as JS data properties, however `[Global]` means a lot more (e.g. global object, named properties object, etc.). Interfaces specified with `[TargetOfExposed]` only expose top-level IDL constructs specified with `[Exposed]` and means nothing else.

@@ -154,6 +154,8 @@ def _build_supported_extended_attributes():
           forms=F.IDENT),
         E("NewObject", applicable_to=[T.OPERATION]),
         E("NoAllocDirectCall", applicable_to=[T.OPERATION]),
+        E("NodeWrapInOwnContext",
+          applicable_to=[T.ATTRIBUTE, T.OPERATION, T.TYPE]),
         E("NotEnumerable", applicable_to=[T.ATTRIBUTE, T.OPERATION]),
         E("PassAsSpan", applicable_to=[T.TYPE]),
         E("PermissiveDictionaryConversion", applicable_to=[T.DICTIONARY]),
