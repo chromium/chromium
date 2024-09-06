@@ -377,10 +377,12 @@ const auto& GetFailingTestNames() {
 // to GetFailingTestNames(), directly above, instead of renaming the test to
 // DISABLED_DataDrivenHeuristics.
 TEST_P(FormStructureBrowserTest, DataDrivenHeuristics) {
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   if (GetActiveHeuristicSource() != HeuristicSource::kLegacy) {
     GTEST_SKIP() << "DataDrivenHeuristics tests are only supported with legacy "
                     "parsing patterns";
   }
+#endif
   bool is_expected_to_pass =
       !base::Contains(GetFailingTestNames(), GetParam().BaseName().value());
   RunOneDataDrivenTest(GetParam(), GetIOSOutputDirectory(),

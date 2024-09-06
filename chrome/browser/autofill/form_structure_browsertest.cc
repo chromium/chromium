@@ -296,10 +296,12 @@ std::unique_ptr<HttpResponse> FormStructureBrowserTest::HandleRequest(
 #define MAYBE_DataDrivenHeuristics DataDrivenHeuristics
 #endif
 IN_PROC_BROWSER_TEST_P(FormStructureBrowserTest, MAYBE_DataDrivenHeuristics) {
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   if (GetActiveHeuristicSource() != HeuristicSource::kLegacy) {
     GTEST_SKIP() << "DataDrivenHeuristics tests are only supported with legacy "
                     "parsing patterns";
   }
+#endif
   // Prints the path of the test to be executed.
   LOG(INFO) << GetParam().MaybeAsASCII();
   bool is_expected_to_pass =

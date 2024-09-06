@@ -42,12 +42,14 @@ action("regex_patterns_inl_h") {
 
   # The order of sources must be so that it matches the PatternSource enum
   # values in regex_patterns.h.
-  sources = [ "form_parsing/resources/legacy_regex_patterns.json" ]
+  sources = []
   if (use_internal_autofill_patterns) {
     sources += [
       "form_parsing/internal_resources/0_default_regex_patterns.json",
       "form_parsing/internal_resources/1_experimental_regex_patterns.json",
     ]
+  } else {
+    sources += [ "form_parsing/resources/legacy_regex_patterns.json" ]
   }
 
   script = "form_parsing/transpile_regex_patterns.py"

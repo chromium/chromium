@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/autofill/core/browser/form_parsing/form_field_parser.h"
+
 #include <memory>
 #include <string>
 #include <tuple>
@@ -11,8 +13,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
-#include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
+#include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -129,14 +131,14 @@ TEST_P(MatchTest, Match) {
   field.set_parseable_label(label);
   for (const auto& pattern : positive_patterns) {
     ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
-                           PatternSource::kLegacy);
+                           GetActivePatternSource().value());
     SCOPED_TRACE("positive_pattern = " + base::UTF16ToUTF8(pattern));
     EXPECT_TRUE(FormFieldParser::MatchForTesting(context, &field, pattern,
                                                  {MatchAttribute::kLabel}));
   }
   for (const auto& pattern : negative_patterns) {
     ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
-                           PatternSource::kLegacy);
+                           GetActivePatternSource().value());
     SCOPED_TRACE("negative_pattern = " + base::UTF16ToUTF8(pattern));
     EXPECT_FALSE(FormFieldParser::MatchForTesting(context, &field, pattern,
                                                   {MatchAttribute::kLabel}));
@@ -177,7 +179,7 @@ TEST_P(FormFieldParserTest, TestParseableLabels) {
     feature_list.InitAndEnableFeature(
         features::kAutofillEnableSupportForParsingWithSharedLabels);
     ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
-                           PatternSource::kLegacy);
+                           GetActivePatternSource().value());
     EXPECT_TRUE(FormFieldParser::MatchForTesting(
         context, autofill_field, u"First Name", {MatchAttribute::kLabel}));
   }
@@ -186,7 +188,7 @@ TEST_P(FormFieldParserTest, TestParseableLabels) {
     feature_list.InitAndDisableFeature(
         features::kAutofillEnableSupportForParsingWithSharedLabels);
     ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
-                           PatternSource::kLegacy);
+                           GetActivePatternSource().value());
     EXPECT_FALSE(FormFieldParser::MatchForTesting(
         context, autofill_field, u"First Name", {MatchAttribute::kLabel}));
   }

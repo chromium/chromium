@@ -22,10 +22,11 @@ namespace autofill {
 // for it in `GetActiveHeuristicSource()`, `GetNonActiveHeuristicSources()`
 // and `HeuristicToPatternSource()`.
 enum class HeuristicSource {
-  // Same values used in `PatternSource` with additional value
-  // for the ML model.
+// Same values used in `PatternSource` with additional value
+// for the ML model.
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   kLegacy,
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+#else
   kDefault,
   kExperimental,
 #endif

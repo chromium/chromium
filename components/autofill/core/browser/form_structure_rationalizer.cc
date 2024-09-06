@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_parsing/credit_card_field_parser.h"
 #include "components/autofill/core/browser/form_structure_rationalization_engine.h"
+#include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/rationalization_util.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -1037,12 +1038,12 @@ void FormStructureRationalizer::RationalizeByRationalizationEngine(
     const GeoIpCountryCode& client_country,
     const LanguageCode& language_code,
     LogManager* log_manager) {
-  std::optional<PatternSource> pattern_source = GetActivePatternSource();
-  if (!pattern_source.has_value()) {
-    pattern_source = PatternSource::kLegacy;
-  }
-
-  ParsingContext context(client_country, language_code, *pattern_source,
+  ParsingContext context(client_country, language_code,
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+                         PatternSource::kDefault,
+#else
+                         PatternSource::kLegacy,
+#endif
                          GetActiveRegexFeatures());
 
   rationalization::ApplyRationalizationEngineRules(context, *fields_,

@@ -517,8 +517,10 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
              "--run-internal-tests --test-launcher-timeout 100000 "
              "to execute these tests.";
     }
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
     ASSERT_NE(GetActiveHeuristicSource(), HeuristicSource::kLegacy)
         << "Internal tests are only supported with internal parsing patterns";
+#endif
     ASSERT_GE(TestTimeouts::test_launcher_timeout().InSeconds(), 100)
         << "This is a long-running test; you must specify "
            "--test-launcher-timeout to have a value of at least 100000.";

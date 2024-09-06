@@ -194,7 +194,14 @@ void FormStructure::DetermineHeuristicTypes(
       base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection)
           ? current_page_language_
           : LanguageCode();
-  ParsingContext context(client_country_, page_language, PatternSource::kLegacy,
+  // The `PatternSource` parameter is overwritten again immediately before
+  // parsing and doesn't matter here.
+  ParsingContext context(client_country_, page_language,
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+                         PatternSource::kDefault,
+#else
+                         PatternSource::kLegacy,
+#endif
                          GetActiveRegexFeatures(), log_manager);
 
   // The active heuristic source might not be a pattern source.

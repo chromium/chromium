@@ -119,9 +119,10 @@ class FormStructureTest_ForPatternSource
 
   std::string pattern_source_as_string() const {
     switch (pattern_source()) {
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
       case PatternSource::kLegacy:
         return "legacy";
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+#else
       case PatternSource::kDefault:
         return "default";
       case PatternSource::kExperimental:

@@ -96,7 +96,6 @@ INSTANTIATE_TEST_SUITE_P(RegexPatternsTest,
 #if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
                              PatternSource::kLegacy
 #else
-                             PatternSource::kLegacy,
                              PatternSource::kDefault,
                              PatternSource::kExperimental
 #endif
@@ -228,15 +227,15 @@ TEST_P(RegexPatternsTest,
 struct PatternTestCase {
   // The set of patterns. In non-branded builds, only the default set is
   // supported.
-  PatternSource pattern_source = PatternSource::kLegacy;
+  PatternSource pattern_source;
   // Reference to the pattern name in the resources/regex_patterns.json file.
   const char* pattern_name;
   // Language selector for the pattern, refers to the detected language of a
   // website.
   const char* language = "en";
   // Strings that should be matched by the pattern.
-  std::vector<std::string> positive_samples = {};
-  std::vector<std::string> negative_samples = {};
+  std::vector<std::string> positive_samples;
+  std::vector<std::string> negative_samples;
 };
 
 class RegexPatternsTestWithSamples
@@ -275,7 +274,7 @@ INSTANTIATE_TEST_SUITE_P(
                         .pattern_name = "PATTERN_SOURCE_DUMMY",
                         .language = "en",
                         .positive_samples = {"legacy"},
-                        .negative_samples = {"default", "experimental"}},
+                        .negative_samples = {"default", "experimental"}}
 #else
         PatternTestCase{.pattern_source = PatternSource::kDefault,
                         .pattern_name = "PATTERN_SOURCE_DUMMY",
@@ -287,14 +286,8 @@ INSTANTIATE_TEST_SUITE_P(
                         .language = "en",
                         .positive_samples = {"experimental"},
                         .negative_samples = {"default", "legacy"}},
-        PatternTestCase{.pattern_source = PatternSource::kLegacy,
-                        .pattern_name = "PATTERN_SOURCE_DUMMY",
-                        .language = "en",
-                        .positive_samples = {"legacy"},
-                        .negative_samples = {"default", "experimental"}},
-#endif
         PatternTestCase{
-            .pattern_source = PatternSource::kLegacy,
+            .pattern_source = PatternSource::kDefault,
             .pattern_name = "CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR",
             .language = "en",
             .positive_samples =
@@ -319,7 +312,7 @@ INSTANTIATE_TEST_SUITE_P(
                  "Expiration Date MM - YYYY", "Expiration Date MM-YYYY",
                  "expiration date yyyy", "Exp Date     (MM / YYYY)"}},
         PatternTestCase{
-            .pattern_source = PatternSource::kLegacy,
+            .pattern_source = PatternSource::kDefault,
             .pattern_name = "CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR",
             .language = "en",
             .positive_samples =
@@ -344,7 +337,7 @@ INSTANTIATE_TEST_SUITE_P(
                  "Expiration Date MM / YY", "Expiration Date MM/YY",
                  "Expiration Date MM - YY", "Expiration Date MM-YY",
                  "expiration date yy", "Exp Date     (MM / YY)"}},
-        PatternTestCase{.pattern_source = PatternSource::kLegacy,
+        PatternTestCase{.pattern_source = PatternSource::kDefault,
                         .pattern_name = "ZIP_CODE",
                         .language = "en",
                         .positive_samples = {"Zip code", "postal code"},
@@ -353,16 +346,14 @@ INSTANTIATE_TEST_SUITE_P(
                              "postleitzahl",
                              // Not referring to a ZIP code:
                              "Supported file formats: .docx, .rar, .zip."}},
-        PatternTestCase{.pattern_source = PatternSource::kLegacy,
+        PatternTestCase{.pattern_source = PatternSource::kDefault,
                         .pattern_name = "ZIP_CODE",
                         .language = "de",
                         .positive_samples =
                             {// Inherited from "en":
                              "Zip code", "postal code",
                              // Specifically added for "de":
-                             "postleitzahl"}}
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-        ,
+                             "postleitzahl"}},
         PatternTestCase{
             .pattern_source = PatternSource::kExperimental,
             .pattern_name = "CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR",
