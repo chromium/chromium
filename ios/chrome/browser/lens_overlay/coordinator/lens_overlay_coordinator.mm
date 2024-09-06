@@ -150,7 +150,10 @@ const CGFloat kMenuSymbolSize = 18;
   }
   LensConfiguration* config =
       [self createLensConfigurationForEntrypoint:entrypoint];
-  NSArray<UIAction*>* additionalMenuItems = @[ [self openUserActivityAction] ];
+  NSArray<UIAction*>* additionalMenuItems = @[
+    [self openUserActivityAction],
+    [self learnMoreAction],
+  ];
 
   _selectionViewController = ios::provider::NewChromeLensOverlay(
       snapshot, config, additionalMenuItems);
@@ -609,17 +612,33 @@ const CGFloat kMenuSymbolSize = 18;
   return tabHelper;
 }
 
-- (UIAction*)openUserActivityAction {
+- (UIAction*)openURLAction:(GURL)URL {
   BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]
       initWithBrowser:self.browser
              scenario:kMenuScenarioHistogramHistoryEntry];
-  UIAction* action =
-      [actionFactory actionToOpenInNewTabWithURL:GURL(kMyActivityURL)
-                                      completion:nil];
+  UIAction* action = [actionFactory actionToOpenInNewTabWithURL:URL
+                                                     completion:nil];
+  return action;
+}
+
+- (UIAction*)openUserActivityAction {
+  UIAction* action = [self openURLAction:GURL(kMyActivityURL)];
   action.title = l10n_util::GetNSString(IDS_IOS_MY_ACTIVITY_TITLE);
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
   action.image = MakeSymbolMonochrome(
       CustomSymbolWithPointSize(kGoogleIconSymbol, kMenuSymbolSize));
+#else
+  action.image = nil;
+#endif
+  return action;
+}
+
+- (UIAction*)learnMoreAction {
+  UIAction* action = [self openURLAction:GURL(kLearnMoreLensURL)];
+  action.title = l10n_util::GetNSString(IDS_IOS_LENS_LEARN_MORE);
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+  action.image = MakeSymbolMonochrome(
+      DefaultSymbolWithPointSize(kInfoCircleSymbol, kMenuSymbolSize));
 #else
   action.image = nil;
 #endif

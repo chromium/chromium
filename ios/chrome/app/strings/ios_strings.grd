@@ -2453,6 +2453,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_LENS_KEYBOARD_IPH_TEXT" desc="Text the IPH for the Lens button in the keyboard.">
         You can search images and what you see.
       </message>
+      <message name="IDS_IOS_LENS_LEARN_MORE" desc="The title for the overflow menu option leading to the 'Learn More' page for Lens Overlay [iOS only].">
+        Learn more
+      </message>
       <message name="IDS_IOS_LENS_PROMO_INSTRUCTIONS_STEP1" desc="The text for step 1 in the Lens Promo instructions view.">
         Go to your homepage or keyboard
       </message>
