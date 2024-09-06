@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBr
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordinator.LinkToggleState;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleMetricsHelper.LinkToggleMetricsDetails;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
@@ -84,6 +85,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     @Mock private ShareSheetCoordinator mShareSheetCoordinator;
     @Mock private Supplier<Tab> mTabProvider;
     @Mock private Tab mTab;
+    @Mock private NativePage mNativePage;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private WebContents mWebContents;
     @Mock private Tracker mTracker;
@@ -139,8 +141,44 @@ public class ChromeProvidedSharingOptionsProviderTest {
     }
 
     @Test
+    public void getPropertyModels_longScreenshotEnabledPdfTab_excludesLongScreenshot() {
+        Mockito.when(mTab.isNativePage()).thenReturn(true);
+        Mockito.when(mTab.getNativePage()).thenReturn(mNativePage);
+        Mockito.when(mNativePage.isPdf()).thenReturn(true);
+        setUpChromeProvidedSharingOptionsProviderTest(
+                /* isIncognito= */ false, /* printingEnabled= */ true, LinkGeneration.MAX);
+        List<PropertyModel> propertyModels =
+                mChromeProvidedSharingOptionsProvider.getPropertyModels(
+                        ShareContentTypeHelper.ALL_CONTENT_TYPES_FOR_TEST,
+                        DetailedContentType.NOT_SPECIFIED,
+                        /* isMultiWindow= */ false);
+
+        assertFalse(
+                "Property models should not contain long screenshots.",
+                propertyModelsContain(propertyModels, R.string.sharing_long_screenshot));
+    }
+
+    @Test
     public void getPropertyModels_printingEnabledNoTab_excludesPrinting() {
         Mockito.when(mTabProvider.hasValue()).thenReturn(false);
+        setUpChromeProvidedSharingOptionsProviderTest(
+                /* isIncognito= */ false, /* printingEnabled= */ true, LinkGeneration.MAX);
+        List<PropertyModel> propertyModels =
+                mChromeProvidedSharingOptionsProvider.getPropertyModels(
+                        ShareContentTypeHelper.ALL_CONTENT_TYPES_FOR_TEST,
+                        DetailedContentType.NOT_SPECIFIED,
+                        /* isMultiWindow= */ false);
+
+        assertFalse(
+                "Property models should not contain printing.",
+                propertyModelsContain(propertyModels, R.string.print_share_activity_title));
+    }
+
+    @Test
+    public void getPropertyModels_printingEnabledPdfTab_excludesPrinting() {
+        Mockito.when(mTab.isNativePage()).thenReturn(true);
+        Mockito.when(mTab.getNativePage()).thenReturn(mNativePage);
+        Mockito.when(mNativePage.isPdf()).thenReturn(true);
         setUpChromeProvidedSharingOptionsProviderTest(
                 /* isIncognito= */ false, /* printingEnabled= */ true, LinkGeneration.MAX);
         List<PropertyModel> propertyModels =

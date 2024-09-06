@@ -390,6 +390,7 @@ public class AppMenuPropertiesDelegateUnitTest {
             R.id.all_bookmarks_menu_id,
             R.id.recent_tabs_menu_id,
             R.id.divider_line_id,
+            R.id.share_row_menu_id,
             R.id.find_in_page_id,
             R.id.divider_line_id,
             R.id.preferences_id,
