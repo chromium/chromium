@@ -2230,12 +2230,7 @@ void CaptureModeController::OnDlpRestrictionCheckedAtSessionInit(
   }
 
   RecordCaptureModeEntryType(entry_type);
-  // Reset the user capture region if enough time has passed as it can be
-  // annoying to still have the old capture region from the previous session
-  // long time ago.
-  if (!user_capture_region_.IsEmpty() &&
-      base::TimeTicks::Now() - last_capture_region_update_time_ >
-          kResetCaptureRegionDuration) {
+  if (ShouldClearCaptureRegion(behavior_type)) {
     SetUserCaptureRegion(gfx::Rect(), /*by_user=*/false);
   }
 
@@ -2377,6 +2372,17 @@ void CaptureModeController::PerformScreenshotOfGivenWindow(
   // TODO(michelefan): Add behavior type as an input parameter, if this API is
   // used for other entry types in future.
   CaptureImage(capture_params, BuildImagePath(), GetBehavior(behavior_type));
+}
+
+bool CaptureModeController::ShouldClearCaptureRegion(
+    BehaviorType behavior_type) const {
+  // Reset the user capture region if enough time has passed as it can be
+  // annoying to still have the old capture region from the previous session
+  // long time ago, or if the active behavior is sunfish behavior.
+  return !user_capture_region_.IsEmpty() &&
+         (base::TimeTicks::Now() - last_capture_region_update_time_ >
+              kResetCaptureRegionDuration ||
+          behavior_type == BehaviorType::kSunfish);
 }
 
 CaptureModeSaveToLocation CaptureModeController::GetSaveToOption(
