@@ -425,7 +425,7 @@ class HostProcess : public ConfigWatcher::Delegate,
   bool enable_user_interface_ = true;
   bool allow_remote_access_connections_ = true;
   std::optional<bool> allow_pin_auth_;
-  bool is_corp_user_ = false;
+  bool is_corp_host_ = false;
   bool require_session_authorization_ = false;
   LocalSessionPoliciesProvider local_session_policies_provider_;
 
@@ -464,7 +464,7 @@ class HostProcess : public ConfigWatcher::Delegate,
 #endif
   std::unique_ptr<HostPowerSaveBlocker> power_save_blocker_;
 
-  // Only set if |is_corp_user_| is true.
+  // Only set if |is_corp_host_| is true.
   std::unique_ptr<CorpHostStatusLogger> corp_host_status_logger_;
 
   std::unique_ptr<ChromotingHost> host_;
@@ -797,8 +797,8 @@ void HostProcess::CreateAuthenticatorFactory() {
   auto auth_config = std::make_unique<protocol::HostAuthenticationConfig>(
       local_certificate, key_pair_);
   if (require_session_authorization_ ||
-      (is_corp_user_ && !allow_pin_auth_.value_or(false))) {
-    if (!is_corp_user_) {
+      (is_corp_host_ && !allow_pin_auth_.value_or(false))) {
+    if (!is_corp_host_) {
       // TODO: joedow - Implement SessionAuthz for Cloud hosts.
       NOTREACHED() << "SessionAuthz not yet supported for non-Corp hosts";
     }
@@ -1080,13 +1080,7 @@ void HostProcess::OnUpdateHostOwner(const std::string& host_owner) {
 }
 
 void HostProcess::OnUpdateIsCorpUser(bool is_corp_user) {
-  if (is_corp_user == is_corp_user_) {
-    return;
-  }
-
-  LOG(INFO) << "Updating is_corp_user from " << is_corp_user_ << " to "
-            << is_corp_user;
-  is_corp_user_ = is_corp_user;
+  // TODO: joedow - Remove this helper since the host config defines this now.
 }
 
 void HostProcess::OnUpdateRequireSessionAuthorization(bool require) {
@@ -1220,14 +1214,11 @@ bool HostProcess::ApplyConfig(const base::Value::Dict& config) {
   }
   OnUpdateHostOwner(*host_owner);
 
-  // Set the default is_corp_user value based on |IsGoogleEmail()|. This may be
-  // overwritten in the initial heartbeat response, but we need the default in
-  // place until we get that heartbeat. This is temporary until we
-  // can fix the host setup so these are set before the host process starts.
-  // TODO: garykac - Set this value properly during host setup.
-  // TODO: joedow - Decide whether to use separate username and email config
-  // values or rely on the service to provide them.
-  OnUpdateIsCorpUser(IsGoogleEmail(host_owner_));
+  // TODO: joedow - Remove the email check once all Corp hosts have a hint set.
+  bool has_google_email = IsGoogleEmail(host_owner_);
+  auto* host_type_hint = config.FindString(kHostTypeHintPath);
+  is_corp_host_ = (host_type_hint && *host_type_hint == kCorpHostTypeHint) ||
+                  has_google_email;
 
   require_session_authorization_ =
       config.FindBool(kRequireSessionAuthorizationPath).value_or(false);
@@ -1243,7 +1234,7 @@ bool HostProcess::ApplyConfig(const base::Value::Dict& config) {
                  << kHostSecretHashConfigPath << "`";
       return false;
     }
-  } else if (is_corp_user_) {
+  } else if (is_corp_host_) {
     // TODO: joedow - Remove this codepath once all Corp host configs include
     // the kRequireSessionAuthorizationPath attribute.
     HOST_LOG << "No value store for: " << kHostSecretHashConfigPath << ". PIN "
@@ -1647,7 +1638,7 @@ void HostProcess::InitializeSignaling() {
   heartbeat_sender_ = std::make_unique<HeartbeatSender>(
       this, host_id_, ftl_signal_strategy.get(), oauth_token_getter_.get(),
       zombie_host_detector_.get(), context_->url_loader_factory(),
-      is_corp_user_);
+      is_corp_host_);
   signal_strategy_ = std::move(ftl_signal_strategy);
 
   zombie_host_detector_->Start();
@@ -1710,21 +1701,14 @@ void HostProcess::StartHost() {
   protocol_config->set_webrtc_supported(true);
   session_manager->set_protocol_config(std::move(protocol_config));
 
-  if (is_corp_user_) {
+  if (is_corp_host_) {
     // Enabling this policy means that a local user sitting at a host would not
     // see any UI or indication that a remote user was connected.  We do have a
     // few use cases for this internally where we know for a fact that there
     // will not be a local user.  Since that isn't something we can control
-    // externally, we don't want to apply this policy for non-Googlers.
+    // externally, we don't want to apply this policy for non-Corp machines.
     desktop_environment_options_.set_enable_user_interface(
         enable_user_interface_);
-    // It is too early to know for sure that this logger is needed, so this ends
-    // up enabling it for some cases where it is not necessary. The correct
-    // approach would be to enable this once we know for sure (after we get the
-    // first heartbeat), but that is complicated because of the dependency on
-    // the |session_manager|.
-    // TODO(garykac): As part of the re-write, we should enable this on setup
-    // only for those corp users who need it.
     corp_host_status_logger_ = std::make_unique<CorpHostStatusLogger>(
         context_->url_loader_factory(), service_account_email_,
         oauth_refresh_token_);
@@ -1732,7 +1716,7 @@ void HostProcess::StartHost() {
   }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-  desktop_environment_options_.set_enable_remote_webauthn(is_corp_user_);
+  desktop_environment_options_.set_enable_remote_webauthn(is_corp_host_);
 #endif
 
   host_ = std::make_unique<ChromotingHost>(

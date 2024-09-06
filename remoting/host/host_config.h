@@ -44,6 +44,17 @@ extern const char kPrivateKeyConfigPath[];
 extern const char kUsageStatsConsentConfigPath[];
 // Indicates whether the machine is configured for session authorization.
 extern const char kRequireSessionAuthorizationPath[];
+// A hint used when initializing the host before it comes online. Several
+// actions, such as validating the host config itself, require knowing the
+// context in which the host is being run. An example is whether a PIN secret
+// should exist in the config or not. This value should match the scopes stored
+// in the refresh token, otherwise the host will appear to come online but will
+// not be connectable.
+extern const char kHostTypeHintPath[];
+// Supported Host type hint values stored in |kHostTypeHintPath|.
+extern const char kCorpHostTypeHint[];
+extern const char kCloudHostTypeHint[];
+extern const char kMe2MeHostTypeHint[];
 
 // Deprecated keys. These keys were used in pre-M120 host versions and are being
 // kept around for backward compatibility. We should consider rewriting the
