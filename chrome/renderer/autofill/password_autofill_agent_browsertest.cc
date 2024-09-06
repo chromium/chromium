@@ -1830,6 +1830,7 @@ TEST_F(PasswordAutofillAgentTest, PreviewSuggestionOnUsernameField) {
   // If the password field is not autocompletable, the preview must be available
   // only on username.
   SetElementReadOnly(password_element_, /*read_only=*/true);
+  ASSERT_TRUE(SimulateElementClick(kUsernameName));
   password_autofill_agent_->PreviewSuggestion(
       username_element_, kAliceUsername16, kAlicePassword16);
   CheckTextFieldsSuggestedState(kAliceUsername, /*username_autofilled=*/true,
@@ -1886,6 +1887,7 @@ TEST_F(PasswordAutofillAgentTest, PreviewSuggestionOnPasswordField) {
   // If the password field is not autocompletable, there must be no preview
   // available.
   SetElementReadOnly(password_element_, /*read_only=*/true);
+  ASSERT_TRUE(SimulateElementClick(kUsernameName));
   password_autofill_agent_->PreviewSuggestion(
       password_element_, kAliceUsername16, kAlicePassword16);
   CheckTextFieldsSuggestedState(
@@ -1959,6 +1961,8 @@ TEST_F(PasswordAutofillAgentTest, PreviewSuggestionSelectionRange) {
   SimulateOnFillPasswordForm(fill_data_);
 
   for (const auto& selected_element : {username_element_, password_element_}) {
+    ASSERT_TRUE(
+        SimulateElementClick(selected_element.GetAttribute("id").Ascii()));
     ResetFieldState(&username_element_, "ali", WebAutofillState::kPreviewed);
     ResetFieldState(&password_element_);
 
@@ -1983,6 +1987,8 @@ TEST_F(PasswordAutofillAgentTest, ClearPreviewWithPasswordAutofilled) {
   CheckTextFieldsDOMState(std::string(), false, "sec", true);
 
   for (const auto& selected_element : {username_element_, password_element_}) {
+    ASSERT_TRUE(
+        SimulateElementClick(selected_element.GetAttribute("id").Ascii()));
     password_autofill_agent_->PreviewSuggestion(
         selected_element, kAliceUsername16, kAlicePassword16);
     password_autofill_agent_->ClearPreviewedForm();
@@ -2008,6 +2014,8 @@ TEST_F(PasswordAutofillAgentTest, ClearPreviewWithUsernameAutofilled) {
   CheckTextFieldsDOMState("ali", true, std::string(), false);
 
   for (const auto& selected_element : {username_element_, password_element_}) {
+    ASSERT_TRUE(
+        SimulateElementClick(selected_element.GetAttribute("id").Ascii()));
     password_autofill_agent_->PreviewSuggestion(
         selected_element, kAliceUsername16, kAlicePassword16);
     password_autofill_agent_->ClearPreviewedForm();
@@ -2076,6 +2084,8 @@ TEST_F(PasswordAutofillAgentTest,
   CheckTextFieldsDOMState("ali", true, "sec", true);
 
   for (const auto& selected_element : {username_element_, password_element_}) {
+    ASSERT_TRUE(
+        SimulateElementClick(selected_element.GetAttribute("id").Ascii()));
     password_autofill_agent_->PreviewSuggestion(
         selected_element, kAliceUsername16, kAlicePassword16);
     password_autofill_agent_->ClearPreviewedForm();
@@ -2613,6 +2623,8 @@ TEST_F(PasswordAutofillAgentTest,
   CheckTextFieldsDOMState(std::string(), false, std::string(), false);
 
   for (const auto& selected_element : {username_element_, password_element_}) {
+    ASSERT_TRUE(
+        SimulateElementClick(selected_element.GetAttribute("id").Ascii()));
     password_autofill_agent_->PreviewSuggestion(
         selected_element, kAliceUsername16, kAlicePassword16);
     password_autofill_agent_->ClearPreviewedForm();
@@ -3393,20 +3405,20 @@ TEST_F(PasswordAutofillAgentTest, FillPasswordSuggestionById_NoFocusedElement) {
       form_util::GetFieldRendererId(password_element_), kAliceUsername16,
       kAlicePassword16);
 
-  EXPECT_EQ(username_element_.SuggestedValue().Utf16(), u"");
-  EXPECT_FALSE(username_element_.IsPreviewed());
-  EXPECT_EQ(password_element_.SuggestedValue().Utf16(), u"");
-  EXPECT_FALSE(password_element_.IsPreviewed());
+  EXPECT_EQ(username_element_.SuggestedValue().Utf16(), kAliceUsername16);
+  EXPECT_TRUE(username_element_.IsPreviewed());
+  EXPECT_EQ(password_element_.SuggestedValue().Utf16(), kAlicePassword16);
+  EXPECT_TRUE(password_element_.IsPreviewed());
 
   password_autofill_agent_->FillPasswordSuggestionById(
       form_util::GetFieldRendererId(username_element_),
       form_util::GetFieldRendererId(password_element_), kAliceUsername16,
       kAlicePassword16);
 
-  EXPECT_EQ(username_element_.Value().Utf16(), u"");
-  EXPECT_FALSE(username_element_.IsAutofilled());
-  EXPECT_EQ(password_element_.Value().Utf16(), u"");
-  EXPECT_FALSE(password_element_.IsAutofilled());
+  EXPECT_EQ(username_element_.Value().Utf16(), kAliceUsername16);
+  EXPECT_TRUE(username_element_.IsAutofilled());
+  EXPECT_EQ(password_element_.Value().Utf16(), kAlicePassword16);
+  EXPECT_TRUE(password_element_.IsAutofilled());
 }
 
 TEST_F(PasswordAutofillAgentTest, ShowPopupOnEmptyPasswordField) {
@@ -4874,6 +4886,7 @@ TEST_F(PasswordAutofillAgentTest, SingleUsernamePreviewSuggestion) {
   // Neither field should be autocompleted.
   CheckTextFieldsDOMState(std::string(), false, std::string(), false);
 
+  ASSERT_TRUE(SimulateElementClick(kUsernameName));
   password_autofill_agent_->PreviewSuggestion(
       username_element_, kAliceUsername16, kAlicePassword16);
   CheckTextFieldsSuggestedState(kAliceUsername, true, std::string(), false);
@@ -4920,6 +4933,7 @@ TEST_F(PasswordAutofillAgentTest, SingleUsernameClearPreview) {
   fill_data_.preferred_login.password_value.clear();
   fill_data_.password_element_renderer_id = autofill::FieldRendererId();
   ResetFieldState(&username_element_, "ali", WebAutofillState::kPreviewed);
+  ASSERT_TRUE(SimulateElementClick(kUsernameName));
   username_element_.SetSelectionRange(0, 0);
 
   // Simulate the browser sending the login info, but set `wait_for_username`
