@@ -47,7 +47,7 @@
     padding-inline-start: var(--product-selector-empty-state-padding);
   }
 
-  iron-icon {
+  cr-icon {
     right: 4px;
   }
 
@@ -82,7 +82,7 @@
   <template is="dom-if" if="[[!selectedItem]]" restamp>
     <div id="emptyState">$i18n{emptyProductSelector}</div>
   </template>
-  <iron-icon icon="cr:expand-more"></iron-icon>
+  <cr-icon icon="cr:expand-more"></cr-icon>
   <div id="hoverLayer"></div>
 </div>
 

@@ -97,7 +97,7 @@
       <template is="dom-if" if="[[qrScannerEnabled]]" class="center-content">
         <div class="center-content">
           <cr-button on-click="switchToQrInput" class="center text-button">
-            <iron-icon class="button-image" icon="cr:videocam"></iron-icon>
+            <cr-icon class="button-image" icon="cr:videocam"></cr-icon>
             $i18n{useCamera}
           </cr-button>
         </div>
@@ -112,7 +112,7 @@
     <div class="space-1"></div>
     <template is="dom-if" if="[[rememberDevices]]">
       <div id="remembered-device-footnote">
-        <iron-icon icon="cr:domain" id="remembered-device-icon"></iron-icon>
+        <cr-icon icon="cr:domain" id="remembered-device-icon"></cr-icon>
         <div id="remembered-device-content">
           [[managedFootnote]]
         </div>

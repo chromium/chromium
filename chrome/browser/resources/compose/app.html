@@ -60,7 +60,7 @@
     transform-origin: top left;
   }
 
-  #firstRunHeading iron-icon {
+  #firstRunHeading cr-icon {
     --iron-icon-width: 20px;
     --iron-icon-height: 20px;
   }
@@ -372,7 +372,7 @@
     font-size: 11px;
   }
 
-  .icon-buttons-row cr-button iron-icon {
+  .icon-buttons-row cr-button cr-icon {
     width: var(--cr-icon-size);
     height: var(--cr-icon-size);
   }
@@ -496,7 +496,7 @@
 <div id="firstRunDialog" class="dialog" hidden="[[!showFirstRunDialog_]]">
   <div id="firstRunHeading">
     <div id="firstRunIconContainer">
-      <iron-icon icon="compose:compose"></iron-icon>
+      <cr-icon icon="compose:compose"></cr-icon>
     </div>
     <h1>$i18n{firstRunTitle}</h1>
     <cr-icon-button id="firstRunCloseButton" class="close-button"
@@ -632,18 +632,18 @@
                   <cr-button id="undoButtonRefined" title="$i18n{undo}"
                     disabled="[[!undoEnabled_]]" on-click="onUndoClick_">
                     <div aria-hidden="true"> $i18n{undoButtonText} </div>
-                    <iron-icon aria-hidden="true" slot="suffix-icon"
+                    <cr-icon aria-hidden="true" slot="suffix-icon"
                       icon="compose:undo">
-                    </iron-icon>
+                    </cr-icon>
                   </cr-button>
                 </div>
                 <div class="button-container" hidden="[[!enableUiRefinements]]">
                   <cr-button id="redoButton" title="$i18n{redo}"
                     disabled="[[!redoEnabled_]]" on-click="onRedoClick_">
                     <div aria-hidden="true"> $i18n{redoButtonText} </div>
-                    <iron-icon aria-hidden="true" slot="suffix-icon"
+                    <cr-icon aria-hidden="true" slot="suffix-icon"
                       icon="compose:redo">
-                    </iron-icon>
+                    </cr-icon>
                   </cr-icon-button>
                 </div>
               </div>
@@ -661,7 +661,7 @@
       </div>
       <cr-button id="submitButton" class="action-button" on-click="onSubmit_"
         disabled="[[!isSubmitEnabled_]]">
-        <iron-icon slot="prefix-icon" icon="compose:compose"></iron-icon>
+        <cr-icon slot="prefix-icon" icon="compose:compose"></cr-icon>
         $i18n{submitButton}
       </cr-button>
     </div>
@@ -711,8 +711,8 @@
       <cr-button id="errorGoBackButton" class="action-button"
         on-click="onErrorGoBackButton_"
         hidden="[[!isBackFromErrorAvailable_(response_)]]">
-        <iron-icon aria-hidden="true" slot="prefix-icon" icon="compose:undo">
-        </iron-icon>
+        <cr-icon aria-hidden="true" slot="prefix-icon" icon="compose:undo">
+        </cr-icon>
         <div aria-hidden="true">
           $i18nRaw{errorFilteredGoBackButton}
         </div>

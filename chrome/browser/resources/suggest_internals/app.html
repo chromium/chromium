@@ -44,26 +44,26 @@
   <div slot="body">
         <cr-button title="export requests to clipboard" on-click="onCopyClick_">
           Copy
-          <iron-icon icon="cr:insert-drive-file" slot="suffix-icon"></iron-icon>
+          <cr-icon icon="cr:insert-drive-file" slot="suffix-icon"></cr-icon>
         </cr-button>
         <cr-button title="Download requests in JSON format." on-click="onDownloadClick_">
           Download
-          <iron-icon icon="cr:file-download" slot="suffix-icon"></iron-icon>
+          <cr-icon icon="cr:file-download" slot="suffix-icon"></cr-icon>
         </cr-button>
         <cr-button title="Import requests from clipboard." on-click="onPasteClick_">
           Paste
-          <iron-icon icon="cr:insert-drive-file" slot="suffix-icon"></iron-icon>
+          <cr-icon icon="cr:insert-drive-file" slot="suffix-icon"></cr-icon>
         </cr-button>
         <div class="upload-container">
           <cr-button>
             Upload
-            <iron-icon icon="cr:insert-drive-file" slot="suffix-icon"></iron-icon>
+            <cr-icon icon="cr:insert-drive-file" slot="suffix-icon"></cr-icon>
           </cr-button>
           <input placeholder="Upload previously downloaded requests to load them." on-change="onImportFile_" type="file" accept=".json">
         </div>
         <cr-button title="Clears the result list" on-click="onClearClick_">
           Clear
-          <iron-icon icon="cr:delete" slot="suffix-icon"></iron-icon>
+          <cr-icon icon="cr:delete" slot="suffix-icon"></cr-icon>
         </cr-button>
   </div>
 </cr-drawer>
