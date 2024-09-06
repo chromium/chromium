@@ -24,6 +24,7 @@ source_set("utils") {
     ":constants",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ui/base",
   ]
   frameworks = [

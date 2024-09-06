@@ -4,10 +4,13 @@
 
 #import "ios/chrome/browser/safety_check_notifications/utils/utils.h"
 
+#import <optional>
+
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/safety_check_notifications/utils/constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -98,6 +101,21 @@ UNNotificationContent* NotificationContent(NSString* title,
   return content;
 }
 
+// Returns the time duration of user inactivity required before Safety Check
+// notifications are triggered. This duration can be modified through
+// Experimental settings or Finch. If no override is set, a default value is
+// used.
+double InactiveThresholdForNotifications() {
+  std::optional<int> forced_threshold = experimental_flags::
+      GetForcedInactivityThresholdForSafetyCheckNotifications();
+
+  if (!forced_threshold.has_value()) {
+    return InactiveThresholdForSafetyCheckNotifications().InSecondsF();
+  }
+
+  return static_cast<double>(forced_threshold.value());
+}
+
 }  // namespace
 
 UNNotificationRequest* PasswordNotificationRequest(
@@ -116,12 +134,10 @@ UNNotificationRequest* PasswordNotificationRequest(
   return [UNNotificationRequest
       requestWithIdentifier:kSafetyCheckPasswordNotificationID
                     content:content
-                    trigger:
-                        [UNTimeIntervalNotificationTrigger
-                            triggerWithTimeInterval:
-                                InactiveThresholdForSafetyCheckNotifications()
-                                    .InSecondsF()
-                                            repeats:NO]];
+                    trigger:[UNTimeIntervalNotificationTrigger
+                                triggerWithTimeInterval:
+                                    InactiveThresholdForNotifications()
+                                                repeats:NO]];
 }
 
 UNNotificationContent* NotificationForPasswordCheckState(
@@ -180,12 +196,10 @@ UNNotificationRequest* UpdateChromeNotificationRequest(
   return [UNNotificationRequest
       requestWithIdentifier:kSafetyCheckUpdateChromeNotificationID
                     content:content
-                    trigger:
-                        [UNTimeIntervalNotificationTrigger
-                            triggerWithTimeInterval:
-                                InactiveThresholdForSafetyCheckNotifications()
-                                    .InSecondsF()
-                                            repeats:NO]];
+                    trigger:[UNTimeIntervalNotificationTrigger
+                                triggerWithTimeInterval:
+                                    InactiveThresholdForNotifications()
+                                                repeats:NO]];
 }
 
 UNNotificationContent* NotificationForUpdateChromeCheckState(
@@ -215,12 +229,10 @@ UNNotificationRequest* SafeBrowsingNotificationRequest(
   return [UNNotificationRequest
       requestWithIdentifier:kSafetyCheckSafeBrowsingNotificationID
                     content:content
-                    trigger:
-                        [UNTimeIntervalNotificationTrigger
-                            triggerWithTimeInterval:
-                                InactiveThresholdForSafetyCheckNotifications()
-                                    .InSecondsF()
-                                            repeats:NO]];
+                    trigger:[UNTimeIntervalNotificationTrigger
+                                triggerWithTimeInterval:
+                                    InactiveThresholdForNotifications()
+                                                repeats:NO]];
 }
 
 UNNotificationContent* NotificationForSafeBrowsingCheckState(
