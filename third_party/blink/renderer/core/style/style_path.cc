@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "third_party/blink/renderer/core/css/css_path_value.h"
-#include "third_party/blink/renderer/core/svg/svg_path_byte_stream.h"
 #include "third_party/blink/renderer/core/svg/svg_path_utilities.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -17,32 +16,28 @@
 
 namespace blink {
 
-StylePath::StylePath(std::unique_ptr<SVGPathByteStream> path_byte_stream,
-                     WindRule wind_rule)
+StylePath::StylePath(SVGPathByteStream path_byte_stream, WindRule wind_rule)
     : byte_stream_(std::move(path_byte_stream)),
       path_length_(std::numeric_limits<float>::quiet_NaN()),
-      wind_rule_(wind_rule) {
-  DCHECK(byte_stream_);
-}
+      wind_rule_(wind_rule) {}
 
 StylePath::~StylePath() = default;
 
-scoped_refptr<StylePath> StylePath::Create(
-    std::unique_ptr<SVGPathByteStream> path_byte_stream,
-    WindRule wind_rule) {
+scoped_refptr<StylePath> StylePath::Create(SVGPathByteStream path_byte_stream,
+                                           WindRule wind_rule) {
   return base::AdoptRef(new StylePath(std::move(path_byte_stream), wind_rule));
 }
 
 const StylePath* StylePath::EmptyPath() {
   DEFINE_STATIC_REF(StylePath, empty_path,
-                    StylePath::Create(std::make_unique<SVGPathByteStream>()));
+                    StylePath::Create(SVGPathByteStream()));
   return empty_path;
 }
 
 const Path& StylePath::GetPath() const {
   if (!path_) {
-    path_ = std::make_unique<Path>();
-    BuildPathFromByteStream(*byte_stream_, *path_);
+    path_.emplace();
+    BuildPathFromByteStream(byte_stream_, *path_);
     path_->SetWindRule(wind_rule_);
   }
   return *path_;
@@ -66,7 +61,7 @@ CSSValue* StylePath::ComputedCSSValue() const {
 
 bool StylePath::IsEqualAssumingSameType(const BasicShape& o) const {
   const StylePath& other = To<StylePath>(o);
-  return wind_rule_ == other.wind_rule_ && *byte_stream_ == *other.byte_stream_;
+  return wind_rule_ == other.wind_rule_ && byte_stream_ == other.byte_stream_;
 }
 
 void StylePath::GetPath(Path& path,

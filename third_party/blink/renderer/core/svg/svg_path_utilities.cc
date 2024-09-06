@@ -63,19 +63,16 @@ String BuildStringFromByteStream(const SVGPathByteStream& stream,
 }
 
 SVGParsingError BuildByteStreamFromString(const StringView& path_string,
-                                          SVGPathByteStream& result) {
-  result.clear();
+                                          SVGPathByteStreamBuilder& builder) {
   if (path_string.empty())
     return SVGParseStatus::kNoError;
 
   // The string length is typically a minor overestimate of eventual byte stream
   // size, so it avoids us a lot of reallocs.
-  result.ReserveInitialCapacity(path_string.length());
+  builder.ReserveInitialCapacity(path_string.length());
 
-  SVGPathByteStreamBuilder builder(result);
   SVGPathStringSource source(path_string);
   svg_path_parser::ParsePath(source, builder);
-  result.ShrinkToFit();
   return source.ParseError();
 }
 

@@ -231,19 +231,16 @@ void PathInterpolationFunctions::Composite(
 scoped_refptr<StylePath> PathInterpolationFunctions::AppliedValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue* non_interpolable_value) {
-  std::unique_ptr<SVGPathByteStream> path_byte_stream =
-      std::make_unique<SVGPathByteStream>();
-
   auto* non_interpolable_path_value =
       To<SVGPathNonInterpolableValue>(non_interpolable_value);
   InterpolatedSVGPathSource source(
       To<InterpolableList>(
           *To<InterpolableList>(interpolable_value).Get(kPathArgsIndex)),
       non_interpolable_path_value->PathSegTypes());
-  SVGPathByteStreamBuilder builder(*path_byte_stream);
+  SVGPathByteStreamBuilder builder;
   svg_path_parser::ParsePath(source, builder);
 
-  return StylePath::Create(std::move(path_byte_stream),
+  return StylePath::Create(builder.CopyByteStream(),
                            non_interpolable_path_value->GetWindRule());
 }
 

@@ -88,6 +88,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/core/svg/svg_parsing_error.h"
+#include "third_party/blink/renderer/core/svg/svg_path_byte_stream_builder.h"
 #include "third_party/blink/renderer/core/svg/svg_path_utilities.h"
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
@@ -6548,21 +6549,20 @@ bool ValidWidthOrHeightKeyword(CSSValueID id, const CSSParserContext& context) {
   return false;
 }
 
-std::unique_ptr<SVGPathByteStream> ConsumePathStringArg(
+std::optional<SVGPathByteStream> ConsumePathStringArg(
     CSSParserTokenStream& args) {
   if (args.Peek().GetType() != kStringToken) {
-    return nullptr;
+    return std::nullopt;
   }
 
   CSSParserToken path = args.ConsumeIncludingWhitespace();
-  std::unique_ptr<SVGPathByteStream> byte_stream =
-      std::make_unique<SVGPathByteStream>();
-  if (BuildByteStreamFromString(path.Value(), *byte_stream) !=
+  SVGPathByteStreamBuilder builder;
+  if (BuildByteStreamFromString(path.Value(), builder) !=
       SVGParseStatus::kNoError) {
-    return nullptr;
+    return std::nullopt;
   }
 
-  return byte_stream;
+  return builder.CopyByteStream();
 }
 
 cssvalue::CSSPathValue* ConsumeBasicShapePath(CSSParserTokenStream& args) {
@@ -6589,7 +6589,7 @@ cssvalue::CSSPathValue* ConsumeBasicShapePath(CSSParserTokenStream& args) {
     return nullptr;
   }
 
-  return MakeGarbageCollected<cssvalue::CSSPathValue>(std::move(byte_stream),
+  return MakeGarbageCollected<cssvalue::CSSPathValue>(std::move(*byte_stream),
                                                       wind_rule);
 }
 
@@ -6605,8 +6605,7 @@ CSSValue* ConsumePathFunction(CSSParserTokenStream& stream,
     CSSParserTokenStream::RestoringBlockGuard guard(stream);
     stream.ConsumeWhitespace();
 
-    std::unique_ptr<SVGPathByteStream> byte_stream =
-        ConsumePathStringArg(stream);
+    std::optional<SVGPathByteStream> byte_stream = ConsumePathStringArg(stream);
     if (!byte_stream || !stream.AtEnd()) {
       return nullptr;
     }
@@ -6623,7 +6622,7 @@ CSSValue* ConsumePathFunction(CSSParserTokenStream& stream,
       }
     } else {
       value =
-          MakeGarbageCollected<cssvalue::CSSPathValue>(std::move(byte_stream));
+          MakeGarbageCollected<cssvalue::CSSPathValue>(std::move(*byte_stream));
     }
 
     guard.Release();
