@@ -338,8 +338,8 @@ class _Variant():
         self._params = params
 
     @property
-    def params(self) -> _TestParams:
-        """Read-only getter for this variant's param dict."""
+    def params(self) -> _MutableTestParams:
+        """Returns this variant's param dict."""
         return self._params
 
     @staticmethod
@@ -517,10 +517,10 @@ class _VariantGrid:
         self._variants = variants
         self._grid_width = grid_width
 
+        self._params = {}  # type: _MutableTestParams
         self._file_name = None
         self._canvas_types = None
         self._template_type = None
-        self._params = None
 
     @property
     def variants(self) -> List[_Variant]:
@@ -550,18 +550,18 @@ class _VariantGrid:
 
     @property
     def params(self) -> _TestParams:
-        """Returns this grid's param dict, used to render Jinja templates."""
-        if self._params is None:
-            if len(self.variants) == 1:
-                self._params = dict(self.variants[0].params)
-            else:
-                self._params = self._get_grid_params()
+        """This grid's read-only param dict, used to render Jinja templates."""
         return self._params
 
     def finalize(self, jinja_env: jinja2.Environment):
         """Finalize this grid's variants, adding computed params fields."""
         for variant_id, variant in enumerate(self.variants):
             variant.finalize_params(jinja_env, variant_id)
+
+        if len(self.variants) == 1:
+            self._params = self.variants[0].params
+        else:
+            self._params = self._get_grid_params()
 
     def add_dimension(self, variants: Mapping[str,
                                               _TestParams]) -> '_VariantGrid':
@@ -630,7 +630,7 @@ class _VariantGrid:
         return frozenset(sum([list(v.params[name]) for v in self.variants],
                              []))
 
-    def _get_grid_params(self) -> _TestParams:
+    def _get_grid_params(self) -> _MutableTestParams:
         """Returns the params dict needed to render this grid with Jinja."""
         filter_variant = self._variants_for_canvas_type
         grid_params = {
@@ -773,7 +773,8 @@ def _get_variant_dimensions(params: _TestParams) -> List[_VariantDimension]:
     ]
 
 
-def _get_variant_grids(test: Mapping[str, Any]) -> List[_VariantGrid]:
+def _get_variant_grids(test: Mapping[str, Any],
+                       jinja_env: jinja2.Environment) -> List[_VariantGrid]:
     base_variant = _Variant.create_with_defaults(test)
     grid_width = base_variant.params.get('grid_width', 1)
     grids = [_VariantGrid([base_variant], grid_width=grid_width)]
@@ -786,6 +787,10 @@ def _get_variant_grids(test: Mapping[str, Any]) -> List[_VariantGrid]:
             ]
         else:
             grids = [grid.add_dimension(variants) for grid in grids]
+
+    for grid in grids:
+        grid.finalize(jinja_env)
+
     return grids
 
 
@@ -845,9 +850,7 @@ def generate_test_files(name_to_dir_file: str) -> None:
     used_variants = collections.defaultdict(set)
     for test in tests:
         print(test['name'])
-        for grid in _get_variant_grids(test):
-
-            grid.finalize(jinja_env)
+        for grid in _get_variant_grids(test, jinja_env):
             if test['name'] != grid.file_name:
                 print(f'  {grid.file_name}')
 
