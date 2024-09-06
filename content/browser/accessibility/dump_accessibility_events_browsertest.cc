@@ -280,15 +280,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-current-changed.html"));
 }
 
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_AccessibilityEventsAriaDisabledChanged \
-  DISABLED_AccessibilityEventsAriaDisabledChanged
-#else
-#define MAYBE_AccessibilityEventsAriaDisabledChanged \
-  AccessibilityEventsAriaDisabledChanged
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       MAYBE_AccessibilityEventsAriaDisabledChanged) {
+                       AccessibilityEventsAriaDisabledChanged) {
   RunEventTest(FILE_PATH_LITERAL("aria-disabled-changed.html"));
 }
 
