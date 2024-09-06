@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
+#include "privacy_sandbox_survey_factory.h"
 
 PrivacySandboxSurveyDesktopControllerFactory*
 PrivacySandboxSurveyDesktopControllerFactory::GetInstance() {
@@ -22,13 +23,17 @@ PrivacySandboxSurveyDesktopControllerFactory::GetForProfile(Profile* profile) {
 
 PrivacySandboxSurveyDesktopControllerFactory::
     PrivacySandboxSurveyDesktopControllerFactory()
-    : ProfileKeyedServiceFactory("PrivacySandboxSurveyDesktopController") {}
+    : ProfileKeyedServiceFactory("PrivacySandboxSurveyDesktopController") {
+  DependsOn(PrivacySandboxSurveyFactory::GetInstance());
+}
 
 std::unique_ptr<KeyedService> PrivacySandboxSurveyDesktopControllerFactory::
     BuildServiceInstanceForBrowserContext(
         content::BrowserContext* context) const {
   return std::make_unique<
-      privacy_sandbox::PrivacySandboxSurveyDesktopController>();
+      privacy_sandbox::PrivacySandboxSurveyDesktopController>(
+      PrivacySandboxSurveyFactory::GetForProfile(
+          Profile::FromBrowserContext(context)));
 }
 
 bool PrivacySandboxSurveyDesktopControllerFactory::
