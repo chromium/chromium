@@ -9556,7 +9556,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="792514962475806987">Niveau de zoom ancré :</translation>
 <translation id="7925285046818567682">En attente de <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">Ce n'était pas moi</translation>
-<translation id="7926975587469166629">Pseudo associé à la carte</translation>
+<translation id="7926975587469166629">Nom donné à la carte</translation>
 <translation id="7928175190925744466">Vous avez déjà modifié ce mot de passe ?</translation>
 <translation id="7929468958996190828">Vous pouvez <ph name="BEGIN_LINK" />actualiser la page maintenant<ph name="END_LINK" /> ou réessayer plus tard après avoir ouvert de nouveaux onglets similaires</translation>
 <translation id="7929962904089429003">Ouvrir le menu</translation>
@@ -9828,7 +9828,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8102139037507939978">Retirez les informations permettant d'identifier personnellement les utilisateurs du fichier system_logs.txt.</translation>
 <translation id="810362914482827094">Rechercher des clés d'accès</translation>
 <translation id="8104088837833760645">Télécharger le profil eSIM</translation>
-<translation id="8105273883928376822">Veuillez vous connecter pour continuer.</translation>
+<translation id="8105273883928376822">Connectez-vous pour continuer</translation>
 <translation id="8107015733319732394">Installation du Google Play Store sur votre <ph name="DEVICE_TYPE" />. Cette opération peut prendre quelques minutes.</translation>
 <translation id="810728361871746125">Résolution d'affichage</translation>
 <translation id="8109109153262930486">Avatar par défaut</translation>

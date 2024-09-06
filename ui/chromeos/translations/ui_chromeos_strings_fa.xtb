@@ -247,7 +247,7 @@
 <translation id="2984337792991268709">امروز <ph name="TODAY_DAYTIME" /></translation>
 <translation id="299638574917407533">فرانسوی (کانادا)</translation>
 <translation id="3003189754374775221">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" />, قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، اتصال</translation>
-<translation id="3003633581067744647">تغییر وضعیت به نمای تصویر کوچک</translation>
+<translation id="3003633581067744647">تغییر وضعیت به نمای ریزعکس</translation>
 <translation id="3016566519832145558">احتیاط: این فایل‌ها موقتی هستند و ممکن است برای آزادسازی فضای دیسک به‌طور خودکار حذف شوند.</translation>
 <translation id="3029114385395636667">‏برای دسترسی آفلاین به «سندنگار»، «کاربرگ‌نگار»، و «اسلایدنگار»، «سندنگار Google آفلاین» را فعال کنید.</translation>
 <translation id="303198083543495566">جغرافیا</translation>
@@ -541,7 +541,7 @@
  جداکردن دستگاه هنگامی که در حال استفاده است ممکن است باعث از دست رفتن داده‌ها شود.  لطفاً تا به پایان رسیدن عملیات صبر کنید، سپس دستگاه را با استفاده از برنامه Files خارج نمایید.</translation>
 <translation id="5163869187418756376">اشتراک‌گذاری انجام نشد. اتصال خود را بررسی کرده، بعداً دوباره امتحان کنید.</translation>
 <translation id="516592729076796170">دووراک آمریکایی برنامه‌نویس‌ها</translation>
-<translation id="5177526793333269655">نمای تصویر کوچک</translation>
+<translation id="5177526793333269655">نمای ریزعکس</translation>
 <translation id="5181896909298187506">هیچ فایلی در موارد اخیر وجود ندارد</translation>
 <translation id="5194713942430106590">کلیک کنید تا ستون به‌صورت صعودی مرتب شود.</translation>
 <translation id="5211614973734216083">فاروئی</translation>
@@ -1010,7 +1010,7 @@
 <translation id="8569764466147087991">انتخاب فایلی برای باز کردن</translation>
 <translation id="8577897833047451336">کروات</translation>
 <translation id="8578308463707544055">اندونزیایی</translation>
-<translation id="8600173386174225982">فهرست فایل به نمای تصویر کوچک تغییر کرده است.</translation>
+<translation id="8600173386174225982">فهرست فایل به نمای ریزعکس تغییر کرده است.</translation>
 <translation id="8601932370724196034">‏فایل تصویری Crostini</translation>
 <translation id="8609695766746872526">ایسلندی</translation>
 <translation id="8630384863424041081">پین سیم‌کارت یا پین پیش‌فرضی را که شرکت مخابراتی‌تان ارائه کرده است وارد کنید. برای پشتیبانی با شرکت مخابراتی‌تان تماس بگیرید.</translation>

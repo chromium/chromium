@@ -383,7 +383,7 @@
 <translation id="126156426083987769">演示模式设备许可出问题了。</translation>
 <translation id="1263231323834454256">阅读清单</translation>
 <translation id="1263733306853729545">用 <ph name="MINUS" /> 键和 <ph name="EQUAL" /> 键在候选字词列表中翻页</translation>
-<translation id="126387934568812801">包含此屏幕截图以及已打开标签页的标题</translation>
+<translation id="126387934568812801">包含此屏幕截图以及所打开标签页的标题</translation>
 <translation id="1264083566674525434">修改网站权限</translation>
 <translation id="1264337193001759725">若要查看网络界面日志，请参阅：<ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">您的应用和设置会在您使用自己的 Google 账号登录的所有 ChromeOS Flex 设备上保持同步。如需了解浏览器同步选项，请转到 <ph name="LINK_BEGIN" />Chrome 设置<ph name="LINK_END" />。</translation>
@@ -3545,7 +3545,7 @@
 <translation id="3537099313456411235">关联 <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> 即可在“文件”应用内访问您的云端硬盘文件</translation>
 <translation id="3537881477201137177">日后需要时，您可在“设置”中修改</translation>
 <translation id="3538066758857505094">卸载 Linux 时出错。请重试。</translation>
-<translation id="3539537154248488260">隐藏/显示“随便看看”</translation>
+<translation id="3539537154248488260">隐藏/显示灵感示例</translation>
 <translation id="3540173484406326944">未通过“<ph name="HOST_DEVICE_NAME" />”连接到网络</translation>
 <translation id="354060433403403521">交流电源适配器</translation>
 <translation id="354068948465830244">可读取和更改网站数据</translation>
@@ -4770,7 +4770,7 @@
 <translation id="4411344321892622527">不允许滚动和缩放分享的标签页</translation>
 <translation id="4411578466613447185">代码签名人</translation>
 <translation id="4411719918614785832">这些通行密钥会保存在此计算机上的 Windows Hello 中，不会保存到您的 Google 账号中。</translation>
-<translation id="4412544493002546580">请重试或从下面的“随便看看”壁纸中选择一个。</translation>
+<translation id="4412544493002546580">请重试，或从下面的灵感示例主题中选择一个。</translation>
 <translation id="4412547955014928315">为 <ph name="SITE_NAME" /> 及其下属所有网站删除网站数据和权限？</translation>
 <translation id="4412632005703201014">Chrome 应用即将迁移到渐进式 Web 应用。此 Chrome 应用由贵组织安装在您的浏览器上。若要从应用列表中打开渐进式 Web 应用，请先与您的管理员联系，请他们卸载 Chrome 应用。在此期间，您可以访问 <ph name="EXTENSION_LAUNCH_URL" /> 在网络上打开 <ph name="EXTENSION_NAME" />。</translation>
 <translation id="4412698727486357573">帮助中心</translation>
@@ -6024,7 +6024,7 @@
 <translation id="534449933710420173">未命名的文件夹</translation>
 <translation id="5345916423802287046">在您登录时启动应用</translation>
 <translation id="5347920333985823270">Chrome 支持免费的网络体验</translation>
-<translation id="5350116201946341974">奇思妙想</translation>
+<translation id="5350116201946341974">怪诞</translation>
 <translation id="5350293332385664455">关闭 Google 助理</translation>
 <translation id="535123479159372765">从其他设备复制的文字</translation>
 <translation id="5352033265844765294">时间戳</translation>
@@ -6391,7 +6391,7 @@
 <translation id="5608580678041221894">按以下键可调整或移动剪裁区域</translation>
 <translation id="560919433407466404">授权 Parallels Desktop 访问 USB 设备。</translation>
 <translation id="5609231933459083978">该应用似乎无效。</translation>
-<translation id="5610867721023328944">请重试或从以下可用主题中选择一个。</translation>
+<translation id="5610867721023328944">请重试，或从下面可用的主题中选择一个。</translation>
 <translation id="5611398002774823980">保存到账号</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />、<ph name="APP_FULL_NAME" /></translation>
 <translation id="5613074282491265467">登录 Chrome 后，您保存的密码会保存到您的 Google 账号 (<ph name="USER_EMAIL" />) 中。如需关闭此设置，请前往“设置”部分。</translation>
@@ -7366,7 +7366,7 @@
 <translation id="6327785803543103246">网络代理自动发现</translation>
 <translation id="6329916384047371874">您将使用 <ph name="DOMAIN" /> 上的 <ph name="PASSWORD_DOMAIN" /> 密码。除非您信任 <ph name="DOMAIN" />，否则请不要使用此密码。</translation>
 <translation id="6331857227627979149">您的通行密钥将保存到 <ph name="ACCOUNT_NAME" /> 的 Google 密码管理工具中。您只需验证一次身份。</translation>
-<translation id="6333064448949140209">文件将发送到 Google 进行调试</translation>
+<translation id="6333064448949140209">文件将发送给 Google 进行调试</translation>
 <translation id="6333170995003625229">无法验证您的电子邮件地址或密码。请尝试重新登录。</translation>
 <translation id="6334267141726449402">复制此链接并将其发送给用户以收集日志。</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> 已停用 ADB 调试。这会导致您的 <ph name="DEVICE_TYPE" /> 在 24 小时后重置。请备份您想保留的所有文件。</translation>
@@ -9106,7 +9106,7 @@
 <translation id="7628392600831846024">符号样式</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />)，等级：<ph name="GRADE" /></translation>
 <translation id="762917478230183172">为每个键选择一项操作</translation>
-<translation id="7629206210984165492">闷闷不乐</translation>
+<translation id="7629206210984165492">冷清</translation>
 <translation id="7629827748548208700">标签页：<ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">此设备由 <ph name="MANAGER" /> 管理，要求您每次使用前必须先登录。</translation>
 <translation id="7631014249255418691">已成功备份 Linux 应用和文件</translation>
@@ -9385,7 +9385,7 @@
 <translation id="7807711621188256451">始终允许 <ph name="HOST" /> 使用您的摄像头</translation>
 <translation id="7810202088502699111">已拦截此网页上的弹出式窗口。</translation>
 <translation id="7810367892333449285">所输入代码的格式应为：<ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ 地址<ph name="LPA_2" />$<ph name="LPA_3" />可选匹配 ID<ph name="LPA_4" /></translation>
-<translation id="7811263553491007091">请重试，或从之前生成的以下主题中任选其一。</translation>
+<translation id="7811263553491007091">请重试，或从下面之前生成的主题中选择一个。</translation>
 <translation id="7812170317334653156">Google 日历已隐藏</translation>
 <translation id="7814090115158024843">在这些网站上一律停用写作帮助</translation>
 <translation id="7814458197256864873">复制(&amp;C)</translation>
@@ -9709,7 +9709,7 @@
 <translation id="8037801708772278989">刚刚检查过</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{正在将 1 个文件复制到 <ph name="CLOUD_PROVIDER" />}other{正在将 {NUM_OF_FILES} 个文件复制到 <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="8041089156583427627">发送反馈</translation>
-<translation id="8041093619605951337">开心</translation>
+<translation id="8041093619605951337">欢欣</translation>
 <translation id="8041267120753677077">流式传输手机上的应用</translation>
 <translation id="8042142357103597104">文字不透明度</translation>
 <translation id="8042331986490021244">系统会先在设备上对您的密码进行加密，然后再将其保存到 Google 密码管理工具中</translation>
@@ -11354,7 +11354,7 @@
 <translation id="9203904171912129171">选择设备</translation>
 <translation id="920410963177453528">点击下拉菜单即可改选面板</translation>
 <translation id="9206889157914079472">在锁定屏幕上使用触控笔记事</translation>
-<translation id="9207434080086272167">晴天</translation>
+<translation id="9207434080086272167">晴朗</translation>
 <translation id="9207669213427469593">将窗口移至一侧，即可使用分屏。此时，系统会在另一侧显示窗口建议</translation>
 <translation id="9209563766569767417">正在检查 Linux 容器设置</translation>
 <translation id="9214520840402538427">糟糕！安装时间属性的初始化已过期，请与您的支持代表联系。</translation>
