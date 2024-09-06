@@ -6,7 +6,6 @@ import type {CrToastManagerElement, DownloadsManagerElement, PageRemote} from 'c
 import {BrowserProxy, DangerType, loadTimeData, State} from 'chrome://downloads/downloads.js';
 import {stringToMojoString16, stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import {isMac} from 'chrome://resources/js/platform.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -22,6 +21,11 @@ suite('manager tests', function() {
   setup(function() {
     loadTimeData.overrideValues({'improvedDownloadWarningsUX': true});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    // Set height to 100% so that the manager has a non-zero height. This is
+    // necessary for the list to know how many items to render. In production
+    // this is done by downloads.html.
+    document.documentElement.setAttribute('style', 'height: 100%;');
+    document.body.setAttribute('style', 'height: 100%;');
 
     testBrowserProxy = new TestDownloadsProxy();
     callbackRouterRemote = testBrowserProxy.callbackRouterRemote;
@@ -32,6 +36,7 @@ suite('manager tests', function() {
 
     toastManager = manager.shadowRoot!.querySelector('cr-toast-manager')!;
     assertTrue(!!toastManager);
+    return microtasksFinished();
   });
 
   test('long URLs don\'t elide', async () => {
@@ -48,7 +53,6 @@ suite('manager tests', function() {
           displayUrl: stringToMojoString16(displayUrl),
         })]);
     await callbackRouterRemote.$.flushForTesting();
-    flush();
     await microtasksFinished();
 
     const item = manager.shadowRoot!.querySelector('downloads-item')!;
@@ -74,19 +78,16 @@ suite('manager tests', function() {
 
     callbackRouterRemote.insertItems(0, [download1, download2]);
     await callbackRouterRemote.$.flushForTesting();
-    flush();
     await microtasksFinished();
     assertEquals(1, countDates());
 
     callbackRouterRemote.removeItem(0);
     await callbackRouterRemote.$.flushForTesting();
-    flush();
     await microtasksFinished();
     assertEquals(1, countDates());
 
     callbackRouterRemote.insertItems(0, [download1]);
     await callbackRouterRemote.$.flushForTesting();
-    flush();
     await microtasksFinished();
     assertEquals(1, countDates());
   });
@@ -98,7 +99,6 @@ suite('manager tests', function() {
     });
     callbackRouterRemote.insertItems(0, [dangerousDownload]);
     await callbackRouterRemote.$.flushForTesting();
-    flush();
     await microtasksFinished();
     assertTrue(!!manager.shadowRoot!.querySelector('downloads-item')!
                      .shadowRoot!.querySelector('.dangerous'));
@@ -109,7 +109,6 @@ suite('manager tests', function() {
     });
     callbackRouterRemote.updateItem(0, safeDownload);
     await callbackRouterRemote.$.flushForTesting();
-    flush();
     await microtasksFinished();
     assertFalse(!!manager.shadowRoot!.querySelector('downloads-item')!
                       .shadowRoot!.querySelector('.dangerous'));
@@ -123,7 +122,6 @@ suite('manager tests', function() {
                                        url: stringToMojoUrl('a'.repeat(1000)),
                                      })]);
     await callbackRouterRemote.$.flushForTesting();
-    flush();
     await microtasksFinished();
     const item = manager.shadowRoot!.querySelector('downloads-item')!;
 
@@ -132,8 +130,7 @@ suite('manager tests', function() {
     assertTrue(!!quickRemoveButton);
     quickRemoveButton.click();
     await testBrowserProxy.handler.whenCalled('remove');
-    flush();
-    const list = manager.shadowRoot!.querySelector('iron-list')!;
+    const list = manager.shadowRoot!.querySelector('cr-infinite-list')!;
     assertTrue(list.hidden);
     assertTrue(toastManager.isToastOpen);
   });
@@ -254,7 +251,6 @@ suite('manager tests', function() {
           }),
         ]);
         await callbackRouterRemote.$.flushForTesting();
-        flush();
         await microtasksFinished();
         const item = manager.shadowRoot!.querySelector('downloads-item');
         assertTrue(!!item);
@@ -264,7 +260,6 @@ suite('manager tests', function() {
           detail: {id: item.data?.id || ''},
         }));
         await callbackRouterRemote.$.flushForTesting();
-        flush();
         const recordOpenId = await testBrowserProxy.handler.whenCalled(
             'recordOpenBypassWarningDialog');
         assertEquals('itemId', recordOpenId);
@@ -276,7 +271,6 @@ suite('manager tests', function() {
         // Confirm the dialog to download the dangerous file.
         dialog.$.dialog.close();
         await callbackRouterRemote.$.flushForTesting();
-        flush();
         const saveDangerousId = await testBrowserProxy.handler.whenCalled(
             'saveDangerousFromDialogRequiringGesture');
         assertEquals('itemId', saveDangerousId);
@@ -294,7 +288,6 @@ suite('manager tests', function() {
       }),
     ]);
     await callbackRouterRemote.$.flushForTesting();
-    flush();
     await microtasksFinished();
     const item = manager.shadowRoot!.querySelector('downloads-item');
     assertTrue(!!item);
@@ -304,7 +297,6 @@ suite('manager tests', function() {
       detail: {id: item.data?.id || ''},
     }));
     await callbackRouterRemote.$.flushForTesting();
-    flush();
     const recordOpenId = await testBrowserProxy.handler.whenCalled(
         'recordOpenBypassWarningDialog');
     assertEquals('itemId', recordOpenId);
@@ -316,7 +308,6 @@ suite('manager tests', function() {
     // Cancel the dialog and check that it's recorded.
     dialog.$.dialog.cancel();
     await callbackRouterRemote.$.flushForTesting();
-    flush();
     const recordCancelId = await testBrowserProxy.handler.whenCalled(
         'recordCancelBypassWarningDialog');
     assertEquals('itemId', recordCancelId);
@@ -335,7 +326,6 @@ suite('manager tests', function() {
           }),
         ]);
         await callbackRouterRemote.$.flushForTesting();
-        flush();
         await microtasksFinished();
         const item = manager.shadowRoot!.querySelector('downloads-item')!;
         assertTrue(!!item);
@@ -344,7 +334,8 @@ suite('manager tests', function() {
           composed: true,
           detail: {id: item.data?.id || ''},
         }));
-        flush();
+        await microtasksFinished();
+
         const dialog = manager.shadowRoot!.querySelector(
             'downloads-bypass-warning-confirmation-dialog');
         assertTrue(!!dialog);
@@ -352,7 +343,6 @@ suite('manager tests', function() {
         // Remove the file and check that the dialog is hidden.
         callbackRouterRemote.removeItem(0);
         await callbackRouterRemote.$.flushForTesting();
-        flush();
         assertFalse(isVisible(dialog));
       });
 
@@ -372,7 +362,6 @@ suite('manager tests', function() {
           }),
         ]);
         await callbackRouterRemote.$.flushForTesting();
-        flush();
         await microtasksFinished();
         const saveDangerousButton =
             manager.shadowRoot!.querySelector('downloads-item')!.shadowRoot!
@@ -380,7 +369,6 @@ suite('manager tests', function() {
                     '#save-dangerous');
         assertTrue(!!saveDangerousButton);
         saveDangerousButton.click();
-        flush();
         const recordOpenId = await testBrowserProxy.handler.whenCalled(
             'recordOpenBypassWarningInterstitial');
         assertEquals('itemId', recordOpenId);
@@ -412,7 +400,6 @@ suite('manager tests', function() {
       }),
     ]);
     await callbackRouterRemote.$.flushForTesting();
-    flush();
     await microtasksFinished();
     const saveDangerousButton =
         manager.shadowRoot!.querySelector('downloads-item')!.shadowRoot!
@@ -420,7 +407,6 @@ suite('manager tests', function() {
                 '#save-dangerous');
     assertTrue(!!saveDangerousButton);
     saveDangerousButton.click();
-    flush();
     const recordOpenId = await testBrowserProxy.handler.whenCalled(
         'recordOpenBypassWarningInterstitial');
     assertEquals('itemId', recordOpenId);
@@ -452,8 +438,8 @@ suite('manager tests', function() {
           }),
         ]);
         await callbackRouterRemote.$.flushForTesting();
-        flush();
         await microtasksFinished();
+
         const item = manager.shadowRoot!.querySelector('downloads-item');
         assertTrue(!!item);
         const saveDangerousButton =
@@ -462,7 +448,8 @@ suite('manager tests', function() {
                     '#save-dangerous');
         assertTrue(!!saveDangerousButton);
         saveDangerousButton.click();
-        flush();
+        await microtasksFinished();
+
         const interstitial = manager.shadowRoot!.querySelector(
             'downloads-dangerous-download-interstitial');
         assertTrue(!!interstitial);
@@ -470,7 +457,7 @@ suite('manager tests', function() {
         // Remove the file and check that the interstitial is hidden.
         callbackRouterRemote.removeItem(0);
         await callbackRouterRemote.$.flushForTesting();
-        flush();
+        await microtasksFinished();
         assertFalse(isVisible(interstitial));
       });
 
@@ -490,7 +477,6 @@ suite('manager tests', function() {
         });
         callbackRouterRemote.insertItems(0, [dangerousDownload]);
         await callbackRouterRemote.$.flushForTesting();
-        flush();
 
         const item = manager.shadowRoot!.querySelector('downloads-item');
         assertTrue(!!item);
@@ -521,7 +507,6 @@ suite('manager tests', function() {
         callbackRouterRemote.insertItems(
             0, [dangerousDownload, dangerousDownloadTwo]);
         await callbackRouterRemote.$.flushForTesting();
-        flush();
         const itemList = manager.shadowRoot!.querySelectorAll('downloads-item');
         assertEquals(itemList.length, 2);
         assertTrue(itemList[0]!.showEsbPromotion);
@@ -570,7 +555,6 @@ suite('manager tests', function() {
           dangerousDownload,
         ]);
         await callbackRouterRemote.$.flushForTesting();
-        flush();
         await testBrowserProxy.handler.whenCalled('logEsbPromotionRowViewed');
       });
   // </if>

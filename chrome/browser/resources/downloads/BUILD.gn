@@ -15,11 +15,8 @@ build_webui("build") {
     "images/no_downloads.svg",
   ]
 
-  # Files holding a Polymer element definition and have an equivalent .html file.
-  web_component_files = [
-    "item.ts",
-    "manager.ts",
-  ]
+  # Files holding a Lit element definition and have an equivalent .html file.
+  web_component_files = [ "item.ts" ]
 
   non_web_component_files = [
     "browser_proxy.ts",
@@ -30,6 +27,8 @@ build_webui("build") {
     "data.ts",
     "downloads.ts",
     "icon_loader.ts",
+    "manager.html.ts",
+    "manager.ts",
     "search_service.ts",
     "toolbar.html.ts",
     "toolbar.ts",
@@ -39,6 +38,7 @@ build_webui("build") {
     "bypass_warning_confirmation_dialog.css",
     "dangerous_download_interstitial.css",
     "item.css",
+    "manager.css",
     "toolbar.css",
   ]
 
