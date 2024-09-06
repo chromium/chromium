@@ -1434,7 +1434,6 @@ void OnListFamilyMembersResponse(
   if (!signin::ShouldPresentUserSigninUpgrade(
           self.sceneState.browserProviderInterface.mainBrowserProvider.browser
               ->GetBrowserState(),
-          GetApplicationContext()->GetLocalState(),
           version_info::GetVersion())) {
     return NO;
   }

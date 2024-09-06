@@ -44,10 +44,11 @@ class PostRestoreAppAgentTest : public PlatformTest {
   explicit PostRestoreAppAgentTest() { CreateAppAgent(); }
 
   void CreateAppAgent() {
-    app_agent_ = [[PostRestoreAppAgent alloc]
-        initWithPromosManager:CreatePromosManager()
-        authenticationService:CreateAuthService()
-              identityManager:GetIdentityManager()];
+    app_agent_ =
+        [[PostRestoreAppAgent alloc] initWithPromosManager:CreatePromosManager()
+                                     authenticationService:CreateAuthService()
+                                           identityManager:GetIdentityManager()
+                                               prefService:pref_service()];
     mockAppState_ = OCMClassMock([AppState class]);
     [app_agent_ setAppState:mockAppState_];
   }
@@ -85,7 +86,7 @@ class PostRestoreAppAgentTest : public PlatformTest {
   void SetFakePreRestoreAccountInfo() {
     AccountInfo accountInfo;
     accountInfo.email = kFakePreRestoreAccountEmail;
-    StorePreRestoreIdentity(local_state(), accountInfo,
+    StorePreRestoreIdentity(pref_service(), accountInfo,
                             /*history_sync_enabled=*/false);
   }
 
@@ -100,9 +101,7 @@ class PostRestoreAppAgentTest : public PlatformTest {
                           signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   }
 
-  PrefService* local_state() {
-    return GetApplicationContext()->GetLocalState();
-  }
+  PrefService* pref_service() { return browser_state_.get()->GetPrefs(); }
 
  protected:
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
@@ -122,13 +121,13 @@ TEST_F(PostRestoreAppAgentTest, MaybeRegisterPromo) {
       .Times(0);
 
   // Scenarios which should not register a promo.
-  ClearPreRestoreIdentity(local_state());
+  ClearPreRestoreIdentity(pref_service());
   MockAppStateChange(InitStageFinal);
 
   SetFakePreRestoreAccountInfo();
   MockAppStateChange(InitStageFinal);
 
-  ClearPreRestoreIdentity(local_state());
+  ClearPreRestoreIdentity(pref_service());
   MockAppStateChange(InitStageFinal);
 }
 
@@ -160,7 +159,7 @@ TEST_F(PostRestoreAppAgentTest, DeregisterPromoAlert) {
       .Times(1);
 
   SetFakePreRestoreAccountInfo();
-  ClearPreRestoreIdentity(local_state());
+  ClearPreRestoreIdentity(pref_service());
   MockAppStateChange(InitStageFinal);
 }
 

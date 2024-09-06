@@ -90,7 +90,6 @@ base::TimeDelta GetWaitThresholdForCapabilities() {
 }
 
 bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
-                                    PrefService* local_state,
                                     const base::Version& current_version) {
   DCHECK(browser_state);
   DCHECK(current_version.IsValid());
@@ -147,7 +146,7 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
 
   // Avoid showing the upgrade sign-in promo when the device restore sign-in
   // promo should be shown instead.
-  if (GetPreRestoreIdentity(local_state).has_value()) {
+  if (GetPreRestoreIdentity(browser_state->GetPrefs()).has_value()) {
     return false;
   }
 

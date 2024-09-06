@@ -75,6 +75,8 @@ TEST_F(BrowserPrefsTest, VerifyBrowserStatePrefsMigration) {
 // profile prefService is performed correctly.
 TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
   base::Value::List list_example = base::Value::List().Append("Example");
+  base::Value::Dict dict_example;
+  dict_example.Set("Example_key", "Example_value");
 
   // Simulate registering a value different from default in localState
   // prefService.
@@ -85,6 +87,8 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
                            "Example");
   local_state()->SetString(
       tab_resumption_prefs::kTabResumptionLastOpenedTabURLPref, "Example");
+  local_state()->SetDict(prefs::kIosPreRestoreAccountInfo,
+                         dict_example.Clone());
 
   EXPECT_EQ(
       pref_service()->GetInteger(prefs::kIosSyncSegmentsNewTabPageDisplayCount),
@@ -111,6 +115,11 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
   EXPECT_EQ(local_state()->GetString(
                 tab_resumption_prefs::kTabResumptionLastOpenedTabURLPref),
             "Example");
+
+  EXPECT_EQ(pref_service()->GetDict(prefs::kIosPreRestoreAccountInfo).size(),
+            0ul);
+  EXPECT_EQ(local_state()->GetDict(prefs::kIosPreRestoreAccountInfo),
+            dict_example);
 
   MigrateObsoleteBrowserStatePrefs(base::FilePath(), pref_service());
 
@@ -140,4 +149,9 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
   EXPECT_EQ(local_state()->GetString(
                 tab_resumption_prefs::kTabResumptionLastOpenedTabURLPref),
             std::string());
+
+  EXPECT_EQ(pref_service()->GetDict(prefs::kIosPreRestoreAccountInfo),
+            dict_example);
+  EXPECT_EQ(local_state()->GetDict(prefs::kIosPreRestoreAccountInfo).size(),
+            0ul);
 }

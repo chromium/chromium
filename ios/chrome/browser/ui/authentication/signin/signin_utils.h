@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 
 class ChromeAccountManagerService;
-class PrefService;
 
 namespace base {
 class TimeDelta;
@@ -27,7 +26,6 @@ base::TimeDelta GetWaitThresholdForCapabilities();
 
 // Returns true if this user sign-in upgrade should be shown for `browserState`.
 bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
-                                    PrefService* local_state,
                                     const base::Version& current_version);
 
 // Returns true if the web sign-in dialog can be presented. If false, user

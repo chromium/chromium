@@ -650,8 +650,8 @@ void AuthenticationService::HandleForgottenIdentity(
     bool history_sync_enabled = user_settings->GetSelectedTypes().HasAll(
         {syncer::UserSelectableType::kHistory,
          syncer::UserSelectableType::kTabs});
-    StorePreRestoreIdentity(GetApplicationContext()->GetLocalState(),
-                            extended_account_info, history_sync_enabled);
+    StorePreRestoreIdentity(pref_service_, extended_account_info,
+                            history_sync_enabled);
   }
 
   // Sign the user out.

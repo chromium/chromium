@@ -1030,6 +1030,8 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterStringPref(kSyncPasswordLengthAndHashSalt, std::string());
   registry->RegisterStringPref(kContextualSearchEnabled, std::string());
   registry->RegisterInt64Pref(kNtpShownBookmarksFolder, 3);
+
+  registry->RegisterDictionaryPref(prefs::kIosPreRestoreAccountInfo);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1253,6 +1255,10 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
   prefs->ClearPref(kSyncPasswordLengthAndHashSalt);
   prefs->ClearPref(kContextualSearchEnabled);
   prefs->ClearPref(kNtpShownBookmarksFolder);
+
+  // Added 09/2024.
+  MigrateDictionaryPrefFromLocalStatePrefsToProfilePrefs(
+      prefs::kIosPreRestoreAccountInfo, prefs);
 }
 
 void MigrateObsoleteUserDefault() {

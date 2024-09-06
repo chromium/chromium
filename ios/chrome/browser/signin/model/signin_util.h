@@ -43,19 +43,19 @@ signin::Tribool IsFirstSessionAfterDeviceRestore();
 
 // Stores a user's account info and if history sync was enabled or not, when we
 // detect that it was forgotten during a device restore.
-void StorePreRestoreIdentity(PrefService* local_state,
+void StorePreRestoreIdentity(PrefService* profile_pref,
                              AccountInfo account,
                              bool history_sync_enabled);
 
 // Clears the identity that was signed-in before the restore.
-void ClearPreRestoreIdentity(PrefService* local_state);
+void ClearPreRestoreIdentity(PrefService* profile_pref);
 
 // Returns the identity that was signed-in before the restore, but is now
 // not signed-in.
-std::optional<AccountInfo> GetPreRestoreIdentity(PrefService* local_state);
+std::optional<AccountInfo> GetPreRestoreIdentity(PrefService* profile_pref);
 
 // Returns whether history sync was enabled before the restore.
-bool GetPreRestoreHistorySyncEnabled(PrefService* local_state);
+bool GetPreRestoreHistorySyncEnabled(PrefService* profile_pref);
 
 // Returns the list of account capability service names supported in Chrome.
 // This is exposed to allow for prefetching capabilities on app startup.

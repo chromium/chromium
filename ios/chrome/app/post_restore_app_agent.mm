@@ -10,7 +10,6 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 
@@ -29,8 +28,8 @@
 // The AuthenticationManager is used to reset the reauth infobar prompt.
 @property(nonatomic, assign) AuthenticationService* authenticationService;
 
-// Local state is used to retrieve and/or clear the pre-restore identity.
-@property(nonatomic, assign) PrefService* localState;
+// Profile pref service used to retrieve and/or clear the pre-restore identity.
+@property(nonatomic, assign) PrefService* prefService;
 
 @end
 
@@ -42,10 +41,11 @@
 
 #pragma mark - Initializers
 
-- (instancetype)
-    initWithPromosManager:(PromosManager*)promosManager
-    authenticationService:(AuthenticationService*)authenticationService
-          identityManager:(signin::IdentityManager*)identityManager {
+- (instancetype)initWithPromosManager:(PromosManager*)promosManager
+                authenticationService:
+                    (AuthenticationService*)authenticationService
+                      identityManager:(signin::IdentityManager*)identityManager
+                          prefService:(PrefService*)prefService {
   DCHECK(authenticationService);
   DCHECK(identityManager);
 
@@ -54,7 +54,7 @@
     _promosManager = promosManager;
     _authenticationService = authenticationService;
     _identityManager = identityManager;
-    _localState = GetApplicationContext()->GetLocalState();
+    _prefService = prefService;
   }
   return self;
 }
@@ -74,7 +74,7 @@
 - (void)appState:(AppState*)appState
     didTransitionFromInitStage:(InitStage)previousInitStage {
   if (self.appState.initStage == InitStageFinal) {
-    self.hasAccountInfo = GetPreRestoreIdentity(_localState).has_value();
+    self.hasAccountInfo = GetPreRestoreIdentity(_prefService).has_value();
     [self maybeRegisterPromo];
     // AuthenticationService is no longer needed.
     self.authenticationService = nullptr;
@@ -98,7 +98,7 @@
     case signin::PrimaryAccountChangeEvent::Type::kSet:
       if (self.promosManager) {
         [self deregisterPromos];
-        ClearPreRestoreIdentity(_localState);
+        ClearPreRestoreIdentity(_prefService);
         self.hasAccountInfo = NO;
         [self shutdown];
       }
@@ -123,7 +123,7 @@
   } else if (_promosManager) {
     [self deregisterPromos];
   } else if (_hasAccountInfo) {
-    ClearPreRestoreIdentity(_localState);
+    ClearPreRestoreIdentity(_prefService);
   }
 }
 
