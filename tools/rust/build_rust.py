@@ -115,13 +115,10 @@ RUST_SRC_GIT_COMMIT_INFO_FILE_PATH = os.path.join(RUST_SRC_DIR,
 RUST_TOOLCHAIN_LIB_DIR = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'lib')
 RUST_TOOLCHAIN_SRC_DIST_DIR = os.path.join(RUST_TOOLCHAIN_LIB_DIR, 'rustlib',
                                            'src', 'rust')
-RUST_TOOLCHAIN_SRC_DIST_VENDOR_DIR = os.path.join(RUST_TOOLCHAIN_SRC_DIST_DIR,
-                                                  'vendor')
 RUST_CONFIG_TEMPLATE_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), 'config.toml.template')
 RUST_CARGO_CONFIG_TEMPLATE_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), 'cargo-config.toml.template')
-RUST_SRC_VENDOR_DIR = os.path.join(RUST_SRC_DIR, 'vendor')
 
 RUST_HOST_LLVM_BUILD_DIR = os.path.join(CHROMIUM_DIR, 'third_party',
                                         'rust-toolchain-intermediate',
@@ -256,8 +253,8 @@ def InstallBetaPackage(package_dir, install_dir):
     RunCommand([os.path.join(package_dir, 'install.sh')] + args)
 
 
-def CargoVendor(cargo_bin):
-    '''Runs `cargo vendor` to pull down dependencies.'''
+def VendorForStdlib(cargo_bin):
+    '''Runs `cargo vendor` to pull down standard library dependencies.'''
     os.chdir(RUST_SRC_DIR)
 
     vendor_env = os.environ
@@ -268,10 +265,8 @@ def CargoVendor(cargo_bin):
     vendor_env['RUSTC_BOOTSTRAP'] = '1'
 
     vendor_cmd = [
-        cargo_bin,
-        'vendor',
-        '--locked',
-        '--versioned-dirs',
+        cargo_bin, 'vendor', '--manifest-path', 'library/Cargo.toml',
+        '--locked', '--versioned-dirs', 'library/vendor'
     ]
     RunWithRetry(vendor_cmd, 'cargo vendor')
 
@@ -628,6 +623,24 @@ def GitApplyCherryPicks():
     # with `GitMoveSubmoduleBranch()`.
     #############################
 
+    # TODO Remove once LLVM rolls past llvmorg-20-init-3909-ge61d6066e267
+    RunCommand([
+        'git',
+        '-C',
+        RUST_SRC_DIR,
+        'revert',
+        '--no-edit',
+        '-m',
+        '1',
+        '8c7a7e346be4cdf13e77ab4acbfb5ade819a4e60',
+    ])
+
+    # TODO(b/363219692): Remove once
+    # https://github.com/rust-lang/rust/pull/129894 or a similar fix has been
+    # merged.
+    GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
+                  'f20103f9f3e35dad241dd81cd3ae9eb2dafb3f44')
+
     print('Finished applying cherry-picks.')
 
 
@@ -784,7 +797,7 @@ def main():
                 if l.strip('\n') != 'debug = 0':
                     f.write(l)
 
-        CargoVendor(cargo_bin)
+        VendorForStdlib(cargo_bin)
 
     # Gnrt needs the checkout to be up-to-date, workspace submodules to be
     # synced for cargo to work, and the cargo binary itself. All this is done,
@@ -841,9 +854,10 @@ def main():
 
     xpy.run('install', [])
 
-    # Copy additional vendored crates required for building stdlib.
-    print(f'Copying vendored dependencies to {RUST_TOOLCHAIN_OUT_DIR} ...')
-    shutil.copytree(RUST_SRC_VENDOR_DIR, RUST_TOOLCHAIN_SRC_DIST_VENDOR_DIR)
+    # The Rust stdlib deps are vendored to rust-src/library/vendor, and later
+    # the x.py install process copies all subdirs of rust-src/library to the
+    # toolchain package, so we do not need to explicitly copy the vendor dir.
+    # This is left as a note in case that behavior changes.
 
     with open(VERSION_SRC_PATH, 'w') as stamp:
         stamp.write(MakeVersionStamp(checkout_revision))

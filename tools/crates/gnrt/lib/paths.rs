@@ -112,7 +112,7 @@ pub fn normalize_unix_path_separator(path: &Path) -> String {
 
 static RUST_THIRD_PARTY_DIR: &str = "third_party/rust";
 static RUST_SRC_LIBRARY_SUBDIR: &str = "library";
-static RUST_SRC_VENDOR_SUBDIR: &str = "vendor";
+static RUST_SRC_VENDOR_SUBDIR: &str = "library/vendor";
 static RUST_SRC_INSTALLED_DIR: &str = "third_party/rust-toolchain/lib/rustlib/src/rust";
 
 static STD_CONFIG_FILE: &str = "build/rust/std/gnrt_config.toml";

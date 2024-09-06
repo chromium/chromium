@@ -177,6 +177,9 @@ rust_static_library("crabbyavif") {
     "//third_party/libyuv",
     "//third_party/rust/libc/v0_2:lib",
   ]
+
+  # TODO(crbug.com/365052670): Clean up.
+  rustflags = [ "-Aelided-named-lifetimes" ]
 }
 
 source_set("header_files") {

@@ -44,9 +44,13 @@ extra_kv = { include_coverage = true }
 # The build script conditionally generates a file; it's simplest to just paste
 # raw GN into the output. (crbug.com/1470653)
 extra_kv = { include_coverage = false, raw_gn = 'if (current_cpu == "arm64") { build_script_outputs = ["outlined_atomics.rs"] }' }
-
-# compiler_builtins depends on libm on windows crbug.com/1472681
-extra_src_roots = ['../libm']
+extra_src_roots = [
+  # compiler_builtins depends on libm on windows crbug.com/1472681
+  '../libm',
+]
+extra_build_script_src_roots = [
+  '../configure.rs',
+]
 
 [crate.core]
 # Dependencies of profiler_builtins must have instrumentation disabled
@@ -105,3 +109,7 @@ exclude_deps_in_gn = ['proc_macro']
 #
 # Suppress link directives since we specify the deps in GN configs.
 extra_kv = { skip_build_rs = true, no_link_directives = true }
+
+[crate.windows-targets]
+# This target is #[no_core] which is incompatible with profiling.
+extra_kv = { include_coverage = false }
