@@ -58,17 +58,6 @@ h2 {
   --cr-icon-button-size: 48px;
 }
 
-.color-chip {
-  -webkit-appearance: none;
-  background: var(--item-color, magenta);
-  cursor: pointer;
-  border: 1px solid rgba(32, 33, 36, 0.5);
-  border-radius: 12px;
-  margin: 0;
-  height: 24px;
-  width: 24px;
-}
-
 .color-item {
   align-items: center;
   cursor: pointer;
@@ -78,8 +67,18 @@ h2 {
   width: 48px;
 }
 
-.color-item input[checked] {
-  border-radius: 18px;
+.color-chip {
+  -webkit-appearance: none;
+  background: var(--item-color, magenta);
+  border: 1px solid rgba(32, 33, 36, 0.5);
+  border-radius: 50%;
+  cursor: pointer;
+  margin: 0;
+  height: 24px;
+  width: 24px;
+}
+
+.color-chip[checked] {
   height: 36px;
   width: 36px;
 }
