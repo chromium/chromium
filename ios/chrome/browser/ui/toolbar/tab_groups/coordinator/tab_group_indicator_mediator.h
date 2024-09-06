@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_mutator.h"
 
 @protocol TabGroupIndicatorConsumer;
@@ -20,8 +21,9 @@ class WebStateList;
 @property(nonatomic, weak) id<TabGroupIndicatorCoordinatorDelegate> delegate;
 
 // Creates an instance of the mediator.
-- (instancetype)initWithConsumer:(id<TabGroupIndicatorConsumer>)consumer
-                    webStateList:(WebStateList*)webStateList;
+- (instancetype)initWithProfile:(ProfileIOS*)profile
+                       consumer:(id<TabGroupIndicatorConsumer>)consumer
+                   webStateList:(WebStateList*)webStateList;
 
 - (instancetype)init NS_UNAVAILABLE;
 

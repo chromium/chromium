@@ -30,8 +30,9 @@
 - (void)start {
   _view = [[TabGroupIndicatorView alloc] init];
   _mediator = [[TabGroupIndicatorMediator alloc]
-      initWithConsumer:_view
-          webStateList:self.browser->GetWebStateList()];
+      initWithProfile:self.browser->GetProfile()
+             consumer:_view
+         webStateList:self.browser->GetWebStateList()];
   _mediator.delegate = self;
   _view.mutator = _mediator;
 }

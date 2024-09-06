@@ -12,12 +12,18 @@ source_set("coordinator") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:forward",
+    "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/tab_switcher:tab_group_confirmation",
     "//ios/chrome/browser/ui/toolbar/tab_groups/ui",
+    "//ios/web/public",
+    "//ios/web/public/navigation",
   ]
   frameworks = [ "UIKit.framework" ]
 }

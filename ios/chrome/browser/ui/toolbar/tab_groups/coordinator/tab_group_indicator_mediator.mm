@@ -5,6 +5,9 @@
 #import "ios/chrome/browser/ui/toolbar/tab_groups/coordinator/tab_group_indicator_mediator.h"
 
 #import "base/memory/weak_ptr.h"
+#import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
@@ -12,23 +15,29 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_action_type.h"
 #import "ios/chrome/browser/ui/toolbar/tab_groups/coordinator/tab_group_indicator_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_consumer.h"
+#import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/web_state.h"
 
 @interface TabGroupIndicatorMediator () <WebStateListObserving>
 @end
 
 @implementation TabGroupIndicatorMediator {
+  ProfileIOS* _profile;
   __weak id<TabGroupIndicatorConsumer> _consumer;
   base::WeakPtr<WebStateList> _webStateList;
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
 }
 
-- (instancetype)initWithConsumer:(id<TabGroupIndicatorConsumer>)consumer
-                    webStateList:(WebStateList*)webStateList {
+- (instancetype)initWithProfile:(ProfileIOS*)profile
+                       consumer:(id<TabGroupIndicatorConsumer>)consumer
+                   webStateList:(WebStateList*)webStateList {
   self = [super init];
   if (self) {
+    CHECK(profile);
     CHECK(consumer);
     CHECK(webStateList);
     CHECK(IsTabGroupIndicatorEnabled());
+    _profile = profile;
     _consumer = consumer;
     _webStateList = webStateList->AsWeakPtr();
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
@@ -125,7 +134,24 @@
 // `insertionParams`.
 - (void)insertAndActivateNewWebStateWithInsertionParams:
     (WebStateList::InsertionParams)insertionParams {
-  // TODO(crbug.com/361499394): Implement this.
+  CHECK(_webStateList);
+  CHECK(_profile);
+
+  if (!IsAddNewTabAllowedByPolicy(_profile->GetPrefs(),
+                                  _profile->IsOffTheRecord())) {
+    return;
+  }
+
+  web::WebState::CreateParams params(_profile);
+  std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
+
+  GURL url(kChromeUINewTabURL);
+  web::NavigationManager::WebLoadParams loadParams(url);
+  loadParams.transition_type = ui::PAGE_TRANSITION_TYPED;
+  webState->GetNavigationManager()->LoadURLWithParams(loadParams);
+
+  _webStateList->InsertWebState(std::move(webState),
+                                insertionParams.Activate());
 }
 
 @end
