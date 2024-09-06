@@ -20,6 +20,9 @@
 // Tracks if the view is available.
 @property(nonatomic, assign) BOOL available;
 
+// Whether the view is displayed in Incognito mode.
+@property(nonatomic, assign) BOOL incognito;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_TAB_GROUPS_UI_TAB_GROUP_INDICATOR_VIEW_H_

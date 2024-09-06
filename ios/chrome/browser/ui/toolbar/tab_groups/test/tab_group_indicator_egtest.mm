@@ -67,6 +67,26 @@ void CreateDefaultFirstGroupFromTabCellAtIndex(int tab_cell_index) {
       performAction:grey_tap()];
 }
 
+// Creates a default tab group and open the tab group indicator menu.
+void CreateDefaultTabGroupAndOpenMenu(
+    net::test_server::EmbeddedTestServer* testServer) {
+  // Create a tab cell.
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(testServer, kTab1Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Create a group.
+  CreateDefaultFirstGroupFromTabCellAtIndex(0);
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      performAction:grey_tap()];
+
+  // Open the tab group indicator menu .
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupIndicatorViewMatcherWithGroupTitle(
+                                   l10n_util::GetPluralNSStringF(
+                                       IDS_IOS_TAB_GROUP_TABS_NUMBER, 1))]
+      performAction:grey_tap()];
+}
+
 }  // namespace
 
 // Tests for the tab group indicator.
@@ -80,8 +100,15 @@ void CreateDefaultFirstGroupFromTabCellAtIndex(int tab_cell_index) {
   config.features_enabled.push_back(kTabGroupsInGrid);
   config.features_enabled.push_back(kTabGroupsIPad);
   config.features_enabled.push_back(kModernTabStrip);
-  config.features_enabled.push_back(kTabGroupSync);
   config.features_enabled.push_back(kTabGroupIndicator);
+  if ([self isRunningTest:@selector
+            (testTabGroupIndicatorMenuActionsSyncDisabled)] ||
+      [self isRunningTest:@selector
+            (testTabGroupIndicatorMenuActionsDeleteGroupSyncDisabled)]) {
+    config.features_disabled.push_back(kTabGroupSync);
+  } else {
+    config.features_enabled.push_back(kTabGroupSync);
+  }
   return config;
 }
 
@@ -161,27 +188,12 @@ void CreateDefaultFirstGroupFromTabCellAtIndex(int tab_cell_index) {
 
 // Tests that opening a new tab in the group from the tab group indicator menu
 // works.
-- (void)testTabGroupIndicatorMenuOpenNewTab {
+- (void)testTabGroupIndicatorMenuActionsOpenNewTab {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"On iPad, the tab indicator is not displauyed if "
                            @"the tab strip is visible.");
   }
-
-  // Create a tab cell.
-  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
-  [ChromeEarlGreyUI openTabGrid];
-
-  // Create a group.
-  CreateDefaultFirstGroupFromTabCellAtIndex(0);
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
-      performAction:grey_tap()];
-
-  // Open the tab group indicator menu .
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupIndicatorViewMatcherWithGroupTitle(
-                                   l10n_util::GetPluralNSStringF(
-                                       IDS_IOS_TAB_GROUP_TABS_NUMBER, 1))]
-      performAction:grey_tap()];
+  CreateDefaultTabGroupAndOpenMenu(self.testServer);
 
   // Tap on the "New tab in group" button.
   [[EarlGrey
@@ -195,6 +207,98 @@ void CreateDefaultFirstGroupFromTabCellAtIndex(int tab_cell_index) {
   NSString* newTabTitle = [ChromeEarlGrey currentTabTitle];
   GREYAssertNotEqual(kTab1Title, newTabTitle,
                      @"New current tab should have a different title");
+}
+
+// Tests that menu actions are correct.
+- (void)testTabGroupIndicatorMenuActions {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"On iPad, the tab indicator is not displauyed if "
+                           @"the tab strip is visible.");
+  }
+  CreateDefaultTabGroupAndOpenMenu(self.testServer);
+
+  // Check that displayed menu actions are correct.
+  [[EarlGrey
+      selectElementWithMatcher:MenuButtonMatcher(
+                                   IDS_IOS_CONTENT_CONTEXT_NEWTABINGROUP)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:MenuButtonMatcher(
+                                          IDS_IOS_CONTENT_CONTEXT_UNGROUP)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:MenuButtonMatcher(
+                                          IDS_IOS_CONTENT_CONTEXT_RENAMEGROUP)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:MenuButtonMatcher(
+                                          IDS_IOS_CONTENT_CONTEXT_DELETEGROUP)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:MenuButtonMatcher(
+                                          IDS_IOS_CONTENT_CONTEXT_CLOSEGROUP)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that menu actions are correct when kTabGroupSync is disabled.
+- (void)testTabGroupIndicatorMenuActionsSyncDisabled {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"On iPad, the tab indicator is not displauyed if "
+                           @"the tab strip is visible.");
+  }
+  CreateDefaultTabGroupAndOpenMenu(self.testServer);
+
+  // Check that displayed menu actions are correct.
+  [[EarlGrey
+      selectElementWithMatcher:MenuButtonMatcher(
+                                   IDS_IOS_CONTENT_CONTEXT_NEWTABINGROUP)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:MenuButtonMatcher(
+                                          IDS_IOS_CONTENT_CONTEXT_UNGROUP)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:MenuButtonMatcher(
+                                          IDS_IOS_CONTENT_CONTEXT_RENAMEGROUP)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:MenuButtonMatcher(
+                                          IDS_IOS_CONTENT_CONTEXT_DELETEGROUP)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Not displayed when kTabGroupSync is disabled.
+  [[EarlGrey selectElementWithMatcher:MenuButtonMatcher(
+                                          IDS_IOS_CONTENT_CONTEXT_CLOSEGROUP)]
+      assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that closing a tab group from the tab group indicator menu works.
+- (void)testTabGroupIndicatorMenuActionsCloseGroup {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"On iPad, the tab indicator is not displauyed if "
+                           @"the tab strip is visible.");
+  }
+  CreateDefaultTabGroupAndOpenMenu(self.testServer);
+
+  // Tap on the "Close Group" button.
+  [[EarlGrey selectElementWithMatcher:MenuButtonMatcher(
+                                          IDS_IOS_CONTENT_CONTEXT_CLOSEGROUP)]
+      performAction:grey_tap()];
+
+  // Check that there are now 0 tab.
+  GREYAssertEqual(0, [ChromeEarlGrey mainTabCount],
+                  @"Expected 0 tab to be present.");
+}
+
+// Tests that deleting a tab group from the tab group indicator menu works when
+// kTabGroupSync is disabled.
+- (void)testTabGroupIndicatorMenuActionsDeleteGroupSyncDisabled {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"On iPad, the tab indicator is not displauyed if "
+                           @"the tab strip is visible.");
+  }
+  CreateDefaultTabGroupAndOpenMenu(self.testServer);
+
+  // Tap on the "Delete Group" button.
+  [[EarlGrey selectElementWithMatcher:MenuButtonMatcher(
+                                          IDS_IOS_CONTENT_CONTEXT_DELETEGROUP)]
+      performAction:grey_tap()];
+
+  // Check that there are now 0 tab.
+  GREYAssertEqual(0, [ChromeEarlGrey mainTabCount],
+                  @"Expected 0 tab to be present.");
 }
 
 @end

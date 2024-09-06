@@ -24,6 +24,9 @@ enum class TabGroupActionType;
 - (void)showTabGroupIndicatorConfirmationForAction:
     (TabGroupActionType)actionType;
 
+// Displays a snackbar after closing a tab group locally.
+- (void)showTabGroupIndicatorSnackbarAfterClosingGroup;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_TAB_GROUPS_COORDINATOR_TAB_GROUP_INDICATOR_COORDINATOR_DELEGATE_H_

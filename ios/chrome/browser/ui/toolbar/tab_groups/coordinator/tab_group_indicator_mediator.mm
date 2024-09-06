@@ -5,7 +5,9 @@
 #import "ios/chrome/browser/ui/toolbar/tab_groups/coordinator/tab_group_indicator_mediator.h"
 
 #import "base/memory/weak_ptr.h"
+#import "components/saved_tab_groups/tab_group_sync_service.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
@@ -23,12 +25,15 @@
 
 @implementation TabGroupIndicatorMediator {
   ProfileIOS* _profile;
+  raw_ptr<tab_groups::TabGroupSyncService> _tabGroupSyncService;
   __weak id<TabGroupIndicatorConsumer> _consumer;
   base::WeakPtr<WebStateList> _webStateList;
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
 }
 
 - (instancetype)initWithProfile:(ProfileIOS*)profile
+            tabGroupSyncService:
+                (tab_groups::TabGroupSyncService*)tabGroupSyncService
                        consumer:(id<TabGroupIndicatorConsumer>)consumer
                    webStateList:(WebStateList*)webStateList {
   self = [super init];
@@ -38,6 +43,7 @@
     CHECK(webStateList);
     CHECK(IsTabGroupIndicatorEnabled());
     _profile = profile;
+    _tabGroupSyncService = tabGroupSyncService;
     _consumer = consumer;
     _webStateList = webStateList->AsWeakPtr();
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
@@ -116,11 +122,39 @@
   if (!tabGroup) {
     return;
   }
-  [_delegate showTabGroupIndicatorConfirmationForAction:TabGroupActionType::
-                                                            kDeleteTabGroup];
+  [self closeTabGroup:tabGroup andDeleteGroup:NO];
+}
+
+- (void)deleteGroup {
+  const TabGroup* tabGroup = [self currentTabGroup];
+  if (!tabGroup) {
+    return;
+  }
+  if (IsTabGroupSyncEnabled()) {
+    [_delegate showTabGroupIndicatorConfirmationForAction:TabGroupActionType::
+                                                              kDeleteTabGroup];
+    return;
+  }
+  [self closeTabGroup:tabGroup andDeleteGroup:YES];
 }
 
 #pragma mark - Private
+
+// Closes all tabs in `tabGroup`. If `deleteGroup` is false, the group is closed
+// locally.
+- (void)closeTabGroup:(const TabGroup*)tabGroup
+       andDeleteGroup:(BOOL)deleteGroup {
+  if (IsTabGroupSyncEnabled() && !deleteGroup) {
+    [_delegate showTabGroupIndicatorSnackbarAfterClosingGroup];
+    tab_groups::utils::CloseTabGroupLocally(tabGroup, _webStateList.get(),
+                                            _tabGroupSyncService);
+  } else {
+    // Using `CloseAllWebStatesInGroup` will result in calling the web state
+    // list observers which will take care of updating the consumer.
+    CloseAllWebStatesInGroup(*_webStateList, tabGroup,
+                             WebStateList::CLOSE_USER_ACTION);
+  }
+}
 
 // Returns the current tab group.
 - (const TabGroup*)currentTabGroup {

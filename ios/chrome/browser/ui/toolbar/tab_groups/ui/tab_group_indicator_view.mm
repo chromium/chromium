@@ -110,7 +110,11 @@
   UIButton* button = [[UIButton alloc] init];
   button.translatesAutoresizingMaskIntoConstraints = NO;
   button.showsMenuAsPrimaryAction = YES;
+  return button;
+}
 
+// Sets the menu of `menuButton`.
+- (void)setMenuButton {
   __weak __typeof(self) weakSelf = self;
   ActionFactory* actionFactory = [[ActionFactory alloc]
       initWithScenario:kMenuScenarioHistogramTabGroupIndicatorEntry];
@@ -128,14 +132,18 @@
     [menuElements addObject:[actionFactory actionToCloseTabGroupWithBlock:^{
                     [weakSelf.mutator closeGroup];
                   }]];
+    if (!_incognito) {
+      [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
+                      [weakSelf.mutator deleteGroup];
+                    }]];
+    }
   } else {
-    [menuElements addObject:[actionFactory actionToDeleteWithBlock:^{
-                    [weakSelf.mutator closeGroup];
+    [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
+                    [weakSelf.mutator deleteGroup];
                   }]];
   }
 
-  button.menu = [UIMenu menuWithChildren:menuElements];
-  return button;
+  _menuButton.menu = [UIMenu menuWithChildren:menuElements];
 }
 
 // Sets the constraints of the view.
@@ -170,6 +178,11 @@
 - (void)setAvailable:(BOOL)available {
   _available = available;
   [self updateVisibility];
+}
+
+- (void)setIncognito:(BOOL)incognito {
+  _incognito = incognito;
+  [self setMenuButton];
 }
 
 - (void)setGroupTitle:(NSString*)title {

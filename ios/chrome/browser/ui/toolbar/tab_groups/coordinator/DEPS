@@ -1,3 +1,4 @@
 include_rules = [
   "+ios/chrome/browser/ui/tab_switcher/tab_group_action_type.h",
+  "+components/saved_tab_groups/tab_group_sync_service.h",
 ]

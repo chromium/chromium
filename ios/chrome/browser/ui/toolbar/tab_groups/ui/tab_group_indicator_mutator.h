@@ -20,6 +20,9 @@
 // Closes the current group.
 - (void)closeGroup;
 
+// Deletes the current group.
+- (void)deleteGroup;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_TAB_GROUPS_UI_TAB_GROUP_INDICATOR_MUTATOR_H_
