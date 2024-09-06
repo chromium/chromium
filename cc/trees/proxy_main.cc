@@ -15,6 +15,7 @@
 #include "base/notreached.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/traced_value.h"
 #include "base/types/optional_ref.h"
 #include "cc/base/completion_event.h"
@@ -33,6 +34,7 @@
 #include "cc/trees/render_frame_metadata_observer.h"
 #include "cc/trees/scoped_abort_remaining_swap_promises.h"
 #include "cc/trees/swap_promise.h"
+#include "cc/trees/trace_utils.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace cc {
@@ -129,19 +131,17 @@ void ProxyMain::BeginMainFrame(
   DCHECK(IsMainThread());
   DCHECK_EQ(NO_PIPELINE_STAGE, current_pipeline_stage_);
 
-  {
-    TRACE_EVENT_WITH_FLOW0(
-        "viz,benchmark", "MainFrame.BeginMainFrameOnMain",
-        TRACE_ID_LOCAL(begin_main_frame_state->trace_id),
-        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
-  }
   base::TimeTicks begin_main_frame_start_time = base::TimeTicks::Now();
 
   const viz::BeginFrameArgs& frame_args =
       begin_main_frame_state->begin_frame_args;
-  benchmark_instrumentation::ScopedBeginFrameTask begin_frame_task(
-      benchmark_instrumentation::kDoBeginFrame,
-      frame_args.frame_id.sequence_number);
+  TRACE_EVENT("cc,benchmark", "ProxyMain::BeginMainFrame",
+              [&](perfetto::EventContext ctx) {
+                EmitMainFramePipelineStep(
+                    ctx, begin_main_frame_state->trace_id,
+                    perfetto::protos::pbzero::MainFramePipeline::Step::
+                        BEGIN_MAIN_FRAME);
+              });
 
   // This needs to run unconditionally, so do it before any early-returns.
   if (layer_tree_host_->scheduling_client())
@@ -160,12 +160,16 @@ void ProxyMain::BeginMainFrame(
   // max_requested_pipeline_stage_. Otherwise a requested commit could get lost
   // after tab becomes visible again.
   if (!layer_tree_host_->IsVisible()) {
-    TRACE_EVENT_INSTANT0("cc", "EarlyOut_NotVisible", TRACE_EVENT_SCOPE_THREAD);
-
-    TRACE_EVENT_WITH_FLOW1(
-        "viz,benchmark", "MainFrame.BeginMainFrameAbortedOnMain",
-        TRACE_ID_LOCAL(begin_main_frame_state->trace_id),
-        TRACE_EVENT_FLAG_FLOW_IN, "reason", "kAbortedNotVisible");
+    TRACE_EVENT("cc,benchmark", "MainFrameAborted",
+                [&](perfetto::EventContext ctx) {
+                  auto* pipeline = EmitMainFramePipelineStep(
+                      ctx, begin_main_frame_state->trace_id,
+                      perfetto::protos::pbzero::MainFramePipeline::Step::
+                          ABORTED_ON_MAIN);
+                  pipeline->set_aborted_on_main_reason(
+                      perfetto::protos::pbzero::MainFramePipeline::
+                          AbortedOnMainReason::NOT_VISIBLE);
+                });
     // Since the commit is deferred due to the page becoming invisible, the
     // metrics are not meaningful anymore (as the page might become visible in
     // any arbitrary time in the future and cause an arbitrarily large latency).
@@ -190,12 +194,16 @@ void ProxyMain::BeginMainFrame(
 
   // If main frame updates and commits are deferred, skip the entire pipeline.
   if (defer_main_frame_update_ || pause_rendering_) {
-    TRACE_EVENT_INSTANT0("cc", "EarlyOut_DeferCommit",
-                         TRACE_EVENT_SCOPE_THREAD);
-    TRACE_EVENT_WITH_FLOW1(
-        "viz,benchmark", "MainFrame.BeginMainFrameAbortedOnMain",
-        TRACE_ID_LOCAL(begin_main_frame_state->trace_id),
-        TRACE_EVENT_FLAG_FLOW_IN, "reason", "kAbortedDeferredMainFrameUpdate");
+    TRACE_EVENT("cc,benchmark", "MainFrameAborted",
+                [&](perfetto::EventContext ctx) {
+                  auto* pipeline = EmitMainFramePipelineStep(
+                      ctx, begin_main_frame_state->trace_id,
+                      perfetto::protos::pbzero::MainFramePipeline::Step::
+                          ABORTED_ON_MAIN);
+                  pipeline->set_aborted_on_main_reason(
+                      perfetto::protos::pbzero::MainFramePipeline::
+                          AbortedOnMainReason::DEFERRED_UPDATE);
+                });
     // In this case, since the commit is deferred to a later time, gathered
     // events metrics are not discarded so that they can be reported if the
     // commit happens in the future.
@@ -296,12 +304,16 @@ void ProxyMain::BeginMainFrame(
   if (skip_commit) {
     current_pipeline_stage_ = NO_PIPELINE_STAGE;
     layer_tree_host_->DidBeginMainFrame();
-    TRACE_EVENT_INSTANT0("cc", "EarlyOut_DeferCommit_InsideBeginMainFrame",
-                         TRACE_EVENT_SCOPE_THREAD);
-    TRACE_EVENT_WITH_FLOW1(
-        "viz,benchmark", "MainFrame.BeginMainFrameAbortedOnMain",
-        TRACE_ID_LOCAL(begin_main_frame_state->trace_id),
-        TRACE_EVENT_FLAG_FLOW_IN, "reason", "kAbortedDeferredCommit");
+    TRACE_EVENT("cc,benchmark", "MainFrameAborted",
+                [&](perfetto::EventContext ctx) {
+                  auto* pipeline = EmitMainFramePipelineStep(
+                      ctx, begin_main_frame_state->trace_id,
+                      perfetto::protos::pbzero::MainFramePipeline::Step::
+                          ABORTED_ON_MAIN);
+                  pipeline->set_aborted_on_main_reason(
+                      perfetto::protos::pbzero::MainFramePipeline::
+                          AbortedOnMainReason::DEFERRED_COMMIT_ABORTED);
+                });
     layer_tree_host_->RecordEndOfFrameMetrics(
         begin_main_frame_start_time,
         begin_main_frame_state->active_sequence_trackers);
@@ -373,10 +385,7 @@ void ProxyMain::BeginMainFrame(
 
   DCHECK_EQ(has_updates, (bool)commit_state.get());
   if (commit_state.get()) {
-    commit_state->trace_id =
-        (0x1llu << 52) |  // Signature bit chosen at random to avoid collisions
-        (frame_args.frame_id.source_id << 32) |
-        (commit_state->source_frame_number & 0xffffffff);
+    commit_state->trace_id = begin_main_frame_state->trace_id;
   }
   current_pipeline_stage_ = COMMIT_PIPELINE_STAGE;
 
@@ -386,10 +395,16 @@ void ProxyMain::BeginMainFrame(
     layer_tree_host_->DidBeginMainFrame();
     TRACE_EVENT_INSTANT0("cc,raf_investigation", "EarlyOut_NoUpdates",
                          TRACE_EVENT_SCOPE_THREAD);
-    TRACE_EVENT_WITH_FLOW1(
-        "viz,benchmark", "MainFrame.BeginMainFrameAbortedOnMain",
-        TRACE_ID_LOCAL(begin_main_frame_state->trace_id),
-        TRACE_EVENT_FLAG_FLOW_IN, "reason", "kFinishedNoUpdates");
+    TRACE_EVENT("cc,benchmark", "MainFrameAborted",
+                [&](perfetto::EventContext ctx) {
+                  auto* pipeline = EmitMainFramePipelineStep(
+                      ctx, begin_main_frame_state->trace_id,
+                      perfetto::protos::pbzero::MainFramePipeline::Step::
+                          ABORTED_ON_MAIN);
+                  pipeline->set_aborted_on_main_reason(
+                      perfetto::protos::pbzero::MainFramePipeline::
+                          AbortedOnMainReason::NO_UPDATE);
+                });
     std::vector<std::unique_ptr<SwapPromise>> swap_promises =
         layer_tree_host_->GetSwapPromiseManager()->TakeSwapPromises();
 
@@ -437,16 +452,13 @@ void ProxyMain::BeginMainFrame(
   int source_frame_number = commit_state->source_frame_number;
   CommitTimestamps commit_timestamps;
   {
-    TRACE_EVENT_WITH_FLOW0("viz,benchmark",
-                           "MainFrame.NotifyReadyToCommitOnMain",
-                           TRACE_ID_LOCAL(begin_main_frame_state->trace_id),
-                           TRACE_EVENT_FLAG_FLOW_IN);
-    TRACE_EVENT_WITH_FLOW0(
-        "viz,benchmark", "MainFrame.NotifyReadyToCommitOnMain",
-        TRACE_ID_LOCAL(commit_state->trace_id), TRACE_EVENT_FLAG_FLOW_OUT);
-  }
-  {
-    TRACE_EVENT0("cc,raf_investigation", "ProxyMain::BeginMainFrame::commit");
+    TRACE_EVENT("cc,benchmark", "ProxyMain::BeginMainFrame::commit",
+                [&](perfetto::EventContext ctx) {
+                  EmitMainFramePipelineStep(
+                      ctx, begin_main_frame_state->trace_id,
+                      perfetto::protos::pbzero::MainFramePipeline::Step::
+                          COMMIT_ON_MAIN);
+                });
 
     std::optional<DebugScopedSetMainThreadBlocked> main_thread_blocked;
     if (blocking)

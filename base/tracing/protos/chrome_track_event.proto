@@ -1932,9 +1932,56 @@ message AnimationFrameScriptTimingInfo {
   optional ThirdPartyTechnology third_party_technology = 10;
 }
 
+message BeginFrameId {
+  optional uint64 source_id = 1;
+  optional uint64 sequence_number = 2;
+}
+
+message MainFramePipeline {
+  enum Step {
+    UNKNOWN = 0;
+    SEND_BEGIN_MAIN_FRAME = 1;
+    BEGIN_MAIN_FRAME = 2;
+    ABORTED_ON_MAIN = 3;
+    COMMIT_ON_MAIN = 4;
+    READY_TO_COMMIT_ON_IMPL = 5;
+    COMMIT_ON_IMPL = 6;
+    COMMIT_COMPLETE = 7;
+    READY_TO_ACTIVATE = 8;
+    ACTIVATE = 9;
+    DRAW = 10;
+    UPDATE_DISPLAY_TREE = 11;
+  }
+
+  // Id connecting the steps of the pipeline together.
+  optional uint64 main_frame_id = 1;
+  optional Step step = 2;
+
+  // Id for the BeginFrame, which triggered this main frame.
+  // Set for the SEND_BEGIN_MAIN_FRAME step.
+  optional BeginFrameId begin_frame_id = 3;
+
+  // If the step is ABORTED_ON_MAIN, this field will contain the reason.
+  enum AbortedOnMainReason {
+    ABORTED_MAIN_REASON_UNKNOWN = 0;
+    NOT_VISIBLE = 1;
+    DEFERRED_UPDATE = 2;
+    DEFERRED_COMMIT_ABORTED = 3;
+    NO_UPDATE = 4;
+  }
+  optional AbortedOnMainReason aborted_on_main_reason = 4;
+
+  // Id of the last begin frame id issued by renderer compositor by the time
+  // this main frame is drawn for the first time.
+  // The difference between `begin_frame_id` and
+  // `last_begin_frame_id_during_first_draw` can be used to reason about the
+  // main frame latency. Set for the first DRAW step.
+  optional BeginFrameId last_begin_frame_id_during_first_draw = 5;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1067
+  // Next ID: 1068
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -2076,5 +2123,7 @@ message ChromeTrackEvent {
         1065;
 
     optional ScrollMetrics scroll_metrics = 1066;
+
+    optional MainFramePipeline main_frame_pipeline = 1067;
   }
 }

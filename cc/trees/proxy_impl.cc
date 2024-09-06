@@ -36,6 +36,7 @@
 #include "cc/trees/proxy_main.h"
 #include "cc/trees/render_frame_metadata_observer.h"
 #include "cc/trees/task_runner_provider.h"
+#include "cc/trees/trace_utils.h"
 #include "components/viz/common/frame_sinks/delay_based_time_source.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
@@ -349,12 +350,14 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
     bool scroll_and_viewport_changes_synced,
     CommitTimestamps* commit_timestamps,
     bool commit_timeout) {
-  {
-    TRACE_EVENT_WITH_FLOW0(
-        "viz,benchmark", "MainFrame.NotifyReadyToCommitOnImpl",
-        TRACE_ID_LOCAL(commit_state->trace_id),
-        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
-  }
+  TRACE_EVENT("cc,benchmark", "ProxyImpl::ReadyToCommit",
+              [&](perfetto::EventContext ctx) {
+                EmitMainFramePipelineStep(
+                    ctx, commit_state->trace_id,
+                    perfetto::protos::pbzero::MainFramePipeline::Step::
+                        READY_TO_COMMIT_ON_IMPL);
+              });
+
   DCHECK(!data_for_commit_.get());
   DCHECK(IsImplThread());
   DCHECK(base::FeatureList::IsEnabled(features::kNonBlockingCommit) ||
@@ -445,14 +448,14 @@ void ProxyImpl::OnCanDrawStateChanged(bool can_draw) {
 }
 
 void ProxyImpl::NotifyReadyToActivate() {
-  if (host_impl_->sync_tree() &&
-      !scheduler_->pending_tree_is_ready_for_activation()) {
-    TRACE_EVENT_WITH_FLOW0(
-        "viz,benchmark", "MainFrame.NotifyReadyToActivate",
-        TRACE_ID_LOCAL(host_impl_->sync_tree()->trace_id()),
-        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
-  }
   DCHECK(IsImplThread());
+  TRACE_EVENT_INSTANT("cc,benchmark", "ProxyImpl::ReadyToActivate",
+                      [&](perfetto::EventContext ctx) {
+                        EmitMainFramePipelineStep(
+                            ctx, host_impl_->active_tree()->trace_id(),
+                            perfetto::protos::pbzero::MainFramePipeline::Step::
+                                READY_TO_ACTIVATE);
+                      });
   scheduler_->NotifyReadyToActivate();
 }
 
@@ -734,16 +737,19 @@ void ProxyImpl::ScheduledActionSendBeginMainFrame(
       host_impl_->FrameSequenceTrackerActiveTypes();
   begin_main_frame_state->evicted_ui_resources =
       host_impl_->EvictedUIResourcesExist();
-  begin_main_frame_state->trace_id =
-      (0x1llu << 51) |  // Signature bit chosen at random to avoid collisions
-      (args.frame_id.source_id << 32) |
-      (args.frame_id.sequence_number & 0xffffffff);
   host_impl_->WillSendBeginMainFrame();
   {
-    TRACE_EVENT_WITH_FLOW0("viz,benchmark",
-                           "MainFrame.SendBeginMainFrameOnImpl",
-                           TRACE_ID_LOCAL(begin_main_frame_state->trace_id),
-                           TRACE_EVENT_FLAG_FLOW_OUT);
+    TRACE_EVENT_INSTANT(
+        "cc,benchmark", "SendBeginMainFrame", [&](perfetto::EventContext ctx) {
+          auto* pipeline = EmitMainFramePipelineStep(
+              ctx, begin_main_frame_state->trace_id,
+              perfetto::protos::pbzero::MainFramePipeline::Step::
+                  SEND_BEGIN_MAIN_FRAME);
+
+          auto* begin_frame_id = pipeline->set_begin_frame_id();
+          begin_frame_id->set_sequence_number(args.frame_id.sequence_number);
+          begin_frame_id->set_source_id(args.frame_id.source_id);
+        });
   }
   MainThreadTaskRunner()->PostTask(
       FROM_HERE,
@@ -775,9 +781,13 @@ void ProxyImpl::ScheduledActionUpdateDisplayTree() {
   DCHECK(IsImplThread());
   DCHECK(host_impl_.get());
 
-  TRACE_EVENT_WITH_FLOW0("viz,benchmark", "MainFrame.UpdateDisplayTree",
-                         TRACE_ID_LOCAL(host_impl_->active_tree()->trace_id()),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("cc,benchmark", "MainFrame.UpdateDisplayTree",
+              [&](perfetto::EventContext ctx) {
+                EmitMainFramePipelineStep(
+                    ctx, host_impl_->active_tree()->trace_id(),
+                    perfetto::protos::pbzero::MainFramePipeline::Step::
+                        UPDATE_DISPLAY_TREE);
+              });
 
   // TODO(rockot): Maybe this flag should be renamed to reflect that we hold it
   // during display tree updates too.
@@ -807,12 +817,12 @@ void ProxyImpl::ScheduledActionUpdateDisplayTree() {
 }
 
 void ProxyImpl::ScheduledActionCommit() {
-  {
-    TRACE_EVENT_WITH_FLOW0(
-        "viz,benchmark", "MainFrame.BeginCommit",
-        TRACE_ID_LOCAL(data_for_commit_->commit_state->trace_id),
-        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
-  }
+  TRACE_EVENT(
+      "cc,benchmark", "ProxyImpl::Commit", [&](perfetto::EventContext ctx) {
+        EmitMainFramePipelineStep(
+            ctx, data_for_commit_->commit_state->trace_id,
+            perfetto::protos::pbzero::MainFramePipeline::Step::COMMIT_ON_IMPL);
+      });
   DCHECK(IsImplThread());
   DCHECK(base::FeatureList::IsEnabled(features::kNonBlockingCommit) ||
          IsMainThreadBlocked());
@@ -843,9 +853,6 @@ void ProxyImpl::ScheduledActionCommit() {
 
 void ProxyImpl::ScheduledActionPostCommit() {
   DCHECK(IsImplThread());
-  TRACE_EVENT_WITH_FLOW0("viz,benchmark", "MainFrame.CommitComplete",
-                         TRACE_ID_LOCAL(host_impl_->sync_tree()->trace_id()),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
 
   // This is run as a separate step from commit because it can be time-consuming
   // and ought not delay sending the next BeginMainFrame.
@@ -856,10 +863,6 @@ void ProxyImpl::ScheduledActionActivateSyncTree() {
   if (host_impl_->sync_tree() &&
       host_impl_->sync_tree()->source_frame_number() !=
           host_impl_->active_tree()->source_frame_number()) {
-    TRACE_EVENT_WITH_FLOW0(
-        "viz,benchmark", "MainFrame.Activate",
-        TRACE_ID_LOCAL(host_impl_->sync_tree()->trace_id()),
-        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
     next_frame_is_newly_committed_frame_ = true;
   }
   DCHECK(IsImplThread());
@@ -917,9 +920,20 @@ DrawResult ProxyImpl::DrawInternal(bool forced_draw) {
   DCHECK(IsImplThread());
   DCHECK(host_impl_.get());
 
-  TRACE_EVENT_WITH_FLOW0("viz,benchmark,input.scrolling", "MainFrame.Draw",
-                         TRACE_ID_LOCAL(host_impl_->active_tree()->trace_id()),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT(
+      "cc,benchmark", "MainFrame.Draw", [&](perfetto::EventContext ctx) {
+        auto* pipeline = EmitMainFramePipelineStep(
+            ctx, host_impl_->active_tree()->trace_id(),
+            perfetto::protos::pbzero::MainFramePipeline::Step::DRAW);
+        if (next_frame_is_newly_committed_frame_) {
+          viz::BeginFrameId frame_id =
+              host_impl_->CurrentBeginFrameArgs().frame_id;
+          auto* first_draw_frame_id =
+              pipeline->set_last_begin_frame_id_during_first_draw();
+          first_draw_frame_id->set_source_id(frame_id.source_id);
+          first_draw_frame_id->set_sequence_number(frame_id.sequence_number);
+        }
+      });
 
   base::AutoReset<bool> mark_inside(&inside_draw_, true);
 

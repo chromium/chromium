@@ -16413,7 +16413,7 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
   host_impl_->WillBeginImplFrame(begin_frame_args);
 
   // Create the pending tree.
-  host_impl_->BeginCommit(0, /*trace_id=*/1);
+  host_impl_->BeginCommit(0, BeginMainFrameTraceId{1});
   LayerTreeImpl* pending_tree = host_impl_->pending_tree();
   auto* root = SetupRootLayer<FakePictureLayerImpl>(pending_tree, layer_size,
                                                     raster_source);

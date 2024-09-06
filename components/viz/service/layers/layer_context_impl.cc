@@ -803,7 +803,8 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
 
   layers.set_background_color(update->background_color);
   layers.set_source_frame_number(update->source_frame_number);
-  layers.set_trace_id(update->trace_id);
+  layers.set_trace_id(
+      cc::BeginMainFrameTraceId::FromUnsafeValue(update->trace_id));
   layers.SetDeviceViewportRect(update->device_viewport);
   if (update->device_scale_factor <= 0) {
     return base::unexpected("Invalid device scale factor");

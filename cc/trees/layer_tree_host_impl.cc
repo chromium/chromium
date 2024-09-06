@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "cc/trees/trace_utils.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -652,7 +653,7 @@ void LayerTreeHostImpl::ReadyToCommit(
 }
 
 void LayerTreeHostImpl::BeginCommit(int source_frame_number,
-                                    uint64_t trace_id) {
+                                    BeginMainFrameTraceId trace_id) {
   TRACE_EVENT0("cc", "LayerTreeHostImpl::BeginCommit");
 
   if (!CommitsToActiveTree()) {
@@ -734,7 +735,13 @@ void LayerTreeHostImpl::RecordGpuRasterizationHistogram() {
 void LayerTreeHostImpl::CommitComplete() {
   DCHECK(!settings_.is_display_tree);
 
-  TRACE_EVENT0("cc", "LayerTreeHostImpl::CommitComplete");
+  TRACE_EVENT(
+      "cc,benchmark", "LayerTreeHostImpl::CommitComplete",
+      [&](perfetto::EventContext ctx) {
+        EmitMainFramePipelineStep(
+            ctx, sync_tree()->trace_id(),
+            perfetto::protos::pbzero::MainFramePipeline::Step::COMMIT_COMPLETE);
+      });
 
   if (input_delegate_)
     input_delegate_->DidCommit();
@@ -2697,15 +2704,9 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
                        compositor_frame.render_pass_list);
 
   base::TimeTicks submit_time = base::TimeTicks::Now();
-  {
-    TRACE_EVENT_WITH_FLOW0(
-        "viz,benchmark", "MainFrame.SubmitCompositorFrame",
-        TRACE_ID_GLOBAL(active_tree()->trace_id()),
-        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
-    layer_tree_frame_sink_->SubmitCompositorFrame(
-        std::move(compositor_frame),
-        /*hit_test_data_changed=*/false);
-  }
+  layer_tree_frame_sink_->SubmitCompositorFrame(
+      std::move(compositor_frame),
+      /*hit_test_data_changed=*/false);
 
 #if DCHECK_IS_ON()
   if (!doing_sync_draw_) {
@@ -3585,7 +3586,13 @@ void LayerTreeHostImpl::PushScrollbarOpacitiesFromActiveToPending() {
 }
 
 void LayerTreeHostImpl::ActivateSyncTree() {
-  TRACE_EVENT0("cc,benchmark", "LayerTreeHostImpl::ActivateSyncTree()");
+  TRACE_EVENT(
+      "cc,benchmark", "LayerTreeHostImpl::ActivateSyncTree",
+      [&](perfetto::EventContext ctx) {
+        EmitMainFramePipelineStep(
+            ctx, sync_tree()->trace_id(),
+            perfetto::protos::pbzero::MainFramePipeline::Step::ACTIVATE);
+      });
   if (pending_tree_) {
     TRACE_EVENT_NESTABLE_ASYNC_END1(
         "cc", "PendingTree:waiting", TRACE_ID_LOCAL(pending_tree_.get()),
