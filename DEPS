@@ -4322,7 +4322,7 @@ deps = {
 
   'src/components/optimization_guide/internal': {
       'url': Var('chrome_git') + '/chrome/components/optimization_guide.git' + '@' +
-        'e5145254bd6b163c9e694a8dd2d3af4c48d44a63',
+        '17d330cdc2079880e2f30b78bd8dfd258329ae9a',
       'condition': 'checkout_src_internal',
   },
 
