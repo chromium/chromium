@@ -170,7 +170,7 @@ suite('OverlayTranslateButton', function() {
     // source language.
     assertEquals(
         overlayTranslateButtonElement.$.sourceLanguageButton.innerText,
-        sourceLanguageMenuItem.innerText);
+        sourceLanguageMenuItem.innerText.trim());
 
     // Verify a new translate full image request was sent.
     let args = await testBrowserProxy.handler.whenCalled(
@@ -201,7 +201,7 @@ suite('OverlayTranslateButton', function() {
     overlayTranslateButtonElement.$.sourceAutoDetectButton.click();
     assertEquals(
         overlayTranslateButtonElement.$.sourceLanguageButton.innerText,
-        loadTimeData.getString('autoDetect'));
+        loadTimeData.getString('detectLanguage'));
 
     // Verify a new translate full image request was sent with auto detect.
     args = await testBrowserProxy.handler.whenCalled(
@@ -271,7 +271,7 @@ suite('OverlayTranslateButton', function() {
     // target language.
     assertEquals(
         overlayTranslateButtonElement.$.targetLanguageButton.innerText,
-        targetLanguageMenuItem.innerText);
+        targetLanguageMenuItem.innerText.trim());
 
     // Both of the language picker menus should be hidden after this.
     assertFalse(

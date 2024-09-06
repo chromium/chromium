@@ -80,8 +80,14 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
   html_source->AddLocalizedString(
       "networkErrorPageBottomLine",
       IDS_SIDE_PANEL_COMPANION_ERROR_PAGE_SECOND_LINE);
-  html_source->AddLocalizedString("autoDetect",
-                                  IDS_LENS_OVERLAY_AUTO_DETECT_LANGUAGE_LABEL);
+  html_source->AddLocalizedString("detectLanguage",
+                                  IDS_LENS_OVERLAY_DETECT_LANGUAGE_LABEL);
+  html_source->AddLocalizedString(
+      "translateFrom", IDS_LENS_OVERLAY_SOURCE_LANGUAGE_PICKER_MENU_TITLE);
+  html_source->AddLocalizedString(
+      "translateTo", IDS_LENS_OVERLAY_TARGET_LANGUAGE_PICKER_MENU_TITLE);
+  html_source->AddLocalizedString("allLanguages",
+                                  IDS_LENS_OVERLAY_ALL_LANGUAGES_LABEL);
 
   // Add default theme colors.
   const auto& palette = lens::kPaletteColors.at(lens::PaletteId::kFallback);

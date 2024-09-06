@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/cr_elements/icons.html.js';
 
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import {assert, assertInstanceof} from '//resources/js/assert.js';
@@ -211,6 +214,8 @@ export class TranslateButtonElement extends PolymerElement {
   }
 
   private hideLanguagePickerMenus() {
+    this.$.sourceLanguagePickerMenu.scroll(0, 0);
+    this.$.targetLanguagePickerMenu.scroll(0, 0);
     this.targetLanguageMenuVisible = false;
     this.sourceLanguageMenuVisible = false;
   }
@@ -220,11 +225,22 @@ export class TranslateButtonElement extends PolymerElement {
       return this.sourceLanguage.displayName;
     }
 
-    return loadTimeData.getString('autoDetect');
+    return loadTimeData.getString('detectLanguage');
   }
 
   private computeShouldShowStarsIcon(): boolean {
     return this.sourceLanguage === null;
+  }
+
+  private getAutoCheckedClass(
+      sourceLanguage: chrome.languageSettingsPrivate.Language): string {
+    return sourceLanguage === null ? 'selected' : '';
+  }
+
+  private getLanguageCheckedClass(
+      language: chrome.languageSettingsPrivate.Language,
+      selectedLanguage: chrome.languageSettingsPrivate.Language): string {
+    return selectedLanguage === language ? 'selected' : '';
   }
 }
 
