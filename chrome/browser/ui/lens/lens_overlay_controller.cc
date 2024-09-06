@@ -899,6 +899,9 @@ void LensOverlayController::IssueTranslateFullPageRequestForTesting(
 void LensOverlayController::IssueTranslateFullPageRequest(
     const std::string& source_language,
     const std::string& target_language) {
+  // Remove the selection thumbnail, if it exists.
+  SetSearchboxThumbnail(std::string());
+  ClearRegionSelection();
   lens_overlay_query_controller_->SendFullPageTranslateQuery(source_language,
                                                              target_language);
 }
@@ -1701,12 +1704,19 @@ void LensOverlayController::OnTextModified() {
   }
 }
 
-void LensOverlayController::OnThumbnailRemoved() {
+void LensOverlayController::ClearRegionSelection() {
   selected_region_thumbnail_uri_.clear();
   lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
   initialization_data_->selected_region_.reset();
   initialization_data_->selected_region_bitmap_.reset();
   page_->ClearRegionSelection();
+}
+
+void LensOverlayController::OnThumbnailRemoved() {
+  // This is called by the searchbox after the thumbnail is
+  // removed from there, so no need to manually replace the
+  // searchbox thumbnail uri here.
+  ClearRegionSelection();
 }
 
 void LensOverlayController::OnSuggestionAccepted(

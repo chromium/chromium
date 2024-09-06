@@ -667,6 +667,9 @@ class LensOverlayController : public LensSearchboxClient,
   // Called when the UI needs to create the view to show in the overlay.
   std::unique_ptr<views::View> CreateViewForOverlay();
 
+  // Clears the selected region.
+  void ClearRegionSelection();
+
   // content::WebContentsDelegate:
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
