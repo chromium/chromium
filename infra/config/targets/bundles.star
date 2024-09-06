@@ -412,7 +412,7 @@ targets.bundle(
     name = "webview_bot_all_gtests",
     targets = [
         "system_webview_shell_instrumentation_tests",
-        "webview_bot_instrumentation_test_apk_gtest",
+        "webview_bot_instrumentation_test_apk_mutations_gtest",
         "webview_bot_instrumentation_test_apk_no_field_trial_gtest",
         "webview_bot_unittests_gtest",
         "webview_cts_tests_gtest",

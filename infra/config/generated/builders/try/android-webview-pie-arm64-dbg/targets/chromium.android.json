@@ -151,6 +151,7 @@
       {
         "args": [
           "--use-apk-under-test-flags-file",
+          "--webview-mutations-enabled",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -159,11 +160,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "webview_instrumentation_test_apk"
+            "webview_instrumentation_test_apk_mutations"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "webview_instrumentation_test_apk",
+        "name": "webview_instrumentation_test_apk_mutations",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
