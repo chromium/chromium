@@ -15,8 +15,8 @@ import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/u
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {keyEventOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../chromeos/chai_assert.js';
-import {isVisible} from '../chromeos/test_util.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../chai_assert.js';
+import {isVisible} from '../test_util.js';
 
 import {FakeConfirmationManagerRemote, FakeDiscoveryManagerRemote} from './fake_mojo_interfaces.js';
 
@@ -716,5 +716,4 @@ suite('DiscoveryPageTest', function() {
     const nearbyDeviceElements = container.querySelectorAll('nearby-device');
     assertEquals(0, nearbyDeviceElements.length);
   });
-
 });

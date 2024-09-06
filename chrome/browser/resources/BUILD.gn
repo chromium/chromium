@@ -85,7 +85,6 @@ group("resources") {
       "ash/settings:resources",
       "chromeos:resources",
       "nearby_internals:resources",
-      "nearby_share:resources",
     ]
   }
 

@@ -15,8 +15,8 @@ import 'chrome://os-settings/os_settings.js';
 import {AccountManagerBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
 import {createPageAvailabilityForTesting, CrSettingsPrefs, MainPageContainerElement, Router, routes, routesMojom, setContactManagerForTesting, setNearbyShareSettingsForTesting, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {FakeContactManager} from 'chrome://webui-test/nearby_share/shared/fake_nearby_contact_manager.js';
-import {FakeNearbyShareSettings} from 'chrome://webui-test/nearby_share/shared/fake_nearby_share_settings.js';
+import {FakeContactManager} from 'chrome://webui-test/chromeos/nearby_share/shared/fake_nearby_contact_manager.js';
+import {FakeNearbyShareSettings} from 'chrome://webui-test/chromeos/nearby_share/shared/fake_nearby_share_settings.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 

@@ -9,7 +9,7 @@ import {TransferStatus} from 'chrome://nearby/shared/nearby_share.mojom-webui.js
 import {ShareType} from 'chrome://nearby/shared/nearby_share_share_type.mojom-webui.js';
 import {ShareTargetType} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom-webui.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../chromeos/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 
 import {FakeConfirmationManagerRemote, FakeTransferUpdateListenerPendingReceiver} from './fake_mojo_interfaces.js';
 

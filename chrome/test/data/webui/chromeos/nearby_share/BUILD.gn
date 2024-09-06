@@ -27,7 +27,7 @@ generate_grd("build_grdp") {
   testonly = true
   grd_prefix = "nearby_share"
   out_grd = "$target_gen_dir/resources.grdp"
-  resource_path_prefix = "nearby_share"
+  resource_path_prefix = "chromeos/nearby_share"
 
   deps = [ ":build_ts" ]
 

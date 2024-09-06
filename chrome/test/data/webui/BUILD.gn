@@ -602,6 +602,7 @@ generate_grd("build_grd") {
       "chromeos/healthd_internals:build_grdp",
       "chromeos/inline_login:build_grdp",
       "chromeos/manage_mirrorsync:build_grdp",
+      "chromeos/nearby_share:build_grdp",
       "chromeos/office_fallback:build_grdp",
       "chromeos/oobe:build_grdp",
       "chromeos/os_feedback_ui:build_grdp",
@@ -616,7 +617,6 @@ generate_grd("build_grd") {
       "chromeos/shortcut_customization:build_grdp",
       "chromeos/vc_background_ui:build_grdp",
       "cr_components/chromeos:build_grdp",
-      "nearby_share:build_grdp",
       "//ui/file_manager:build_tests_gen_grdp",
       "//ui/file_manager:build_tests_grdp",
     ]
@@ -637,6 +637,7 @@ generate_grd("build_grd") {
       "$target_gen_dir/chromeos/healthd_internals/resources.grdp",
       "$target_gen_dir/chromeos/inline_login/resources.grdp",
       "$target_gen_dir/chromeos/manage_mirrorsync/resources.grdp",
+      "$target_gen_dir/chromeos/nearby_share/resources.grdp",
       "$target_gen_dir/chromeos/office_fallback/resources.grdp",
       "$target_gen_dir/chromeos/oobe/resources.grdp",
       "$target_gen_dir/chromeos/parent_access/resources.grdp",
@@ -654,7 +655,6 @@ generate_grd("build_grd") {
       "$target_gen_dir/chromeos/web_ui_test_mojo_lite_resources.grdp",
       "$target_gen_dir/chromeos/web_ui_test_mojo_resources.grdp",
       "$target_gen_dir/cr_components/chromeos/resources.grdp",
-      "$target_gen_dir/nearby_share/resources.grdp",
       "$root_gen_dir/ui/file_manager/tests_resources.grdp",
       "$root_gen_dir/ui/file_manager/tests_gen_resources.grdp",
     ]

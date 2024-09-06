@@ -11,8 +11,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {DataUsage, FastInitiationNotificationState, Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals, assertFalse, assertGE, assertTrue} from '../../chromeos/chai_assert.js';
-import {isChildVisible} from '../../chromeos/test_util.js';
+import {assertEquals, assertFalse, assertGE, assertTrue} from '../../chai_assert.js';
+import {isChildVisible} from '../../test_util.js';
 
 import {FakeContactManager} from './fake_nearby_contact_manager.js';
 

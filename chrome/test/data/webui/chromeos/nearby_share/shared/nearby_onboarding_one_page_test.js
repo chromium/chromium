@@ -11,7 +11,7 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {DataUsage, DeviceNameValidationResult, FastInitiationNotificationState, Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../chromeos/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
 import {FakeNearbyShareSettings} from './fake_nearby_share_settings.js';
 

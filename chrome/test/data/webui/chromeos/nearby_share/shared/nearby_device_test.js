@@ -7,7 +7,7 @@ import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {ShareTargetType} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom-webui.js';
 
-import {assertEquals} from '../../chromeos/chai_assert.js';
+import {assertEquals} from '../../chai_assert.js';
 
 suite('DeviceTest', function() {
   /** @type {!NearbyDeviceElement} */

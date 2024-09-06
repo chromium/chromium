@@ -90,9 +90,9 @@ if (include_js2gtest_tests) {
   js2gtest("browser_tests_js_mojo_webui") {
     test_type = "mojo_webui"
     sources = [
-      "../nearby_share/nearby_browsertest.js",
-      "../nearby_share/shared/nearby_shared_v3_browsertest.js",
       "manage_mirrorsync/manage_mirrorsync_browsertest.js",
+      "nearby_share/nearby_browsertest.js",
+      "nearby_share/shared/nearby_shared_v3_browsertest.js",
     ]
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   }

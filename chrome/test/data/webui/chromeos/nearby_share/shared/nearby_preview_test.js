@@ -7,7 +7,7 @@ import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {ShareType} from 'chrome://nearby/shared/nearby_share_share_type.mojom-webui.js';
 
-import {assertEquals} from '../../chromeos/chai_assert.js';
+import {assertEquals} from '../../chai_assert.js';
 
 suite('PreviewTest', function() {
   /** @type {!NearbyPreviewElement} */
