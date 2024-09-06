@@ -11,6 +11,8 @@ const TestPrivateKey = new Uint8Array([
 
 const _hpkeModulePromise = import('../third_party/hpke-js/hpke.js');
 
+// Common utilities.
+
 function _get16(buffer, offset) {
   return buffer[offset] << 8 | buffer[offset + 1];
 }
@@ -25,9 +27,32 @@ function _put16(buffer, offset, val) {
   buffer[offset + 1] = val & 0xFF;
 }
 
+function _put32(buffer, offset, val) {
+  buffer[offset] = (val >> 24) & 0xFF;
+  buffer[offset + 1] = (val >> 16) & 0xFF;
+  buffer[offset + 2] = (val >> 8) & 0xFF;
+  buffer[offset + 3] = val & 0xFF;
+}
+
+// Concatenates two Uint8Array's.
+function _concat(a, b) {
+  let c = new Uint8Array(a.length + b.length);
+  for (var i = 0; i < a.length; ++i) {
+    c[i] = a[i];
+  }
+  for (var i = 0; i < b.length; ++i) {
+    c[i + a.length] = b[i];
+  }
+  return c;
+}
+
 function _toArrayBuffer(typedArray) {
   return typedArray.buffer.slice(
       typedArray.byteOffset, typedArray.byteOffset + typedArray.byteLength);
+}
+
+function _toBytesArrayBuffer(str) {
+  return _toArrayBuffer(new TextEncoder().encode(str));
 }
 
 function _bufferAsStream(buffer) {
@@ -48,10 +73,18 @@ async function _applyTransform(inData, transform) {
 }
 
 // Returns an ArrayBuffer (promise).
+async function _gzip(inData) {
+  const compress = new CompressionStream('gzip');
+  return _applyTransform(inData, compress);
+}
+
+// Returns an ArrayBuffer (promise).
 async function _gunzip(inData) {
   const decompress = new DecompressionStream('gzip');
   return _applyTransform(inData, decompress);
 }
+
+// InterestGroupData decoding helpers.
 
 function _decodeIgDataHeader(igData) {
   if (igData.length < 8) {
@@ -110,8 +143,88 @@ function _decodeIgDataPaddingHeader(decryptedText) {
   };
 }
 
+// serverResponse encoding helpers.
+
+// Takes an ArrayBuffer, returns a Uint8Array.
+function _frameServerResponse(arrayBuffer) {
+  let array = new Uint8Array(arrayBuffer);
+  let framedLength = 5 + array.length;
+  let framed = new Uint8Array(framedLength);
+  framed[0] = 2;  // gzip + ver 0.
+  _put32(framed, 1, array.length);
+  for (let i = 0; i < array.length; ++i) {
+    framed[i + 5] = array[i];
+  }
+  return framed;
+}
+
+async function _encryptServerResponse(payload, decoded) {
+  // This again follows RFC 9458 (Oblivious HTTP), "Encapsulation of
+  // Responses", just with different message type:
+  const ResponseMessageType = 'message/auction response';
+  const Nk = decoded.cipherSuite.aead.keySize;
+  const Nn = decoded.cipherSuite.aead.nonceSize;
+  let secret = await decoded.receiveContext.export(
+      _toBytesArrayBuffer(ResponseMessageType), Math.max(Nk, Nn));
+  let responseNonce = new Uint8Array(Math.max(Nk, Nn));
+  crypto.getRandomValues(responseNonce);
+  let salt = _concat(decoded.enc, responseNonce);
+  let prk = await decoded.cipherSuite.kdf.extract(salt, secret);
+  let aeadKey =
+      await decoded.cipherSuite.kdf.expand(prk, _toBytesArrayBuffer('key'), Nk);
+  let aeadNonce = await decoded.cipherSuite.kdf.expand(
+      prk, _toBytesArrayBuffer('nonce'), Nn);
+  let encContext = decoded.cipherSuite.aead.createEncryptionContext(aeadKey);
+  let ct = await encContext.seal(
+      /*iv=*/ aeadNonce, /*data=*/ payload,
+      /*aad=*/ _toBytesArrayBuffer(''));
+  return _concat(responseNonce, new Uint8Array(ct));
+}
+
+// CBOR requires property names to be in sorted order; but the library we use
+// doesn't do it automatically. Since it's easy for a test to fail for the
+// wrong reason if the response isn't specified correctly, this ensures the
+// proper ordering. It assumes a very simple data model, so no arrays with
+// holes, no mixture of different kinds of indices in the map, etc.
+// Getting the sort order right in more complicated cases is outside the
+// scope of this helper.
+function _sortForCbor(input) {
+  if (input === null || typeof input !== 'object') {
+    return input;
+  }
+
+  if (input instanceof Array) {
+    let out = [];
+    for (let i = 0; i < input.length; ++i) {
+      out[i] = _sortForCbor(input[i]);
+    }
+    return out;
+  } else {
+    let keys = Object.getOwnPropertyNames(input).sort((a, b) => {
+      // CBOR order compares lengths before values.
+      if (a.length < b.length)
+        return -1;
+      if (a.length > b.length)
+        return 1;
+      if (a < b)
+        return -1;
+      if (a > b)
+        return 1;
+      return 0;
+    });
+    let out = {};
+    for (let key of keys) {
+      out[key] = _sortForCbor(input[key]);
+    }
+    return out;
+  }
+}
+
+// Exported API.
+
 // Decodes the request payload produced by getInterestGroupAdAuctionData into
-// {paddedSize: ..., message: ...}
+// {paddedSize: ..., message: ..., cipherSuite: ... , receiveContext: ...,
+//  enc:...}
 BA.decodeInterestGroupData = async function(igData) {
   const hpke = await _hpkeModulePromise;
 
@@ -159,7 +272,44 @@ BA.decodeInterestGroupData = async function(igData) {
 
   return {
     paddedSize: pt.length,
-    message: decoded
+    message: decoded,
+    receiveContext: recipient,
+    cipherSuite: suite,
+    enc: pieces.enc
   };
-}
+};
+
+// Encodes, compresses, encrypts, etc., `responseObject` into a proper
+// serverResponse in reply to `decoded`.
+BA.encodeServerResponse = async function(responseObject, decoded) {
+  let cborPayload = new Uint8Array(CBOR.encode(_sortForCbor(responseObject)));
+  let gzipPayload = await _gzip(cborPayload);
+  let framedPayload = _toArrayBuffer(_frameServerResponse(gzipPayload));
+  return await _encryptServerResponse(framedPayload, decoded);
+};
+
+// Returns a hash string that can be used to authorize a given response,
+// formatted for use in an Ad-Auction-Result HTTP header.
+BA.payloadHash = async function(serverResponse) {
+  let hash =
+      new Uint8Array(await crypto.subtle.digest('SHA-256', serverResponse));
+  let hashString = ''
+  for (let i = 0; i < hash.length; ++i) {
+    hashString += String.fromCharCode(hash[i]);
+  }
+  return btoa(hashString)
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/g, '');
+};
+
+// Authorizes each serverResponse hash in `hashes` to be used for
+// B&A auction result.
+BA.authorizeServerResponseHashes = async function(hashes) {
+  let authorizeURL =
+      new URL('resources/authorize-server-response.py', window.location);
+  authorizeURL.searchParams.append('hashes', hashes.join(','));
+  await fetch(authorizeURL, {adAuctionHeaders: true});
+};
+
 })(BA);
