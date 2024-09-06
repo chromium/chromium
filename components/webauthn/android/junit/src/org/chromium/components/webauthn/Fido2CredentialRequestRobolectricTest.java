@@ -350,7 +350,14 @@ public class Fido2CredentialRequestRobolectricTest {
                 mCallback::onError);
 
         assertThat(mFido2ApiCallHelper.mMakeCredentialCalled).isFalse();
-        verify(mCredManHelperMock).startMakeRequest(any(), any(), any(), any(), any(), any());
+        verify(mCredManHelperMock)
+                .startMakeRequest(
+                        any(),
+                        any(),
+                        /* clientDataJson= */ eq(null),
+                        /* clientDataHash= */ eq(null),
+                        any(),
+                        any());
     }
 
     @Test

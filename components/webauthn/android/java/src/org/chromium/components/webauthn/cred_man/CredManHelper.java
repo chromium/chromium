@@ -90,7 +90,7 @@ public class CredManHelper {
             PublicKeyCredentialCreationOptions options,
             String originString,
             @Nullable byte[] clientDataJson,
-            byte[] clientDataHash,
+            @Nullable byte[] clientDataHash,
             MakeCredentialResponseCallback makeCallback,
             Callback<Integer> errorCallback) {
         mClientDataJson = clientDataJson;
@@ -159,7 +159,9 @@ public class CredManHelper {
                                     CredManCreateRequestEnum.FAILURE);
                             return;
                         }
-                        response.info.clientDataJson = mClientDataJson;
+                        if (mClientDataJson != null) {
+                            response.info.clientDataJson = mClientDataJson;
+                        }
                         response.echoCredProps = options.credProps;
                         makeCallback.onRegisterResponse(AuthenticatorStatus.SUCCESS, response);
                         mMetricsHelper.recordCredManCreateRequestHistogram(
@@ -188,7 +190,7 @@ public class CredManHelper {
             PublicKeyCredentialRequestOptions options,
             String originString,
             @Nullable byte[] clientDataJson,
-            byte[] clientDataHash,
+            @Nullable byte[] clientDataHash,
             GetAssertionResponseCallback getCallback,
             Callback<Integer> errorCallback,
             Barrier barrier,
@@ -434,7 +436,9 @@ public class CredManHelper {
                             mErrorCallback.onResult(AuthenticatorStatus.UNKNOWN_ERROR);
                             return;
                         }
-                        response.info.clientDataJson = mClientDataJson;
+                        if (mClientDataJson != null) {
+                            response.info.clientDataJson = mClientDataJson;
+                        }
                         response.extensions.echoAppidExtension = options.extensions.appid != null;
                         mConditionalUiState =
                                 options.isConditional

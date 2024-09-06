@@ -232,7 +232,8 @@ public class Fido2CredentialRequest
         mEchoCredProps = options.credProps;
 
         byte[] clientDataHash = maybeClientDataHash;
-        if (clientDataHash == null) {
+        if (clientDataHash == null
+                && !is(mAuthenticationContextProvider.getWebContents(), WebauthnMode.APP)) {
             assert options.challenge != null;
             final String callerOriginString = convertOriginToString(origin);
             clientDataHash =
@@ -446,7 +447,8 @@ public class Fido2CredentialRequest
 
         final String callerOriginString = convertOriginToString(origin);
         byte[] clientDataHash = maybeClientDataHash;
-        if (clientDataHash == null) {
+        if (clientDataHash == null
+                && !is(mAuthenticationContextProvider.getWebContents(), WebauthnMode.APP)) {
             assert options.challenge != null;
             clientDataHash =
                     buildClientDataJsonAndComputeHash(
@@ -478,7 +480,8 @@ public class Fido2CredentialRequest
                     returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
                     return;
                 }
-                maybeDispatchGetAssertionRequest(options, callerOriginString, clientDataHash, null);
+                maybeDispatchGetAssertionRequest(
+                        options, callerOriginString, maybeClientDataHash, null);
                 return;
             }
             int result =
