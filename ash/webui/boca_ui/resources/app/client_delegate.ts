@@ -53,10 +53,17 @@ export class ClientDelegateFactory {
         });
       },
       createSession: async (sessionConfig: SessionConfig) => {
+        console.log(
+            'Actual session duration is:' +
+            sessionConfig.sessionDurationInMinutes +
+            ', but we overrided it to 2min');
         const result = await pageHandler.createSession({
           sessionDuration: {
-            microseconds: BigInt(sessionConfig.sessionDurationInMinutes) *
-                MICRO_SECS_IN_MINUTES,
+            // TODO(b/365141108) Hardcode session duration to 2 mintes until we
+            // have end session.
+            microseconds: BigInt(2) * MICRO_SECS_IN_MINUTES,
+            // microseconds: BigInt(sessionConfig.sessionDurationInMinutes) *
+            //     MICRO_SECS_IN_MINUTES,
           },
           students: sessionConfig.students,
           onTaskConfig: {

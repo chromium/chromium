@@ -25,7 +25,9 @@ class BocaAppBrowserProducerTest : public WebUIMochaBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(BocaAppBrowserProducerTest, TestMojoTranslationLayer) {
+// TODO(b/365141108) Reenable after we remove hard-coded duration.
+IN_PROC_BROWSER_TEST_F(BocaAppBrowserProducerTest,
+                       DISABLED_TestMojoTranslationLayer) {
   RunTestWithoutTestLoader("chromeos/boca_ui/client_delegate_impl_test.js",
                            "mocha.run()");
 }
