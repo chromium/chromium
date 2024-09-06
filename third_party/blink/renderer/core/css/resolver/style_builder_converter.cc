@@ -2446,7 +2446,7 @@ StyleColor ResolveColorValue(const CSSLengthResolver& length_resolver,
     if (style_color1.IsAbsoluteColor() && style_color2.IsAbsoluteColor()) {
       const Color c1 = style_color1.Resolve(Color(), used_color_scheme);
       const Color c2 = style_color2.Resolve(Color(), used_color_scheme);
-      return StyleColor(color_mix_value->Mix(c1, c2));
+      return StyleColor(color_mix_value->Mix(c1, c2, length_resolver));
     }
     double alpha_multiplier = 0.0;
     double mix_amount = 0.0;

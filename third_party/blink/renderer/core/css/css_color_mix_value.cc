@@ -59,15 +59,12 @@ bool CSSColorMixValue::NormalizePercentages(
   return true;
 }
 
-Color CSSColorMixValue::Mix(const Color& color1, const Color& color2) const {
-  CHECK(!Percentage1() || Percentage1()->IsNumericLiteralValue());
-  CHECK(!Percentage2() || Percentage2()->IsNumericLiteralValue());
+Color CSSColorMixValue::Mix(const Color& color1,
+                            const Color& color2,
+                            const CSSLengthResolver& length_resolver) const {
   double alpha_multiplier;
   double mix_amount;
-  // Using default length resolver here as we only call it with numeric %, no
-  // calc().
-  if (!NormalizePercentages(mix_amount, alpha_multiplier,
-                            CSSToLengthConversionData())) {
+  if (!NormalizePercentages(mix_amount, alpha_multiplier, length_resolver)) {
     return Color();
   }
   return Color::FromColorMix(ColorInterpolationSpace(),
