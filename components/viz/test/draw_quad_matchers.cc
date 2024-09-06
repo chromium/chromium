@@ -33,8 +33,6 @@ const char* MaterialToString(DrawQuad::Material material) {
       return "kTextureContent";
     case DrawQuad::Material::kTiledContent:
       return "kTiledContent";
-    case DrawQuad::Material::kYuvVideoContent:
-      return "kYuvVideoContent";
     case DrawQuad::Material::kVideoHole:
       return "kVideoHole";
   }

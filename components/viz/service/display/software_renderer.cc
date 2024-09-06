@@ -342,7 +342,6 @@ void SoftwareRenderer::DoDrawQuad(const DrawQuad* quad,
       NOTREACHED_IN_MIGRATION();
       break;
     case DrawQuad::Material::kInvalid:
-    case DrawQuad::Material::kYuvVideoContent:
     case DrawQuad::Material::kSharedElement:
       DrawUnsupportedQuad(quad);
       NOTREACHED_IN_MIGRATION();

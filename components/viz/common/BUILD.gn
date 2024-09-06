@@ -224,8 +224,6 @@ viz_component("common") {
     "quads/tile_draw_quad.h",
     "quads/video_hole_draw_quad.cc",
     "quads/video_hole_draw_quad.h",
-    "quads/yuv_video_draw_quad.cc",
-    "quads/yuv_video_draw_quad.h",
     "resources/bitmap_allocation.cc",
     "resources/bitmap_allocation.h",
     "resources/platform_color.h",

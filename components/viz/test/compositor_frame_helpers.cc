@@ -17,7 +17,6 @@
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
-#include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
 
 namespace viz {
@@ -257,9 +256,6 @@ RenderPassBuilder& RenderPassBuilder::SetQuadDamageRect(
   if (quad->material == DrawQuad::Material::kTextureContent) {
     auto* texture_quad = static_cast<TextureDrawQuad*>(quad);
     texture_quad->damage_rect = damage_rect;
-  } else if (quad->material == DrawQuad::Material::kYuvVideoContent) {
-    auto* yuv_video_quad = static_cast<YUVVideoDrawQuad*>(quad);
-    yuv_video_quad->damage_rect = damage_rect;
   } else {
     NOTREACHED_IN_MIGRATION();
   }

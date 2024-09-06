@@ -20,7 +20,6 @@
 #include "cc/trees/task_runner_provider.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
-#include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
 #include "media/base/video_frame.h"
 #include "media/renderers/video_resource_updater.h"

@@ -20,9 +20,6 @@ specific_include_rules = {
   ".*_unittest\.cc": [
     "+cc/test",
   ],
-  "yuv_video_draw_quad.*": [
-    "+ui/gfx/hdr_metadata.h",
-  ],
   "compositor_frame_metadata\.h" : [
     "+third_party/blink/public/common/tokens/tokens.h",
   ]

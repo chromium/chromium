@@ -18,7 +18,6 @@
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/common/quads/video_hole_draw_quad.h"
-#include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/test/paths.h"
 #include "components/viz/test/test_surface_id_allocator.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -187,13 +186,12 @@ TEST(RenderPassIOTest, SharedQuadStateList) {
 }
 
 TEST(RenderPassIOTest, QuadList) {
-  const size_t kSharedQuadStateCount = 5;
+  const size_t kSharedQuadStateCount = 4;
   size_t quad_count = 0;
-  const std::array<DrawQuad::Material, 9> kQuadMaterials = {
+  const std::array<DrawQuad::Material, 8> kQuadMaterials = {
       DrawQuad::Material::kSolidColor,
       DrawQuad::Material::kTextureContent,  // is_stream_video set to true.
       DrawQuad::Material::kVideoHole,
-      DrawQuad::Material::kYuvVideoContent,
       DrawQuad::Material::kTextureContent,
       DrawQuad::Material::kCompositorRenderPass,
       DrawQuad::Material::kTiledContent,
@@ -246,26 +244,7 @@ TEST(RenderPassIOTest, QuadList) {
       ++quad_count;
     }
     {
-      // 4. YUVVideoDrawQuad
-      YUVVideoDrawQuad* quad =
-          render_pass0->CreateAndAppendDrawQuad<YUVVideoDrawQuad>();
-      skcms_Matrix3x3 primary_matrix = {{{0.6587f, 0.3206f, 0.1508f},
-                                         {0.3332f, 0.6135f, 0.0527f},
-                                         {0.0081f, 0.0659f, 0.7965f}}};
-      skcms_TransferFunction transfer_func = {
-          0.9495f, 0.0495f, 0.6587f, 0.3206f, 0.0003f, 0.f, 2.3955f};
-      quad->SetAll(render_pass0->shared_quad_state_list.ElementAt(sqs_index),
-                   gfx::Rect(0, 0, 800, 600), gfx::Rect(10, 15, 780, 570),
-                   false, gfx::Size(800, 400), gfx::Rect(10, 20, 300, 400),
-                   gfx::Size(2, 2), ResourceId(1u), ResourceId(2u),
-                   ResourceId(3u), ResourceId(4u),
-                   gfx::ColorSpace::CreateCustom(primary_matrix, transfer_func),
-                   12u, gfx::ProtectedVideoType::kClear, gfx::HDRMetadata());
-      ++sqs_index;
-      ++quad_count;
-    }
-    {
-      // 5. TextureDrawQuad
+      // 4. TextureDrawQuad
       TextureDrawQuad* quad =
           render_pass0->CreateAndAppendDrawQuad<TextureDrawQuad>();
       quad->SetAll(render_pass0->shared_quad_state_list.ElementAt(sqs_index),
@@ -279,7 +258,7 @@ TEST(RenderPassIOTest, QuadList) {
       ++quad_count;
     }
     {
-      // 6. CompositorRenderPassDrawQuad
+      // 5. CompositorRenderPassDrawQuad
       CompositorRenderPassDrawQuad* quad =
           render_pass0->CreateAndAppendDrawQuad<CompositorRenderPassDrawQuad>();
       quad->SetAll(render_pass0->shared_quad_state_list.ElementAt(sqs_index),
@@ -292,7 +271,7 @@ TEST(RenderPassIOTest, QuadList) {
       ++quad_count;
     }
     {
-      // 7. TileDrawQuad
+      // 6. TileDrawQuad
       TileDrawQuad* quad =
           render_pass0->CreateAndAppendDrawQuad<TileDrawQuad>();
       quad->SetAll(render_pass0->shared_quad_state_list.ElementAt(sqs_index),
@@ -302,7 +281,7 @@ TEST(RenderPassIOTest, QuadList) {
       ++quad_count;
     }
     {
-      // 8. SurfaceDrawQuad
+      // 7. SurfaceDrawQuad
       SurfaceDrawQuad* quad =
           render_pass0->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
       quad->SetAll(render_pass0->shared_quad_state_list.ElementAt(sqs_index),
@@ -312,7 +291,7 @@ TEST(RenderPassIOTest, QuadList) {
       ++quad_count;
     }
     {
-      // 9. SurfaceDrawQuad with no starting SurfaceId
+      // 8. SurfaceDrawQuad with no starting SurfaceId
       SurfaceDrawQuad* quad =
           render_pass0->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
       quad->SetAll(render_pass0->shared_quad_state_list.ElementAt(sqs_index),

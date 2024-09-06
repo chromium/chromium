@@ -30,7 +30,6 @@
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
-#include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/service/display/display.h"
@@ -393,29 +392,6 @@ class RendererPerfTest : public VizPerfTest {
                 texture_quad->premultiplied_alpha);
             texture_quad->resources.ids[TextureDrawQuad::kResourceIdIndex] =
                 actual_id;
-          } break;
-          case DrawQuad::Material::kYuvVideoContent: {
-            YUVVideoDrawQuad* yuv_quad =
-                reinterpret_cast<YUVVideoDrawQuad*>(quad);
-            const size_t kIndex[] = {
-                YUVVideoDrawQuad::kYPlaneResourceIdIndex,
-                YUVVideoDrawQuad::kUPlaneResourceIdIndex,
-                YUVVideoDrawQuad::kVPlaneResourceIdIndex,
-                YUVVideoDrawQuad::kAPlaneResourceIdIndex,
-            };
-            const gfx::Size kSize[] = {
-                yuv_quad->ya_tex_size(),
-                yuv_quad->uv_tex_size(),
-                yuv_quad->uv_tex_size(),
-                yuv_quad->ya_tex_size(),
-            };
-            for (size_t ii = 0; ii < yuv_quad->resources.count; ++ii) {
-              ResourceId recorded_id = yuv_quad->resources.ids[kIndex[ii]];
-              ResourceId actual_id =
-                  this->MapResourceId(&resource_map, recorded_id, kSize[ii],
-                                      SkColor4f{0.0f, 1.0f, 0.0f, 0.5f}, false);
-              yuv_quad->resources.ids[kIndex[ii]] = actual_id;
-            }
           } break;
           default:
             ASSERT_TRUE(false);

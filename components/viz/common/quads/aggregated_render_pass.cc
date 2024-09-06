@@ -23,7 +23,6 @@
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/common/quads/video_hole_draw_quad.h"
-#include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/common/traced_value.h"
 
 namespace viz {
@@ -136,9 +135,6 @@ DrawQuad* AggregatedRenderPass::CopyFromAndAppendDrawQuad(
       break;
     case DrawQuad::Material::kVideoHole:
       CopyFromAndAppendTypedDrawQuad<VideoHoleDrawQuad>(quad);
-      break;
-    case DrawQuad::Material::kYuvVideoContent:
-      CopyFromAndAppendTypedDrawQuad<YUVVideoDrawQuad>(quad);
       break;
     case DrawQuad::Material::kSharedElement:
       CHECK(false)

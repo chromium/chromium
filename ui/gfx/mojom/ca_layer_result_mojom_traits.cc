@@ -17,8 +17,6 @@ EnumTraits<gfx::mojom::CALayerResult, gfx::CALayerResult>::ToMojom(
       return gfx::mojom::CALayerResult::kCALayerSuccess;
     case gfx::kCALayerFailedUnknown:  // = 1,
       return gfx::mojom::CALayerResult::kCALayerFailedUnknown;
-    case gfx::kCALayerFailedStreamVideoNotCandidate:  // = 3,
-      return gfx::mojom::CALayerResult::kCALayerFailedStreamVideoNotCandidate;
     case gfx::kCALayerFailedTextureNotCandidate:  // = 5,
       return gfx::mojom::CALayerResult::kCALayerFailedTextureNotCandidate;
     case gfx::kCALayerFailedTileNotCandidate:  // = 7,
@@ -35,8 +33,6 @@ EnumTraits<gfx::mojom::CALayerResult, gfx::CALayerResult>::ToMojom(
       return gfx::mojom::CALayerResult::kCALayerFailedSurfaceContent;
     case gfx::kCALayerFailedDifferentClipSettings:  // = 16,
       return gfx::mojom::CALayerResult::kCALayerFailedDifferentClipSettings;
-    case gfx::kCALayerFailedDifferentVertexOpacities:  // = 17,
-      return gfx::mojom::CALayerResult::kCALayerFailedDifferentVertexOpacities;
     case gfx::kCALayerFailedRenderPassBackdropFilters:  // = 19,
       return gfx::mojom::CALayerResult::kCALayerFailedRenderPassBackdropFilters;
     case gfx::kCALayerFailedRenderPassPassMask:  // = 20,
@@ -54,12 +50,6 @@ EnumTraits<gfx::mojom::CALayerResult, gfx::CALayerResult>::ToMojom(
           kCALayerFailedQuadRoundedCornerNotUniform;
     case gfx::kCALayerFailedTooManyQuads:  // = 27,
       return gfx::mojom::CALayerResult::kCALayerFailedTooManyQuads;
-    case gfx::kCALayerFailedYUVNotCandidate:  // = 28,
-      return gfx::mojom::CALayerResult::kCALayerFailedYUVNotCandidate;
-    case gfx::kCALayerFailedYUVTexcoordMismatch:  // = 29,
-      return gfx::mojom::CALayerResult::kCALayerFailedYUVTexcoordMismatch;
-    case gfx::kCALayerFailedYUVInvalidPlanes:  // = 30,
-      return gfx::mojom::CALayerResult::kCALayerFailedYUVInvalidPlanes;
     case gfx::kCALayerFailedCopyRequests:  // = 31,
       return gfx::mojom::CALayerResult::kCALayerFailedCopyRequests;
     case gfx::kCALayerFailedOverlayDisabled:  // = 32,
@@ -89,10 +79,6 @@ bool EnumTraits<gfx::mojom::CALayerResult, gfx::CALayerResult>::FromMojom(
     case gfx::mojom::CALayerResult::kCALayerFailedUnknown:  // = 1
       *out = gfx::kCALayerFailedUnknown;
       return true;
-    case gfx::mojom::CALayerResult::
-        kCALayerFailedStreamVideoNotCandidate:  // = 3
-      *out = gfx::kCALayerFailedStreamVideoNotCandidate;
-      return true;
     case gfx::mojom::CALayerResult::kCALayerFailedTextureNotCandidate:  // = 5
       *out = gfx::kCALayerFailedTextureNotCandidate;
       return true;
@@ -119,10 +105,6 @@ bool EnumTraits<gfx::mojom::CALayerResult, gfx::CALayerResult>::FromMojom(
       *out = gfx::kCALayerFailedDifferentClipSettings;
       return true;
     case gfx::mojom::CALayerResult::
-        kCALayerFailedDifferentVertexOpacities:  // = 17
-      *out = gfx::kCALayerFailedDifferentVertexOpacities;
-      return true;
-    case gfx::mojom::CALayerResult::
         kCALayerFailedRenderPassBackdropFilters:  // = 19
       *out = gfx::kCALayerFailedRenderPassBackdropFilters;
       return true;
@@ -147,15 +129,6 @@ bool EnumTraits<gfx::mojom::CALayerResult, gfx::CALayerResult>::FromMojom(
       return true;
     case gfx::mojom::CALayerResult::kCALayerFailedTooManyQuads:  // = 27
       *out = gfx::kCALayerFailedTooManyQuads;
-      return true;
-    case gfx::mojom::CALayerResult::kCALayerFailedYUVNotCandidate:  // = 28
-      *out = gfx::kCALayerFailedYUVNotCandidate;
-      return true;
-    case gfx::mojom::CALayerResult::kCALayerFailedYUVTexcoordMismatch:  // = 29
-      *out = gfx::kCALayerFailedYUVTexcoordMismatch;
-      return true;
-    case gfx::mojom::CALayerResult::kCALayerFailedYUVInvalidPlanes:  // = 30
-      *out = gfx::kCALayerFailedYUVInvalidPlanes;
       return true;
     case gfx::mojom::CALayerResult::kCALayerFailedCopyRequests:  // = 31
       *out = gfx::kCALayerFailedCopyRequests;

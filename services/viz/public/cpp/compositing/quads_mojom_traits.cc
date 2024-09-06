@@ -56,10 +56,6 @@ viz::DrawQuad* AllocateAndConstruct(
       quad = list->AllocateAndConstruct<viz::VideoHoleDrawQuad>();
       quad->material = viz::DrawQuad::Material::kVideoHole;
       return quad;
-    case viz::mojom::DrawQuadStateDataView::Tag::kYuvVideoQuadState:
-      quad = list->AllocateAndConstruct<viz::YUVVideoDrawQuad>();
-      quad->material = viz::DrawQuad::Material::kYuvVideoContent;
-      return quad;
     case viz::mojom::DrawQuadStateDataView::Tag::kSharedElementQuadState:
       quad = list->AllocateAndConstruct<viz::SharedElementDrawQuad>();
       quad->material = viz::DrawQuad::Material::kSharedElement;
@@ -226,56 +222,6 @@ bool StructTraits<viz::mojom::VideoHoleQuadStateDataView, viz::DrawQuad>::Read(
   viz::VideoHoleDrawQuad* video_hole_quad =
       static_cast<viz::VideoHoleDrawQuad*>(out);
   return data.ReadOverlayPlaneId(&video_hole_quad->overlay_plane_id);
-}
-
-// static
-bool StructTraits<viz::mojom::YUVVideoQuadStateDataView, viz::DrawQuad>::Read(
-    viz::mojom::YUVVideoQuadStateDataView data,
-    viz::DrawQuad* out) {
-  viz::YUVVideoDrawQuad* quad = static_cast<viz::YUVVideoDrawQuad*>(out);
-  if (!data.ReadCodedSize(&quad->coded_size) ||
-      !data.ReadVideoVisibleRect(&quad->video_visible_rect) ||
-      !data.ReadVideoColorSpace(&quad->video_color_space) ||
-      !data.ReadProtectedVideoType(&quad->protected_video_type) ||
-      !data.ReadHdrMetadata(&quad->hdr_metadata) ||
-      !data.ReadYPlaneResourceId(
-          &quad->resources
-               .ids[viz::YUVVideoDrawQuad::kYPlaneResourceIdIndex]) ||
-      !data.ReadUPlaneResourceId(
-          &quad->resources
-               .ids[viz::YUVVideoDrawQuad::kUPlaneResourceIdIndex]) ||
-      !data.ReadVPlaneResourceId(
-          &quad->resources
-               .ids[viz::YUVVideoDrawQuad::kVPlaneResourceIdIndex]) ||
-      !data.ReadAPlaneResourceId(
-          &quad->resources
-               .ids[viz::YUVVideoDrawQuad::kAPlaneResourceIdIndex])) {
-    return false;
-  }
-  static_assert(viz::YUVVideoDrawQuad::kAPlaneResourceIdIndex ==
-                    viz::DrawQuad::Resources::kMaxResourceIdCount - 1,
-                "The A plane resource should be the last resource ID.");
-
-  quad->u_scale = data.u_scale();
-  quad->v_scale = data.v_scale();
-
-  quad->resources.count =
-      quad->resources.ids[viz::YUVVideoDrawQuad::kAPlaneResourceIdIndex] ? 4
-                                                                         : 3;
-
-  quad->bits_per_channel = data.bits_per_channel();
-  if (quad->bits_per_channel < viz::YUVVideoDrawQuad::kMinBitsPerChannel) {
-    viz::SetDeserializationCrashKeyString("Bits per channel too small");
-    return false;
-  }
-  if (quad->bits_per_channel > viz::YUVVideoDrawQuad::kMaxBitsPerChannel) {
-    viz::SetDeserializationCrashKeyString("Bits per channel too big");
-    return false;
-  }
-  if (!data.ReadDamageRect(&quad->damage_rect))
-    return false;
-
-  return true;
 }
 
 // static

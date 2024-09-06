@@ -140,16 +140,6 @@ void FakeSkiaOutputSurface::MakePromiseSkImage(
       {backend_texture.getBackendFormat()});
 }
 
-sk_sp<SkImage> FakeSkiaOutputSurface::MakePromiseSkImageFromYUV(
-    const std::vector<ImageContext*>& contexts,
-    sk_sp<SkColorSpace> image_color_space,
-    SkYUVAInfo::PlaneConfig plane_config,
-    SkYUVAInfo::Subsampling subsampling) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  NOTIMPLEMENTED();
-  return nullptr;
-}
-
 gpu::SyncToken FakeSkiaOutputSurface::ReleaseImageContexts(
     std::vector<std::unique_ptr<ImageContext>> image_contexts) {
   return gpu::SyncToken();

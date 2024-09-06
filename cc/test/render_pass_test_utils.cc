@@ -27,7 +27,6 @@
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
-#include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/service/display/display_resource_provider.h"
@@ -222,12 +221,6 @@ std::vector<viz::ResourceId> AddOneOfEveryQuadType(
   viz::ResourceId resource8 =
       CreateAndImportResource(resource_provider, kSyncToken);
 
-  viz::ResourceId plane_resources[4];
-  for (int i = 0; i < 4; ++i) {
-    plane_resources[i] = CreateAndImportResource(
-        resource_provider, kSyncToken, gfx::ColorSpace::CreateREC601());
-  }
-
   viz::SharedQuadState* shared_state =
       to_pass->CreateAndAppendSharedQuadState();
   shared_state->SetAll(gfx::Transform(), rect, rect, gfx::MaskFilterInfo(),
@@ -310,18 +303,8 @@ std::vector<viz::ResourceId> AddOneOfEveryQuadType(
                     resource4, gfx::RectF(0, 0, 100, 100), gfx::Size(100, 100),
                     false, false, false);
 
-  auto* yuv_quad = to_pass->CreateAndAppendDrawQuad<viz::YUVVideoDrawQuad>();
-  yuv_quad->SetNew(shared_state2, rect, visible_rect, needs_blending,
-                   gfx::Size(100, 100), gfx::Rect(0, 0, 50, 50),
-                   gfx::Size(2, 2), plane_resources[0], plane_resources[1],
-                   plane_resources[2], plane_resources[3],
-                   gfx::ColorSpace::CreateREC601(), 8,
-                   gfx::ProtectedVideoType::kClear, std::nullopt);
-
-  return {resource1,          resource2,          resource3,
-          resource4,          resource5,          resource6,
-          resource8,          plane_resources[0], plane_resources[1],
-          plane_resources[2], plane_resources[3]};
+  return {resource1, resource2, resource3, resource4,
+          resource5, resource6, resource8};
 }
 
 static void CollectResources(std::vector<viz::ReturnedResource>* array,
@@ -373,14 +356,6 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
   resource_ids_to_transfer.push_back(resource7);
   resource_ids_to_transfer.push_back(resource8);
 
-  viz::ResourceId plane_resources[4];
-  for (int i = 0; i < 4; ++i) {
-    plane_resources[i] =
-        CreateAndImportResource(child_resource_provider, kDefaultSyncToken,
-                                gfx::ColorSpace::CreateREC601());
-    resource_ids_to_transfer.push_back(plane_resources[i]);
-  }
-
   std::vector<viz::ReturnedResource> returned_to_child;
   int child_id = resource_provider->CreateChild(
       base::BindRepeating(&CollectResources, &returned_to_child),
@@ -409,10 +384,6 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
   viz::ResourceId mapped_resource5 = resource_map[resource5];
   viz::ResourceId mapped_resource6 = resource_map[resource6];
   viz::ResourceId mapped_resource8 = resource_map[resource8];
-  viz::ResourceId mapped_plane_resources[4];
-  for (int i = 0; i < 4; ++i) {
-    mapped_plane_resources[i] = resource_map[plane_resources[i]];
-  }
 
   viz::SharedQuadState* shared_state =
       to_pass->CreateAndAppendSharedQuadState();
@@ -494,15 +465,6 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
   tile_quad->SetNew(shared_state2, rect, visible_rect, needs_blending,
                     mapped_resource4, gfx::RectF(0, 0, 100, 100),
                     gfx::Size(100, 100), false, false, false);
-
-  viz::YUVVideoDrawQuad* yuv_quad =
-      to_pass->CreateAndAppendDrawQuad<viz::YUVVideoDrawQuad>();
-  yuv_quad->SetNew(shared_state2, rect, visible_rect, needs_blending,
-                   gfx::Size(200, 200), gfx::Rect(0, 0, 100, 100),
-                   gfx::Size(2, 1), mapped_plane_resources[0],
-                   mapped_plane_resources[1], mapped_plane_resources[2],
-                   mapped_plane_resources[3], gfx::ColorSpace::CreateREC601(),
-                   8, gfx::ProtectedVideoType::kClear, std::nullopt);
 }
 
 std::unique_ptr<viz::AggregatedRenderPass> CopyToAggregatedRenderPass(

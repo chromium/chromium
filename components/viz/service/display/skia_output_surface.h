@@ -21,7 +21,6 @@
 #include "gpu/vulkan/buildflags.h"
 #include "media/gpu/buildflags.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-#include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "ui/gfx/gpu_fence_handle.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -83,15 +82,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
       ExternalUseClient::ImageContext* image_context,
       const gfx::ColorSpace& yuv_color_space,
       bool force_rgbx) = 0;
-
-  // Make a promise SkImage from the given |contexts| and |image_color_space|.
-  // The number of contexts provided should match the number of planes indicated
-  // by plane_config.
-  virtual sk_sp<SkImage> MakePromiseSkImageFromYUV(
-      const std::vector<ExternalUseClient::ImageContext*>& contexts,
-      sk_sp<SkColorSpace> image_color_space,
-      SkYUVAInfo::PlaneConfig plane_config,
-      SkYUVAInfo::Subsampling subsampling) = 0;
 
   // Called if SwapBuffers() will be skipped.
   virtual void SwapBuffersSkipped(const gfx::Rect root_pass_damage_rect) = 0;

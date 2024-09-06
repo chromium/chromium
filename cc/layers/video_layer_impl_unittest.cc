@@ -14,7 +14,6 @@
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
-#include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/service/display/output_surface.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"

@@ -49,8 +49,6 @@ bool CanSplitQuad(const DrawQuad::Material quad_material,
       // See `OverlayCandidate::FromDrawQuad()`.
       DrawQuad::Material::kTextureContent,
       DrawQuad::Material::kVideoHole,
-      // See `DCLayerOverlayProcessor::ProcessRenderPass()`.
-      DrawQuad::Material::kYuvVideoContent,
   };
 
   if (base::Contains(kNonSplittableMaterials, quad_material)) {
