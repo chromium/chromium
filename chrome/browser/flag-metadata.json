@@ -3076,6 +3076,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "enable-enterprise-updated-profile-creation-screen",
+    "owners": [ "ydago@chromium.org", "cbe-magic@google.com" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "enable-eol-notification-reset-dismissed-prefs",
     "owners": [ "mmourgos@chromium.org", "tbarzic@chromium.org"],
     "expiry_milestone": 116

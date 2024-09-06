@@ -1120,6 +1120,12 @@ const char kEnterpriseProfileBadgingName[] =
 const char kEnterpriseProfileBadgingDescription[] =
     "Enable enterprise profile badging on the toolbar avatar and profile menu";
 
+const char kEnterpriseUpdatedProfileCreationScreenName[] =
+    "Enable enterprise updated profile creation screens";
+const char kEnterpriseUpdatedProfileCreationScreenDescription[] =
+    "Enable enterprise updated profile creation screens in the profile picker "
+    "and forced profile creation.";
+
 const char kEnableExperimentalCookieFeaturesName[] =
     "Enable experimental cookie features";
 const char kEnableExperimentalCookieFeaturesDescription[] =

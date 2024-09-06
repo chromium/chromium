@@ -15464,6 +15464,8 @@ from previous Chrome versions.
   <int value="-2137491678" label="TabGroupsSaveV2:disabled"/>
   <int value="-2136173537" label="QuickAnswers:enabled"/>
   <int value="-2135698467" label="ExplicitBrowserSigninUIOnDesktop:enabled"/>
+  <int value="-2135582993"
+      label="EnterpriseUpdatedProfileCreationScreen:enabled"/>
   <int value="-2135375480" label="LocalPrinterObserving:enabled"/>
   <int value="-2135135465"
       label="AutofillEnablePrefetchingRiskDataForRetrieval:disabled"/>
@@ -19345,6 +19347,8 @@ from previous Chrome versions.
   <int value="-539515670" label="CrOSLateBootArcVmmSwap:disabled"/>
   <int value="-538728016" label="ChromeCartDomBasedHeuristics:disabled"/>
   <int value="-538448229" label="MaxUnthrottledTimeoutNestingLevel:enabled"/>
+  <int value="-538398895"
+      label="EnterpriseUpdatedProfileCreationScreen:disabled"/>
   <int value="-538323456" label="OmniboxSuggestionAnswerMigration:enabled"/>
   <int value="-538317834" label="ShimlessRMAComplianceCheck:enabled"/>
   <int value="-538141684" label="SafetyTip:enabled"/>

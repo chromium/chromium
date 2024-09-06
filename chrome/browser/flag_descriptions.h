@@ -646,6 +646,9 @@ extern const char kEnableAutofillAddressSavePromptDescription[];
 extern const char kEnterpriseProfileBadgingName[];
 extern const char kEnterpriseProfileBadgingDescription[];
 
+extern const char kEnterpriseUpdatedProfileCreationScreenName[];
+extern const char kEnterpriseUpdatedProfileCreationScreenDescription[];
+
 extern const char kEnableExperimentalCookieFeaturesName[];
 extern const char kEnableExperimentalCookieFeaturesDescription[];
 
