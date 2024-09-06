@@ -26,6 +26,7 @@ import android.widget.TextView;
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
+import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
@@ -50,7 +51,6 @@ import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -638,6 +638,26 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
             viewHolder.textView.setContentDescription(contentDescription);
         }
 
+        private void setDomainText(
+                Resources res,
+                ViewHolder viewHolder,
+                int tabCount,
+                List<RecentlyClosedTab> tabList) {
+            List<String> domainList = new ArrayList<>();
+            for (RecentlyClosedTab tab : tabList) {
+                String domain = UrlUtilities.getDomainAndRegistry(tab.getUrl().getSpec(), false);
+                domainList.add(domain);
+            }
+            String domainText =
+                    res.getQuantityString(
+                            R.plurals.recent_tabs_group_closure_domain_text,
+                            tabCount,
+                            tabCount,
+                            String.join(", ", domainList));
+            viewHolder.domainView.setText(domainText);
+            viewHolder.domainView.setVisibility(View.VISIBLE);
+        }
+
         @Override
         public RecentlyClosedEntry getChild(int childPosition) {
             if (isHistoryLink(childPosition)) return null;
@@ -678,7 +698,8 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                 int tabCount = 0;
                 if (entry instanceof RecentlyClosedGroup) {
                     RecentlyClosedGroup recentlyClosedGroup = (RecentlyClosedGroup) entry;
-                    tabCount = recentlyClosedGroup.getTabs().size();
+                    List<RecentlyClosedTab> tabList = recentlyClosedGroup.getTabs();
+                    tabCount = tabList.size();
 
                     String groupTitle = recentlyClosedGroup.getTitle();
                     @TabGroupColorId int colorId = recentlyClosedGroup.getColor();
@@ -693,31 +714,25 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                                 res.getString(
                                         R.string.recent_tabs_group_closure_with_title, groupTitle));
                     }
+                    setDomainText(res, viewHolder, tabCount, tabList);
                     setContentDescription(res, viewHolder, groupTitle, colorId, tabCount);
                     setIconView(viewHolder, colorId);
+                    loadGroupIcon(viewHolder);
                 }
                 if (entry instanceof RecentlyClosedBulkEvent) {
                     RecentlyClosedBulkEvent recentlyClosedBulkEvent =
                             (RecentlyClosedBulkEvent) entry;
-                    tabCount = recentlyClosedBulkEvent.getTabs().size();
+                    List<RecentlyClosedTab> tabList = recentlyClosedBulkEvent.getTabs();
+                    tabCount = tabList.size();
 
                     viewHolder.textView.setText(
                             res.getString(R.string.recent_tabs_bulk_closure, tabCount));
                     viewHolder.textView.setContentDescription(
                             res.getString(
                                     R.string.recent_tabs_bulk_closure_accessibility, tabCount));
+                    setDomainText(res, viewHolder, tabCount, tabList);
+                    loadTabCount(viewHolder, tabCount);
                 }
-
-                // Entries without dates have a time of 0. TabRestoreService may not save timestamps
-                // between restarts.
-                if (entry.getDate().getTime() != 0L) {
-                    String dateString =
-                            DateFormat.getDateInstance(DateFormat.LONG, getPreferredLocale())
-                                    .format(entry.getDate());
-                    viewHolder.domainView.setText(dateString);
-                    viewHolder.domainView.setVisibility(View.VISIBLE);
-                }
-                loadTabCount(viewHolder, tabCount);
             } else {
                 RecentlyClosedTab tab = (RecentlyClosedTab) entry;
 
@@ -907,6 +922,15 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
     private void loadTabCount(final ViewHolder viewHolder, int tabCount) {
         RecentTabCountDrawable image = new RecentTabCountDrawable(mActivity);
         image.updateTabCount(tabCount);
+        viewHolder.imageView.setImageDrawable(image);
+    }
+
+    private void loadGroupIcon(final ViewHolder viewHolder) {
+        Drawable image =
+                ResourcesCompat.getDrawable(
+                        mActivity.getResources(),
+                        R.drawable.ic_features_24dp,
+                        mActivity.getTheme());
         viewHolder.imageView.setImageDrawable(image);
     }
 

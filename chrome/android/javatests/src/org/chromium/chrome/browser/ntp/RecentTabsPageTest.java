@@ -25,6 +25,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.StringRes;
 import androidx.test.filters.LargeTest;
@@ -65,6 +66,7 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -97,7 +99,7 @@ public class RecentTabsPageTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(8)
+                    .setRevision(9)
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_RECENT_TABS)
                     .build();
 
@@ -128,8 +130,8 @@ public class RecentTabsPageTest {
     @Test
     @MediumTest
     @Feature({"RecentTabsPage"})
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
-    public void testRecentlyClosedGroupColorContentDescriptions() throws ExecutionException {
+    @DisableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
+    public void testRecentlyClosedGroupNoColorContentDescriptions() throws ExecutionException {
         mPage = loadRecentTabsPage();
         // Set a recently closed group with a title and confirm a view is rendered for it.
         final RecentlyClosedGroup titleGroup =
@@ -184,16 +186,12 @@ public class RecentTabsPageTest {
         final String titleGroupAccessibilityString =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            Resources res = mActivity.getResources();
-                            final @StringRes int colorDesc =
-                                    ColorPickerUtils
-                                            .getTabGroupColorPickerItemColorAccessibilityString(
-                                                    titleGroup.getColor());
-                            return res.getString(
-                                    R.string
-                                            .recent_tabs_group_closure_with_title_with_color_accessibility,
-                                    titleGroup.getTitle(),
-                                    res.getString(colorDesc));
+                            return mActivity
+                                    .getResources()
+                                    .getString(
+                                            R.string
+                                                    .recent_tabs_group_closure_with_title_accessibility,
+                                            titleGroup.getTitle());
                         });
         final String noTitleGroupString =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -208,20 +206,16 @@ public class RecentTabsPageTest {
         final String noTitleGroupAccessibilityString =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            Resources res = mActivity.getResources();
-                            final @StringRes int colorDesc =
-                                    ColorPickerUtils
-                                            .getTabGroupColorPickerItemColorAccessibilityString(
-                                                    noTitleGroup.getColor());
-                            return res.getQuantityString(
-                                    R.plurals
-                                            .recent_tabs_group_closure_without_title_with_color_accessibility,
-                                    noTitleGroup.getTabs().size(),
-                                    noTitleGroup.getTabs().size(),
-                                    res.getString(colorDesc));
+                            return mActivity
+                                    .getResources()
+                                    .getQuantityString(
+                                            R.plurals
+                                                    .recent_tabs_group_closure_without_title_accessibility,
+                                            noTitleGroup.getTabs().size(),
+                                            noTitleGroup.getTabs().size());
                         });
         final View titleGroupView = waitForView(titleGroupString);
-        final View noTitleGroupView = waitForView(noTitleGroupString);
+        final View noTitleGroupView = waitForTabCountTitleView(noTitleGroupString);
         assertEquals(titleGroupAccessibilityString, titleGroupView.getContentDescription());
         assertEquals(noTitleGroupAccessibilityString, noTitleGroupView.getContentDescription());
     }
@@ -332,7 +326,7 @@ public class RecentTabsPageTest {
     @Test
     @LargeTest
     @Feature({"RecentTabsPage", "RenderTest"})
-    @DisableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     // Disable sign-in to suppress sign-in promo, as it's unrelated to this render test.
     @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
     public void testRecentlyClosedGroup_WithTitle() throws Exception {
@@ -370,12 +364,16 @@ public class RecentTabsPageTest {
         final String groupAccessibilityString =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            return mActivity
-                                    .getResources()
-                                    .getString(
-                                            R.string
-                                                    .recent_tabs_group_closure_with_title_accessibility,
-                                            group.getTitle());
+                            Resources res = mActivity.getResources();
+                            final @StringRes int colorDesc =
+                                    ColorPickerUtils
+                                            .getTabGroupColorPickerItemColorAccessibilityString(
+                                                    group.getColor());
+                            return res.getString(
+                                    R.string
+                                            .recent_tabs_group_closure_with_title_with_color_accessibility,
+                                    group.getTitle(),
+                                    res.getString(colorDesc));
                         });
         final View view = waitForView(groupString);
         assertEquals(groupAccessibilityString, view.getContentDescription());
@@ -399,7 +397,7 @@ public class RecentTabsPageTest {
     @Test
     @LargeTest
     @Feature({"RecentTabsPage", "RenderTest"})
-    @DisableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     // Disable sign-in to suppress sign-in promo, as it's unrelated to this render test.
     @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
     public void testRecentlyClosedGroup_WithoutTitle() throws Exception {
@@ -439,16 +437,38 @@ public class RecentTabsPageTest {
         final String groupAccessibilityString =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
+                            Resources res = mActivity.getResources();
+                            final @StringRes int colorDesc =
+                                    ColorPickerUtils
+                                            .getTabGroupColorPickerItemColorAccessibilityString(
+                                                    group.getColor());
+                            return res.getQuantityString(
+                                    R.plurals
+                                            .recent_tabs_group_closure_without_title_with_color_accessibility,
+                                    group.getTabs().size(),
+                                    group.getTabs().size(),
+                                    res.getString(colorDesc));
+                        });
+        List<String> domainList = new ArrayList<>();
+        for (RecentlyClosedTab tab : group.getTabs()) {
+            String domain = UrlUtilities.getDomainAndRegistry(tab.getUrl().getSpec(), false);
+            domainList.add(domain);
+        }
+        final String groupDomainString =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
                             return mActivity
                                     .getResources()
                                     .getQuantityString(
-                                            R.plurals
-                                                    .recent_tabs_group_closure_without_title_accessibility,
+                                            R.plurals.recent_tabs_group_closure_domain_text,
                                             group.getTabs().size(),
-                                            group.getTabs().size());
+                                            group.getTabs().size(),
+                                            String.join(", ", domainList));
                         });
-        final View view = waitForView(groupString);
+        final View view = waitForTabCountTitleView(groupString);
         assertEquals(groupAccessibilityString, view.getContentDescription());
+        final TextView domainView = (TextView) waitForView(groupDomainString);
+        assertEquals(groupDomainString, domainView.getText());
 
         mRenderTestRule.render(mPage.getView(), "recently_closed_group_without_title");
 
@@ -512,7 +532,25 @@ public class RecentTabsPageTest {
                                     .getResources()
                                     .getString(R.string.recent_tabs_bulk_closure, size);
                         });
-        final View view = waitForView(eventString);
+        List<String> domainList = new ArrayList<>();
+        for (RecentlyClosedTab tab : event.getTabs()) {
+            String domain = UrlUtilities.getDomainAndRegistry(tab.getUrl().getSpec(), false);
+            domainList.add(domain);
+        }
+        final String eventDomainString =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return mActivity
+                                    .getResources()
+                                    .getQuantityString(
+                                            R.plurals.recent_tabs_group_closure_domain_text,
+                                            event.getTabs().size(),
+                                            event.getTabs().size(),
+                                            String.join(", ", domainList));
+                        });
+        final View view = waitForTabCountTitleView(eventString);
+        final TextView domainView = (TextView) waitForView(eventDomainString);
+        assertEquals(eventDomainString, domainView.getText());
 
         mRenderTestRule.render(mPage.getView(), "recently_closed_bulk_event");
 
@@ -625,6 +663,20 @@ public class RecentTabsPageTest {
                             "Could not find view with this text: " + text,
                             views.size(),
                             Matchers.is(1));
+                });
+        return views.get(0);
+    }
+
+    /** Waits for the view with the specified text to appear. */
+    private View waitForTabCountTitleView(final String text) {
+        final ArrayList<View> views = new ArrayList<>();
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    mPage.getView().findViewsWithText(views, text, View.FIND_VIEWS_WITH_TEXT);
+                    Criteria.checkThat(
+                            "Could not find views with this text: " + text,
+                            views.size(),
+                            Matchers.is(2));
                 });
         return views.get(0);
     }
