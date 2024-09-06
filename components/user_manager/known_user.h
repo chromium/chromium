@@ -101,6 +101,22 @@ class USER_MANAGER_EXPORT KnownUser final {
                       const std::string& path,
                       const int in_value);
 
+  // Return std::nullopt if the value is not found or doesn't have the double
+  // type.
+  std::optional<double> FindDoublePath(const AccountId& account_id,
+                                       std::string_view path) const;
+
+  // Returns true if |account_id| preference by |path| does exist,
+  // fills in |out_value|. Otherwise returns false.
+  bool GetDoublePrefForTest(const AccountId& account_id,
+                            const std::string& path,
+                            double* out_value);
+
+  // Updates user's identified by |account_id| double preference |path|.
+  void SetDoublePref(const AccountId& account_id,
+                     const std::string& path,
+                     const double in_value);
+
   // Returns true if |account_id| preference by |path| does exist,
   // fills in |out_value|. Otherwise returns false.
   bool GetPrefForTest(const AccountId& account_id,
