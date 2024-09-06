@@ -692,7 +692,6 @@ export class DeleteCommand extends FilesCommand {
       fileManager: CommandHandlerDeps): boolean {
     return entries.length > 0 &&
         !this.containsReadOnlyEntry_(entries, fileManager) &&
-        fileManager.directoryModel.canDeleteEntries() &&
         hasCapability(fileManager, entries, 'canDelete');
   }
 
