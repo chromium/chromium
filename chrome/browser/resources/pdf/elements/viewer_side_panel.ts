@@ -266,6 +266,10 @@ export class ViewerSidePanelElement extends CrLitElement {
     return this.currentType_ === type;
   }
 
+  protected isCurrentSize_(size: number): boolean {
+    return this.getCurrentBrush_().size === size;
+  }
+
   protected isCurrentColor_(hex: string): boolean {
     assert(this.shouldShowColorOptions_());
 
