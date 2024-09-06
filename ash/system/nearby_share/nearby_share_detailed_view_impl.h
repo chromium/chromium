@@ -18,7 +18,10 @@ class View;
 
 namespace ash {
 
-class DetailedViewDelegate;
+class HoverHighlightView;
+class NearbyShareDelegate;
+class RoundedContainer;
+class Switch;
 
 class ASH_EXPORT NearbyShareDetailedViewImpl : public NearbyShareDetailedView,
                                                public TrayDetailedView {
@@ -41,9 +44,18 @@ class ASH_EXPORT NearbyShareDetailedViewImpl : public NearbyShareDetailedView,
   // TrayDetailedView:
   void CreateExtraTitleRowButtons() override;
 
+  void CreateIsEnabledContainer();
   void OnSettingsButtonClicked();
+  void OnToggleClicked();
 
   raw_ptr<views::Button> settings_button_ = nullptr;
+  raw_ptr<RoundedContainer> is_enabled_container_ = nullptr;
+  raw_ptr<HoverHighlightView> toggle_row_ = nullptr;
+  // TODO(brandosocarras, b/360150790): use `toggle_switch_` in this class, not
+  // just in utest.
+  raw_ptr<Switch> toggle_switch_ = nullptr;
+
+  const raw_ptr<NearbyShareDelegate> nearby_share_delegate_;
 
   base::WeakPtrFactory<NearbyShareDetailedViewImpl> weak_factory_{this};
 };

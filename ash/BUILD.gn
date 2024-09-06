@@ -3248,6 +3248,7 @@ component("ash") {
     "//chromeos/ash/components/osauth/public",
     "//chromeos/ash/services/hotspot_config/public/mojom",
     "//chromeos/ash/services/multidevice_setup/public/mojom",
+    "//chromeos/ash/services/nearby/public/mojom",
     "//chromeos/crosapi/mojom",
     "//chromeos/services/machine_learning/public/mojom",
     "//chromeos/services/network_config/public/cpp",
