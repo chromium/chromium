@@ -353,6 +353,7 @@ source_set("browser_tests") {
 
   sources = [
     "accessibility_browsertest.cc",
+    "account_supervision_change_browsertest.cc",
     "ash_hud_login_browsertest.cc",
     "auth_factor_config_browsertest.cc",
     "auth_flows_login_ui_test.cc",
