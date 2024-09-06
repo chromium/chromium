@@ -14,6 +14,7 @@
 #include <string_view>
 
 #include "base/memory/weak_ptr.h"
+#include "base/threading/sequence_bound.h"
 #include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 #include "services/device/public/cpp/geolocation/system_geolocation_source.h"
@@ -38,8 +39,12 @@ class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSourceWin
   void OpenSystemPermissionSetting() override;
   void RequestPermission() override;
 
+  // Handles system permission update from `AccessCheckHelper`.
+  void OnPermissionStatusUpdated(LocationSystemPermissionStatus status);
+
  private:
-  void PollPermissionStatus();
+  class AccessCheckHelper;
+
   void OnLaunchUriSuccess(uint8_t launched);
   void OnLaunchUriFailure(HRESULT result);
 
@@ -47,11 +52,6 @@ class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSourceWin
       ABI::Windows::Devices::Geolocation::GeolocationAccessStatus
           geolocation_access_status);
   void OnRequestLocationAccessFailure(HRESULT result);
-
-  // AppCapability object used to determine the current access status.
-  Microsoft::WRL::ComPtr<ABI::Windows::Security::Authorization::
-                             AppCapabilityAccess::IAppCapability>
-      location_capability_;
 
   // The pending operation for launching the settings page, or nullptr if not
   // launching the settings page.
@@ -74,6 +74,10 @@ class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSourceWin
   // The current permission status, or nullopt if the status has not been
   // polled.
   std::optional<LocationSystemPermissionStatus> permission_status_;
+
+  // Helper for checking location permission status on a dedicated COM STA
+  // thread.
+  base::SequenceBound<AccessCheckHelper> access_check_helper_;
 
   base::WeakPtrFactory<SystemGeolocationSourceWin> weak_factory_{this};
 };
