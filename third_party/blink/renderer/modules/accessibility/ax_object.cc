@@ -540,6 +540,18 @@ void AddIntListAttributeFromOffsetVector(
     node_data->AddIntListAttribute(attr, offset_values);
 }
 
+const QualifiedName& DeprecatedAriaColtextAttrName() {
+  DEFINE_STATIC_LOCAL(QualifiedName, aria_coltext_attr,
+                      (AtomicString("aria-coltext")));
+  return aria_coltext_attr;
+}
+
+const QualifiedName& DeprecatedAriaRowtextAttrName() {
+  DEFINE_STATIC_LOCAL(QualifiedName, aria_rowtext_attr,
+                      (AtomicString("aria-rowtext")));
+  return aria_rowtext_attr;
+}
+
 }  // namespace
 
 int32_t ToAXMarkerType(DocumentMarker::MarkerType marker_type) {
@@ -2221,13 +2233,24 @@ void AXObject::SerializeTableAttributes(ui::AXNodeData* node_data) const {
     }
 
     if (RuntimeEnabledFeatures::AriaRowColIndexTextEnabled()) {
-      const AtomicString& aria_cell_row_index_text =
+      // TODO(accessibility): Remove deprecated attribute support for
+      // aria-rowtext/aria-coltext once Sheets uses standard attribute names
+      // aria-rowindextext/aria-colindextext.
+      AtomicString aria_cell_row_index_text =
           GetAOMPropertyOrARIAAttribute(AOMStringProperty::kRowIndexText);
+      if (aria_cell_row_index_text.empty()) {
+        aria_cell_row_index_text =
+            GetAttribute(DeprecatedAriaRowtextAttrName());
+      }
       TruncateAndAddStringAttribute(
           node_data, ax::mojom::blink::StringAttribute::kAriaCellRowIndexText,
           aria_cell_row_index_text);
-      const AtomicString& aria_cell_column_index_text =
+      AtomicString aria_cell_column_index_text =
           GetAOMPropertyOrARIAAttribute(AOMStringProperty::kColIndexText);
+      if (aria_cell_column_index_text.empty()) {
+        aria_cell_column_index_text =
+            GetAttribute(DeprecatedAriaColtextAttrName());
+      }
       TruncateAndAddStringAttribute(
           node_data,
           ax::mojom::blink::StringAttribute::kAriaCellColumnIndexText,

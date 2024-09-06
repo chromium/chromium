@@ -1470,20 +1470,6 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
       AddAttributeToList(ax::mojom::IntAttribute::kAriaCellColumnIndex,
                          "colindex", attributes);
     }
-
-    // Experimental: expose aria-rowtext / aria-coltext. Not standardized
-    // yet, but obscure enough that it's safe to expose.
-    // http://crbug.com/791634
-    for (const auto& attribute_value : GetHtmlAttributes()) {
-      const std::string& attr = attribute_value.first;
-      const std::string& value = attribute_value.second;
-      if (attr == "aria-coltext") {
-        AddAttributeToList("coltext", value, attributes);
-      }
-      if (attr == "aria-rowtext") {
-        AddAttributeToList("rowtext", value, attributes);
-      }
-    }
   }
 
   // Expose row or column header sort direction.
@@ -1510,16 +1496,21 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
   }
 
   if (IsCellOrTableHeader(GetRole())) {
-    // Expose colspan attribute.
-    std::string colspan;
-    if (GetHtmlAttribute("aria-colspan", &colspan)) {
-      AddAttributeToList("colspan", colspan, attributes);
-    }
-    // Expose rowspan attribute.
-    std::string rowspan;
-    if (GetHtmlAttribute("aria-rowspan", &rowspan)) {
-      AddAttributeToList("rowspan", rowspan, attributes);
-    }
+    // These are the older, backwards compatible names that work with JAWS/NVDA:
+    AddAttributeToList(ax::mojom::StringAttribute::kAriaCellColumnIndexText,
+                       "coltext", attributes);
+    AddAttributeToList(ax::mojom::StringAttribute::kAriaCellRowIndexText,
+                       "rowtext", attributes);
+    // These newer names are consistent with the ARIA attribute names:
+    AddAttributeToList(ax::mojom::StringAttribute::kAriaCellColumnIndexText,
+                       "colindextext", attributes);
+    AddAttributeToList(ax::mojom::StringAttribute::kAriaCellRowIndexText,
+                       "rowindextext", attributes);
+
+    AddAttributeToList(ax::mojom::IntAttribute::kAriaCellColumnSpan, "colspan",
+                       attributes);
+    AddAttributeToList(ax::mojom::IntAttribute::kAriaCellRowSpan, "rowspan",
+                       attributes);
   }
 
   // Expose the value of a progress bar, slider, scroll bar or <select> element.
