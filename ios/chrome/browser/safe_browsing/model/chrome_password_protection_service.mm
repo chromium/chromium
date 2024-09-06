@@ -696,7 +696,7 @@ void ChromePasswordProtectionService::FillUserPopulation(
     const GURL& main_frame_url,
     LoginReputationClientRequest* request_proto) {
   *request_proto->mutable_population() =
-      GetUserPopulationForBrowserState(browser_state_);
+      GetUserPopulationForProfile(browser_state_);
 
   safe_browsing::VerdictCacheManager* cache_manager =
       VerdictCacheManagerFactory::GetForBrowserState(browser_state_);

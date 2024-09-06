@@ -14,21 +14,20 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
-safe_browsing::ChromeUserPopulation GetUserPopulationForBrowserState(
-    ChromeBrowserState* browser_state) {
-  syncer::SyncService* sync =
-      SyncServiceFactory::GetForBrowserState(browser_state);
+safe_browsing::ChromeUserPopulation GetUserPopulationForProfile(
+    ProfileIOS* profile) {
+  syncer::SyncService* sync = SyncServiceFactory::GetForBrowserState(profile);
   bool is_history_sync_active =
       sync && !sync->IsLocalSyncEnabled() &&
       sync->GetActiveDataTypes().Has(syncer::HISTORY_DELETE_DIRECTIVES);
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser_state);
+      IdentityManagerFactory::GetForProfile(profile);
   bool is_signed_in =
       identity_manager &&
       safe_browsing::SyncUtils::IsPrimaryAccountSignedIn(identity_manager);
   return safe_browsing::GetUserPopulation(
-      browser_state->GetPrefs(), browser_state->IsOffTheRecord(),
-      is_history_sync_active, is_signed_in,
+      profile->GetPrefs(), profile->IsOffTheRecord(), is_history_sync_active,
+      is_signed_in,
       /*is_under_advanced_protection=*/false,
       GetApplicationContext()->GetBrowserPolicyConnector(),
       /*num_profiles=*/std::nullopt,
