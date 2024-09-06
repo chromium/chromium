@@ -856,7 +856,7 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
     picture_color_space = config_.color_space_info().ToGfxColorSpace();
   }
 
-  media::ClientSharedImageOrMailboxHolder shared_image;
+  scoped_refptr<gpu::ClientSharedImage> shared_image;
   D3D11Status result =
       picture_buffer->ProcessTexture(picture_color_space, shared_image);
   if (!result.is_ok()) {
@@ -864,25 +864,11 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
     return false;
   }
 
-  scoped_refptr<VideoFrame> frame;
-  if (absl::holds_alternative<scoped_refptr<gpu::ClientSharedImage>>(
-          shared_image)) {
-    scoped_refptr<gpu::ClientSharedImage> client_shared_image =
-        absl::get<scoped_refptr<gpu::ClientSharedImage>>(
-            std::move(shared_image));
-    frame = VideoFrame::WrapSharedImage(
-        texture_selector_->PixelFormat(), client_shared_image,
-        client_shared_image->creation_sync_token(), GL_TEXTURE_EXTERNAL_OES,
-        VideoFrame::ReleaseMailboxCB(), picture_buffer->size(), visible_rect,
-        natural_size, timestamp);
-  } else {
-    gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes] = {
-        absl::get<gpu::MailboxHolder>(std::move(shared_image))};
-    frame = VideoFrame::WrapNativeTextures(
-        texture_selector_->PixelFormat(), mailbox_holders,
-        VideoFrame::ReleaseMailboxCB(), picture_buffer->size(), visible_rect,
-        natural_size, timestamp);
-  }
+  scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
+      texture_selector_->PixelFormat(), shared_image,
+      shared_image->creation_sync_token(), GL_TEXTURE_EXTERNAL_OES,
+      VideoFrame::ReleaseMailboxCB(), picture_buffer->size(), visible_rect,
+      natural_size, timestamp);
 
   if (!frame) {
     // This can happen if, somehow, we get an unsupported combination of

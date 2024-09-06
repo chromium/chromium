@@ -34,7 +34,7 @@ class MEDIA_GPU_EXPORT CopyingTexture2DWrapper : public Texture2DWrapper {
 
   D3D11Status ProcessTexture(
       const gfx::ColorSpace& input_color_space,
-      ClientSharedImageOrMailboxHolder& shared_image_dest) override;
+      scoped_refptr<gpu::ClientSharedImage>& shared_image_dest) override;
 
   D3D11Status Init(scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
                    GetCommandBufferHelperCB get_helper_cb,

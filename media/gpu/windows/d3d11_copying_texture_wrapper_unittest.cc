@@ -80,7 +80,7 @@ class MockTexture2DWrapper : public Texture2DWrapper {
 
   D3D11Status ProcessTexture(
       const gfx::ColorSpace& input_color_space,
-      ClientSharedImageOrMailboxHolder& shared_image_dest) override {
+      scoped_refptr<gpu::ClientSharedImage>& shared_image_dest) override {
     return MockProcessTexture();
   }
 
@@ -210,7 +210,7 @@ TEST_P(D3D11CopyingTexture2DWrapperTest,
 
   // TODO: check |gpu_task_runner_|.
 
-  ClientSharedImageOrMailboxHolder shared_image;
+  scoped_refptr<gpu::ClientSharedImage> shared_image;
   gfx::ColorSpace input_color_space = gfx::ColorSpace::CreateSRGBLinear();
   EXPECT_EQ(
       wrapper

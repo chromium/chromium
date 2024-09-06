@@ -77,7 +77,7 @@ class MEDIA_GPU_EXPORT D3D11PictureBuffer
   // |input_color_space| is the color space of our input texture.
   D3D11Status ProcessTexture(
       const gfx::ColorSpace& input_color_space,
-      ClientSharedImageOrMailboxHolder& shared_image_dest);
+      scoped_refptr<gpu::ClientSharedImage>& shared_image_dest);
   ComD3D11Texture2D Texture() const;
   D3D11Status::Or<ID3D11VideoDecoderOutputView*> AcquireOutputView() const;
 

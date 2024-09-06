@@ -103,7 +103,7 @@ D3D11Status DefaultTexture2DWrapper::BeginSharedImageAccess() {
 
 D3D11Status DefaultTexture2DWrapper::ProcessTexture(
     const gfx::ColorSpace& input_color_space,
-    ClientSharedImageOrMailboxHolder& shared_image_dest) {
+    scoped_refptr<gpu::ClientSharedImage>& shared_image_dest) {
   // If we've received an error, then return it to our caller.  This is probably
   // from some previous operation.
   // TODO(liberato): Return the error.

@@ -70,7 +70,7 @@ D3D11Status D3D11PictureBuffer::Init(
 
 D3D11Status D3D11PictureBuffer::ProcessTexture(
     const gfx::ColorSpace& input_color_space,
-    ClientSharedImageOrMailboxHolder& shared_image_dest) {
+    scoped_refptr<gpu::ClientSharedImage>& shared_image_dest) {
   return texture_wrapper_->ProcessTexture(input_color_space, shared_image_dest);
 }
 
