@@ -103,7 +103,6 @@ source_set("sync") {
     "//components/privacy_sandbox:tracking_protection_prefs",
     "//components/saved_tab_groups:core",
     "//components/saved_tab_groups:model",
-    "//components/search_engines",
     "//components/send_tab_to_self",
     "//components/sharing_message",
     "//components/spellcheck:buildflags",

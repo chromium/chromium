@@ -215,6 +215,7 @@ IOSChromeSyncClient::CreateDataTypeControllers(
   builder.SetSupervisedUserSettingsService(
       SupervisedUserSettingsServiceFactory::GetForBrowserState(browser_state_));
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  builder.SetTemplateURLService(nullptr);
   builder.SetUserEventService(
       IOSUserEventServiceFactory::GetForBrowserState(browser_state_));
 

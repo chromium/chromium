@@ -11,6 +11,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -55,10 +56,13 @@ class SyncServiceFactoryTest : public testing::Test {
                               FaviconServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(HistoryServiceFactory::GetInstance(),
                               HistoryServiceFactory::GetDefaultFactory());
-    builder.AddTestingFactory(TrustedVaultServiceFactory::GetInstance(),
-                              TrustedVaultServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               SyncServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(
+        TemplateURLServiceFactory::GetInstance(),
+        base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
+    builder.AddTestingFactory(TrustedVaultServiceFactory::GetInstance(),
+                              TrustedVaultServiceFactory::GetDefaultFactory());
     // Some services will only be created if there is a WebDataService.
     builder.AddTestingFactory(WebDataServiceFactory::GetInstance(),
                               WebDataServiceFactory::GetDefaultFactory());
@@ -229,6 +233,7 @@ TEST_F(SyncServiceFactoryTest, CreateSyncServiceImplDefault) {
   const syncer::DataTypeSet default_types = DefaultDatatypes();
   EXPECT_EQ(default_types.size(), types.size());
   for (syncer::DataType type : default_types) {
-    EXPECT_TRUE(types.Has(type)) << type << " not found in datatypes map";
+    EXPECT_TRUE(types.Has(type))
+        << syncer::DataTypeToDebugString(type) << " not found in datatypes map";
   }
 }

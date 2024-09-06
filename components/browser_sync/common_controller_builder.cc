@@ -47,6 +47,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/core/dual_reading_list_model.h"
 #include "components/reading_list/core/reading_list_local_data_batch_uploader.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/send_tab_to_self/send_tab_to_self_data_type_controller.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/sharing_message/sharing_message_bridge.h"
@@ -311,6 +312,11 @@ void CommonControllerBuilder::SetSupervisedUserSettingsService(
   supervised_user_settings_service_.Set(supervised_user_settings_service);
 }
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+
+void CommonControllerBuilder::SetTemplateURLService(
+    TemplateURLService* template_url_service) {
+  template_url_service_.Set(template_url_service);
+}
 
 void CommonControllerBuilder::SetUserEventService(
     syncer::UserEventService* user_event_service) {
@@ -662,6 +668,17 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
             : nullptr,
         std::make_unique<reading_list::ReadingListLocalDataBatchUploader>(
             dual_reading_list_model_.value())));
+  }
+
+  if (!disabled_types.Has(syncer::SEARCH_ENGINES) &&
+      template_url_service_.value()) {
+    controllers.push_back(
+        std::make_unique<syncer::SyncableServiceBasedDataTypeController>(
+            syncer::SEARCH_ENGINES,
+            data_type_store_service_.value()->GetStoreFactory(),
+            template_url_service_.value()->AsWeakPtr(), dump_stack,
+            syncer::SyncableServiceBasedDataTypeController::DelegateMode::
+                kLegacyFullSyncModeOnly));
   }
 
   if (!disabled_types.Has(syncer::USER_EVENTS)) {

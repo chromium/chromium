@@ -21,6 +21,7 @@
 class GoogleGroupsManager;
 class PrefService;
 class SharingMessageBridge;
+class TemplateURLService;
 
 namespace autofill {
 class AutofillWebDataService;
@@ -185,6 +186,7 @@ class CommonControllerBuilder {
           supervised_user_settings_service);
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
+  void SetTemplateURLService(TemplateURLService* template_url_service);
   void SetUserEventService(syncer::UserEventService* user_event_service);
 
   // Actually builds the controllers. All setters above must have been called
@@ -284,6 +286,7 @@ class CommonControllerBuilder {
       product_specifications_service_;
   SafeOptional<raw_ptr<data_sharing::DataSharingService>> data_sharing_service_;
   SafeOptional<raw_ptr<SharingMessageBridge>> sharing_message_bridge_;
+  SafeOptional<raw_ptr<TemplateURLService>> template_url_service_;
 };
 
 }  // namespace browser_sync
