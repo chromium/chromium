@@ -237,6 +237,10 @@ int64_t GetStorageFileSizeKB(const base::FilePath& path_to_database) {
   return file_size;
 }
 
+void DeduplicateSourceIds(std::vector<StoredSource::Id>& ids) {
+  ids = base::flat_set<StoredSource::Id>(std::move(ids)).extract();
+}
+
 }  // namespace
 
 struct AttributionStorageSql::ReportCorruptionStatusSetAndIds {
@@ -938,6 +942,10 @@ bool AttributionStorageSql::RemoveSourcesWithOutdatedScopes(
     return true;
   }
 
+  const size_t remaining_scopes_allowed =
+      pending_scopes_data->attribution_scope_limit() -
+      pending_scopes_data->attribution_scopes_set().scopes().size();
+
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
     return false;
@@ -979,6 +987,13 @@ bool AttributionStorageSql::RemoveSourcesWithOutdatedScopes(
           (*std::move(scopes_data)).TakeAttributionScopesSet().TakeScopes();
 
       for (std::string& scope : scopes) {
+        // Reduce memory consumption when we already know that the scope is
+        // selected.
+        if (pending_scopes_data->attribution_scopes_set().scopes().contains(
+                scope)) {
+          continue;
+        }
+
         records.emplace_back(std::move(scope), source_id, has_reports,
                              this_source_time);
       }
@@ -994,14 +1009,10 @@ bool AttributionStorageSql::RemoveSourcesWithOutdatedScopes(
 
     // We use a `std::set` here instead of `base::flat_set` because the number
     // of insertions may be large. We use `std::string_view` to avoid having to
-    // copy the initial set from `pending_scopes_data`, which is guaranteed to
-    // outlive the set.
-    for (std::set<std::string_view> selected_scopes(
-             pending_scopes_data->attribution_scopes_set().scopes().begin(),
-             pending_scopes_data->attribution_scopes_set().scopes().end());
+    // move values out of `records`.
+    for (std::set<std::string_view> selected_scopes;
          const auto& record : records) {
-      if (selected_scopes.size() <
-          pending_scopes_data->attribution_scope_limit()) {
+      if (selected_scopes.size() < remaining_scopes_allowed) {
         selected_scopes.insert(record.scope);
       } else if (!selected_scopes.contains(record.scope)) {
         AssignSourceForDeactivationOrDeletion(record.id, record.has_reports,
@@ -1009,6 +1020,9 @@ bool AttributionStorageSql::RemoveSourcesWithOutdatedScopes(
                                               source_ids_to_deactivate);
       }
     }
+
+    DeduplicateSourceIds(source_ids_to_delete);
+    DeduplicateSourceIds(source_ids_to_deactivate);
 
     if (!DeleteEventLevelReportsTriggeredLaterThanForSources(
             source_ids_to_deactivate, source_time) ||
@@ -1503,11 +1517,8 @@ void AttributionStorageSql::ClearDataWithFilter(
   }
 
   // Since multiple reports can be associated with a single source,
-  // deduplicate source IDs using a set to avoid redundant DB operations
-  // below.
-  source_ids_to_delete =
-      base::flat_set<StoredSource::Id>(std::move(source_ids_to_delete))
-          .extract();
+  // deduplicate source IDs to avoid redundant DB operations below.
+  DeduplicateSourceIds(source_ids_to_delete);
 
   if (!DeleteSources(source_ids_to_delete)) {
     return;
