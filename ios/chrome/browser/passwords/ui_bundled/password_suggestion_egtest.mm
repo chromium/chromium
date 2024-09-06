@@ -86,11 +86,17 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
   // enabled by default.
   [ChromeEarlGrey clearUserPrefWithName:
                       prefs::kIosPasswordGenerationBottomSheetDismissCount];
+
+  // Clear password store to make sure that the sheet can be displayed in the
+  // test.
+  [PasswordSettingsAppInterface clearPasswordStores];
 }
 
 - (void)tearDown {
   [ChromeEarlGrey clearUserPrefWithName:
                       prefs::kIosPasswordGenerationBottomSheetDismissCount];
+  // The test may leave stored crendentials behind so clear them.
+  [PasswordSettingsAppInterface clearPasswordStores];
   [super tearDown];
 }
 
@@ -250,6 +256,9 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
 
   [self verifyNewPasswordFieldsHaveBeenFilled];
 
+  // Clear the saved password so the proactive sheet can be displayed again.
+  [PasswordSettingsAppInterface clearPasswordStores];
+
   // Verify that the bottom sheet is unsilenced when triggered again.
   [ChromeEarlGrey reload];
 
@@ -311,6 +320,31 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
       performAction:chrome_test_util::TapWebElementWithId(kNewPasswordFieldID)];
 
   [ChromeEarlGrey waitForKeyboardToAppear];
+}
+
+- (void)testProactiveBottomSheetNotShownWhenCredentialsAvailable {
+  [self loadSignupPage];
+
+  // Fill new password with bottom sheet.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kNewPasswordFieldID)];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:UseSuggestedPasswordButton()];
+  [[EarlGrey selectElementWithMatcher:UseSuggestedPasswordButton()]
+      performAction:grey_tap()];
+  [self verifyNewPasswordFieldsHaveBeenFilled];
+
+  // Reload page so new password is taken into consideration.
+  [ChromeEarlGrey reload];
+
+  // Focus on the new password and validate that the keyboard is shown instead
+  // of the bottom sheet because there is now a saved credential for the site.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kNewPasswordFieldID)];
+  [ChromeEarlGrey waitForKeyboardToAppear];
+  id<GREYMatcher> suggest_password_chip =
+      grey_accessibilityLabel(@"Suggest Strong Password");
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:suggest_password_chip];
 }
 
 @end
