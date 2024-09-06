@@ -78,6 +78,8 @@ class MockDelegate : public DeviceRestrictionScheduleController::Delegate {
  public:
   // DeviceRestrictionScheduleController::Delegate:
   MOCK_METHOD1(BlockLogin, void(bool));
+  MOCK_CONST_METHOD0(IsUserLoggedIn, bool());
+  MOCK_METHOD1(ShowUpcomingLogoutNotification, void(base::Time));
 };
 
 class DeviceRestrictionScheduleControllerTest : public testing::Test {
@@ -145,6 +147,8 @@ TEST_F(DeviceRestrictionScheduleControllerTest, NonEmptyRegularToEmptyPolicy) {
 
   // Advance for a full week. Nothing should be called anymore since the policy
   // isn't active.
+  EXPECT_CALL(delegate_, IsUserLoggedIn()).Times(0);
+  EXPECT_CALL(delegate_, ShowUpcomingLogoutNotification(_)).Times(0);
   EXPECT_CALL(delegate_, BlockLogin(_)).Times(0);
 
   AdvanceTime(base::Days(7));
@@ -166,6 +170,8 @@ TEST_F(DeviceRestrictionScheduleControllerTest,
 
   // Advance for a full week. Nothing should be called anymore since the policy
   // isn't active.
+  EXPECT_CALL(delegate_, IsUserLoggedIn()).Times(0);
+  EXPECT_CALL(delegate_, ShowUpcomingLogoutNotification(_)).Times(0);
   EXPECT_CALL(delegate_, BlockLogin(_)).Times(0);
 
   AdvanceTime(base::Days(7));
@@ -181,6 +187,14 @@ TEST_F(DeviceRestrictionScheduleControllerTest, SamplePolicyRegularStart) {
   EXPECT_CALL(delegate_, BlockLogin(false)).Times(1);
   UpdatePolicyPref(kPolicyJson);
 
+  // Upcoming logout notification should be shown at Wed 11:30.
+  EXPECT_CALL(delegate_, IsUserLoggedIn())
+      .Times(1)
+      .WillOnce(DoAll(EXPECT_TIME(Day::kWednesday, 11, 30), Return(true)));
+  EXPECT_CALL(delegate_, ShowUpcomingLogoutNotification(_))
+      .Times(1)
+      .WillOnce(EXPECT_TIME(Day::kWednesday, 11, 30));
+
   // Next restricted period should start at Wed 12:00.
   EXPECT_CALL(delegate_, BlockLogin(true))
       .Times(1)
@@ -190,6 +204,13 @@ TEST_F(DeviceRestrictionScheduleControllerTest, SamplePolicyRegularStart) {
   EXPECT_CALL(delegate_, BlockLogin(false))
       .Times(1)
       .WillOnce(EXPECT_TIME(Day::kWednesday, 21, 0));
+
+  // Upcoming logout notification would normally be shown at Fri 17:30, but it
+  // is not shown since a user session wasn't in progress.
+  EXPECT_CALL(delegate_, IsUserLoggedIn())
+      .Times(1)
+      .WillOnce(DoAll(EXPECT_TIME(Day::kFriday, 17, 30), Return(false)));
+  EXPECT_CALL(delegate_, ShowUpcomingLogoutNotification(_)).Times(0);
 
   // Next restricted period should start at Fri 18:00.
   EXPECT_CALL(delegate_, BlockLogin(true))
@@ -220,6 +241,14 @@ TEST_F(DeviceRestrictionScheduleControllerTest, SamplePolicyRestrictedStart) {
       .Times(1)
       .WillOnce(EXPECT_TIME(Day::kMonday, 6, 0));
 
+  // Upcoming logout notification should be shown at Wed 11:30.
+  EXPECT_CALL(delegate_, IsUserLoggedIn())
+      .Times(1)
+      .WillOnce(DoAll(EXPECT_TIME(Day::kWednesday, 11, 30), Return(true)));
+  EXPECT_CALL(delegate_, ShowUpcomingLogoutNotification(_))
+      .Times(1)
+      .WillOnce(EXPECT_TIME(Day::kWednesday, 11, 30));
+
   // Next restricted period should start at Wed 12:00.
   EXPECT_CALL(delegate_, BlockLogin(true))
       .Times(1)
@@ -230,6 +259,14 @@ TEST_F(DeviceRestrictionScheduleControllerTest, SamplePolicyRestrictedStart) {
       .Times(1)
       .WillOnce(EXPECT_TIME(Day::kWednesday, 21, 0));
 
+  // Upcoming logout notification should be shown at Fri 17:30.
+  EXPECT_CALL(delegate_, IsUserLoggedIn())
+      .Times(1)
+      .WillOnce(DoAll(EXPECT_TIME(Day::kFriday, 17, 30), Return(true)));
+  EXPECT_CALL(delegate_, ShowUpcomingLogoutNotification(_))
+      .Times(1)
+      .WillOnce(EXPECT_TIME(Day::kFriday, 17, 30));
+
   // Next restricted period should start at Fri 18:00.
   EXPECT_CALL(delegate_, BlockLogin(true))
       .Times(1)
@@ -237,6 +274,43 @@ TEST_F(DeviceRestrictionScheduleControllerTest, SamplePolicyRestrictedStart) {
 
   // Advance for a full week. Will verify the whole schedule with EXPECT_CALLs.
   AdvanceTime(base::Days(7));
+}
+
+// Verify that `ShowUpcomingLogoutNotification` is called immediately if there's
+// less than 30 minutes until restricted schedule begins and a user session is
+// active.
+TEST_F(DeviceRestrictionScheduleControllerTest,
+       ShowUpcomingLogoutNotification_CalledImmediately) {
+  // Set time 20 minutes before restricted schedule.
+  SetTime(Day::kWednesday, 11, 40);
+  // Make sure all EXPECT_CALLs are in sequence.
+  InSequence seq;
+
+  EXPECT_CALL(delegate_, BlockLogin(false)).Times(1);
+  EXPECT_CALL(delegate_, IsUserLoggedIn()).Times(1).WillOnce(Return(true));
+  EXPECT_CALL(delegate_, ShowUpcomingLogoutNotification(_)).Times(1);
+  UpdatePolicyPref(kPolicyJson);
+
+  // Run any pending timers.
+  AdvanceTime(base::TimeDelta());
+}
+
+// Verify that `ShowUpcomingLogoutNotification` isn't called if a user session
+// isn't in progress.
+TEST_F(DeviceRestrictionScheduleControllerTest,
+       ShowUpcomingLogoutNotification_NotCalled) {
+  // Set time 20 minutes before restricted schedule.
+  SetTime(Day::kWednesday, 11, 40);
+  // Make sure all EXPECT_CALLs are in sequence.
+  InSequence seq;
+
+  EXPECT_CALL(delegate_, BlockLogin(false)).Times(1);
+  EXPECT_CALL(delegate_, IsUserLoggedIn()).Times(1).WillOnce(Return(false));
+  EXPECT_CALL(delegate_, ShowUpcomingLogoutNotification(_)).Times(0);
+  UpdatePolicyPref(kPolicyJson);
+
+  // Run any pending timers.
+  AdvanceTime(base::TimeDelta());
 }
 
 }  // namespace policy

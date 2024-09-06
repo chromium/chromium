@@ -33,6 +33,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
 
     // Blocks login and displays login screen banner if enabled.
     virtual void BlockLogin(bool enabled) = 0;
+
+    // Checks if a user is logged in.
+    virtual bool IsUserLoggedIn() const = 0;
+
+    // Shows an in-session notification about upcoming forced logout.
+    virtual void ShowUpcomingLogoutNotification(base::Time logout_time) = 0;
   };
 
   DeviceRestrictionScheduleController(Delegate& delegate,
@@ -51,9 +57,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
 
   void OnPolicyUpdated();
   void Run();
+  void MaybeShowUpcomingLogoutNotification(base::Time logout_time);
   std::optional<base::Time> GetNextRunTime(base::Time current_time) const;
   State GetCurrentState(base::Time current_time) const;
   bool UpdateIntervalsIfChanged(const base::Value::List& policy_value);
+  void StartNotificationTimer(base::Time current_time, base::Time logout_time);
   void StartRunTimer(base::Time next_run_time);
 
   // `delegate_` has to outlive `DeviceRestrictionScheduleController`.
@@ -63,6 +71,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
   std::vector<WeeklyTimeIntervalChecked> intervals_;
 
   base::WallClockTimer run_timer_;
+  base::WallClockTimer notification_timer_;
 };
 
 }  // namespace policy

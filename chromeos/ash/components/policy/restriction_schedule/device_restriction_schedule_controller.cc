@@ -26,6 +26,9 @@ namespace policy {
 
 namespace {
 
+// Display a notification about approaching session end this long in advance.
+constexpr base::TimeDelta kNotificationLeadTime = base::Minutes(30);
+
 using ::policy::weekly_time::ExtractIntervalsFromList;
 using ::policy::weekly_time::GetDurationToNextEvent;
 using ::policy::weekly_time::IntervalsContainTime;
@@ -73,6 +76,7 @@ void DeviceRestrictionScheduleController::OnPolicyUpdated() {
 void DeviceRestrictionScheduleController::Run() {
   // Reset any potentially running timers.
   run_timer_.Stop();
+  notification_timer_.Stop();
 
   // Update state.
   const base::Time current_time = base::Time::Now();
@@ -81,6 +85,11 @@ void DeviceRestrictionScheduleController::Run() {
 
   // Set up timers if there's a schedule (`intervals_` isn't empty).
   if (next_run_time.has_value()) {
+    // Show end session notification in regular state.
+    if (state == State::kRegular) {
+      StartNotificationTimer(current_time, next_run_time.value());
+    }
+
     // Set up next run of the function.
     StartRunTimer(next_run_time.value());
   }
@@ -88,6 +97,13 @@ void DeviceRestrictionScheduleController::Run() {
   // Block or unblock login. This needs to be the last statement since it could
   // cause a restart to the login-screen.
   delegate_->BlockLogin(state == State::kRestricted);
+}
+
+void DeviceRestrictionScheduleController::MaybeShowUpcomingLogoutNotification(
+    base::Time logout_time) {
+  if (delegate_->IsUserLoggedIn()) {
+    delegate_->ShowUpcomingLogoutNotification(logout_time);
+  }
 }
 
 std::optional<base::Time> DeviceRestrictionScheduleController::GetNextRunTime(
@@ -131,6 +147,21 @@ bool DeviceRestrictionScheduleController::UpdateIntervalsIfChanged(
   }
   intervals_ = std::move(new_intervals);
   return true;
+}
+
+void DeviceRestrictionScheduleController::StartNotificationTimer(
+    base::Time current_time,
+    base::Time logout_time) {
+  // Clamp past times to current time.
+  const base::Time notification_time =
+      std::max(logout_time - kNotificationLeadTime, current_time);
+
+  // `this` outlives `notification_timer_`.
+  notification_timer_.Start(
+      FROM_HERE, notification_time,
+      base::BindOnce(&DeviceRestrictionScheduleController::
+                         MaybeShowUpcomingLogoutNotification,
+                     base::Unretained(this), logout_time));
 }
 
 void DeviceRestrictionScheduleController::StartRunTimer(
