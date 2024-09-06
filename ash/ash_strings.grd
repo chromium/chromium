@@ -1809,7 +1809,7 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
         Improve lighting
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_STUDIO_LOOK_NAME" desc="Text for name of the studio look effect in the VC bubble, which is a toggle for enabling or disabling face retouching and portrait relighting.">
-        Studio Look
+        Appearance effects
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_TITLE" desc="The title of the video conference bubble.">
         Video call controls
@@ -1824,13 +1824,13 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
         Settings
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_SETTINGS_STUDIO_LOOK_PREFERENCE" desc="Text for the Studio Look preference title in the VC settings menu.">
-        Studio Look preference
+        Appearance effects preferences
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_SETTINGS_MENU_AUDIO_SETTINGS" desc="Text for the audio settings item in the VC settings menu.">
         Audio settings
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_SETTINGS_MENU_FACE_RETOUCH" desc="Text for the face retouch preference in the VC settings menu.">
-        Face retouch
+        Portrait touch-up
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_SETTINGS_MENU_PORTRAIT_RELIGHTING" desc="Text for the portrait relighting preference in the VC settings menu.">
         Improve lighting
