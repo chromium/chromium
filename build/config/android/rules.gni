@@ -3990,6 +3990,7 @@ if (!is_robolectric && enable_java_templates) {
       sources = invoker.sources
       depfile = "$target_gen_dir/$target_name.d"
       outputs = [ _srcjar_path ]
+      inputs = [ android_protoc_bin ]
       args = [
         "--depfile",
         rebase_path(depfile, root_build_dir),
@@ -4018,7 +4019,7 @@ if (!is_robolectric && enable_java_templates) {
           rebase_path(_plugin_path, root_build_dir),
         ]
         deps += [ _plugin_host_label ]
-        inputs = [ _plugin_path ]
+        inputs += [ _plugin_path ]
       }
 
       args += rebase_path(sources, root_build_dir)

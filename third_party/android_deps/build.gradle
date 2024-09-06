@@ -96,7 +96,7 @@ dependencies {
     // buildCompile needed because we add a custom dep of onto this from guava
     // to fix "unknown enum constant ReflectionSupport$Level.FULL".
     buildCompile 'com.google.j2objc:j2objc-annotations:2.8'
-    compile 'com.google.protobuf:protobuf-javalite:3.19.3'
+    compile 'com.google.protobuf:protobuf-javalite:4.28.0'
     compile 'javax.annotation:javax.annotation-api:1.3.2'
     compile 'javax.annotation:jsr250-api:1.0'
     compile 'javax.inject:javax.inject:1'

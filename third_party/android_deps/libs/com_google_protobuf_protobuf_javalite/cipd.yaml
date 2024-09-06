@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:2@3.21.1.cr1
+# cipd create --pkg-def cipd.yaml -tag version:2@4.28.0.cr1
 package: chromium/third_party/android_deps/libs/com_google_protobuf_protobuf_javalite
 description: "Protocol Buffers [Lite]"
 data:
-- file: protobuf-javalite-3.21.1.jar
+- file: protobuf-javalite-4.28.0.jar

@@ -778,7 +778,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (!defined(android_proto_runtime)) {
     java_prebuilt("com_google_protobuf_protobuf_javalite_java") {
-      jar_path = "cipd/libs/com_google_protobuf_protobuf_javalite/protobuf-javalite-3.21.1.jar"
+      jar_path = "cipd/libs/com_google_protobuf_protobuf_javalite/protobuf-javalite-4.28.0.jar"
       output_name = "com_google_protobuf_protobuf_javalite"
       supports_android = true
       enable_bytecode_checks = false

@@ -175,7 +175,7 @@ if (is_android) {
   }
 
   if (!defined(android_protoc_bin)) {
-    android_protoc_bin = "//third_party/android_protoc/cipd/protoc"
+    android_protoc_bin = "//third_party/android_build_tools/protoc/cipd/protoc"
   }
 
   webview_public_framework_dep =
