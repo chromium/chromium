@@ -57,6 +57,8 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
   }
 }
 
+const CGFloat kSelectionOffsetPadding = 50.0f;
+
 }  // namespace
 
 @interface LensOverlayCoordinator () <
@@ -346,12 +348,29 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
   }
 }
 
+- (void)adjustSelectionOcclusionInsets {
+  if (!_resultViewController) {
+    return;
+  }
+
+  UISheetPresentationController* sheet =
+      _resultViewController.sheetPresentationController;
+  UIViewController* presentedViewController = sheet.presentedViewController;
+  // Pad the offset by a small ammount to avoid having the bottom edge of the
+  // selection overlapped over the sheet.
+  CGFloat sheetHeight = presentedViewController.view.frame.size.height;
+  CGFloat offsetNeeded = sheetHeight + kSelectionOffsetPadding;
+
+  [_selectionViewController
+      setOcclusionInsets:UIEdgeInsetsMake(0, 0, offsetNeeded, 0)
+              reposition:YES
+                animated:YES];
+}
+
 #pragma mark - LensOverlayResultConsumer
 
 // This coordinator acts as a proxy consumer to the result consumer to implement
 // lazy initialization of the result UI.
-// Upon any call, the results UI is created and set as consumer, then the call
-// is repeated.
 - (void)loadResultsURL:(GURL)url {
   DCHECK(!_resultMediator);
 
@@ -670,9 +689,13 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
   ];
   sheet.prefersGrabberVisible = YES;
 
-  [_containerViewController presentViewController:_resultViewController
-                                         animated:YES
-                                       completion:nil];
+  __weak __typeof(self) weakSelf = self;
+  [_containerViewController
+      presentViewController:_resultViewController
+                   animated:YES
+                 completion:^{
+                   [weakSelf adjustSelectionOcclusionInsets];
+                 }];
 }
 
 @end
