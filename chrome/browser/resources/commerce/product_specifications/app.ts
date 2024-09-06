@@ -16,7 +16,7 @@ import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {BrowserProxy} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
-import type {PageCallbackRouter, ProductSpecificationsSet} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
+import type {PageCallbackRouter, ProductSpecificationsFeatureState, ProductSpecificationsSet} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -66,6 +66,7 @@ export interface TableColumn {
 export interface ProductSpecificationsElement {
   $: {
     empty: HTMLElement,
+    error: HTMLElement,
     errorToast: CrToastElement,
     header: HeaderElement,
     loading: HTMLElement,
@@ -74,6 +75,7 @@ export interface ProductSpecificationsElement {
     productSelector: ProductSelectorElement,
     specs: HTMLElement,
     summaryTable: TableElement,
+    syncPromo: HTMLElement,
   };
 }
 
@@ -92,6 +94,14 @@ export enum CompareTableColumnAction {
 
 export const COLUMN_MODIFICATION_HISTOGRAM_NAME: string =
     'Commerce.Compare.Table.ColumnModification';
+
+enum AppState {
+  ERROR = 0,
+  TABLE_EMPTY = 1,
+  SYNC_SCREEN = 2,
+  TABLE_POPULATED = 3,
+  LOADING = 4,
+}
 
 function getProductDetails(
     product: ProductSpecificationsProduct|null,
@@ -151,6 +161,16 @@ function getProductDetails(
   return productDetails;
 }
 
+function areStatesEqual(
+    firstState: ProductSpecificationsFeatureState,
+    secondState: ProductSpecificationsFeatureState) {
+  return firstState.isSyncingTabCompare === secondState.isSyncingTabCompare &&
+      firstState.canLoadFullPageUi === secondState.canLoadFullPageUi &&
+      firstState.canManageSets === secondState.canManageSets &&
+      firstState.canFetchData === secondState.canFetchData &&
+      firstState.isAllowedForEnterprise === secondState.isAllowedForEnterprise;
+}
+
 function findProductInResults(clusterId: bigint, specs: ProductSpecifications):
     ProductSpecificationsProduct|null {
   if (!specs) {
@@ -177,22 +197,26 @@ export class ProductSpecificationsElement extends PolymerElement {
 
   static get properties() {
     return {
+      appState_: {
+        type: Object,
+        computed: 'computeAppState_(productSpecificationsFeatureState_.*,' +
+            ' loadingState_.loading, showEmptyState_)',
+      },
       loadingState_: Object,
       setName_: String,
-      showEmptyState_: {
+      showTableDataUnavailableContainer_: {
         type: Boolean,
-        value: false,
+        computed: 'computeShowTableDataUnavailableContainer_(appState_)',
         reflectToAttribute: true,
       },
       tableColumns_: Object,
-      canShowFeedbackButtons_: Boolean,
     };
   }
 
+  private appState_: AppState = AppState.LOADING;
   private loadingState_: LoadingState = {loading: false, urlCount: 0};
-  private canShowFeedbackButtons_: boolean = false;
   private setName_: string|null = null;
-  private showEmptyState_: boolean;
+  private showTableDataUnavailableContainer_: boolean;
   private tableColumns_: TableColumn[] = [];
 
   private callbackRouter_: PageCallbackRouter;
@@ -200,7 +224,9 @@ export class ProductSpecificationsElement extends PolymerElement {
   private id_: Uuid|null = null;
   private listenerIds_: number[] = [];
   private minLoadingAnimationMs_: number = 500;
+  private productSpecificationsFeatureState_: ProductSpecificationsFeatureState;
   private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
+  private showEmptyState_: boolean;
 
   constructor() {
     super();
@@ -217,6 +243,23 @@ export class ProductSpecificationsElement extends PolymerElement {
         this.callbackRouter_.onProductSpecificationsSetUpdated.addListener(
             (set: ProductSpecificationsSet) => this.onSetUpdated_(set)));
 
+    // TODO: b/358131415 - use listeners to update. Temporary workaround uses
+    // window focus to update the feature state, to check signin.
+    window.addEventListener('focus', async () => {
+      const previousState = this.productSpecificationsFeatureState_;
+      const {state} =
+          await this.shoppingApi_.getProductSpecificationsFeatureState();
+      if (!state || areStatesEqual(previousState, state)) {
+        return;
+      }
+
+      // States have changed, so we need to reload the table.
+      // Update the featureState after loadTable_(), so that the loading
+      // state will animate first.
+      await this.loadTable_(state);
+      this.productSpecificationsFeatureState_ = state;
+    });
+
     this.eventTracker_.add(
         this, 'click',
         () => {
@@ -229,8 +272,36 @@ export class ProductSpecificationsElement extends PolymerElement {
     });
 
     if (this.isOffline_) {
-      this.showEmptyState_ = true;
       this.showOfflineToast_();
+      return;
+    }
+
+    // TODO(b/358131415): update after we use listener/ observers and no longer
+    // need the featureState
+    const {state} =
+        await this.shoppingApi_.getProductSpecificationsFeatureState();
+    if (!state) {
+      return;
+    }
+    await this.loadTable_(state);
+    this.productSpecificationsFeatureState_ = state;
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.listenerIds_.forEach(id => this.callbackRouter_.removeListener(id));
+    this.eventTracker_.removeAll();
+  }
+
+  // TODO(b/364337413): update tests to not rely on animation rendering time
+  resetMinLoadingAnimationMsForTesting(newValue = 0) {
+    this.minLoadingAnimationMs_ = newValue;
+  }
+
+  private async loadTable_(state: ProductSpecificationsFeatureState) {
+    // Don't load the table if access conditions are not met.
+    if (!(state.isSyncingTabCompare && state.canLoadFullPageUi &&
+          state.canFetchData && state.isAllowedForEnterprise)) {
       return;
     }
 
@@ -248,6 +319,7 @@ export class ProductSpecificationsElement extends PolymerElement {
         return;
       }
     }
+
     const urlsParam = params.get('urls');
     if (!urlsParam) {
       this.showEmptyState_ = true;
@@ -261,16 +333,64 @@ export class ProductSpecificationsElement extends PolymerElement {
       return;
     }
 
-    const {state} =
-        await this.shoppingApi_.getProductSpecificationsFeatureState();
-    this.canShowFeedbackButtons_ = state?.isQualityLoggingAllowed || false;
-
     // TODO(b/346601645): Detect if a set already exists
     await this.createNewSet_(urls);
   }
 
-  resetMinLoadingAnimationMsForTesting(newValue = 0) {
-    this.minLoadingAnimationMs_ = newValue;
+  private computeAppState_() {
+    if (this.productSpecificationsFeatureState_) {
+      if (!this.productSpecificationsFeatureState_.isSyncingTabCompare) {
+        return AppState.SYNC_SCREEN;
+      }
+      if (!(this.productSpecificationsFeatureState_.canLoadFullPageUi &&
+            this.productSpecificationsFeatureState_.canFetchData &&
+            this.productSpecificationsFeatureState_.isAllowedForEnterprise)) {
+        return AppState.ERROR;
+      }
+      if (this.loadingState_.loading) {
+        return AppState.LOADING;
+      }
+      if (this.showEmptyState_) {
+        return AppState.TABLE_EMPTY;
+      }
+      return AppState.TABLE_POPULATED;
+    }
+    return AppState.ERROR;
+  }
+
+  private isAppStateError_() {
+    return this.appState_ === AppState.ERROR;
+  }
+
+  private isAppStateTableEmpty_() {
+    return this.appState_ === AppState.TABLE_EMPTY;
+  }
+
+  private isAppStateSyncScreen_() {
+    return this.appState_ === AppState.SYNC_SCREEN;
+  }
+
+  private isAppStateTablePopulated_() {
+    return this.appState_ === AppState.TABLE_POPULATED;
+  }
+
+  private isAppStateLoading_() {
+    return this.appState_ === AppState.LOADING;
+  }
+
+  private computeShowTableDataUnavailableContainer_() {
+    return this.appState_ === AppState.ERROR ||
+        this.appState_ === AppState.TABLE_EMPTY ||
+        this.appState_ === AppState.SYNC_SCREEN;
+  }
+
+  private canShowFeedbackButtons_() {
+    return Boolean(
+        this.productSpecificationsFeatureState_?.isQualityLoggingAllowed);
+  }
+
+  private showSyncSetupFlow_() {
+    this.shoppingApi_.showSyncSetupFlow();
   }
 
   private showOfflineToast_() {
@@ -330,12 +450,6 @@ export class ProductSpecificationsElement extends PolymerElement {
     this.loadingState_ = {loading: false, urlCount: 0};
   }
 
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    this.listenerIds_.forEach(id => this.callbackRouter_.removeListener(id));
-    this.eventTracker_.removeAll();
-  }
-
   private get isOffline_(): boolean {
     return !WindowProxy.getInstance().onLine;
   }
@@ -392,10 +506,6 @@ export class ProductSpecificationsElement extends PolymerElement {
       });
     });
     return aggregatedDatas;
-  }
-
-  private showTable_(): boolean {
-    return !this.loadingState_.loading && !this.showEmptyState_;
   }
 
   private deleteSet_() {

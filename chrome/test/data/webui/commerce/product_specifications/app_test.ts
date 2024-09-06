@@ -103,6 +103,7 @@ interface AppPromiseValues {
   urlToPriceInsightsInfoMap: Map<string, PriceInsightsInfo>;
   specsSet: ProductSpecificationsSet|null;
   urlToPageTitleFromHistoryMap: Map<string, string>;
+  minLoadingAnimationMs: number;
 }
 
 function createAppPromiseValues(overrides?: Partial<AppPromiseValues>):
@@ -116,6 +117,7 @@ function createAppPromiseValues(overrides?: Partial<AppPromiseValues>):
         urlToPriceInsightsInfoMap: new Map<string, PriceInsightsInfo>(),
         specsSet: null,
         urlToPageTitleFromHistoryMap: new Map<string, string>(),
+        minLoadingAnimationMs: 0,
       },
       overrides);
 }
@@ -131,7 +133,6 @@ suite('AppTest', () => {
   async function createAppElement(): Promise<ProductSpecificationsElement> {
     appElement = document.createElement('product-specifications-app');
     document.body.appendChild(appElement);
-    appElement.resetMinLoadingAnimationMsForTesting();
     return appElement;
   }
 
@@ -179,6 +180,8 @@ suite('AppTest', () => {
         });
 
     const appElement = await createAppElement();
+    appElement.resetMinLoadingAnimationMsForTesting(
+        promiseValues.minLoadingAnimationMs);
     await flushTasks();
 
     return appElement;
@@ -222,6 +225,10 @@ suite('AppTest', () => {
     createAppElement();
     await shoppingServiceApi.whenCalled('addProductSpecificationsSet');
 
+    assertEquals(
+        1,
+        shoppingServiceApi.getCallCount(
+            'getProductSpecificationsFeatureState'));
     assertEquals(1, router.getCallCount('getCurrentQuery'));
     assertEquals(
         1, shoppingServiceApi.getCallCount('addProductSpecificationsSet'));
@@ -233,19 +240,19 @@ suite('AppTest', () => {
         shoppingServiceApi.getArgs('addProductSpecificationsSet')[0][1]);
   });
 
-  test('handles invalid route', () => {
+  test('handles invalid route', async () => {
     router.setResultFor(
         'getCurrentQuery', new URLSearchParams('urls=INVALID_JSON'));
-    createAppElement();
+    await createAppElement();
 
     assertEquals(1, router.getCallCount('getCurrentQuery'));
     assertEquals(
         0, shoppingServiceApi.getCallCount('addProductSpecificationsSet'));
   });
 
-  test('handles missing router', () => {
+  test('handles missing router', async () => {
     router.setResultFor('getCurrentQuery', new URLSearchParams(''));
-    createAppElement();
+    await createAppElement();
 
     assertEquals(1, router.getCallCount('getCurrentQuery'));
     assertEquals(
@@ -1174,6 +1181,7 @@ suite('AppTest', () => {
     shoppingServiceApi.setResultFor(
         'getUrlInfosForRecentlyViewedTabs', Promise.resolve({urlInfos: []}));
     await createAppElementWithPromiseValues(promiseValues);
+    await shoppingServiceApi.whenCalled('getProductSpecificationsFeatureState');
 
     // Click on the "add column" button and select the first (only) item.
     const newColSelector = appElement.$.newColumnSelector;
@@ -1283,6 +1291,8 @@ suite('AppTest', () => {
           'getUrlInfosForProductTabs', Promise.resolve({urlInfos: tabInfos}));
       shoppingServiceApi.setResultFor(
           'getUrlInfosForRecentlyViewedTabs', Promise.resolve({urlInfos: []}));
+      await shoppingServiceApi.whenCalled(
+          'getProductSpecificationsFeatureState');
 
       await clickFirstAvailableItemInNewColumnSelector();
 
@@ -1299,6 +1309,8 @@ suite('AppTest', () => {
       shoppingServiceApi.setResultFor(
           'getUrlInfosForRecentlyViewedTabs',
           Promise.resolve({urlInfos: tabInfos}));
+      await shoppingServiceApi.whenCalled(
+          'getProductSpecificationsFeatureState');
 
       await clickFirstAvailableItemInNewColumnSelector();
 
@@ -1331,7 +1343,6 @@ suite('AppTest', () => {
           'getUrlInfosForRecentlyViewedTabs', Promise.resolve({urlInfos: []}));
 
       await clickFirstAvailableItemInFirstColumn();
-
       assertEquals(
           1,
           metrics.count(
@@ -1412,42 +1423,44 @@ suite('AppTest', () => {
   });
 
   test('shows full table loading state', async () => {
-    const minLoadingAnimationMs = 10;
+    const minLoadingAnimationMs = 40;
     const promiseValues = createAppPromiseValues({
       urlsParam: ['https://example.com/'],
+      minLoadingAnimationMs: minLoadingAnimationMs,
     });
-    createAppElementWithPromiseValues(promiseValues);
-    appElement.resetMinLoadingAnimationMsForTesting(minLoadingAnimationMs);
-    await flushTasks();
+    // Needs to await in order to load elements.
+    await createAppElementWithPromiseValues(promiseValues);
+    await shoppingServiceApi.whenCalled('getProductSpecificationsFeatureState');
 
     assertTrue(isVisible(appElement.$.loading));
     assertFalse(isVisible(appElement.$.summaryTable));
 
     // Wait for the loading animation to finish.
     await new Promise(res => setTimeout(res, minLoadingAnimationMs));
-
     assertFalse(isVisible(appElement.$.loading));
   });
 
   test('disables menu button while loading', async () => {
     const promiseValues = createAppPromiseValues({
       urlsParam: ['https://example.com/'],
+      minLoadingAnimationMs: 500,
     });
     createAppElementWithPromiseValues(promiseValues);
-    appElement.resetMinLoadingAnimationMsForTesting(500);
     await flushTasks();
 
     assertTrue(appElement.$.header.$.menuButton.disabled);
   });
 
   test('show feedback loading state while loading', async () => {
-    const minLoadingAnimationMs = 10;
+    const minLoadingAnimationMs = 80;
     const promiseValues = createAppPromiseValues({
       urlsParam: ['https://example.com/'],
+      minLoadingAnimationMs: minLoadingAnimationMs,
     });
-    createAppElementWithPromiseValues(promiseValues);
-    appElement.resetMinLoadingAnimationMsForTesting(minLoadingAnimationMs);
-    await flushTasks();
+    // Needs to await in order to load elements.
+    await createAppElementWithPromiseValues(promiseValues);
+    await shoppingServiceApi.whenCalled('getProductSpecificationsFeatureState');
+
     const feedbackLoading =
         appElement.shadowRoot!.querySelector('#feedbackLoading');
     assertTrue(!!feedbackLoading);
@@ -1460,7 +1473,6 @@ suite('AppTest', () => {
 
     // Wait for the loading animation to finish.
     await new Promise(res => setTimeout(res, minLoadingAnimationMs));
-
     assertFalse(isVisible(feedbackLoading));
     assertTrue(isVisible(feedbackButtons));
   });
@@ -1480,6 +1492,7 @@ suite('AppTest', () => {
     const minLoadingAnimationMs = 10;
     const promiseValues = createAppPromiseValues({
       urlsParam: ['https://example.com/'],
+      minLoadingAnimationMs: minLoadingAnimationMs,
     });
     createAppElementWithPromiseValues(promiseValues);
     await flushTasks();
@@ -1487,7 +1500,6 @@ suite('AppTest', () => {
         appElement.shadowRoot!.querySelector('#feedbackLoading');
     const feedbackButtons =
         appElement.shadowRoot!.querySelector('#feedbackButtons');
-    appElement.resetMinLoadingAnimationMsForTesting(minLoadingAnimationMs);
 
     assertFalse(isVisible(feedbackLoading));
     assertFalse(isVisible(feedbackButtons));
@@ -1505,7 +1517,7 @@ suite('AppTest', () => {
     const promiseValues = createAppPromiseValues({
       urlsParam: ['https://example.com/'],
     });
-    createAppElementWithPromiseValues(promiseValues);
+    await createAppElementWithPromiseValues(promiseValues);
     const learnMoreLink =
         appElement.shadowRoot!.querySelector('#learnMoreLink');
     const disclaimer = appElement.shadowRoot!.querySelector('#disclaimer');
@@ -1706,9 +1718,10 @@ suite('AppTest', () => {
   });
 
   suite('EmptyState', () => {
-    test('shows empty state if app loads without urls', () => {
+    test('shows empty state if app loads without urls', async () => {
       router.setResultFor('getCurrentQuery', '');
       createAppElement();
+      await flushTasks();
 
       assertTrue(isVisible(appElement.$.empty));
       assertFalse(isVisible(appElement.$.specs));
@@ -1842,17 +1855,19 @@ suite('AppTest', () => {
   });
 
   suite('Offline', () => {
-    test('shows empty state and offline toast if app loads offline', () => {
-      router.setResultFor(
-          'getCurrentQuery',
-          new URLSearchParams(
-              'urls=' + JSON.stringify('https://example.com/')));
-      windowProxy.setResultFor('onLine', false);
-      createAppElement();
+    test(
+        'shows error state and offline toast if app loads offline',
+        async () => {
+          router.setResultFor(
+              'getCurrentQuery',
+              new URLSearchParams(
+                  'urls=' + JSON.stringify('https://example.com/')));
+          windowProxy.setResultFor('onLine', false);
+          await createAppElement();
 
-      assertTrue(isVisible(appElement.$.empty));
-      assertTrue(appElement.$.offlineToast.open);
-    });
+          assertTrue(isVisible(appElement.$.error));
+          assertTrue(appElement.$.offlineToast.open);
+        });
 
     test(
         `shows offline toast instead of making api call when
@@ -1998,5 +2013,125 @@ suite('AppTest', () => {
     feedbackArgs = await shoppingServiceApi.whenCalled(
         'setProductSpecificationsUserFeedback');
     assertEquals(UserFeedback.kUnspecified, feedbackArgs);
+  });
+
+  suite('FeatureState', () => {
+    test('feedback hidden if not allowed', async () => {
+      shoppingServiceApi.setResultFor(
+          'getProductSpecificationsFeatureState', Promise.resolve({
+            state: {
+              isSyncingTabCompare: true,
+              canLoadFullPageUi: true,
+              canManageSets: true,
+              canFetchData: true,
+              isAllowedForEnterprise: true,
+              isQualityLoggingAllowed: false,
+            },
+          }));
+      const minLoadingAnimationMs = 10;
+      const promiseValues = createAppPromiseValues({
+        urlsParam: ['https://example.com/'],
+        minLoadingAnimationMs: minLoadingAnimationMs,
+      });
+      createAppElementWithPromiseValues(promiseValues);
+      await flushTasks();
+      const feedbackLoading =
+          appElement.shadowRoot!.querySelector('#feedbackLoading');
+      const feedbackButtons =
+          appElement.shadowRoot!.querySelector('#feedbackButtons');
+
+      assertFalse(isVisible(feedbackLoading));
+      assertFalse(isVisible(feedbackButtons));
+
+      // Wait for the loading animation to finish.
+      await new Promise(res => setTimeout(res, minLoadingAnimationMs));
+
+      assertFalse(isVisible(feedbackLoading));
+      assertFalse(isVisible(feedbackButtons));
+    });
+
+    test('shows sync state if user is not syncing', async () => {
+      shoppingServiceApi.setResultFor(
+          'getProductSpecificationsFeatureState', Promise.resolve({
+            state: {
+              isSyncingTabCompare: false,
+              canLoadFullPageUi: true,
+              canManageSets: true,
+              canFetchData: true,
+              isAllowedForEnterprise: true,
+            },
+          }));
+      await createAppElement();
+      await shoppingServiceApi.whenCalled(
+          'getProductSpecificationsFeatureState');
+
+      assertTrue(isVisible(appElement.$.syncPromo));
+      assertFalse(isVisible(appElement.$.error));
+      assertFalse(isVisible(appElement.$.empty));
+      assertFalse(isVisible(appElement.$.specs));
+    });
+
+    test('shows error state if disabled', async () => {
+      shoppingServiceApi.setResultFor(
+          'getProductSpecificationsFeatureState', Promise.resolve({
+            state: {
+              isSyncingTabCompare: true,
+              canLoadFullPageUi: true,
+              canManageSets: true,
+              canFetchData: false,
+              isAllowedForEnterprise: true,
+            },
+          }));
+      createAppElement();
+      await shoppingServiceApi.whenCalled(
+          'getProductSpecificationsFeatureState');
+
+      assertTrue(isVisible(appElement.$.error));
+      assertFalse(isVisible(appElement.$.syncPromo));
+      assertFalse(isVisible(appElement.$.empty));
+      assertFalse(isVisible(appElement.$.specs));
+    });
+
+    test('reload with sync screen', async () => {
+      shoppingServiceApi.setResultFor(
+          'getProductSpecificationsFeatureState', Promise.resolve({
+            state: {
+              isSyncingTabCompare: true,
+              canLoadFullPageUi: true,
+              canManageSets: true,
+              canFetchData: false,
+              isAllowedForEnterprise: true,
+            },
+          }));
+      await createAppElement();
+      await shoppingServiceApi.whenCalled(
+          'getProductSpecificationsFeatureState');
+
+      assertTrue(isVisible(appElement.$.error));
+      assertFalse(isVisible(appElement.$.syncPromo));
+      assertFalse(isVisible(appElement.$.empty));
+      assertFalse(isVisible(appElement.$.specs));
+
+      shoppingServiceApi.reset();
+      shoppingServiceApi.setResultFor('getCallbackRouter', callbackRouter);
+      shoppingServiceApi.setResultFor(
+          'getProductSpecificationsFeatureState', Promise.resolve({
+            state: {
+              isSyncingTabCompare: false,
+              canLoadFullPageUi: true,
+              canManageSets: true,
+              canFetchData: true,
+              isAllowedForEnterprise: true,
+            },
+          }));
+
+      window.dispatchEvent(new Event('focus'));
+      await flushTasks();
+
+      assertFalse(isVisible(appElement.$.error));
+      assertTrue(isVisible(appElement.$.syncPromo));
+      assertFalse(isVisible(appElement.$.empty));
+      assertFalse(isVisible(appElement.$.specs));
+    });
   });
 });
