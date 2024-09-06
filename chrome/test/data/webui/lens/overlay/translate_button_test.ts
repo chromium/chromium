@@ -7,6 +7,7 @@ import 'chrome-untrusted://lens/translate_button.js';
 import {BrowserProxyImpl} from 'chrome-untrusted://lens/browser_proxy.js';
 import {LanguageBrowserProxyImpl} from 'chrome-untrusted://lens/language_browser_proxy.js';
 import {UserAction} from 'chrome-untrusted://lens/lens.mojom-webui.js';
+import {ShimmerControlRequester} from 'chrome-untrusted://lens/selection_utils.js';
 import type {TranslateButtonElement} from 'chrome-untrusted://lens/translate_button.js';
 import type {CrButtonElement} from 'chrome-untrusted://resources/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
@@ -14,7 +15,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-te
 import type {MetricsTracker} from 'chrome-untrusted://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome-untrusted://webui-test/metrics_test_support.js';
 import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
-import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {TestLanguageBrowserProxy} from './test_language_browser_proxy.js';
 import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
@@ -47,8 +48,15 @@ suite('OverlayTranslateButton', function() {
   test('TranslateButtonClick', async () => {
     assertFalse(isVisible(overlayTranslateButtonElement.$.languagePicker));
 
+    const focusRegionEventPromise =
+        eventToPromise('focus-region', document.body);
     // Click the translate button to show the language picker.
     overlayTranslateButtonElement.$.translateButton.click();
+    // Clicking the translate button should focus the shimmer.
+    const focusRegionEvent = await focusRegionEventPromise;
+    assertEquals(
+        focusRegionEvent.detail.requester, ShimmerControlRequester.TRANSLATE);
+
 
     // By default, we should send a translation request for source "auto" and
     // target language as defined by the proxy.
@@ -66,7 +74,14 @@ suite('OverlayTranslateButton', function() {
 
     // Clicking again should toggle the language picker but not send another
     // request.
+    const unfocusRegionEventPromise =
+        eventToPromise('unfocus-region', document.body);
     overlayTranslateButtonElement.$.translateButton.click();
+    // Clicking the translate button again should unfocus the shimmer.
+    await unfocusRegionEventPromise;
+    const unfocusRegionEvent = await unfocusRegionEventPromise;
+    assertEquals(
+        unfocusRegionEvent.detail.requester, ShimmerControlRequester.TRANSLATE);
     assertEquals(
         1,
         testBrowserProxy.handler.getCallCount('issueTranslateFullPageRequest'));

@@ -48,6 +48,7 @@ export enum ShimmerControlRequester {
   POST_SELECTION = 2,
   SEGMENTATION = 3,
   MANUAL_REGION = 4,
+  TRANSLATE = 5,
 }
 
 // Region sent to OverlayShimmerCanvasElement to focus the shimmer on.

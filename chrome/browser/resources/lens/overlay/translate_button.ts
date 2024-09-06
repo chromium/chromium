@@ -21,6 +21,7 @@ import type {LanguageBrowserProxy} from './language_browser_proxy.js';
 import {UserAction} from './lens.mojom-webui.js';
 import {INVOCATION_SOURCE} from './lens_overlay_app.js';
 import {recordLensOverlayInteraction} from './metrics_utils.js';
+import {focusShimmerOnRegion, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
 import {getTemplate} from './translate_button.html.js';
 
 // The language codes that are supported to be translated by the server.
@@ -215,6 +216,17 @@ export class TranslateButtonElement extends PolymerElement {
         INVOCATION_SOURCE,
         this.isTranslateModeEnabled ? UserAction.kTranslateButtonEnableAction :
                                       UserAction.kTranslateButtonDisableAction);
+
+    // Focus or unfocus the shimmer depending on whether translate was
+    // enabled/disabled.
+    if (this.isTranslateModeEnabled) {
+      focusShimmerOnRegion(
+          this, /*top=*/ 0, /*left=*/ 0, /*width=*/ 0, /*height=*/ 0,
+          ShimmerControlRequester.TRANSLATE);
+    } else {
+      unfocusShimmer(this, ShimmerControlRequester.TRANSLATE);
+    }
+
     // Dispatch event to let other components know the overlay translate mode
     // state.
     this.dispatchEvent(new CustomEvent('translate-mode-state-changed', {
