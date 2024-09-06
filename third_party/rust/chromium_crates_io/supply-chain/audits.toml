@@ -738,6 +738,11 @@ Only minor changes:
 * Exposing an extra constructor for `rust::Slice`.
 """
 
+[[audits.cxxbridge-cmd]]
+who = "danakj <danakj@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.126 -> 1.0.128"
+
 [[audits.cxxbridge-flags]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]

@@ -98,7 +98,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."cxx:1.0.126"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cxxbridge-cmd:1.0.126"]
+[policy."cxxbridge-cmd:1.0.128"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."cxxbridge-flags:1.0.126"]
