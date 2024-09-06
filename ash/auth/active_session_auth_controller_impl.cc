@@ -277,8 +277,12 @@ void ActiveSessionAuthControllerImpl::OnAuthSessionStarted(
     available_factors_.Put(AuthInputType::kPassword);
   }
 
-  if (auth_factors.FindPinFactor() && !IsPinLocked()) {
-    available_factors_.Put(AuthInputType::kPin);
+  auto* pin_factor = auth_factors.FindPinFactor();
+  if (pin_factor) {
+    if (!pin_factor->GetPinStatus().IsLockedFactor()) {
+      available_factors_.Put(AuthInputType::kPin);
+    }
+    pin_status_message_ = BuildPinStatusMessage(pin_factor->GetPinStatus());
   }
 
   MaybePrepareFingerprint(
@@ -392,6 +396,9 @@ void ActiveSessionAuthControllerImpl::InitUi() {
   contents_view_observer_.Observe(contents_view_);
   contents_view_->AddObserver(this);
   SetState(ActiveSessionAuthState::kInitialized);
+  if (!pin_status_message_.empty()) {
+    contents_view_->SetPinStatus(pin_status_message_);
+  }
 
   MoveToTheCenter();
   widget_->Show();
@@ -553,14 +560,6 @@ void ActiveSessionAuthControllerImpl::OnClose() {
       return;
   }
   NOTREACHED();
-}
-
-bool ActiveSessionAuthControllerImpl::IsPinLocked() const {
-  CHECK(user_context_);
-  const auto& auth_factors = user_context_->GetAuthFactorsData();
-  auto* pin_factor = auth_factors.FindPinFactor();
-  CHECK(pin_factor);
-  return pin_factor->GetPinStatus().IsLockedFactor();
 }
 
 void ActiveSessionAuthControllerImpl::SetState(ActiveSessionAuthState state) {

@@ -175,10 +175,6 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
   // cryptohome.
   void InitUi();
 
-  // Checks the pin factor is still available using user_context_. It shpuld be
-  // called after auth factors configuration is updated.
-  bool IsPinLocked() const;
-
   // Show a PinStatus based error message, only if |pin_status| represents
   // a locked factor.
   void DisplayPinStatusMessage(const cryptohome::PinStatus pin_status);
