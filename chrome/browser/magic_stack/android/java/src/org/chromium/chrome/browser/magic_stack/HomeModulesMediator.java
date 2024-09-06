@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Callback;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.components.segmentation_platform.ClassificationResult;
@@ -77,7 +76,7 @@ public class HomeModulesMediator {
     private boolean mIsFetchingModules;
 
     private boolean mIsShown;
-    private Callback<Boolean> mSetVisibilityCallback;
+    private Runnable mOnHomeModulesChangedCallback;
     private long[] mShowModuleStartTimeMs;
     private List<Integer> mModuleListToShow;
     private SegmentationPlatformService mSegmentationPlatformService;
@@ -99,7 +98,7 @@ public class HomeModulesMediator {
 
     /** Shows the magic stack with profile ready. */
     void showModules(
-            Callback<Boolean> onHomeModulesShownCallback,
+            Runnable onHomeModulesChangedCallback,
             ModuleDelegate moduleDelegate,
             SegmentationPlatformService segmentationPlatformService) {
         mSegmentationPlatformService = segmentationPlatformService;
@@ -111,36 +110,31 @@ public class HomeModulesMediator {
             buildModulesAndShow(
                     getFixedModuleList(filteredEnabledModuleSet),
                     moduleDelegate,
-                    onHomeModulesShownCallback,
+                    onHomeModulesChangedCallback,
                     /* durationMs= */ 0);
             return;
         }
         getSegmentationRanking(
-                moduleDelegate, onHomeModulesShownCallback, filteredEnabledModuleSet);
+                moduleDelegate, onHomeModulesChangedCallback, filteredEnabledModuleSet);
     }
 
     private void buildModulesAndShow(
             List<Integer> moduleList,
             ModuleDelegate moduleDelegate,
-            Callback<Boolean> onHomeModulesShownCallback,
+            Runnable onHomeModulesChangedCallback,
             long durationMs) {
         // Record only if ranking is fetched from segmentation service.
         if (durationMs > 0) {
             HomeModulesMetricsUtils.recordSegmentationFetchRankingDuration(durationMs);
         }
         if (moduleList == null) {
-            onHomeModulesShownCallback.onResult(false);
+            onHomeModulesChangedCallback.run();
             return;
         }
 
         moduleDelegate.prepareBuildAndShow();
 
-        buildModulesAndShow(
-                moduleList,
-                moduleDelegate,
-                (isVisible) -> {
-                    onHomeModulesShownCallback.onResult(isVisible);
-                });
+        buildModulesAndShow(moduleList, moduleDelegate, onHomeModulesChangedCallback);
     }
 
     /**
@@ -153,13 +147,13 @@ public class HomeModulesMediator {
     void buildModulesAndShow(
             @NonNull @ModuleType List<Integer> moduleList,
             @NonNull ModuleDelegate moduleDelegate,
-            @NonNull Callback<Boolean> setVisibilityCallback) {
+            @NonNull Runnable onHomeModulesChangedCallback) {
         if (mIsShown) {
             updateModules();
             return;
         }
 
-        mSetVisibilityCallback = setVisibilityCallback;
+        mOnHomeModulesChangedCallback = onHomeModulesChangedCallback;
         assert mModel.size() == 0;
         mIsFetchingModules = true;
         mIsShown = true;
@@ -391,9 +385,8 @@ public class HomeModulesMediator {
         HomeModulesMetricsUtils.recordModuleBuiltPosition(
                 item.type, mModel.size() - 1, mModuleDelegateHost.isHomeSurface());
 
+        mOnHomeModulesChangedCallback.run();
         if (mModel.size() == 1) {
-            mSetVisibilityCallback.onResult(true);
-
             // We use the build time of the first module as the starting time.
             long duration = SystemClock.elapsedRealtime() - mShowModuleStartTimeMs[0];
             HomeModulesMetricsUtils.recordFirstModuleShownDuration(duration);
@@ -498,7 +491,7 @@ public class HomeModulesMediator {
         mModuleListToShow = null;
 
         mModel.clear();
-        mSetVisibilityCallback.onResult(false);
+        mOnHomeModulesChangedCallback.run();
     }
 
     /** Returns the instance of a module {@link ModuleProvider} of the given type. */
@@ -621,7 +614,7 @@ public class HomeModulesMediator {
 
     private void getSegmentationRanking(
             ModuleDelegate moduleDelegate,
-            Callback<Boolean> onHomeModulesShownCallback,
+            Runnable onHomeModulesChangedCallback,
             Set<Integer> filteredEnabledModuleSet) {
         long segmentationServiceCallTimeMs = SystemClock.elapsedRealtime();
 
@@ -640,7 +633,7 @@ public class HomeModulesMediator {
                     buildModulesAndShow(
                             onGetClassificationResult(result, filteredEnabledModuleSet),
                             moduleDelegate,
-                            onHomeModulesShownCallback,
+                            onHomeModulesChangedCallback,
                             durationMs);
                 });
     }
