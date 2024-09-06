@@ -850,6 +850,11 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // requests the thumbnail for that page.
   void MaybeRequestPendingThumbnail(int page_index);
 
+  // Sets whether form highlight should be enabled or cleared.
+  void SetFormHighlight(bool enable_form);
+
+  void ClearTextSelection();
+
   const raw_ptr<PDFiumEngineClient> client_;
 
   // The current document layout.

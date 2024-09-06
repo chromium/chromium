@@ -2174,9 +2174,13 @@ bool PDFiumEngine::IsReadOnly() const {
 
 void PDFiumEngine::SetReadOnly(bool enable) {
   read_only_ = enable;
+  SetFormHighlight(!read_only_);
+  ClearTextSelection();
+}
 
+void PDFiumEngine::SetFormHighlight(bool enable_form) {
   // Restore form highlights.
-  if (!read_only_) {
+  if (enable_form) {
     FPDF_SetFormFieldHighlightAlpha(form(), kFormHighlightAlpha);
     return;
   }
@@ -2184,8 +2188,9 @@ void PDFiumEngine::SetReadOnly(bool enable) {
   // Hide form highlights.
   FPDF_SetFormFieldHighlightAlpha(form(), /*alpha=*/0);
   KillFormFocus();
+}
 
-  // Unselect text.
+void PDFiumEngine::ClearTextSelection() {
   SelectionChangeInvalidator selection_invalidator(this);
   selection_.clear();
 }
