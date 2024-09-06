@@ -27,6 +27,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/linux/web_sandbox_support.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "ui/gfx/font_fallback_linux.h"
@@ -82,7 +83,7 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
         font_description, FontFaceCreationParams(family_name)));
   }
 
-  if (fallback_priority == FontFallbackPriority::kEmojiEmoji) {
+  if (IsEmojiPresentationEmoji(fallback_priority)) {
     // FIXME crbug.com/591346: We're overriding the fallback character here
     // with the FAMILY emoji in the hope to find a suitable emoji font.
     // This should be improved by supporting fallback for character
@@ -91,7 +92,7 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
   }
 
   // First try the specified font with standard style & weight.
-  if (fallback_priority != FontFallbackPriority::kEmojiEmoji &&
+  if (!IsEmojiPresentationEmoji(fallback_priority) &&
       (font_description.Style() == kItalicSlopeValue ||
        font_description.Weight() >= kBoldThreshold)) {
     const SimpleFontData* font_data =
@@ -103,11 +104,12 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
   gfx::FallbackFontData fallback_font;
   if (!FontCache::GetFontForCharacter(
           c,
-          fallback_priority == FontFallbackPriority::kEmojiEmoji
+          IsEmojiPresentationEmoji(fallback_priority)
               ? kColorEmojiLocale
               : font_description.LocaleOrDefault().Ascii().c_str(),
-          &fallback_font))
+          &fallback_font)) {
     return nullptr;
+  }
 
   FontFaceCreationParams creation_params;
   creation_params = FontFaceCreationParams(

@@ -42,6 +42,7 @@
 
 #include "base/check_op.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
+#include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
 #include "third_party/blink/renderer/platform/text/icu_error.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
@@ -477,8 +478,8 @@ const AtomicString& GetFontBasedOnUnicodeBlock(UBlockCode block_code,
   switch (block_code) {
     case UBLOCK_EMOTICONS:
     case UBLOCK_ENCLOSED_ALPHANUMERIC_SUPPLEMENT:
-      // We call this function only when FallbackPriority is not kEmojiEmoji,
-      // so we need a text presentation of emoji.
+      // We call this function only when FallbackPriority is not kEmojiEmoji or
+      // kEmojiEmojiWithVS, so we need a text presentation of emoji.
       return GetMonoEmojiFont(font_manager);
     case UBLOCK_PLAYING_CARDS:
     case UBLOCK_MISCELLANEOUS_SYMBOLS:
@@ -575,8 +576,13 @@ const AtomicString& GetFallbackFamily(
     const SkFontMgr& font_manager,
     UScriptCode& script_out) {
   DCHECK(character);
-  if (fallback_priority == FontFallbackPriority::kEmojiEmoji) [[unlikely]] {
+  if (IsEmojiPresentationEmoji(fallback_priority)) [[unlikely]] {
     if (const AtomicString& family = GetColorEmojiFont(font_manager)) {
+      script_out = USCRIPT_INVALID_CODE;
+      return family;
+    }
+  } else if (IsTextPresentationEmoji(fallback_priority)) [[unlikely]] {
+    if (const AtomicString& family = GetMonoEmojiFont(font_manager)) {
       script_out = USCRIPT_INVALID_CODE;
       return family;
     }

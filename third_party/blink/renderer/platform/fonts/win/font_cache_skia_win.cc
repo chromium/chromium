@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_face_creation_params.h"
+#include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/win/font_fallback_win.h"
@@ -98,10 +99,10 @@ const LayoutLocale* FallbackLocaleForCharacter(
     const FontDescription& font_description,
     const FontFallbackPriority& fallback_priority,
     const UChar32 codepoint) {
-  if (fallback_priority == FontFallbackPriority::kEmojiEmoji) {
+  if (IsEmojiPresentationEmoji(fallback_priority)) {
     return LayoutLocale::Get(AtomicString(kColorEmojiLocale));
   } else if (RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled() &&
-             Character::IsEmoji(codepoint)) {
+             IsTextPresentationEmoji(fallback_priority)) {
     return LayoutLocale::Get(AtomicString(kMonoEmojiLocale));
   }
 
@@ -292,7 +293,7 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
   TRACE_EVENT0("ui", "FontCache::PlatformFallbackFontForCharacter");
 
   // First try the specified font with standard style & weight.
-  if (fallback_priority != FontFallbackPriority::kEmojiEmoji &&
+  if (!IsEmojiPresentationEmoji(fallback_priority) &&
       (font_description.Style() == kItalicSlopeValue ||
        font_description.Weight() >= kBoldWeightValue)) {
     const SimpleFontData* font_data =
@@ -301,15 +302,22 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
       return font_data;
   }
 
+  FontFallbackPriority fallback_priority_with_emoji_text = fallback_priority;
+  if (RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled() &&
+      fallback_priority == FontFallbackPriority::kText &&
+      Character::IsEmoji(character)) {
+    fallback_priority_with_emoji_text = FontFallbackPriority::kEmojiText;
+  }
+
   const SimpleFontData* hardcoded_list_fallback_font =
-      GetFallbackFamilyNameFromHardcodedChoices(font_description, character,
-                                                fallback_priority);
+      GetFallbackFamilyNameFromHardcodedChoices(
+          font_description, character, fallback_priority_with_emoji_text);
 
   // Fall through to running the API-based fallback.
   if (RuntimeEnabledFeatures::LegacyWindowsDWriteFontFallbackEnabled() ||
       !hardcoded_list_fallback_font) {
     return GetDWriteFallbackFamily(font_description, character,
-                                   fallback_priority);
+                                   fallback_priority_with_emoji_text);
   }
 
   return hardcoded_list_fallback_font;
