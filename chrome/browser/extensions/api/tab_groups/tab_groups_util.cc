@@ -14,8 +14,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -180,18 +178,6 @@ tab_groups::TabGroupColorId ColorToColorId(api::tab_groups::Color color) {
 
   NOTREACHED_IN_MIGRATION();
   return tab_groups::TabGroupColorId::kGrey;
-}
-
-bool IsGroupSaved(tab_groups::TabGroupId tab_group_id,
-                  TabStripModel* tab_strip_model) {
-  // If the service failed to start, then there are no saved tab groups.
-  tab_groups::SavedTabGroupKeyedService* saved_tab_group_service =
-      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
-          tab_strip_model->profile());
-  if (!saved_tab_group_service) {
-    return false;
-  }
-  return saved_tab_group_service->model()->Contains(tab_group_id);
 }
 
 }  // namespace tab_groups_util

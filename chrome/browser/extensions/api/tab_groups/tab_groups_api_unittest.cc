@@ -26,14 +26,14 @@
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -387,13 +387,15 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsUpdateSavedTab) {
       u"Initial title", tab_groups::TabGroupColorId::kBlue);
   tab_group_model->GetTabGroup(group)->SetVisualData(visual_data);
 
-  tab_groups::SavedTabGroupKeyedService* saved_service =
-      tab_groups::SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
+  tab_groups::TabGroupSyncService* saved_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
           browser()->profile());
-  ASSERT_NE(saved_service, nullptr);
-  saved_service->SaveGroup(group);
+  ASSERT_TRUE(saved_service);
+  saved_service->SetIsInitializedForTesting(true);
+  saved_service->AddGroup(
+      tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(group));
   int group_id = tab_groups_util::GetGroupId(group);
-  ASSERT_TRUE(tab_groups_util::IsGroupSaved(group, tab_strip_model));
+  ASSERT_TRUE(saved_service->GetGroup(group));
 
   scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
 
@@ -407,8 +409,10 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsUpdateSavedTab) {
                                           api_test_utils::FunctionMode::kNone));
 
   // Check that values were updated.
-  ASSERT_TRUE(tab_group_model->GetTabGroup(group)->visual_data()->title() ==
-              u"another title");
+  tab_groups::TabGroupVisualData expected_visual_data(
+      u"another title", tab_groups::TabGroupColorId::kRed);
+  ASSERT_EQ(expected_visual_data,
+            *tab_group_model->GetTabGroup(group)->visual_data());
 }
 
 // Test that moving a group to the right results in the correct tab order.
