@@ -582,10 +582,8 @@ void ServiceWorkerContextWrapper::RegisterServiceWorker(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!context_core_) {
     GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            std::move(callback),
-            blink::ServiceWorkerStatusCode::kErrorStartWorkerFailed));
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  blink::ServiceWorkerStatusCode::kErrorAbort));
     return;
   }
   blink::mojom::ServiceWorkerRegistrationOptions options_to_pass(
