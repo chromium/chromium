@@ -16075,6 +16075,8 @@ from previous Chrome versions.
   <int value="-1908551313" label="MahiDebugging:enabled"/>
   <int value="-1907565048" label="HtmlBaseUsernameDetector:disabled"/>
   <int value="-1907342706" label="ReadItLaterInMenu:disabled"/>
+  <int value="-1907000073"
+      label="AutofillEnablePaymentSettingsServerCardSave:disabled"/>
   <int value="-1906427432" label="WallpaperFastRefresh:disabled"/>
   <int value="-1905470520" label="FirmwareUpdaterApp:enabled"/>
   <int value="-1905351186" label="FeedAblation:disabled"/>
@@ -20934,6 +20936,8 @@ from previous Chrome versions.
   <int value="123097915" label="FaviconsFromWebManifest:enabled"/>
   <int value="124590378" label="LensStandalone:disabled"/>
   <int value="125403592" label="PaymentLinkDetection:enabled"/>
+  <int value="125500471"
+      label="AutofillEnablePaymentSettingsServerCardSave:enabled"/>
   <int value="125581289" label="WebRtcHWVP8Encoding:disabled"/>
   <int value="125934378" label="enable-password-link"/>
   <int value="126341641" label="EnableDrDcVulkan:enabled"/>
@@ -24385,6 +24389,8 @@ from previous Chrome versions.
       label="OmniboxOnDeviceHeadProviderNonIncognito:disabled"/>
   <int value="1569327162" label="ButterOnDesktopFollowup:enabled"/>
   <int value="1570051274" label="ProductSpecifications:disabled"/>
+  <int value="1570067571"
+      label="AutofillEnablePaymentSettingsCardPromoAndScanCard:disabled"/>
   <int value="1570178909" label="NewOverviewLayout:enabled"/>
   <int value="1570786077" label="EnableFingerprintingProtectionFilter:enabled"/>
   <int value="1571640975" label="EcheLauncherIconsInMoreAppsButton:enabled"/>
@@ -25087,6 +25093,8 @@ from previous Chrome versions.
   <int value="1838990777" label="V8Future:enabled"/>
   <int value="1839005510" label="MutingCompromisedCredentials:enabled"/>
   <int value="1839740266" label="LocationHardReload:disabled"/>
+  <int value="1839869519"
+      label="AutofillEnablePaymentSettingsCardPromoAndScanCard:enabled"/>
   <int value="1840087820" label="NtpRealboxMatchSearchboxTheme:enabled"/>
   <int value="1840756750"
       label="PriceTrackingSubscriptionServiceLocaleKey:enabled"/>

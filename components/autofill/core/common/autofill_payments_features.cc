@@ -119,6 +119,20 @@ BASE_FEATURE(kAutofillEnableOffersInClankKeyboardAccessory,
              "AutofillEnableOffersInClankKeyboardAccessory",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+// When enabled, the payment settings page will show a card promo and allow for
+// card scans.
+BASE_FEATURE(kAutofillEnablePaymentSettingsCardPromoAndScanCard,
+             "AutofillEnablePaymentSettingsCardPromoAndScanCard",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, the payment settings page will save new cards to the payment
+// server instead of locally.
+BASE_FEATURE(kAutofillEnablePaymentSettingsServerCardSave,
+             "AutofillEnablePaymentSettingsServerCardSave",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // When enabled, risk data is prefetched during payments autofill flows to
 // reduce user-perceived latency.
 BASE_FEATURE(kAutofillEnablePrefetchingRiskDataForRetrieval,

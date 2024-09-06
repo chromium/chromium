@@ -557,6 +557,24 @@ const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[] =
     "When enabled, offers will be displayed in the keyboard accessory when "
     "available.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kAutofillEnablePaymentSettingsCardPromoAndScanCardName[] =
+    "Use the new card promo and allow for card scanning in the payment "
+    "settings page";
+const char kAutofillEnablePaymentSettingsCardPromoAndScanCardDescription[] =
+    "When enabled, the new card promo UX will be shown on the payment "
+    "settings page and the option for card scans will be available on the add "
+    "card page.";
+
+const char kAutofillEnablePaymentSettingsServerCardSaveName[] =
+    "Save new credit cards in the payment settings page to the Google Payments "
+    "server";
+const char kAutofillEnablePaymentSettingsServerCardSaveDescription[] =
+    "When enabled, new credit cards added in the payment settings page will be "
+    "saved to the Google Payments server. The card will be saved locally "
+    "if the server save fails.";
+#endif
+
 const char kAutofillEnablePrefetchingRiskDataForRetrievalName[] =
     "Enable prefetching of risk data during payments autofill retrieval";
 const char kAutofillEnablePrefetchingRiskDataForRetrievalDescription[] =

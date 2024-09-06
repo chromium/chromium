@@ -347,6 +347,15 @@ extern const char kAutofillEnableNewCardArtAndNetworkImagesDescription[];
 extern const char kAutofillEnableOffersInClankKeyboardAccessoryName[];
 extern const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kAutofillEnablePaymentSettingsCardPromoAndScanCardName[];
+extern const char
+    kAutofillEnablePaymentSettingsCardPromoAndScanCardDescription[];
+
+extern const char kAutofillEnablePaymentSettingsServerCardSaveName[];
+extern const char kAutofillEnablePaymentSettingsServerCardSaveDescription[];
+#endif
+
 extern const char kAutofillEnablePrefetchingRiskDataForRetrievalName[];
 extern const char kAutofillEnablePrefetchingRiskDataForRetrievalDescription[];
 

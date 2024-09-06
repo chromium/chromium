@@ -746,6 +746,24 @@
     "expiry_milestone": 116
   },
   {
+    "name": "autofill-enable-payment-settings-card-promo-and-scan-card",
+    "owners": [
+      "darwinyang@chromium.org",
+      "icer@chromium.org",
+      "chrome-payments-team@google.com"
+    ],
+    "expiry_milestone": 134
+  },
+  {
+    "name": "autofill-enable-payment-settings-server-card-save",
+    "owners": [
+      "darwinyang@chromium.org",
+      "icer@chromium.org",
+      "chrome-payments-team@google.com"
+    ],
+    "expiry_milestone": 134
+  },
+  {
     "name": "autofill-enable-prefetching-risk-data-for-retrieval",
     "owners": ["hvs@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 130

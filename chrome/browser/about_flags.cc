@@ -11874,6 +11874,24 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(display::features::kExcludeDisplayInMirrorMode)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"autofill-enable-payment-settings-card-promo-and-scan-card",
+     flag_descriptions::kAutofillEnablePaymentSettingsCardPromoAndScanCardName,
+     flag_descriptions::
+         kAutofillEnablePaymentSettingsCardPromoAndScanCardDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         autofill::features::
+             kAutofillEnablePaymentSettingsCardPromoAndScanCard)},
+
+    {"autofill-enable-payment-settings-server-card-save",
+     flag_descriptions::kAutofillEnablePaymentSettingsServerCardSaveName,
+     flag_descriptions::kAutofillEnablePaymentSettingsServerCardSaveDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnablePaymentSettingsServerCardSave)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
