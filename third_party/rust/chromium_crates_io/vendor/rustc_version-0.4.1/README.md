@@ -3,7 +3,7 @@ rustc-version-rs
 
 [![Documentation](https://docs.rs/rustc_version/badge.svg)](https://docs.rs/rustc_version/)
 [![Crates.io](https://img.shields.io/crates/v/rustc_version.svg)](https://crates.io/crates/rustc_version)
-[![Build status](https://github.com/Kimundi/rustc-version-rs/workflows/CI/badge.svg)](https://github.com/Kimundi/rustc-version-rs/actions?query=workflow%3ACI)
+[![Build status](https://github.com/djc/rustc-version-rs/workflows/CI/badge.svg)](https://github.com/djc/rustc-version-rs/actions?query=workflow%3ACI)
 
 A library for querying the version of a `rustc` compiler.
 

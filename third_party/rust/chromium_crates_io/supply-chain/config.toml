@@ -227,7 +227,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."rustc-demangle:0.1.24"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."rustc_version:0.4.0"]
+[policy."rustc_version:0.4.1"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."rustversion:1.0.17"]

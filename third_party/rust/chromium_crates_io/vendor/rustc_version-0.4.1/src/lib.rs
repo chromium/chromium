@@ -198,9 +198,16 @@ pub fn version() -> Result<Version> {
 /// Returns the `rustc` SemVer version and additional metadata
 /// like the git short hash and build date.
 pub fn version_meta() -> Result<VersionMeta> {
-    let cmd = env::var_os("RUSTC").unwrap_or_else(|| OsString::from("rustc"));
+    let rustc = env::var_os("RUSTC").unwrap_or_else(|| OsString::from("rustc"));
+    let cmd = if let Some(wrapper) = env::var_os("RUSTC_WRAPPER").filter(|w| !w.is_empty()) {
+        let mut cmd = Command::new(wrapper);
+        cmd.arg(rustc);
+        cmd
+    } else {
+        Command::new(rustc)
+    };
 
-    VersionMeta::for_command(Command::new(cmd))
+    VersionMeta::for_command(cmd)
 }
 
 /// Parses a "rustc -vV" output string and returns
@@ -263,7 +270,7 @@ pub fn version_meta_for(verbose_version_string: &str) -> Result<VersionMeta> {
 
 fn expect_key_or_unknown(key: &str, map: &HashMap<&str, &str>) -> Result<Option<String>, Error> {
     match map.get(key) {
-        Some(&v) if v == "unknown" => Ok(None),
+        Some(&"unknown") => Ok(None),
         Some(&v) => Ok(Some(String::from(v))),
         None => Err(Error::UnexpectedVersionFormat),
     }
