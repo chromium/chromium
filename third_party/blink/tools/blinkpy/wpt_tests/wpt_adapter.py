@@ -187,10 +187,10 @@ class WPTAdapter:
             self.options.smoke = self.port.default_smoke_test_only()
         if self.options.smoke:
             if not explicit_tests and self.options.num_retries is None:
-                # Retry failures 1 times if we're running a smoke test without
+                # Retry failures 3 times if we're running a smoke test without
                 # additional tests. SmokeTests is an explicit list of tests, so we
                 # wouldn't retry by default without this special case.
-                self.options.num_retries = 1
+                self.options.num_retries = 3
 
             if not self.options.test_list:
                 self.options.test_list = []
@@ -409,7 +409,7 @@ class WPTAdapter:
 
         if self.options.num_retries is None:
             # If --test-list is passed, or if no test narrowing is specified,
-            # default to 1 retries. Otherwise [e.g. if tests are being passed by
+            # default to 3 retries. Otherwise [e.g. if tests are being passed by
             # name], default to 0 retries.
             if self.options.test_list or len(self.paths) < len(all_test_names):
                 self.options.num_retries = 3
