@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
@@ -34,6 +35,7 @@
 #include "chromeos/ash/components/cryptohome/userdataauth_util.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/browser_context.h"
@@ -71,6 +73,14 @@ std::vector<base::FilePath> GetMyFilesContents(Profile* profile) {
     files.push_back(path);
   }
   return files;
+}
+
+// Generates the destination directory name, combining the "ChromeOS device"
+// prefix with a unique identifier of the device.
+std::string GenerateDestinationDirName() {
+  std::optional<std::string_view> id =
+      ash::system::StatisticsProvider::GetInstance()->GetMachineID();
+  return std::string(kDestinationDirName) + " " + std::string(id.value_or(""));
 }
 
 }  // namespace
@@ -234,8 +244,8 @@ void LocalFilesMigrationManager::StartMigration(
     return;
   }
 
-  // TODO(aidazolic): Add unique ID of the device.
-  coordinator_->Run(cloud_provider_, std::move(files), kDestinationDirName,
+  coordinator_->Run(cloud_provider_, std::move(files),
+                    GenerateDestinationDirName(),
                     base::BindOnce(&LocalFilesMigrationManager::OnMigrationDone,
                                    weak_factory_.GetWeakPtr()));
 }

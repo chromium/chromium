@@ -26,6 +26,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/mock_userdataauth_client.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/browser/browser_context.h"
@@ -41,6 +43,8 @@ namespace {
 constexpr char kReadOnly[] = "read_only";
 
 constexpr char kEmail[] = "stub-user@example.com";
+
+constexpr char kTestDeviceSerialNumber[] = "12345689";
 
 constexpr base::TimeDelta kMaxDelta = base::Seconds(1);
 
@@ -60,6 +64,12 @@ MATCHER_P(WithEnabled, enabled, "") {
 template <typename ReplyType>
 auto ReplyWith(const ReplyType& reply) {
   return base::test::RunOnceCallbackRepeatedly<1>(reply);
+}
+
+// Constructs the expected destination directory name.
+std::string ExpectedDestinationDirName() {
+  return std::string(kDestinationDirName) + " " +
+         std::string(kTestDeviceSerialNumber);
 }
 
 class MockMigrationObserver : public LocalFilesMigrationManager::Observer {
@@ -148,6 +158,10 @@ class LocalFilesMigrationManagerTest : public policy::PolicyTest {
   ~LocalFilesMigrationManagerTest() override = default;
 
   void SetUpOnMainThread() override {
+    statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
+                                             kTestDeviceSerialNumber);
+    ash::system::StatisticsProvider::SetTestProvider(&statistics_provider_);
+
     ASSERT_TRUE(manager());
 
     manager()->AddObserver(&observer_);
@@ -188,6 +202,7 @@ class LocalFilesMigrationManagerTest : public policy::PolicyTest {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
+  ash::system::FakeStatisticsProvider statistics_provider_;
   std::unique_ptr<MockMigrationNotificationManager> notification_manager_ =
       nullptr;
   MockMigrationObserver observer_;
@@ -317,7 +332,8 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
       std::make_unique<MockMigrationCoordinator>(browser()->profile());
   {
     testing::InSequence s;
-    EXPECT_CALL(*coordinator.get(), Run(CloudProvider::kGoogleDrive, _, _, _))
+    EXPECT_CALL(*coordinator.get(), Run(CloudProvider::kGoogleDrive, _,
+                                        ExpectedDestinationDirName(), _))
         .Times(1);
     EXPECT_CALL(*coordinator.get(), Stop).Times(1);
   }
@@ -353,10 +369,12 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
       std::make_unique<MockMigrationCoordinator>(browser()->profile());
   {
     testing::InSequence s;
-    EXPECT_CALL(*coordinator.get(), Run(CloudProvider::kOneDrive, _, _, _))
+    EXPECT_CALL(*coordinator.get(), Run(CloudProvider::kOneDrive, _,
+                                        ExpectedDestinationDirName(), _))
         .Times(1);
     EXPECT_CALL(*coordinator.get(), Stop).Times(1);
-    EXPECT_CALL(*coordinator.get(), Run(CloudProvider::kGoogleDrive, _, _, _))
+    EXPECT_CALL(*coordinator.get(), Run(CloudProvider::kGoogleDrive, _,
+                                        ExpectedDestinationDirName(), _))
         .WillOnce([](CloudProvider cloud_provider,
                      std::vector<base::FilePath> file_paths,
                      const std::string& destination_dir,
@@ -398,7 +416,8 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
       std::make_unique<MockMigrationCoordinator>(browser()->profile());
   {
     testing::InSequence s;
-    EXPECT_CALL(*coordinator.get(), Run(CloudProvider::kOneDrive, _, _, _))
+    EXPECT_CALL(*coordinator.get(), Run(CloudProvider::kOneDrive, _,
+                                        ExpectedDestinationDirName(), _))
         .Times(1);
     EXPECT_CALL(*coordinator.get(), Stop).Times(1);
   }

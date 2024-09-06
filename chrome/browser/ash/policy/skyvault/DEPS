@@ -32,4 +32,6 @@ include_rules = [
   "+chrome/browser/notifications",
   "+chrome/browser/platform_util.h",
   "+chrome/browser/ui/webui/ash/skyvault/local_files_migration_dialog.h",
+  "+chromeos/ash/components/system/statistics_provider.h",
+  "+chromeos/ash/components/system/fake_statistics_provider.h",
 ]
