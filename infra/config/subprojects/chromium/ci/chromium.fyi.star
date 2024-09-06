@@ -460,6 +460,13 @@ ci.builder(
 
 fyi_ios_builder(
     name = "ios-fieldtrial-rel",
+    description_html = (
+        "Builds the open-source version of Chrome for iOS and runs tests, " +
+        "passing the --disable-field-trial-config flag. This causes " +
+        "testing/variations/fieldtrial_testing_config.json not to be used for" +
+        " determining which finch experiments are enabled. Instead, the " +
+        "default configuration with no experiments enabled is used."
+    ),
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "ios",

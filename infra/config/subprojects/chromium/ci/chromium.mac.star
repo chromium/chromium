@@ -580,6 +580,11 @@ ios_builder(
     # We don't have necessary capacity to run this configuration in CQ, but it
     # is part of the main waterfall
     name = "ios-catalyst",
+    description_html = (
+        "Builds the open-source version of Chrome for iOS as a Catalyst app " +
+        "(i.e. an iOS app for running in a wrapper on macOS). Build-only " +
+        "(does not run tests)."
+    ),
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "ios",
@@ -620,6 +625,10 @@ ios_builder(
 
 ios_builder(
     name = "ios-device",
+    description_html = (
+        "Builds the open-source version of Chrome for iOS as a binary for " +
+        "running on a real device. Build-only (does not run tests)."
+    ),
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "ios",
@@ -665,6 +674,11 @@ ios_builder(
 ios_builder(
     name = "ios-simulator",
     branch_selector = branches.selector.IOS_BRANCHES,
+    description_html = (
+        "Builds the open-source version of Chrome for iOS as a simulator " +
+        "binary and runs tests. This is what's included on most CQ runs " +
+        "(even for CLs that don't explicitly touch an iOS file)."
+    ),
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "ios",
@@ -712,6 +726,15 @@ ios_builder(
 ios_builder(
     name = "ios-simulator-full-configs",
     branch_selector = branches.selector.IOS_BRANCHES,
+    description_html = (
+        "Builds the open-source version of Chrome for iOS as a simulator " +
+        "binary, and runs tests on a large variety of configurations. These " +
+        "configurations are less common (e.g. weird screen sizes, older OS " +
+        "versions) and failures are less frequent, so these configs only " +
+        "run in the CQ for CLs that actually touch an ios-related file. " +
+        "Other CLs may introduce failures, but we handle them reactively as " +
+        "they appear on the console."
+    ),
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "ios",
@@ -758,6 +781,11 @@ ios_builder(
 
 ios_builder(
     name = "ios-simulator-noncq",
+    description_html = (
+        "Builds the open-source version of Chrome for iOS as a simulator " +
+        "binary. Runs tests that are not included on CQ runs, but that we " +
+        "still want tested regularly."
+    ),
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "ios",

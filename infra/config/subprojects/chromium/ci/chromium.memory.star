@@ -732,6 +732,11 @@ ci.builder(
 
 ci.builder(
     name = "ios-asan",
+    description_html = (
+        "Builds the open-source version of Chrome for iOS with " +
+        "AddressSanitizer (ASan) and runs unit tests for detecting memory " +
+        "errors."
+    ),
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "ios",
