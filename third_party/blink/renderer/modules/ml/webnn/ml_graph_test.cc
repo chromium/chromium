@@ -690,6 +690,7 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
          /*softsign_input=*/webnn::SupportedDataTypes::All(),
          /*split_input=*/webnn::SupportedDataTypes::All(),
          /*tanh_input=*/webnn::SupportedDataTypes::All(),
+         /*tile_input=*/webnn::SupportedDataTypes::All(),
          /*transpose_input=*/webnn::SupportedDataTypes::All(),
          /*triangular_input=*/webnn::SupportedDataTypes::All(),
          /*where_condition=*/

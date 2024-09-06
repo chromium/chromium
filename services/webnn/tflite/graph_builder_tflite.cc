@@ -431,6 +431,8 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*softsign_input=*/kFloat32,
        /*split_input=*/kFloat32AndInt8To64AndUint8,
        /*tanh_input=*/kFloat32,
+       // Tile is not implemented.
+       /*tile_input=*/{},
        /*transpose_input=*/kFloat32AndInt8To64AndUint8,
        /*triangular_input=*/kFloat32AndInt32To64AndUint32,
        /*where_condition=*/DataTypeConstraint::kUint8,
@@ -643,7 +645,7 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
       operator_offset = SerializeTanh(*op.get_tanh());
       break;
     case mojom::Operation::Tag::kTile:
-      return base::unexpected("Tile operation is not implemented in tflite.");
+      NOTREACHED();
     case mojom::Operation::Tag::kTranspose:
       operator_offset = SerializeTranspose(*op.get_transpose());
       break;

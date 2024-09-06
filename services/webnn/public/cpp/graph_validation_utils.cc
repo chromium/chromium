@@ -2225,9 +2225,17 @@ ValidateQuantizeLinearAndInferOutput(
 }
 
 base::expected<OperandDescriptor, std::string> ValidateTileAndInferOutput(
+    const ContextProperties& context_properties,
     const OperandDescriptor& input,
     base::span<const uint32_t> repetitions,
     std::string_view label) {
+  if (!context_properties.data_type_limits.tile_input.Has(input.data_type())) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedInputArgumentTypeError(
+                   input.data_type(),
+                   context_properties.data_type_limits.tile_input)));
+  }
+
   if (repetitions.size() != input.Rank()) {
     return base::unexpected(ErrorWithLabel(
         label,

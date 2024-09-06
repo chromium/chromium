@@ -150,6 +150,7 @@ struct DataTypeLimits {
   SupportedDataTypes softsign_input;
   SupportedDataTypes split_input;
   SupportedDataTypes tanh_input;
+  SupportedDataTypes tile_input;
   SupportedDataTypes transpose_input;
   SupportedDataTypes triangular_input;
 

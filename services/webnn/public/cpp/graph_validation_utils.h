@@ -633,7 +633,8 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
 // https://github.com/webmachinelearning/webnn/issues/375
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
-    ValidateTileAndInferOutput(const OperandDescriptor& input,
+    ValidateTileAndInferOutput(const ContextProperties& context_properties,
+                               const OperandDescriptor& input,
                                base::span<const uint32_t> repetitions,
                                std::string_view label);
 

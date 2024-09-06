@@ -306,6 +306,9 @@ ContextProperties ContextImplDml::GetProperties(
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_tanh_operator_desc#tensor-support
        /*tanh_input=*/DataTypeConstraint::kFloat16To32,
 
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_tile_operator_desc#tensor-support
+       /*tile_input=*/SupportedDataTypes::All(),
+
        // Transpose is emulated by identity.
        /*transpose_input=*/kFloat16To32Ints8To32,
 

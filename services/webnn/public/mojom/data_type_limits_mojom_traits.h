@@ -358,6 +358,10 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.tanh_input;
   }
+  static webnn::SupportedDataTypes tile_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.tile_input;
+  }
   static webnn::SupportedDataTypes transpose_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.transpose_input;
@@ -463,6 +467,7 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
            data.ReadSoftsignInput(&out->softsign_input) &&
            data.ReadSplitInput(&out->split_input) &&
            data.ReadTanhInput(&out->tanh_input) &&
+           data.ReadTileInput(&out->tile_input) &&
            data.ReadTransposeInput(&out->transpose_input) &&
            data.ReadTriangularInput(&out->triangular_input) &&
            data.ReadWhereCondition(&out->where_condition) &&

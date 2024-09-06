@@ -4352,13 +4352,16 @@ void CreateOperatorNodeForSoftplus(const IdToOperandMap& id_to_operand_map,
   CHECK(id_to_node_output_map.try_emplace(output_id, node_output).second);
 }
 
-void CreateOperatorNodeForTile(const IdToOperandMap& id_to_operand_map,
+void CreateOperatorNodeForTile(const ContextProperties& context_properties,
+                               const IdToOperandMap& id_to_operand_map,
                                const mojom::TilePtr& tile,
                                GraphBuilderDml& graph_builder,
                                IdToNodeOutputMap& id_to_node_output_map) {
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, tile->input_operand_id);
   const auto& input_tensor_desc = input->GetTensorDesc();
+  CHECK(context_properties.data_type_limits.tile_input.Has(
+      DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
 
   const uint64_t output_id = tile->output_operand_id;
   const auto output_tensor_desc =
@@ -5940,8 +5943,9 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
         break;
       }
       case Operation::Tag::kTile: {
-        CreateOperatorNodeForTile(id_to_operand_map, operation->get_tile(),
-                                  graph_builder, id_to_node_output_map);
+        CreateOperatorNodeForTile(context_properties, id_to_operand_map,
+                                  operation->get_tile(), graph_builder,
+                                  id_to_node_output_map);
         break;
       }
       case Operation::Tag::kTranspose: {

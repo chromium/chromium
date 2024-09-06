@@ -1965,7 +1965,8 @@ bool ValidateSplit(const ContextProperties& context_properties,
   return true;
 }
 
-bool ValidateTile(const IdToOperandMap& id_to_operand_map,
+bool ValidateTile(const ContextProperties& context_properties,
+                  const IdToOperandMap& id_to_operand_map,
                   const mojom::Tile& tile,
                   base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(tile.input_operand_id)) {
@@ -1981,7 +1982,7 @@ bool ValidateTile(const IdToOperandMap& id_to_operand_map,
   }
 
   auto validated_output = ValidateTileAndInferOutput(
-      input->descriptor, tile.repetitions, tile.label);
+      context_properties, input->descriptor, tile.repetitions, tile.label);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -2265,8 +2266,8 @@ bool ValidateOperation(const ContextProperties& context_properties,
           id_to_operand_map, *operation.get_tanh(),
           context_properties.data_type_limits.tanh_input, processed_operands);
     case mojom::Operation::Tag::kTile:
-      return ValidateTile(id_to_operand_map, *operation.get_tile(),
-                          processed_operands);
+      return ValidateTile(context_properties, id_to_operand_map,
+                          *operation.get_tile(), processed_operands);
     case mojom::Operation::Tag::kTranspose:
       return ValidateTranspose(context_properties, id_to_operand_map,
                                *operation.get_transpose(), processed_operands);

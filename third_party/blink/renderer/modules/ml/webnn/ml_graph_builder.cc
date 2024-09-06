@@ -2434,7 +2434,8 @@ MLOperand* MLGraphBuilder::tile(const MLOperand* input,
 
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
-      webnn::ValidateTileAndInferOutput(input->Descriptor(), repetitions,
+      webnn::ValidateTileAndInferOutput(ml_context_->GetProperties(),
+                                        input->Descriptor(), repetitions,
                                         options->label().Utf8()));
 
   auto* tile = MakeGarbageCollected<MLTileOperator>(this, repetitions, options);

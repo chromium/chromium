@@ -99,6 +99,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedDataTypes softsign_input,
                  SupportedDataTypes split_input,
                  SupportedDataTypes tanh_input,
+                 SupportedDataTypes tile_input,
                  SupportedDataTypes transpose_input,
                  SupportedDataTypes triangular_input,
                  SupportedDataTypes where_condition,
@@ -200,6 +201,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedDataTypes softsign_input;
   SupportedDataTypes split_input;
   SupportedDataTypes tanh_input;
+  SupportedDataTypes tile_input;
   SupportedDataTypes transpose_input;
   SupportedDataTypes triangular_input;
   SupportedDataTypes where_condition;
@@ -294,6 +296,7 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.softsign_input == rhs.softsign_input &&
          lhs.split_input == rhs.split_input &&
          lhs.tanh_input == rhs.tanh_input &&
+         lhs.tile_input == rhs.tile_input &&
          lhs.transpose_input == rhs.transpose_input &&
          lhs.triangular_input == rhs.triangular_input &&
          lhs.where_condition == rhs.where_condition &&

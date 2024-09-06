@@ -582,6 +582,7 @@ ContextProperties GetContextPropertiesForTesting() {
        /*softsign_input=*/SupportedDataTypes::All(),
        /*split_input=*/SupportedDataTypes::All(),
        /*tanh_input=*/SupportedDataTypes::All(),
+       /*tile_input=*/SupportedDataTypes::All(),
        /*transpose_input=*/SupportedDataTypes::All(),
        /*triangular_input=*/SupportedDataTypes::All(),
        /*where_condition=*/SupportedDataTypes::All(),

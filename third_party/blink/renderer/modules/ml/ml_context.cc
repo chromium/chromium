@@ -840,6 +840,13 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
       SupportedDataTypesToSupportLimits(data_type_limits.tanh_input));
   op_support_limits->setTanh(tanh);
 
+  MLSingleInputSupportLimits* tile = MLSingleInputSupportLimits::Create();
+  tile->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.tile_input));
+  tile->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.tile_input));
+  op_support_limits->setTile(tile);
+
   MLSingleInputSupportLimits* transpose = MLSingleInputSupportLimits::Create();
   transpose->setInput(
       SupportedDataTypesToSupportLimits(data_type_limits.transpose_input));

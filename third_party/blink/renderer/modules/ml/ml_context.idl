@@ -245,6 +245,7 @@ dictionary MLOpSupportLimits {
   MLSingleInputSupportLimits softsign;
   MLSingleInputSupportLimits split;
   MLSingleInputSupportLimits tanh;
+  MLSingleInputSupportLimits tile;
   MLSingleInputSupportLimits transpose;
   MLSingleInputSupportLimits triangular;
   MLWhereSupportLimits where;
