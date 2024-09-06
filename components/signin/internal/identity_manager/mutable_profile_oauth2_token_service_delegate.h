@@ -32,6 +32,19 @@ class TokenWebData;
 class TokenBindingHelper;
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
+// This enum is used to know if an account is known by the client has a valid
+// refresh token or not.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AccountStartupState {
+  kKnownValidToken = 0,
+  kKnownInvalidToken = 1,
+  kUnknownValidToken = 2,
+  kUnknownInvalidToken = 3,
+
+  kMaxValue = kUnknownInvalidToken,
+};
+
 enum class RevokeAllTokensOnLoad {
   kNo = 0,
   kDeleteSiteDataOnExit = 1,
@@ -126,6 +139,18 @@ class MutableProfileOAuth2TokenServiceDelegate
                            UpdateInvalidToken);
   FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
                            LoadInvalidToken);
+  FRIEND_TEST_ALL_PREFIXES(
+      MutableProfileOAuth2TokenServiceDelegateTest,
+      LoadAllCredentialsIntoMemoryAccountAvailabilityPrimaryAvailable);
+  FRIEND_TEST_ALL_PREFIXES(
+      MutableProfileOAuth2TokenServiceDelegateTest,
+      LoadAllCredentialsIntoMemoryAccountAvailabilityPrimaryNotAvailable);
+  FRIEND_TEST_ALL_PREFIXES(
+      MutableProfileOAuth2TokenServiceDelegateTest,
+      LoadAllCredentialsIntoMemoryAccountAvailabilitySecondaryAvailable);
+  FRIEND_TEST_ALL_PREFIXES(
+      MutableProfileOAuth2TokenServiceDelegateTest,
+      LoadAllCredentialsIntoMemoryAccountAvailabilitySecondaryNotAvailable);
   FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
                            GetAccounts);
   FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
@@ -237,6 +262,11 @@ class MutableProfileOAuth2TokenServiceDelegate
   // revoked on the server.
   void RevokeCredentialsImpl(const CoreAccountId& account_id,
                              bool revoke_on_server);
+
+  // Records whether the `account_id` is available in the account tracker
+  // service with a valid `refresh_token` or not. Called at startup.
+  void RecordAccountAvailabilityStartup(const CoreAccountId& account_id,
+                                        const std::string& refresh_token);
 
   // In memory refresh token store mapping account_id to refresh_token.
   std::map<CoreAccountId, std::string> refresh_tokens_;

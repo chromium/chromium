@@ -278,6 +278,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Signin.AccountInPref.MatchingFetchedAccount" enum="Boolean"
+    expires_after="2024-12-05">
+  <owner>rsult@google.com</owner>
+  <owner>droger@chromium.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    This histogram records whether the fetched account and the stored account in
+    preferences have matching account Ids. Recorded whenever a fetched account
+    is retreived from the server.
+  </summary>
+</histogram>
+
+<histogram name="Signin.AccountInPref.StartupState.{AccountType}"
+    enum="AccountStartupState" expires_after="2024-12-05">
+  <owner>rsult@google.com</owner>
+  <owner>droger@chromium.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    This histogram records whether the {AccountType} account is known in the
+    preferences along with the validity of the refresh token. The value is
+    recorded on profile load when loading the account information.
+  </summary>
+  <token key="AccountType">
+    <variant name="Primary" summary="primary"/>
+    <variant name="Secondary" summary="account"/>
+  </token>
+</histogram>
+
+<histogram name="Signin.AccountInPref.State" enum="AccountInPrefState"
+    expires_after="2024-12-05">
+  <owner>rsult@google.com</owner>
+  <owner>droger@chromium.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    This histogram records the state of the account that is stored in the
+    preferences; whether it is fully or partially known. Recorded whenever a
+    fetched account is retreived from the server.
+  </summary>
+</histogram>
+
 <histogram name="Signin.AccountManagementType"
     enum="AccountManagedStatusFinderOutcome" expires_after="2025-01-20">
   <owner>msarda@chromium.org</owner>

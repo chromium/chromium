@@ -805,6 +805,79 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, LoadInvalidToken) {
             oauth2_service_delegate_->GetAuthError(account_id));
 }
 
+TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
+       LoadAllCredentialsIntoMemoryAccountAvailabilityPrimaryAvailable) {
+  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  std::map<std::string, TokenWithBindingKey> tokens;
+  const std::string gaia_id = "gaia_id";
+  const CoreAccountId account_id = CoreAccountId::FromGaiaId(gaia_id);
+  tokens["AccountId-gaia_id"] = TokenWithBindingKey("refresh_token");
+
+  // Primary account is available in account tracker service.
+  account_tracker_service_.SeedAccountInfo(gaia_id, "test@google.com");
+  oauth2_service_delegate_->loading_primary_account_id_ = account_id;
+
+  base::HistogramTester histogram_tester;
+  oauth2_service_delegate_->LoadAllCredentialsIntoMemory(tokens);
+  histogram_tester.ExpectBucketCount(
+      "Signin.AccountInPref.StartupState.Primary",
+      AccountStartupState::kKnownValidToken, 1);
+}
+
+TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
+       LoadAllCredentialsIntoMemoryAccountAvailabilityPrimaryNotAvailable) {
+  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  std::map<std::string, TokenWithBindingKey> tokens;
+  const std::string gaia_id = "gaia_id";
+  const CoreAccountId account_id = CoreAccountId::FromGaiaId(gaia_id);
+  tokens["AccountId-gaia_id"] =
+      TokenWithBindingKey(GaiaConstants::kInvalidRefreshToken);
+
+  // Primary account is not seeded in the account tracker service.
+  oauth2_service_delegate_->loading_primary_account_id_ = account_id;
+
+  base::HistogramTester histogram_tester;
+  oauth2_service_delegate_->LoadAllCredentialsIntoMemory(tokens);
+  histogram_tester.ExpectBucketCount(
+      "Signin.AccountInPref.StartupState.Primary",
+      AccountStartupState::kUnknownInvalidToken, 1);
+}
+
+TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
+       LoadAllCredentialsIntoMemoryAccountAvailabilitySecondaryAvailable) {
+  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  std::map<std::string, TokenWithBindingKey> tokens;
+  const std::string gaia_id = "gaia_id";
+  const CoreAccountId account_id = CoreAccountId::FromGaiaId(gaia_id);
+  tokens["AccountId-gaia_id"] =
+      TokenWithBindingKey(GaiaConstants::kInvalidRefreshToken);
+
+  // Secondary account is available in account tracker service.
+  account_tracker_service_.SeedAccountInfo(gaia_id, "test@google.com");
+
+  base::HistogramTester histogram_tester;
+  oauth2_service_delegate_->LoadAllCredentialsIntoMemory(tokens);
+  histogram_tester.ExpectBucketCount(
+      "Signin.AccountInPref.StartupState.Secondary",
+      AccountStartupState::kKnownInvalidToken, 1);
+}
+
+TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
+       LoadAllCredentialsIntoMemoryAccountAvailabilitySecondaryNotAvailable) {
+  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  std::map<std::string, TokenWithBindingKey> tokens;
+  const std::string gaia_id = "gaia_id";
+  const CoreAccountId account_id = CoreAccountId::FromGaiaId(gaia_id);
+  tokens["AccountId-gaia_id"] = TokenWithBindingKey("refresh_token");
+
+  // Secondary account is not seeded in the account tracker service.
+  base::HistogramTester histogram_tester;
+  oauth2_service_delegate_->LoadAllCredentialsIntoMemory(tokens);
+  histogram_tester.ExpectBucketCount(
+      "Signin.AccountInPref.StartupState.Secondary",
+      AccountStartupState::kUnknownValidToken, 1);
+}
+
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, GetTokenForMultilogin) {
   InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
   const CoreAccountId account_id1 = CoreAccountId::FromGaiaId("account_id1");

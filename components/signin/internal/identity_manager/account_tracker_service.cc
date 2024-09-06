@@ -20,6 +20,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_functions_internal_overloads.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -82,6 +83,17 @@ const base::FilePath::CharType kAccountsFolder[] =
     FILE_PATH_LITERAL("Accounts");
 const base::FilePath::CharType kAvatarImagesFolder[] =
     FILE_PATH_LITERAL("Avatar Images");
+
+// Marks the state of the account that are read from prefs.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AccountInPrefState {
+  kValid = 0,
+  kEmptyAccount = 1,
+  kEmptyEmailOrGaiaId = 2,
+
+  kMaxValue = kEmptyEmailOrGaiaId,
+};
 
 // Reads a PNG image from disk and decodes it. If the reading/decoding attempt
 // was unsuccessful, an empty image is returned.
@@ -331,6 +343,15 @@ void AccountTrackerService::SetAccountInfoFromUserInfo(
   DCHECK(base::Contains(accounts_, account_id));
   AccountInfo& account_info = accounts_[account_id];
 
+  AccountInPrefState state = AccountInPrefState::kValid;
+  if (account_info.IsEmpty()) {
+    state = AccountInPrefState::kEmptyAccount;
+  } else if (account_info.gaia.empty() || account_info.email.empty()) {
+    // This may happen if account capabilities are fetched first.
+    state = AccountInPrefState::kEmptyEmailOrGaiaId;
+  }
+  base::UmaHistogramEnumeration("Signin.AccountInPref.State", state);
+
   std::optional<AccountInfo> maybe_account_info =
       AccountInfoFromUserInfo(user_info);
   if (maybe_account_info) {
@@ -339,7 +360,13 @@ void AccountTrackerService::SetAccountInfoFromUserInfo(
     maybe_account_info->account_id = PickAccountIdForAccount(
         maybe_account_info->gaia, maybe_account_info->email);
 
-    if (maybe_account_info->account_id == account_info.account_id) {
+    // Whether the existing account in pref matches the fetched account.
+    bool accounts_matching =
+        maybe_account_info->account_id == account_info.account_id;
+    base::UmaHistogramBoolean("Signin.AccountInPref.MatchingFetchedAccount",
+                              accounts_matching);
+
+    if (accounts_matching) {
       account_info.UpdateWith(maybe_account_info.value());
     } else {
       DLOG(ERROR) << "Cannot set account info from user info as account ids "

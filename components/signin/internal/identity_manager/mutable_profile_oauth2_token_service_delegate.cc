@@ -12,8 +12,10 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_client.h"
@@ -536,6 +538,8 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
         LoadTokenFromDBStatus::NUM_LOAD_TOKEN_FROM_DB_STATUS);
 
     if (load_account) {
+      RecordAccountAvailabilityStartup(account_id, refresh_token);
+
       UpdateCredentialsInMemory(account_id, refresh_token
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
                                 ,
@@ -817,4 +821,31 @@ void MutableProfileOAuth2TokenServiceDelegate::RevokeCredentialsImpl(
     ClearPersistedCredentials(account_id);
     FireRefreshTokenRevoked(account_id);
   }
+}
+
+void MutableProfileOAuth2TokenServiceDelegate::RecordAccountAvailabilityStartup(
+    const CoreAccountId& account_id,
+    const std::string& refresh_token) {
+  constexpr const char kAccountAvailabilityStartupHistogramBase[] =
+      "Signin.AccountInPref.StartupState.";
+
+  bool known_account =
+      !account_tracker_service_->GetAccountInfo(account_id).IsEmpty();
+  bool refersh_token_valid =
+      refresh_token != GaiaConstants::kInvalidRefreshToken;
+
+  AccountStartupState startup_state = AccountStartupState::kUnknownInvalidToken;
+  if (known_account && refersh_token_valid) {
+    startup_state = AccountStartupState::kKnownValidToken;
+  } else if (known_account) {
+    startup_state = AccountStartupState::kKnownInvalidToken;
+  } else if (refersh_token_valid) {
+    startup_state = AccountStartupState::kUnknownValidToken;
+  }
+
+  base::UmaHistogramEnumeration(
+      base::StrCat({kAccountAvailabilityStartupHistogramBase,
+                    loading_primary_account_id_ == account_id ? "Primary"
+                                                              : "Secondary"}),
+      startup_state);
 }
