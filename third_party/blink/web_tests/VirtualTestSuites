@@ -585,6 +585,7 @@
   },
   {
     "prefix": "hidpi",
+    "owners": ["arakeri@microsoft.com"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["fast/scrolling/scrollbars/dsf-ready"],
     "args": ["--disable-smooth-scrolling",
