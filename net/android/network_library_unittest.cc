@@ -91,18 +91,20 @@ TEST(NetworkLibraryTest, BindToNetwork) {
   NetworkChangeNotifierFactoryAndroid ncn_factory;
   NetworkChangeNotifier::DisableForTest ncn_disable_for_test;
   std::unique_ptr<NetworkChangeNotifier> ncn(ncn_factory.CreateInstance());
-  TCPSocket socket_tcp_ipv4(nullptr, nullptr, NetLogSource());
-  ASSERT_EQ(OK, socket_tcp_ipv4.Open(ADDRESS_FAMILY_IPV4));
-  TCPSocket socket_tcp_ipv6(nullptr, nullptr, NetLogSource());
-  ASSERT_EQ(OK, socket_tcp_ipv6.Open(ADDRESS_FAMILY_IPV6));
+  std::unique_ptr<TCPSocket> socket_tcp_ipv4 =
+      TCPSocket::Create(nullptr, nullptr, NetLogSource());
+  ASSERT_EQ(OK, socket_tcp_ipv4->Open(ADDRESS_FAMILY_IPV4));
+  std::unique_ptr<TCPSocket> socket_tcp_ipv6 =
+      TCPSocket::Create(nullptr, nullptr, NetLogSource());
+  ASSERT_EQ(OK, socket_tcp_ipv6->Open(ADDRESS_FAMILY_IPV6));
   UDPSocket socket_udp_ipv4(DatagramSocket::DEFAULT_BIND, nullptr,
                             NetLogSource());
   ASSERT_EQ(OK, socket_udp_ipv4.Open(ADDRESS_FAMILY_IPV4));
   UDPSocket socket_udp_ipv6(DatagramSocket::DEFAULT_BIND, nullptr,
                             NetLogSource());
   ASSERT_EQ(OK, socket_udp_ipv6.Open(ADDRESS_FAMILY_IPV6));
-  std::array sockets{socket_tcp_ipv4.SocketDescriptorForTesting(),
-                     socket_tcp_ipv6.SocketDescriptorForTesting(),
+  std::array sockets{socket_tcp_ipv4->SocketDescriptorForTesting(),
+                     socket_tcp_ipv6->SocketDescriptorForTesting(),
                      socket_udp_ipv4.SocketDescriptorForTesting(),
                      socket_udp_ipv6.SocketDescriptorForTesting()};
 

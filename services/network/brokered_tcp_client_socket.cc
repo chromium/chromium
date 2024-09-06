@@ -128,7 +128,7 @@ void BrokeredTcpClientSocket ::DidCompleteCreate(
 
   // Create an unconnected TCPSocket with the socket fd that was opened in the
   // browser process.
-  std::unique_ptr<net::TCPSocket> tcp_socket = std::make_unique<net::TCPSocket>(
+  std::unique_ptr<net::TCPSocket> tcp_socket = net::TCPSocket::Create(
       std::move(socket_performance_watcher_), net_log_source_);
   tcp_socket->AdoptUnconnectedSocket(socket.TakeSocket());
 

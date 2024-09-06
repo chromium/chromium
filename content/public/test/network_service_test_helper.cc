@@ -722,13 +722,14 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
   void MakeRequestToServer(network::TransferableSocket transferred,
                            const net::IPEndPoint& endpoint,
                            MakeRequestToServerCallback callback) override {
-    net::TCPSocket socket(nullptr, nullptr, net::NetLogSource());
-    socket.AdoptConnectedSocket(transferred.TakeSocket(), endpoint);
+    std::unique_ptr<net::TCPSocket> socket =
+        net::TCPSocket::Create(nullptr, nullptr, net::NetLogSource());
+    socket->AdoptConnectedSocket(transferred.TakeSocket(), endpoint);
     const std::string kRequest("GET / HTTP/1.0\r\n\r\n");
     auto io_buffer = base::MakeRefCounted<net::StringIOBuffer>(kRequest);
 
-    int rv = socket.Write(io_buffer.get(), io_buffer->size(), base::DoNothing(),
-                          TRAFFIC_ANNOTATION_FOR_TESTS);
+    int rv = socket->Write(io_buffer.get(), io_buffer->size(),
+                           base::DoNothing(), TRAFFIC_ANNOTATION_FOR_TESTS);
     // For purposes of tests, this IPC only supports sync Write calls.
     DCHECK_NE(net::ERR_IO_PENDING, rv);
     std::move(callback).Run(rv == static_cast<int>(kRequest.size()));

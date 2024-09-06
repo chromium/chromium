@@ -37,15 +37,14 @@ TCPClientSocket::TCPClientSocket(
     net::NetLog* net_log,
     const net::NetLogSource& source,
     handles::NetworkHandle network)
-    : TCPClientSocket(
-          std::make_unique<TCPSocket>(std::move(socket_performance_watcher),
-                                      net_log,
-                                      source),
-          addresses,
-          -1 /* current_address_index */,
-          nullptr /* bind_address */,
-          network_quality_estimator,
-          network) {}
+    : TCPClientSocket(TCPSocket::Create(std::move(socket_performance_watcher),
+                                        net_log,
+                                        source),
+                      addresses,
+                      -1 /* current_address_index */,
+                      nullptr /* bind_address */,
+                      network_quality_estimator,
+                      network) {}
 
 TCPClientSocket::TCPClientSocket(std::unique_ptr<TCPSocket> connected_socket,
                                  const IPEndPoint& peer_address)

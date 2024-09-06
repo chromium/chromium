@@ -490,7 +490,7 @@ void WifiDirectMedium::CreateAndConnectSocket(
   }
   auto ip_endpoint = net::IPEndPoint(*ip, port);
   auto tcp_socket =
-      std::make_unique<net::TCPSocket>(nullptr, nullptr, net::NetLogSource());
+      net::TCPSocket::Create(nullptr, nullptr, net::NetLogSource());
   tcp_socket->AdoptUnconnectedSocket(fd);
   tcp_socket->Connect(
       ip_endpoint,
