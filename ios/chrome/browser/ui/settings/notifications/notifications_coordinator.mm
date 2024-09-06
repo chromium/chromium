@@ -26,7 +26,6 @@
 #import "ios/chrome/browser/ui/settings/notifications/notifications_mediator.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_navigation_commands.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_settings_observer.h"
-#import "ios/chrome/browser/ui/settings/notifications/notifications_view_controller.h"
 #import "ios/chrome/browser/ui/settings/notifications/tracking_price/tracking_price_coordinator.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -35,19 +34,13 @@
 
 @interface NotificationsCoordinator () <
     NotificationsNavigationCommands,
-    NotificationsViewControllerPresentationDelegate,
     ContentNotificationsCoordinatorDelegate,
     TrackingPriceCoordinatorDelegate,
     NotificationsOptInAlertCoordinatorDelegate,
     NotificationsBannerViewControllerPresentationDelegate>
 
-// View controller presented by coordinator when feature IOSTipsNotifications is
-// disabled.
-@property(nonatomic, strong) NotificationsViewController* viewController;
-// View controller presented by coordinator when feature IOSTipsNotifications is
-// enabled.
-@property(nonatomic, strong)
-    NotificationsBannerViewController* updatedViewController;
+// View controller presented by coordinator.
+@property(nonatomic, strong) NotificationsBannerViewController* viewController;
 // Notifications settings mediator.
 @property(nonatomic, strong) NotificationsMediator* mediator;
 // Coordinator for Content settings menu.
@@ -98,27 +91,14 @@
   self.mediator.presenter = self;
   _notificationsObserver.delegate = self.mediator;
 
-  if (IsIOSTipsNotificationsEnabled() || IsSafetyCheckNotificationsEnabled()) {
-    self.updatedViewController =
-        [[NotificationsBannerViewController alloc] init];
-    self.updatedViewController.presentationDelegate = self;
-    self.updatedViewController.modelDelegate = self.mediator;
-    self.updatedViewController.isContentNotificationEnabled =
-        IsContentNotificationEnabled(self.browser->GetBrowserState());
-    self.mediator.consumer = self.updatedViewController;
-    [self.baseNavigationController pushViewController:self.updatedViewController
-                                             animated:YES];
-  } else {
-    self.viewController = [[NotificationsViewController alloc]
-        initWithStyle:ChromeTableViewStyle()];
-    self.viewController.presentationDelegate = self;
-    self.viewController.modelDelegate = self.mediator;
-    self.viewController.isContentNotificationEnabled =
-        IsContentNotificationEnabled(self.browser->GetBrowserState());
-    self.mediator.consumer = self.viewController;
-    [self.baseNavigationController pushViewController:self.viewController
-                                             animated:YES];
-  }
+  self.viewController = [[NotificationsBannerViewController alloc] init];
+  self.viewController.presentationDelegate = self;
+  self.viewController.modelDelegate = self.mediator;
+  self.viewController.isContentNotificationEnabled =
+      IsContentNotificationEnabled(self.browser->GetBrowserState());
+  self.mediator.consumer = self.viewController;
+  [self.baseNavigationController pushViewController:self.viewController
+                                           animated:YES];
 }
 
 - (void)stop {
@@ -198,19 +178,11 @@
   [self.trackingPriceCoordinator start];
 }
 
-#pragma mark - NotificationsViewControllerPresentationDelegate
-
-- (void)notificationsViewControllerDidRemove:
-    (NotificationsViewController*)controller {
-  DCHECK_EQ(self.viewController, controller);
-  [self.delegate notificationsCoordinatorDidRemove:self];
-}
-
 #pragma mark - NotificationsBannerViewControllerPresentationDelegate
 
 - (void)notificationsBannerViewControllerDidRemove:
     (NotificationsBannerViewController*)controller {
-  DCHECK_EQ(self.updatedViewController, controller);
+  DCHECK_EQ(self.viewController, controller);
   [self.delegate notificationsCoordinatorDidRemove:self];
 }
 
@@ -260,14 +232,8 @@
 // Helper method to reset the state of `_optInAlertCoordinator`.
 - (void)resetOptInAlertCoordinator {
   [_optInAlertCoordinator stop];
-
-  UIViewController* baseViewController =
-      (IsIOSTipsNotificationsEnabled() || IsSafetyCheckNotificationsEnabled())
-          ? self.updatedViewController
-          : self.viewController;
-
   _optInAlertCoordinator = [[NotificationsOptInAlertCoordinator alloc]
-      initWithBaseViewController:baseViewController
+      initWithBaseViewController:self.viewController
                          browser:self.browser];
 }
 

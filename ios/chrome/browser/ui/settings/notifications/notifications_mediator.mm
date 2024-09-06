@@ -90,7 +90,6 @@
 
 - (TableViewItem*)priceTrackingItem {
   if (!_priceTrackingItem) {
-    if (IsIOSTipsNotificationsEnabled()) {
       _priceTrackingItem = [self
                detailItemWithType:NotificationsItemIdentifier::
                                       ItemIdentifierPriceTracking
@@ -102,19 +101,6 @@
                     l10n_util::GetNSString(
                         IDS_IOS_NOTIFICATIONS_OPT_IN_PRICE_TRACKING_TOGGLE_MESSAGE)
           accessibilityIdentifier:kSettingsNotificationsPriceTrackingCellId];
-    } else {
-      _priceTrackingItem = [self
-               detailItemWithType:NotificationsItemIdentifier::
-                                      ItemIdentifierPriceTracking
-                             text:
-                                 l10n_util::GetNSString(
-                                     IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACKING_TITLE)
-                       detailText:nil
-                           symbol:CustomSettingsRootSymbol(kDownTrendSymbol)
-                       symbolTint:UIColor.whiteColor
-            symbolBackgroundColor:[UIColor colorNamed:kPink500Color]
-          accessibilityIdentifier:kSettingsNotificationsPriceTrackingCellId];
-    }
     [self updateDetailTextForItem:_priceTrackingItem
                     withClientIDs:{PushNotificationClientId::kCommerce}];
   }
@@ -123,7 +109,6 @@
 
 - (TableViewItem*)contentNotificationsItem {
   if (!_contentNotificationsItem) {
-    if (IsIOSTipsNotificationsEnabled()) {
       _contentNotificationsItem = [self
                detailItemWithType:NotificationsItemIdentifier::
                                       ItemIdentifierContent
@@ -135,19 +120,6 @@
                     l10n_util::GetNSString(
                         IDS_IOS_CONTENT_NOTIFICATIONS_CONTENT_SETTINGS_FOOTER_TEXT)
           accessibilityIdentifier:kSettingsNotificationsContentCellId];
-    } else {
-      _contentNotificationsItem = [self
-               detailItemWithType:NotificationsItemIdentifier::
-                                      ItemIdentifierContent
-                             text:
-                                 l10n_util::GetNSString(
-                                     IDS_IOS_CONTENT_NOTIFICATIONS_CONTENT_SETTINGS_TOGGLE_TITLE)
-                       detailText:nil
-                           symbol:DefaultSettingsRootSymbol(kNewspaperSFSymbol)
-                       symbolTint:UIColor.whiteColor
-            symbolBackgroundColor:[UIColor colorNamed:kPink500Color]
-          accessibilityIdentifier:kSettingsNotificationsContentCellId];
-    }
     [self updateDetailTextForItem:_contentNotificationsItem
                     withClientIDs:{PushNotificationClientId::kContent,
                                    PushNotificationClientId::kSports}];
@@ -269,16 +241,7 @@
       [[TableViewSwitchItem alloc] initWithType:type];
   switchItem.text = text;
   switchItem.accessibilityIdentifier = accessibilityIdentifier;
-  if (IsIOSTipsNotificationsEnabled() || IsSafetyCheckNotificationsEnabled()) {
     switchItem.detailText = detailText;
-  } else {
-    switchItem.iconImage = symbol;
-    switchItem.iconTintColor = tint;
-    switchItem.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
-    switchItem.iconBackgroundColor = backgroundColor;
-    switchItem.iconBorderWidth = borderWidth;
-  }
-
   return switchItem;
 }
 
@@ -322,17 +285,10 @@
     detailText = l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
   }
 
-  if (IsIOSTipsNotificationsEnabled() || IsSafetyCheckNotificationsEnabled()) {
     TableViewMultiDetailTextItem* detailItem =
         base::apple::ObjCCastStrict<TableViewMultiDetailTextItem>(item);
     detailItem.trailingDetailText = detailText;
     [self.consumer reconfigureCellsForItems:@[ detailItem ]];
-  } else {
-    TableViewDetailIconItem* iconItem =
-        base::apple::ObjCCastStrict<TableViewDetailIconItem>(item);
-    iconItem.detailText = detailText;
-    [self.consumer reconfigureCellsForItems:@[ iconItem ]];
-  }
 }
 
 #pragma mark - NotificationsViewControllerDelegate

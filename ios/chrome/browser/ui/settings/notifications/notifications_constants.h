@@ -7,9 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-// The accessibility identifier of the Notifications setting table view.
-extern NSString* const kNotificationsTableViewId;
-
 // The accessibility identifier of the Notifications price tracking cell.
 extern NSString* const kSettingsNotificationsPriceTrackingCellId;
 

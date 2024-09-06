@@ -782,7 +782,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)settingsNotificationsTableView {
-  return grey_accessibilityID(kNotificationsTableViewId);
+  return grey_accessibilityID(kNotificationsBannerTableViewId);
 }
 
 + (id<GREYMatcher>)settingsInactiveTabsTableView {

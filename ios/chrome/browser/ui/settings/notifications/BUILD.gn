@@ -54,8 +54,6 @@ source_set("notifications_ui") {
     "notifications_consumer.h",
     "notifications_item_identifier.h",
     "notifications_navigation_commands.h",
-    "notifications_view_controller.h",
-    "notifications_view_controller.mm",
     "notifications_view_controller_delegate.h",
   ]
   deps = [
