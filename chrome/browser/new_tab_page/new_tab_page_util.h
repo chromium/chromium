@@ -31,5 +31,7 @@ void LogModuleEnablement(const base::Feature& feature,
 void LogModuleDismissed(const base::Feature& feature,
                         bool enabled,
                         const std::string& remaining_hours);
+void LogModuleError(const base::Feature& feature,
+                    const std::string& error_message);
 
 #endif  // CHROME_BROWSER_NEW_TAB_PAGE_NEW_TAB_PAGE_UTIL_H_

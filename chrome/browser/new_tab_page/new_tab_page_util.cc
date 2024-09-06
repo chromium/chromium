@@ -171,3 +171,11 @@ void LogModuleDismissed(const base::Feature& feature,
       OptimizationGuideLogger::GetInstance())
       << log;
 }
+
+void LogModuleError(const base::Feature& feature,
+                    const std::string& error_message) {
+  OPTIMIZATION_GUIDE_LOGGER(
+      optimization_guide_common::mojom::LogSource::NTP_MODULE,
+      OptimizationGuideLogger::GetInstance())
+      << feature.name << " error: " << error_message;
+}
