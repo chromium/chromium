@@ -39,6 +39,7 @@
 #include <utility>
 
 #include "base/containers/span.h"
+#include "base/containers/span_or_size.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -830,10 +831,8 @@ static bool FormDataToString(
 
   for (const auto& element : body->Elements()) {
     auto data_entry = protocol::Network::PostDataEntry::create().build();
-    auto bytes = protocol::Binary::fromSpan(
-        reinterpret_cast<const uint8_t*>(element.data_.data()),
-        element.data_.size());
-    data_entry->setBytes(std::move(bytes));
+    data_entry->setBytes(
+        protocol::Binary::fromSpan(base::as_byte_span(element.data_)));
     data_entries->push_back(std::move(data_entry));
   }
 
@@ -1602,31 +1601,39 @@ protocol::Response InspectorNetworkAgent::streamResourceContent(
 
 void InspectorNetworkAgent::DidReceiveData(uint64_t identifier,
                                            DocumentLoader* loader,
-                                           const char* data,
+                                           const char* data_ptr,
                                            uint64_t data_length) {
+  auto data = data_ptr
+                  ? base::SpanOrSize<const char>(
+                        // DidReceiveData should receive a base::SpanOrSize
+                        // instead of a pointer
+                        // and size.
+                        UNSAFE_TODO(base::span(
+                            data_ptr, base::checked_cast<size_t>(data_length))))
+                  : base::SpanOrSize<const char>(data_length);
   String request_id = RequestId(loader, identifier);
   Maybe<protocol::Binary> binary_data;
 
-  if (data) {
+  if (auto data_span = data.span(); data_span) {
     NetworkResourcesData::ResourceData const* resource_data =
         resources_data_->Data(request_id);
     if (resource_data && !resource_data->HasContent() &&
         (!resource_data->CachedResource() ||
          resource_data->CachedResource()->GetDataBufferingPolicy() ==
              kDoNotBufferData ||
-         IsErrorStatusCode(resource_data->HttpStatusCode())))
-      resources_data_->MaybeAddResourceData(request_id, data, data_length);
+         IsErrorStatusCode(resource_data->HttpStatusCode()))) {
+      resources_data_->MaybeAddResourceData(request_id, data_span->data(),
+                                            data_span->size());
+    }
 
     if (streaming_request_ids_.Contains(request_id)) {
-      binary_data =
-          protocol::Binary::fromSpan(reinterpret_cast<const uint8_t*>(data),
-                                     base::checked_cast<size_t>(data_length));
+      binary_data = protocol::Binary::fromSpan(base::as_bytes(*data_span));
     }
   }
 
   GetFrontend()->dataReceived(
       request_id, base::TimeTicks::Now().since_origin().InSecondsF(),
-      static_cast<int>(data_length),
+      static_cast<int>(data.size()),
       static_cast<int>(
           resources_data_->GetAndClearPendingEncodedDataLength(request_id)),
       std::move(binary_data));

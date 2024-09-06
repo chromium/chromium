@@ -117,9 +117,9 @@ Binary Binary::fromVector(Vector<uint8_t> in) {
 }
 
 // static
-Binary Binary::fromSpan(const uint8_t* data, size_t size) {
+Binary Binary::fromSpan(base::span<const uint8_t> data) {
   Vector<uint8_t> in;
-  in.Append(data, base::checked_cast<wtf_size_t>(size));
+  in.Append(data.data(), base::checked_cast<wtf_size_t>(data.size()));
   return Binary::fromVector(std::move(in));
 }
 
@@ -184,8 +184,7 @@ bool ProtocolTypeTraits<blink::protocol::Binary>::Deserialize(
     blink::protocol::Binary* value) {
   auto* tokenizer = state->tokenizer();
   if (tokenizer->TokenTag() == crdtp::cbor::CBORTokenTag::BINARY) {
-    const span<uint8_t> bin = tokenizer->GetBinary();
-    *value = Binary::fromSpan(bin.data(), bin.size());
+    *value = Binary::fromSpan(tokenizer->GetBinary());
     return true;
   }
   if (tokenizer->TokenTag() == crdtp::cbor::CBORTokenTag::STRING8) {

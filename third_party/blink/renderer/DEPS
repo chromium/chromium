@@ -18,6 +18,7 @@ include_rules = [
     "+base/containers/heap_array.h",
     "+base/containers/lru_cache.h",
     "+base/containers/span.h",
+    "+base/containers/span_or_size.h",
     "+base/containers/span_reader.h",
     "+base/containers/span_writer.h",
     "+base/dcheck_is_on.h",

@@ -760,13 +760,12 @@ bool GetPostData(
     // TODO(caseq): Also support blobs.
     if (element.type() != network::DataElement::Tag::kBytes)
       return false;
-    const std::vector<uint8_t>& bytes =
+    base::span<const uint8_t> bytes =
         element.As<network::DataElementBytes>().bytes();
     auto data_entry = protocol::Network::PostDataEntry::Create().Build();
-    data_entry->SetBytes(
-        protocol::Binary::fromSpan(bytes.data(), bytes.size()));
+    data_entry->SetBytes(protocol::Binary::fromSpan(bytes));
     data_entries->push_back(std::move(data_entry));
-    result->append(reinterpret_cast<const char*>(bytes.data()), bytes.size());
+    result->append(base::as_string_view(bytes));
   }
   return true;
 }

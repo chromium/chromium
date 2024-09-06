@@ -123,7 +123,7 @@ std::unique_ptr<WebAuthn::Credential> BuildCredentialFromRegistration(
     base::span<const uint8_t> id,
     const device::VirtualFidoDevice::RegistrationData* registration) {
   auto credential = WebAuthn::Credential::Create()
-                        .SetCredentialId(Binary::fromSpan(id.data(), id.size()))
+                        .SetCredentialId(Binary::fromSpan(id))
                         .SetPrivateKey(Binary::fromVector(
                             registration->private_key->GetPKCS8PrivateKey()))
                         .SetSignCount(registration->counter)

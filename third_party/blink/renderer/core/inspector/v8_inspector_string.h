@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -81,7 +82,7 @@ class CORE_EXPORT Binary : public crdtp::Serializable {
   String toBase64() const;
   static Binary fromBase64(const String& base64, bool* success);
   static Binary fromVector(Vector<uint8_t> in);
-  static Binary fromSpan(const uint8_t* data, size_t size);
+  static Binary fromSpan(base::span<const uint8_t> data);
 
   // Note: |data.buffer_policy| must be
   // ScriptCompiler::ScriptCompiler::CachedData::BufferOwned.

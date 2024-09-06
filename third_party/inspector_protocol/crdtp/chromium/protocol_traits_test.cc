@@ -57,7 +57,7 @@ TEST(ProtocolTraits, BinaryBasic) {
   constexpr uint8_t data[] = {'H', 'e', 'l', 'l', 'o', ',', 0,
                               'w', 'o', 'r', 'l', 'd', '!', 0x80};
   const std::vector<uint8_t> data_vec(std::cbegin(data), std::cend(data));
-  Binary binary = Binary::fromSpan(data, sizeof data);
+  Binary binary = Binary::fromSpan(data);
   EXPECT_THAT(binary.toBase64(), Eq("SGVsbG8sAHdvcmxkIYA="));
   EXPECT_THAT(MakeVector(binary), Eq(data_vec));
   EXPECT_THAT(MakeVector(Binary::fromVector(data_vec)), Eq(data_vec));
@@ -74,7 +74,7 @@ TEST(ProtocolTraits, BinaryBasic) {
 TEST(ProtocolTraits, BinarySerialization) {
   constexpr uint8_t data[] = {'H', 'e', 'l', 'l', 'o', ',', 0,
                               'w', 'o', 'r', 'l', 'd', '!', 0x80};
-  Binary binary = Binary::fromSpan(data, sizeof data);
+  Binary binary = Binary::fromSpan(data);
 
   EXPECT_THAT(MakeVector(RoundTrip(binary)), Eq(MakeVector(binary)));
 }
