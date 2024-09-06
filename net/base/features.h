@@ -407,6 +407,11 @@ NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
 NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kIpPrivacyProxyListMinFetchInterval;
 
+// Fetches of the IP Protection proxy list will have a random time in the range
+// of plus or minus this delta added to their interval.
+NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kIpPrivacyProxyListFetchIntervalFuzz;
+
 // Overrides the ProxyA hostname normally set by the proxylist fetch.
 NET_EXPORT extern const base::FeatureParam<std::string>
     kIpPrivacyProxyAHostnameOverride;

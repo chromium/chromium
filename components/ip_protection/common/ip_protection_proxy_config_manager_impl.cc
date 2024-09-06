@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/rand_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -160,15 +161,36 @@ void IpProtectionProxyConfigManagerImpl::OnGotProxyList(
     }
   }
 
-  ScheduleRefreshProxyList(proxy_list_refresh_interval_);
+  base::TimeDelta fuzzed_proxy_list_refresh_interval =
+      FuzzProxyListFetchInterval(proxy_list_refresh_interval_);
+  ScheduleRefreshProxyList(fuzzed_proxy_list_refresh_interval);
 
   if (on_proxy_list_refreshed_for_testing_) {
     std::move(on_proxy_list_refreshed_for_testing_).Run();
   }
 }
 
+base::TimeDelta IpProtectionProxyConfigManagerImpl::FuzzProxyListFetchInterval(
+    base::TimeDelta delay) {
+  if (!enable_proxy_list_fetch_interval_fuzzing_for_testing_) {
+    return delay;
+  }
+
+  // Randomize the next fetch interval, ensuring it's not less than the minimum
+  // age of proxy list refresh allowed.
+  base::TimeDelta fuzz_range =
+      net::features::kIpPrivacyProxyListFetchIntervalFuzz.Get();
+  return std::max(proxy_list_min_age_,
+                  delay + base::RandTimeDelta(-fuzz_range, fuzz_range));
+}
+
 bool IpProtectionProxyConfigManagerImpl::IsProxyListOlderThanMinAge() const {
   return base::Time::Now() - last_proxy_list_refresh_ >= proxy_list_min_age_;
+}
+
+void IpProtectionProxyConfigManagerImpl::
+    EnableProxyListFetchIntervalFuzzingForTesting(bool enable) {
+  enable_proxy_list_fetch_interval_fuzzing_for_testing_ = enable;
 }
 
 void IpProtectionProxyConfigManagerImpl::ScheduleRefreshProxyList(

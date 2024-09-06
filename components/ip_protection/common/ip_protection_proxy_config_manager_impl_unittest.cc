@@ -153,6 +153,10 @@ class IpProtectionProxyConfigManagerImplTest : public testing::Test {
     ipp_proxy_list_ = std::make_unique<IpProtectionProxyConfigManagerImpl>(
         &mock_config_cache_, mock_,
         /* disable_proxy_refreshing_for_testing=*/true);
+
+    // Disable proxy list fetch interval fuzzing for testing.
+    ipp_proxy_list_->EnableProxyListFetchIntervalFuzzingForTesting(
+        /*enable=*/false);
   }
 
   // Wait until the proxy list is refreshed.
@@ -696,6 +700,40 @@ TEST_F(IpProtectionProxyConfigManagerImplTest,
 
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   ASSERT_EQ(ipp_proxy_list_->CurrentGeo(), kMountainViewGeoId);
+}
+
+TEST_F(IpProtectionProxyConfigManagerImplTest,
+       ProxyListRefreshFetchIntervalFuzzed) {
+  SetUpIpProtectionProxyConfigManager(kDisableTokenCacheByGeo);
+
+  GetProxyListCall expected_call{
+      .proxy_chains = std::vector{MakeChain({"a-proxy"})},
+      .geo_id = kMountainViewGeoId};
+  mock_.ExpectGetProxyListCall(expected_call);
+  QuitClosureOnRefresh();
+  ipp_proxy_list_->EnableProxyListFetchIntervalFuzzingForTesting(
+      /*enable=*/true);
+  ipp_proxy_list_->EnableAndTriggerProxyListRefreshingForTesting();
+  WaitTillClosureQuit();
+  ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
+  EXPECT_TRUE(ipp_proxy_list_->IsProxyListAvailable());
+  EXPECT_EQ(ipp_proxy_list_->ProxyList(), expected_call.proxy_chains);
+  EXPECT_EQ(ipp_proxy_list_->CurrentGeo(), kDefaultGeoId);
+
+  base::Time start = base::Time::Now();
+  expected_call =
+      GetProxyListCall{.proxy_chains = std::vector{MakeChain({"b-proxy"})},
+                       .geo_id = kMountainViewGeoId};
+  mock_.ExpectGetProxyListCall(expected_call);
+  QuitClosureOnRefresh();
+  WaitTillClosureQuit();
+
+  base::TimeDelta delay = net::features::kIpPrivacyProxyListFetchInterval.Get();
+  base::TimeDelta fuzz_range =
+      net::features::kIpPrivacyProxyListFetchIntervalFuzz.Get();
+  // Add 10s buffer to account for possible delays before the check
+  EXPECT_LE(base::Time::Now() - start, delay + fuzz_range + base::Seconds(10));
+  EXPECT_GE(base::Time::Now() - start, delay - fuzz_range - base::Seconds(10));
 }
 
 }  // namespace

@@ -382,6 +382,10 @@ const base::FeatureParam<base::TimeDelta> kIpPrivacyProxyListMinFetchInterval{
     &kEnableIpProtectionProxy, /*name=*/"IpPrivacyProxyMinListFetchInterval",
     /*default_value=*/base::Minutes(1)};
 
+const base::FeatureParam<base::TimeDelta> kIpPrivacyProxyListFetchIntervalFuzz{
+    &kEnableIpProtectionProxy, /*name=*/"IpPrivacyProxyListFetchIntervalFuzz",
+    /*default_value=*/base::Minutes(30)};
+
 const base::FeatureParam<bool> kIpPrivacyDirectOnly{
     &kEnableIpProtectionProxy, /*name=*/"IpPrivacyDirectOnly",
     /*default_value=*/false};

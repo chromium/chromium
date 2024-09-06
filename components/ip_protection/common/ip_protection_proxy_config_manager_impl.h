@@ -64,6 +64,8 @@ class IpProtectionProxyConfigManagerImpl
     have_fetched_proxy_list_ = true;
   }
 
+  void EnableProxyListFetchIntervalFuzzingForTesting(bool enable);
+
  private:
   void RefreshProxyList();
   void ScheduleRefreshProxyList(base::TimeDelta delay);
@@ -71,6 +73,7 @@ class IpProtectionProxyConfigManagerImpl
                       std::optional<std::vector<net::ProxyChain>> proxy_list,
                       std::optional<GeoHint> geo_hint);
   bool IsProxyListOlderThanMinAge() const;
+  base::TimeDelta FuzzProxyListFetchInterval(base::TimeDelta delay);
 
   // Latest fetched proxy list.
   std::vector<net::ProxyChain> proxy_list_;
@@ -103,6 +106,9 @@ class IpProtectionProxyConfigManagerImpl
 
   // The regular time interval where the proxy list is refreshed.
   const base::TimeDelta proxy_list_refresh_interval_;
+
+  // If false, proxy list refresh interval is not fuzzed.
+  bool enable_proxy_list_fetch_interval_fuzzing_for_testing_ = true;
 
   // Feature flag to safely introduce token caching by geo.
   const bool enable_token_caching_by_geo_;
