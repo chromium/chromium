@@ -71,7 +71,7 @@ class TestEnvSetupTests(unittest.TestCase):
         try:
             subprocess.run([
                 os.path.join(os.path.dirname(__file__),
-                             '../../../out/fuchsia/bin/run_base_unittests'),
+                             '../../out/fuchsia/bin/run_base_unittests'),
                 '--logs-dir', '/tmp/test_env_setup', '--device'
             ],
                            env=TestEnvSetupTests._merge_env(os.environ, env),

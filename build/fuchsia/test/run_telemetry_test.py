@@ -46,11 +46,6 @@ class TelemetryTestRunner(TestRunner):
 
         super().__init__(out_dir, test_args, packages, target_id)
 
-    # TODO(crbug.com/40853548): Remove when Telemetry tests use CFv2 components.
-    @staticmethod
-    def is_cfv2() -> bool:
-        return False
-
     def run_test(self):
         test_cmd = [self._test_script]
         if self._test_args:

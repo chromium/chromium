@@ -23,11 +23,6 @@ class BlinkTestRunner(TestRunner):
                  target_id: Optional[str]) -> None:
         super().__init__(out_dir, test_args, ['content_shell'], target_id)
 
-    # TODO(crbug.com/40810506): Remove when blink tests use CFv2 content_shell.
-    @staticmethod
-    def is_cfv2() -> bool:
-        return False
-
     def run_test(self):
         test_cmd = [_BLINK_TEST_SCRIPT, '-t', os.path.basename(self._out_dir)]
 

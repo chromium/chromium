@@ -1,10 +1,8 @@
-#!/usr/bin/env vpython3
 # Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Reads log data from a device."""
 
-import argparse
 import os
 import subprocess
 import sys
@@ -12,9 +10,7 @@ import sys
 from contextlib import AbstractContextManager
 from typing import Iterable, Optional, TextIO
 
-from common import catch_sigterm, read_package_paths, register_common_args, \
-                   register_device_args, run_continuous_ffx_command, \
-                   wait_for_sigterm
+from common import run_continuous_ffx_command
 from ffx_integration import run_symbolizer
 
 
@@ -107,33 +103,3 @@ def start_system_log(log_manager: LogManager,
     else:
         log_manager.add_log_process(
             run_continuous_ffx_command(log_cmd, target_id, stdout=system_log))
-
-
-def main():
-    """Stand-alone function for fetching system logs and print to terminal.
-    Runs until the process is killed or interrupted (i.e. user presses CTRL-C).
-    """
-
-    catch_sigterm()
-    parser = argparse.ArgumentParser()
-    register_common_args(parser)
-    register_device_args(parser)
-    parser.add_argument('--packages',
-                        action='append',
-                        help='Name of the packages to symbolize.')
-    manager_args, system_log_args = parser.parse_known_args()
-    if manager_args.packages and not manager_args.out_dir:
-        raise ValueError('--out-dir must be specified to symbolize packages.')
-    package_paths = []
-    if manager_args.packages:
-        for package in manager_args.packages:
-            package_paths.extend(
-                read_package_paths(manager_args.out_dir, package))
-    with LogManager(None) as log_manager:
-        start_system_log(log_manager, True, package_paths, system_log_args,
-                         manager_args.target_id)
-        wait_for_sigterm()
-
-
-if __name__ == '__main__':
-    sys.exit(main())

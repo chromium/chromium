@@ -75,29 +75,6 @@ class LogManagerTest(unittest.TestCase):
         with self.assertRaises(Exception):
             log.open_log_file('test_log_file')
 
-    def test_main_exception(self) -> None:
-        """Tests |main| function to throw exception on incompatible flags."""
-
-        with mock.patch('sys.argv',
-                        ['log_manager.py', '--packages', 'test_package']):
-            with self.assertRaises(ValueError):
-                log_manager.main()
-
-    @mock.patch('log_manager.read_package_paths')
-    @mock.patch('log_manager.start_system_log')
-    def test_main(self, mock_system_log, mock_read_paths) -> None:
-        """Tests |main| function."""
-
-        with mock.patch('sys.argv', [
-                'log_manager.py', '--packages', 'test_package', '--out-dir',
-                'test_out_dir'
-        ]):
-            with mock.patch('common.time.sleep',
-                            side_effect=KeyboardInterrupt):
-                log_manager.main()
-        self.assertEqual(mock_system_log.call_count, 1)
-        self.assertEqual(mock_read_paths.call_count, 1)
-
 
 if __name__ == '__main__':
     unittest.main()
