@@ -2901,9 +2901,12 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     case IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW:
     case IDC_CONTENT_CONTEXT_OPENLINKINPROFILE:
     case IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP:
-    case IDC_CONTENT_CONTEXT_OPENLINKPREVIEW:
       return navigation_allowed && params_.link_url.is_valid() &&
              IsOpenLinkAllowedByDlp(params_.link_url);
+    case IDC_CONTENT_CONTEXT_OPENLINKPREVIEW:
+      return navigation_allowed && params_.link_url.is_valid() &&
+             IsOpenLinkAllowedByDlp(params_.link_url) &&
+             IsAllowedByUntrustedNetworkStatus();
 
     case IDC_CONTENT_CONTEXT_COPYLINKLOCATION:
       return params_.unfiltered_link_url.is_valid();
@@ -3714,8 +3717,7 @@ bool RenderViewContextMenu::IsSaveAsItemAllowedByPolicy(
   return true;
 }
 
-bool RenderViewContextMenu::IsSaveAsItemAllowedByUntrustedNetworkStatus()
-    const {
+bool RenderViewContextMenu::IsAllowedByUntrustedNetworkStatus() const {
   if (!GetRenderFrameHost()) {
     return true;
   }
@@ -3794,7 +3796,7 @@ bool RenderViewContextMenu::IsSaveLinkAsEnabled() const {
     return false;
   }
 
-  if (!IsSaveAsItemAllowedByUntrustedNetworkStatus()) {
+  if (!IsAllowedByUntrustedNetworkStatus()) {
     return false;
   }
 
@@ -3825,7 +3827,7 @@ bool RenderViewContextMenu::IsSaveImageAsEnabled() const {
     return false;
   }
 
-  if (!IsSaveAsItemAllowedByUntrustedNetworkStatus()) {
+  if (!IsAllowedByUntrustedNetworkStatus()) {
     return false;
   }
 
@@ -3838,7 +3840,7 @@ bool RenderViewContextMenu::IsSaveAsEnabled() const {
     return false;
   }
 
-  if (!IsSaveAsItemAllowedByUntrustedNetworkStatus()) {
+  if (!IsAllowedByUntrustedNetworkStatus()) {
     return false;
   }
 
@@ -3990,7 +3992,7 @@ bool RenderViewContextMenu::IsRegionSearchEnabled() const {
 
 bool RenderViewContextMenu::IsVideoFrameItemEnabled(int id) const {
   if (id == IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS &&
-      !IsSaveAsItemAllowedByUntrustedNetworkStatus()) {
+      !IsAllowedByUntrustedNetworkStatus()) {
     return false;
   }
 
