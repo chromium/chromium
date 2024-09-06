@@ -2295,11 +2295,6 @@ crbug.com/1002514 external/wpt/web-share/share-sharePromise-internal-slot.https.
 # system emoji fonts existance in the platform.
 crbug.com/40244183 [ Linux ] external/wpt/css/css-fonts/font-variant-emoji-1.html [ Failure Pass ]
 crbug.com/40244183 [ Linux ] external/wpt/css/css-fonts/font-variant-emoji-2.html [ Failure Pass ]
-crbug.com/40244183 [ Win ] external/wpt/css/css-fonts/font-variant-emoji-1.html [ Failure Pass ]
-crbug.com/40244183 [ Win ] external/wpt/css/css-fonts/font-variant-emoji-2.html [ Failure Pass ]
-crbug.com/40244183 [ Mac ] external/wpt/css/css-fonts/font-variant-emoji-1.html [ Failure Pass ]
-crbug.com/40244183 [ Mac ] external/wpt/css/css-fonts/font-variant-emoji-2.html [ Failure Pass ]
-
 
 # ::first-line issues
 crbug.com/1085772 external/wpt/css/css-pseudo/first-line-opacity-001.html [ Failure ]
