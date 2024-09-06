@@ -397,43 +397,43 @@ void SetGetDisplayNameFunction(GetDisplayNameFunc get_display_name_func) {
   g_get_display_name_func = get_display_name_func;
 }
 
-bool InitBasicPrinterInfo(HANDLE printer, PrinterBasicInfo* printer_info) {
-  DCHECK(printer);
-  DCHECK(printer_info);
-  if (!printer)
-    return false;
+std::optional<PrinterBasicInfo> GetBasicPrinterInfo(HANDLE printer) {
+  if (!printer) {
+    return std::nullopt;
+  }
 
   PrinterInfo2 info_2;
-  if (!info_2.Init(printer))
-    return false;
+  if (!info_2.Init(printer)) {
+    return std::nullopt;
+  }
 
-  printer_info->printer_name = base::WideToUTF8(info_2.get()->pPrinterName);
+  PrinterBasicInfo printer_info;
+  printer_info.printer_name = base::WideToUTF8(info_2.get()->pPrinterName);
   if (g_get_display_name_func) {
-    printer_info->display_name =
-        g_get_display_name_func(printer_info->printer_name);
+    printer_info.display_name =
+        g_get_display_name_func(printer_info.printer_name);
   } else {
-    printer_info->display_name = printer_info->printer_name;
+    printer_info.display_name = printer_info.printer_name;
   }
   if (info_2.get()->pComment) {
-    printer_info->printer_description =
-        base::WideToUTF8(info_2.get()->pComment);
+    printer_info.printer_description = base::WideToUTF8(info_2.get()->pComment);
   }
   if (info_2.get()->pLocation) {
-    printer_info->options[kLocationTagName] =
+    printer_info.options[kLocationTagName] =
         base::WideToUTF8(info_2.get()->pLocation);
   }
   if (info_2.get()->pDriverName) {
-    printer_info->options[kDriverNameTagName] =
+    printer_info.options[kDriverNameTagName] =
         base::WideToUTF8(info_2.get()->pDriverName);
   }
-  printer_info->printer_status = info_2.get()->Status;
+  printer_info.printer_status = info_2.get()->Status;
 
   std::vector<std::string> driver_info = GetDriverInfo(printer);
   if (!driver_info.empty()) {
-    printer_info->options[kDriverInfoTagName] =
+    printer_info.options[kDriverInfoTagName] =
         base::JoinString(driver_info, ";");
   }
-  return true;
+  return printer_info;
 }
 
 std::vector<std::string> GetDriverInfo(HANDLE printer) {

@@ -358,15 +358,20 @@ mojom::ResultCode PrintBackendWin::EnumeratePrinters(
       reinterpret_cast<PRINTER_INFO_4*>(printer_info_buffer.get());
   for (DWORD index = 0; index < count_returned; index++) {
     ScopedPrinterHandle printer;
-    PrinterBasicInfo info;
-    if (printer.OpenPrinterWithName(printer_info[index].pPrinterName) &&
-        InitBasicPrinterInfo(printer.Get(), &info)) {
-      info.is_default = (info.printer_name == default_printer);
-      printer_list.push_back(info);
+    if (!printer.OpenPrinterWithName(printer_info[index].pPrinterName)) {
+      continue;
     }
+
+    std::optional<PrinterBasicInfo> info = GetBasicPrinterInfo(printer.Get());
+    if (!info.has_value()) {
+      continue;
+    }
+
+    info.value().is_default = (info.value().printer_name == default_printer);
+    printer_list.push_back(info.value());
   }
 
-  VLOG(1) << "Found " << count_returned << " printers";
+  VLOG(1) << "Found " << printer_list.size() << " printers";
   return mojom::ResultCode::kSuccess;
 }
 
@@ -399,19 +404,22 @@ mojom::ResultCode PrintBackendWin::GetPrinterBasicInfo(
   if (!printer_handle.IsValid())
     return GetResultCodeFromSystemErrorCode(logging::GetLastSystemErrorCode());
 
-  if (!InitBasicPrinterInfo(printer_handle.Get(), printer_info)) {
-    // InitBasicPrinterInfo() doesn't set a system error code, so just treat as
+  std::optional<PrinterBasicInfo> info =
+      GetBasicPrinterInfo(printer_handle.Get());
+  if (!info.has_value()) {
+    // GetBasicPrinterInfo() doesn't set a system error code, so just treat as
     // general failure.
     return mojom::ResultCode::kFailed;
   }
 
+  *printer_info = info.value();
   std::string default_printer;
   mojom::ResultCode result = GetDefaultPrinterName(default_printer);
-  if (result != mojom::ResultCode::kSuccess) {
+  if (result == mojom::ResultCode::kSuccess) {
+    printer_info->is_default = (printer_info->printer_name == default_printer);
+  } else {
     // Query failure means we can treat this printer as not the default.
     printer_info->is_default = false;
-  } else {
-    printer_info->is_default = (printer_info->printer_name == default_printer);
   }
   return mojom::ResultCode::kSuccess;
 }
