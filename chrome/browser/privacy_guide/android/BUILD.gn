@@ -142,6 +142,7 @@ android_library("javatests") {
     "//chrome/test/android:chrome_java_integration_test_support",
     "//chrome/test/android:chrome_java_test_support_common",
     "//components/browser_ui/site_settings/android:java",
+    "//components/browser_ui/widget/android:java",
     "//components/content_settings/android:content_settings_enums_java",
     "//components/embedder_support/android:util_java",
     "//components/prefs/android:java",

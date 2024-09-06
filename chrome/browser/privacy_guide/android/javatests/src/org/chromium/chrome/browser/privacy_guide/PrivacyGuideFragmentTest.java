@@ -17,6 +17,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
@@ -650,6 +651,31 @@ public class PrivacyGuideFragmentTest {
 
         pressBack();
         onViewWaiting(withText(R.string.privacy_guide_fragment_title));
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"PrivacyGuide"})
+    @EnableFeatures({
+        ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3,
+        ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_GUIDE_AD_TOPICS,
+        ChromeFeatureList.PRIVACY_GUIDE_PRELOAD_ANDROID
+    })
+    public void testAdTopicsCard_adTopicsSwitchUpdatedOnResume() {
+        // Verify that the Ad Topics Switch is updated when the pref is changed when page is
+        // navigated off and returned to
+        launchPrivacyGuide();
+        setAdTopicsState(true);
+        goToCard(FragmentType.AD_TOPICS);
+        onViewWaiting(allOf(withId(R.id.ad_topics_switch), isCompletelyDisplayed()))
+                .check(matches(isChecked()));
+
+        navigateFromCardToNext(FragmentType.AD_TOPICS);
+        setAdTopicsState(false);
+
+        pressBack();
+        onViewWaiting(allOf(withId(R.id.ad_topics_switch), isCompletelyDisplayed()))
+                .check(matches(isNotChecked()));
     }
 
     @Test
