@@ -398,12 +398,6 @@ BASE_FEATURE(kPruneOldTransferCacheEntries,
              "PruneOldTransferCacheEntries",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Using the new SchedulerDfs GPU scheduler.
-BASE_FEATURE(kUseGpuSchedulerDfs,
-             "UseGpuSchedulerDfs",
-             base::FEATURE_ENABLED_BY_DEFAULT
-);
-
 // On platforms with delegated compositing, try to release overlays later, when
 // no new frames are swapped.
 BASE_FEATURE(kDeferredOverlaysRelease,
@@ -788,9 +782,8 @@ bool IncreaseBufferCountForHighFrameRate() {
 
 #endif
 
-// When this flag and kUseGpuSchedulerDfs are both enabled, stops using
-// gpu::SyncPointOrderData for sync point validation, uses gpu::TaskGraph
-// instead.
+// When this flag is enabled, stops using gpu::SyncPointOrderData for sync point
+// validation, uses gpu::TaskGraph instead.
 // Graph-based validation doesn't require sync point releases are submitted to
 // the scheduler prior to their corresponding waits. Therefore it allows to
 // remove the synchronous flush done by VerifySyncTokens().
@@ -801,8 +794,7 @@ BASE_FEATURE(kSyncPointGraphValidation,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsSyncPointGraphValidationEnabled() {
-  return base::FeatureList::IsEnabled(kUseGpuSchedulerDfs) &&
-         base::FeatureList::IsEnabled(kSyncPointGraphValidation);
+  return base::FeatureList::IsEnabled(kSyncPointGraphValidation);
 }
 
 }  // namespace features

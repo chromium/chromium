@@ -222,7 +222,7 @@ void DisplayResourceProviderSoftware::WaitSyncToken(gpu::SyncToken sync_token) {
                          base::Unretained(&completion)))) {
     gpu::SequenceId release_sequence_id =
         sync_point_manager_->GetSyncTokenReleaseSequenceId(sync_token);
-    gpu::Scheduler::ScopedAddWaitingPriority waiting(
+    gpu::Scheduler::ScopedSetSequencePriority waiting(
         gpu_scheduler_, release_sequence_id, gpu::SchedulingPriority::kHigh);
 
     completion.Wait();

@@ -2392,9 +2392,6 @@ extern const char kResetShortcutCustomizationsDescription[];
 extern const char kWebSQLAccessName[];
 extern const char kWebSQLAccessDescription[];
 
-extern const char kUseGpuSchedulerDfsName[];
-extern const char kUseGpuSchedulerDfsDescription[];
-
 extern const char kUseIDNA2008NonTransitionalName[];
 extern const char kUseIDNA2008NonTransitionalDescription[];
 

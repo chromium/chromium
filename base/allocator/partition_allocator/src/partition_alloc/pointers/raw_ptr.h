@@ -61,9 +61,6 @@ class ImageDecodeCache;
 class Scheduler;
 class TextureLayerImpl;
 }  // namespace cc
-namespace gpu {
-class SchedulerDfs;
-}
 namespace base::internal {
 class DelayTimerBase;
 class JobTaskSource;
@@ -235,10 +232,6 @@ struct IsSupportedType<cc::ImageDecodeCache> {
 };
 template <>
 struct IsSupportedType<cc::TextureLayerImpl> {
-  static constexpr bool value = false;
-};
-template <>
-struct IsSupportedType<gpu::SchedulerDfs> {
   static constexpr bool value = false;
 };
 

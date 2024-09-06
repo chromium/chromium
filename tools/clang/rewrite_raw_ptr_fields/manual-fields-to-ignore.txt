@@ -524,7 +524,7 @@ gpu::SharedImageRepresentation::ScopedAccessBase::representation_
 gpu::SharedImageRepresentation::manager_
 gpu::SharedImageRepresentation::backing_
 gpu::SharedImageRepresentation::tracker_
-gpu::SchedulerDfs::Sequence::scheduler_
+gpu::Scheduler::Sequence::scheduler_
 # crrev.com/c/5647253
 gpu::gles2::PassthroughProgramCache::ProgramCacheValue::program_cache_
 

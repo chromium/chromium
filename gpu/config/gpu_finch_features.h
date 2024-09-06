@@ -81,8 +81,6 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kEnableDrDc);
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kPruneOldTransferCacheEntries);
 
-GPU_EXPORT BASE_DECLARE_FEATURE(kUseGpuSchedulerDfs);
-
 #if BUILDFLAG(IS_ANDROID)
 // This flag is use additionally with kEnableDrDc to enable the feature for
 // vulkan enabled android devices.
@@ -123,8 +121,6 @@ GPU_EXPORT bool IncreaseBufferCountForHighFrameRate();
 GPU_EXPORT bool IncreaseBufferCountForWebViewOverlays();
 #endif
 
-// Don't directly check this flag. Instead, please call
-// IsSyncPointGraphValidationEnabled().
 GPU_EXPORT BASE_DECLARE_FEATURE(kSyncPointGraphValidation);
 
 GPU_EXPORT bool IsSyncPointGraphValidationEnabled();

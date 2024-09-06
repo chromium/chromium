@@ -86,7 +86,6 @@ class CommandBufferProxyImplTest
         .push_back(features::kConditionallySkipGpuChannelFlush);
 
     if (std::get<1>(GetParam())) {
-      enabled_features.push_back(features::kUseGpuSchedulerDfs);
       enabled_features.push_back(features::kSyncPointGraphValidation);
     } else {
       disabled_features.push_back(features::kSyncPointGraphValidation);

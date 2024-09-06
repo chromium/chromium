@@ -10476,10 +10476,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media_session::features::kAudioFocusEnforcement)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"use-gpu-scheduler-dfs", flag_descriptions::kUseGpuSchedulerDfsName,
-     flag_descriptions::kUseGpuSchedulerDfsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kUseGpuSchedulerDfs)},
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"cros-battery-saver", flag_descriptions::kCrosBatterySaverName,
      flag_descriptions::kCrosBatterySaverDescription, kOsCrOS,

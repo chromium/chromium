@@ -25,10 +25,9 @@ class TaskGraphTest : public testing::Test {
  protected:
   TaskGraphTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kUseGpuSchedulerDfs,
-                              features::kSyncPointGraphValidation},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kSyncPointGraphValidation);
+    // Initialize after the feature flag has set.
     sync_point_manager_ = std::make_unique<SyncPointManager>();
     task_graph_ = std::make_unique<TaskGraph>(sync_point_manager_.get());
 

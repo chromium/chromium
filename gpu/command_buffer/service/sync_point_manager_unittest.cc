@@ -11,27 +11,17 @@
 #include "base/containers/queue.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gpu {
 
-class SyncPointManagerTest : public testing::WithParamInterface<bool>,
+class SyncPointManagerTest : public base::test::WithFeatureOverride,
                              public testing::Test {
  public:
-  SyncPointManagerTest() {
-    if (GetParam()) {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kUseGpuSchedulerDfs,
-                                features::kSyncPointGraphValidation},
-          /*disabled_features=*/{});
-    } else {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{},
-          /*disabled_features=*/{features::kSyncPointGraphValidation});
-    }
-  }
+  SyncPointManagerTest()
+      : base::test::WithFeatureOverride(features::kSyncPointGraphValidation) {}
   ~SyncPointManagerTest() override = default;
 
  protected:
@@ -43,8 +33,6 @@ class SyncPointManagerTest : public testing::WithParamInterface<bool>,
 
   // Simple static function which can be used to test callbacks.
   static void SetIntegerFunction(int* test, int value) { *test = value; }
-
-  base::test::ScopedFeatureList feature_list_;
 
   std::unique_ptr<SyncPointManager> sync_point_manager_;
 };
