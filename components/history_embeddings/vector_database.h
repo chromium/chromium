@@ -54,7 +54,7 @@ struct SearchParams {
 
   // Divides and caps a word match boost. Finding the word more than this many
   // times won't increase the boost for the word.
-  int word_match_limit = 5;
+  size_t word_match_limit = 5;
 };
 
 struct SearchInfo {
@@ -125,10 +125,7 @@ class Embedding {
   void Normalize();
 
   // Compares one embedding with another and returns a similarity measure.
-  float ScoreWith(SearchInfo& search_info,
-                  const SearchParams& search_params,
-                  const std::string& other_passage,
-                  const Embedding& other_embedding) const;
+  float ScoreWith(const Embedding& other_embedding) const;
 
   // Const accessor used for storage.
   const std::vector<float>& GetData() const { return data_; }

@@ -672,8 +672,6 @@ std::vector<ScoredUrlRow> HistoryEmbeddingsService::Storage::Search(
     for (size_t i = 0; i < n; i++) {
       SearchInfo discard_recount;
       scored_url_row.scores.push_back(query_embedding.ScoreWith(
-          discard_recount, search_params,
-          scored_url_row.passages_embeddings.url_passages.passages.passages(i),
           scored_url_row.passages_embeddings.url_embeddings.embeddings[i]));
     }
   }

@@ -50,34 +50,63 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, Constructs) {
 TEST(HistoryEmbeddingsVectorDatabaseTest, EmbeddingOperations) {
   Embedding a({1, 1, 1});
   EXPECT_FLOAT_EQ(a.Magnitude(), std::sqrt(3));
-
   a.Normalize();
   EXPECT_FLOAT_EQ(a.Magnitude(), 1.0f);
 
   Embedding b({2, 2, 2});
   b.Normalize();
-  SearchParams search_params;
-  SearchInfo search_info;
-  EXPECT_FLOAT_EQ(a.ScoreWith(search_info, search_params, "", b), 1.0f);
-  EXPECT_FLOAT_EQ(
-      a.ScoreWith(search_info, search_params, "this is an ASCII string", b),
-      1.0f);
-  EXPECT_EQ(search_info.skipped_nonascii_passage_count, 0u);
-  EXPECT_FLOAT_EQ(a.ScoreWith(search_info, search_params,
-                              "this is non-ASCII string and scores ∅", b),
-                  0.0f);
-  EXPECT_EQ(search_info.skipped_nonascii_passage_count, 1u);
+  EXPECT_FLOAT_EQ(a.ScoreWith(b), 1.0f);
 
   // Verify more similar embeddings have higher scores.
-  EXPECT_GT(DeterministicEmbedding(5).ScoreWith(search_info, search_params, "",
-                                                DeterministicEmbedding(4)),
-            DeterministicEmbedding(5).ScoreWith(search_info, search_params, "",
-                                                DeterministicEmbedding(3)));
+  EXPECT_GT(DeterministicEmbedding(5).ScoreWith(DeterministicEmbedding(4)),
+            DeterministicEmbedding(5).ScoreWith(DeterministicEmbedding(3)));
 
-  EXPECT_GT(DeterministicEmbedding(5).ScoreWith(search_info, search_params, "",
-                                                DeterministicEmbedding(6)),
-            DeterministicEmbedding(5).ScoreWith(search_info, search_params, "",
-                                                DeterministicEmbedding(7)));
+  EXPECT_GT(DeterministicEmbedding(5).ScoreWith(DeterministicEmbedding(6)),
+            DeterministicEmbedding(5).ScoreWith(DeterministicEmbedding(7)));
+}
+
+TEST(HistoryEmbeddingsVectorDatabaseTest, BestScoreWith) {
+  SearchInfo search_info;
+  SearchParams search_params;
+
+  UrlPassagesEmbeddings url_data(1, 1, base::Time::Now());
+  url_data.url_passages.passages.add_passages("some deterministic passage");
+  url_data.url_passages.passages.add_passages("more text in another passage");
+  url_data.url_passages.passages.add_passages(
+      "some deterministic passage with non-ASCII ∅ character");
+  url_data.url_embeddings.embeddings.push_back(DeterministicEmbedding(0));
+  url_data.url_embeddings.embeddings.push_back(DeterministicEmbedding(1));
+  url_data.url_embeddings.embeddings.push_back(DeterministicEmbedding(2));
+
+  Embedding query_embedding = DeterministicEmbedding(0);
+  float score = url_data.url_embeddings.BestScoreWith(
+      search_info, search_params, query_embedding,
+      url_data.url_passages.passages, 0);
+  EXPECT_EQ(search_info.skipped_nonascii_passage_count, 1u);
+  EXPECT_FLOAT_EQ(score, 1.0f);
+
+  // This test checks basic properties of score boosting, for example that
+  // query terms can be spread across multiple separate passages.
+  // Boost scoring is tested further in FindNearestWordMatchBoosting test below.
+  search_params.query_terms = {
+      "some",
+      "passage",
+  };
+  float boosted_score = url_data.url_embeddings.BestScoreWith(
+      search_info, search_params, query_embedding,
+      url_data.url_passages.passages, 0);
+  EXPECT_LT(score, boosted_score);
+
+  search_params.query_terms = {
+      "some",
+      "passage",
+      "more",
+      "another",
+  };
+  float across_score = url_data.url_embeddings.BestScoreWith(
+      search_info, search_params, query_embedding,
+      url_data.url_passages.passages, 0);
+  EXPECT_LT(boosted_score, across_score);
 }
 
 TEST(HistoryEmbeddingsVectorDatabaseTest, FindNearest) {
