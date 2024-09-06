@@ -37,15 +37,25 @@
 
 using content::DevToolsAgentHost;
 
+namespace extensions {
+
 namespace {
 
 BASE_FEATURE(kExtensionUpdatesImmediatelyUnregisterWorker,
              "ExtensionUpdatesImmediatelyUnregisterWorker",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-}  // namespace
+// TODO(crbug.com/346732739): Combine with
+// ServiceWorkerTaskQueue::IsWorkerUnregistrationSuccess() when the logic is the
+// same.
+// Worker unregistrations can fail in expected and unexpected ways, this
+// determines if the unregistration can be accepted as successful from the
+// extension's perspective.
+bool IsWorkerUnregistrationSuccess(blink::ServiceWorkerStatusCode status) {
+  return status == blink::ServiceWorkerStatusCode::kOk;
+}
 
-namespace extensions {
+}  // namespace
 
 ExtensionRegistrar::ExtensionRegistrar(content::BrowserContext* browser_context,
                                        Delegate* delegate)
@@ -556,7 +566,7 @@ void ExtensionRegistrar::UnregisterServiceWorkerWithRootScope(
 void ExtensionRegistrar::NotifyServiceWorkerUnregistered(
     const ExtensionId& extension_id,
     blink::ServiceWorkerStatusCode status) {
-  bool success = status == blink::ServiceWorkerStatusCode::kOk;
+  bool success = IsWorkerUnregistrationSuccess(status);
   base::UmaHistogramBoolean(
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationState2", success);
   base::UmaHistogramBoolean(

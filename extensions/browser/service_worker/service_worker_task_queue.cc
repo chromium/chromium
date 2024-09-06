@@ -67,6 +67,32 @@ ServiceWorkerTaskQueue::TestObserver* g_test_observer = nullptr;
 // Prevent check on multiple workers per extension for testing purposes.
 bool g_allow_multiple_workers_per_extension = false;
 
+// Worker unregistrations can fail in expected and unexpected ways, this
+// determines if the unregistration can be accepted as successful from the
+// extension's perspective.
+bool IsWorkerUnregistrationSuccess(blink::ServiceWorkerStatusCode status,
+                                   bool worker_previously_registered) {
+  if (status == blink::ServiceWorkerStatusCode::kOk) {
+    return true;
+  }
+
+  if (status != blink::ServiceWorkerStatusCode::kErrorNotFound) {
+    return false;
+  }
+
+  // If worker was not successfully registered before then a not found error
+  // is expected, but can occur because unregistration requests do not check
+  // current registration status.
+  return !worker_previously_registered;
+}
+
+// Worker registrations can fail in expected and unexpected ways, this
+// determines if the registration can be accepted as successful from the
+// extension's perspective.
+bool IsWorkerRegistrationSuccess(blink::ServiceWorkerStatusCode status) {
+  return status == blink::ServiceWorkerStatusCode::kOk;
+}
+
 }  // namespace
 
 ServiceWorkerTaskQueue::ServiceWorkerTaskQueue(BrowserContext* browser_context)
@@ -641,7 +667,7 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
     RegistrationReason reason,
     base::Time start_time,
     blink::ServiceWorkerStatusCode status_code) {
-  const bool success = status_code == blink::ServiceWorkerStatusCode::kOk;
+  const bool success = IsWorkerRegistrationSuccess(status_code);
   base::UmaHistogramBoolean(
       "Extensions.ServiceWorkerBackground.WorkerRegistrationState2", success);
 
@@ -760,15 +786,8 @@ void ServiceWorkerTaskQueue::DidUnregisterServiceWorker(
   // extension.
   CHECK(!IsCurrentActivation(extension_id, activation_token));
 
-  bool success = false;
-  if (status == blink::ServiceWorkerStatusCode::kOk) {
-    success = true;
-  } else if (status == blink::ServiceWorkerStatusCode::kErrorNotFound &&
-             !worker_previously_registered) {
-    // If worker was not successfully registered before then a not found error
-    // is expected.
-    success = true;
-  }
+  bool success =
+      IsWorkerUnregistrationSuccess(status, worker_previously_registered);
 
   base::UmaHistogramBoolean(
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationState2", success);
