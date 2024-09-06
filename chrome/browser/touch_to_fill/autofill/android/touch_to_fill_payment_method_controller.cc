@@ -54,10 +54,7 @@ TouchToFillPaymentMethodController::TouchToFillPaymentMethodController(
 }
 
 TouchToFillPaymentMethodController::~TouchToFillPaymentMethodController() {
-  if (java_object_) {
-    Java_TouchToFillPaymentMethodControllerBridge_onNativeDestroyed(
-        base::android::AttachCurrentThread(), java_object_);
-  }
+  ResetJavaObject();
 }
 
 void TouchToFillPaymentMethodController::WebContentsDestroyed() {
@@ -104,7 +101,7 @@ bool TouchToFillPaymentMethodController::Show(
 
   if (!view->Show(this, cards_to_suggest, suggestions,
                   delegate->ShouldShowScanCreditCard())) {
-    java_object_.Reset();
+    ResetJavaObject();
     return false;
   }
 
@@ -127,7 +124,7 @@ bool TouchToFillPaymentMethodController::Show(
   }
 
   if (!view->Show(this, ibans_to_suggest)) {
-    java_object_.Reset();
+    ResetJavaObject();
     return false;
   }
 
@@ -148,7 +145,7 @@ void TouchToFillPaymentMethodController::OnDismissed(JNIEnv* env,
   }
   view_.reset();
   delegate_.reset();
-  java_object_.Reset();
+  ResetJavaObject();
   keyboard_suppressor_.Unsuppress();
 }
 
@@ -198,6 +195,14 @@ TouchToFillPaymentMethodController::GetJavaObject() {
         base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this));
   }
   return base::android::ScopedJavaLocalRef<jobject>(java_object_);
+}
+
+void TouchToFillPaymentMethodController::ResetJavaObject() {
+  if (java_object_) {
+    Java_TouchToFillPaymentMethodControllerBridge_onNativeDestroyed(
+        base::android::AttachCurrentThread(), java_object_);
+  }
+  java_object_.Reset();
 }
 
 }  // namespace autofill
