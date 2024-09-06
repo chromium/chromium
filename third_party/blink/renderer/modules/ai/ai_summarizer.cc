@@ -7,6 +7,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_summarizer.h"
+#include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_text_session.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
@@ -63,9 +64,15 @@ ScriptPromise<IDLString> AISummarizer::summarize(
     return ScriptPromise<IDLString>();
   }
 
+  AbortSignal* signal = options->getSignalOr(nullptr);
+  if (signal && signal->aborted()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
+                                      kExceptionMessageRequestAborted);
+    return ScriptPromise<IDLString>();
+  }
+
   auto [promise, pending_remote] = CreateModelExecutionResponder(
-      script_state, /*signal=*/nullptr, task_runner_,
-      AIMetrics::AISessionType::kSummarizer,
+      script_state, signal, task_runner_, AIMetrics::AISessionType::kSummarizer,
       /*complete_callback=*/base::DoNothing());
   summarizer_remote_->Summarize(input, options->getContextOr(WTF::String("")),
                                 std::move(pending_remote));
@@ -97,9 +104,15 @@ ReadableStream* AISummarizer::summarizeStreaming(
     return nullptr;
   }
 
+  AbortSignal* signal = options->getSignalOr(nullptr);
+  if (signal && signal->aborted()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
+                                      kExceptionMessageRequestAborted);
+    return nullptr;
+  }
   auto [readable_stream, pending_remote] =
       CreateModelExecutionStreamingResponder(
-          script_state, /*signal=*/nullptr, task_runner_,
+          script_state, signal, task_runner_,
           AIMetrics::AISessionType::kSummarizer,
           /*complete_callback=*/base::DoNothing());
   summarizer_remote_->Summarize(input, options->getContextOr(WTF::String("")),

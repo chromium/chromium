@@ -23,6 +23,7 @@ enum AISummarizerFormat { "plain-text", "markdown" };
 enum AISummarizerLength { "short", "medium", "long" };
 
 dictionary AISummarizerCreateOptions {
+  AbortSignal signal;
   DOMString sharedContext;
   AISummarizerType type = "key-points";
   AISummarizerFormat format = "markdown";

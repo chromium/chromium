@@ -6,6 +6,7 @@
 
 dictionary AISummarizerSummarizeOptions {
   DOMString context;
+  AbortSignal signal;
 };
 
 [
