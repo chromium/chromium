@@ -223,13 +223,13 @@ void FontBuilder::SetFontOpticalSizing(OpticalSizing font_optical_sizing) {
 
 void FontBuilder::SetFontPalette(scoped_refptr<const FontPalette> palette) {
   Set(PropertySetFlag::kFontPalette);
-  font_description_.SetFontPalette(palette);
+  font_description_.SetFontPalette(std::move(palette));
 }
 
 void FontBuilder::SetFontVariantAlternates(
     scoped_refptr<const FontVariantAlternates> variant_alternates) {
   Set(PropertySetFlag::kFontVariantAlternates);
-  font_description_.SetFontVariantAlternates(variant_alternates);
+  font_description_.SetFontVariantAlternates(std::move(variant_alternates));
 }
 
 void FontBuilder::SetFontSmoothing(FontSmoothingMode font_smoothing_mode) {

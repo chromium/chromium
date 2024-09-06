@@ -50,7 +50,8 @@ class PLATFORM_EXPORT FontVariantAlternates
     return character_variant_;
   }
 
-  using ResolverFunction = base::FunctionRef<Vector<uint32_t>(AtomicString)>;
+  using ResolverFunction =
+      base::FunctionRef<Vector<uint32_t>(const AtomicString&)>;
   /* Resolves the internal feature configuration with aliases against resolution
    * functions to get the actual OpenType feature indices for each alias.
    * Produces a resolved copy on which it is possible to call

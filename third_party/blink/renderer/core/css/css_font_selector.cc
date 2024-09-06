@@ -176,7 +176,7 @@ const FontData* CSSFontSelector::GetFontData(
         RetrieveFontPaletteFromStyleEngine(
             request_palette, document.GetStyleEngine(), family_name);
     if (new_request_palette) {
-      request_description.SetFontPalette(new_request_palette);
+      request_description.SetFontPalette(std::move(new_request_palette));
     }
   }
 
@@ -185,7 +185,8 @@ const FontData* CSSFontSelector::GetFontData(
     scoped_refptr<const FontPalette> computed_interpolable_palette =
         ResolveInterpolableFontPalette(request_palette,
                                        document.GetStyleEngine(), family_name);
-    request_description.SetFontPalette(computed_interpolable_palette);
+    request_description.SetFontPalette(
+        std::move(computed_interpolable_palette));
   }
 
   if (request_description.GetFontVariantAlternates()) {
@@ -200,22 +201,22 @@ const FontData* CSSFontSelector::GetFontData(
     scoped_refptr<FontVariantAlternates> new_alternates = nullptr;
     if (feature_values_storage) {
       new_alternates = request_description.GetFontVariantAlternates()->Resolve(
-          [feature_values_storage](AtomicString alias) {
+          [feature_values_storage](const AtomicString& alias) {
             return feature_values_storage->ResolveStylistic(alias);
           },
-          [feature_values_storage](AtomicString alias) {
+          [feature_values_storage](const AtomicString& alias) {
             return feature_values_storage->ResolveStyleset(alias);
           },
-          [feature_values_storage](AtomicString alias) {
+          [feature_values_storage](const AtomicString& alias) {
             return feature_values_storage->ResolveCharacterVariant(alias);
           },
-          [feature_values_storage](AtomicString alias) {
+          [feature_values_storage](const AtomicString& alias) {
             return feature_values_storage->ResolveSwash(alias);
           },
-          [feature_values_storage](AtomicString alias) {
+          [feature_values_storage](const AtomicString& alias) {
             return feature_values_storage->ResolveOrnaments(alias);
           },
-          [feature_values_storage](AtomicString alias) {
+          [feature_values_storage](const AtomicString& alias) {
             return feature_values_storage->ResolveAnnotation(alias);
           });
     } else {
@@ -223,13 +224,15 @@ const FontData* CSSFontSelector::GetFontData(
       // it still needs a resolve call to convert historical-forms state (which
       // is not looked-up against StyleRuleFontFeatureValues) to an internal
       // feature.
-      auto no_lookup = [](AtomicString) -> Vector<uint32_t> { return {}; };
+      auto no_lookup = [](const AtomicString&) -> Vector<uint32_t> {
+        return {};
+      };
       new_alternates = request_description.GetFontVariantAlternates()->Resolve(
           no_lookup, no_lookup, no_lookup, no_lookup, no_lookup, no_lookup);
     }
 
     if (new_alternates) {
-      request_description.SetFontVariantAlternates(new_alternates);
+      request_description.SetFontVariantAlternates(std::move(new_alternates));
     }
   }
 
