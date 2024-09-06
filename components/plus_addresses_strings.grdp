@@ -181,6 +181,9 @@
     <message name="IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_TEXT" desc="The main text in the Autofill suggestion for opening the settings page with creates plus addresses." translateable="false">
       Lorem Ipsum dolor ...
     </message>
+    <message name="IDS_PLUS_ADDRESS_RESERVE_GENERIC_ERROR_TEXT" desc="The error description shown inside the popup when an error occurs while attempting to reserve a plus address." translateable="false">
+      Something went wrong
+    </message>
 
     <!-- IPH strings -->
     <message name="IDS_PLUS_ADDRESS_CREATE_SUGGESTION_IPH" desc="Text shown in the IPH bubble for educating the user on creating plus addresses." translateable="false">

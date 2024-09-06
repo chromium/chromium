@@ -10,14 +10,17 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_test_helpers.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_allocator.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/settings/fake_plus_address_setting_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
 namespace plus_addresses {
@@ -29,6 +32,7 @@ using autofill::FormFieldData;
 using autofill::Suggestion;
 using autofill::SuggestionType;
 using ::testing::AllOf;
+using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::Property;
 using PasswordFormClassification =
@@ -155,6 +159,19 @@ TEST_F(PlusAddressSuggestionGeneratorTest,
   EXPECT_FALSE(suggestion.is_loading);
   EXPECT_EQ(suggestion.GetPayload<Suggestion::PlusAddressPayload>().address,
             base::UTF8ToUTF16(*plus_address));
+}
+
+TEST_F(PlusAddressSuggestionGeneratorTest, GetPlusAddressErrorSuggestion) {
+  const Suggestion suggestion(
+      PlusAddressSuggestionGenerator::GetPlusAddressErrorSuggestion());
+  EXPECT_EQ(suggestion.type, SuggestionType::kPlusAddressError);
+  EXPECT_EQ(
+      suggestion.main_text.value,
+      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT));
+  EXPECT_THAT(
+      suggestion.labels,
+      ElementsAre(ElementsAre(Suggestion::Text(l10n_util::GetStringUTF16(
+          IDS_PLUS_ADDRESS_RESERVE_GENERIC_ERROR_TEXT)))));
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

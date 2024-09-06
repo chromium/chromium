@@ -94,6 +94,8 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kCreateNeWPlusAddressInline";
     case SuggestionType::kFillExistingPlusAddress:
       return "kFillExistingPlusAddress";
+    case SuggestionType::kPlusAddressError:
+      return "kPlusAddressError";
     case SuggestionType::kMerchantPromoCodeEntry:
       return "kMerchantPromoCodeEntry";
     case SuggestionType::kSeePromoCodeDetails:

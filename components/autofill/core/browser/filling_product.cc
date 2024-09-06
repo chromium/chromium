@@ -94,6 +94,7 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kCreateNewPlusAddressInline:
     case SuggestionType::kFillExistingPlusAddress:
     case SuggestionType::kManagePlusAddress:
+    case SuggestionType::kPlusAddressError:
       return FillingProduct::kPlusAddresses;
     case SuggestionType::kPredictionImprovementsFeedback:
       return FillingProduct::kPredictionImprovements;

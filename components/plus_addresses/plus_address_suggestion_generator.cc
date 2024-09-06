@@ -147,6 +147,18 @@ Suggestion PlusAddressSuggestionGenerator::GetManagePlusAddressSuggestion() {
 }
 
 // static
+Suggestion PlusAddressSuggestionGenerator::GetPlusAddressErrorSuggestion() {
+  Suggestion suggestion(
+      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT),
+      SuggestionType::kPlusAddressError);
+  // TODO(crbug.com/362445807): Expose vector_icons::kErrorIcon and use it.
+  suggestion.icon = Suggestion::Icon::kHttpsInvalid;
+  suggestion.labels = {{Suggestion::Text(
+      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_RESERVE_GENERIC_ERROR_TEXT))}};
+  return suggestion;
+}
+
+// static
 void PlusAddressSuggestionGenerator::SetSuggestedPlusAddressForSuggestion(
     const PlusAddress& plus_address,
     autofill::Suggestion& suggestion) {

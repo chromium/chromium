@@ -36,6 +36,7 @@
 #include "components/plus_addresses/plus_address_http_client_impl.h"
 #include "components/plus_addresses/plus_address_preallocator.h"
 #include "components/plus_addresses/plus_address_prefs.h"
+#include "components/plus_addresses/plus_address_suggestion_generator.h"
 #include "components/plus_addresses/plus_address_test_environment.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
@@ -624,6 +625,32 @@ TEST_F(PlusAddressServiceRequestsTest,
   profile.is_confirmed = false;
   url_loader_factory().SimulateResponseForPendingRequest(
       kReservePlusAddressEndpoint, test::MakeCreationResponse(profile));
+}
+
+// Tests that an error suggestion is shown if the reserve call times out.
+TEST_F(PlusAddressServiceRequestsTest,
+       OnShowedInlineSuggestionWithReserveError) {
+  base::test::ScopedFeatureList feature_list{
+      features::kPlusAddressInlineCreation};
+  base::MockCallback<PlusAddressService::UpdateSuggestionsCallback> callback;
+
+  EXPECT_CALL(
+      callback,
+      Run(ElementsAre(
+              PlusAddressSuggestionGenerator::GetPlusAddressErrorSuggestion()),
+          _));
+
+  Suggestion inline_suggestion(SuggestionType::kCreateNewPlusAddressInline);
+  inline_suggestion.payload = Suggestion::PlusAddressPayload();
+  std::vector<Suggestion> current_suggestions = {std::move(inline_suggestion)};
+  service().OnShowedInlineSuggestion(
+      url::Origin::Create(GURL("https://foo.com")), current_suggestions,
+      callback.Get());
+
+  PlusProfile profile = test::CreatePlusProfile();
+  profile.is_confirmed = false;
+  url_loader_factory().SimulateResponseForPendingRequest(
+      kReservePlusAddressEndpoint, "", net::HTTP_REQUEST_TIMEOUT);
 }
 
 // Tests that if an inline suggestion with a proposed address is shown, no

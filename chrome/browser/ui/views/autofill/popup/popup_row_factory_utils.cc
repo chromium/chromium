@@ -286,7 +286,9 @@ std::vector<std::unique_ptr<views::View>> CreateSubtextViews(
               ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
               IsDeactivatedPasswordOrPasskey(suggestion) ? kDisabledTextStyle
                                                          : kMinorTextStyle));
-      if (!IsDeactivatedPasswordOrPasskey(suggestion)) {
+      if (suggestion.type == SuggestionType::kPlusAddressError) {
+        label->SetEnabledColorId(ui::kColorSysError);
+      } else if (!IsDeactivatedPasswordOrPasskey(suggestion)) {
         label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
       }
       // To make sure the popup width will not exceed its maximum value,
@@ -595,15 +597,12 @@ std::unique_ptr<PopupRowWithButtonView> CreateNewPlusAddressInlineSuggestion(
       CreateSubtextViews(*view, kSuggestion, FillingProduct::kPlusAddresses),
       popup_cell_utils::GetIconImageView(kSuggestion), *view);
 
-  // The closure that actually attempts to delete an entry and record metrics
-  // for it.
-  // TODO(crbug.com/362445807): Define proper size.
-  base::RepeatingClosure deletion_action = base::BindRepeating(
+  base::RepeatingClosure action = base::BindRepeating(
       &AutofillPopupController::PerformButtonActionForSuggestion, controller,
       line_number, SuggestionButtonAction());
   std::unique_ptr<views::ImageButton> button =
       views::CreateVectorImageButtonWithNativeTheme(
-          CreateExecuteSoonWrapper(std::move(deletion_action)),
+          CreateExecuteSoonWrapper(std::move(action)),
           vector_icons::kReloadIcon, kRefreshIconSize);
 
   button->SetTooltipText(l10n_util::GetStringUTF16(
@@ -697,7 +696,8 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
           a11y_selection_delegate, selection_delegate, controller, line_number,
           CreateComposePopupRowContentView(suggestion, show_new_badge));
     }
-    case SuggestionType::kCreateNewPlusAddressInline: {
+    case SuggestionType::kCreateNewPlusAddressInline:
+    case SuggestionType::kPlusAddressError: {
       return CreateNewPlusAddressInlineSuggestion(
           controller, a11y_selection_delegate, selection_delegate, line_number);
     }

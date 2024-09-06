@@ -229,6 +229,7 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kPasswordAccountStorageOptInAndGenerate:
     case SuggestionType::kPasswordAccountStorageReSignin:
     case SuggestionType::kPasswordEntry:
+    case SuggestionType::kPlusAddressError:
     case SuggestionType::kPredictionImprovementsFeedback:
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kSeePromoCodeDetails:
@@ -643,6 +644,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kCreateNewPlusAddress:
+    case SuggestionType::kPlusAddressError:
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kMixedFormMessage:
     case SuggestionType::kDevtoolsTestAddressByCountry:
@@ -768,6 +770,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kCreateNewPlusAddressInline:
       // TODO(crbug.com/362445807): Implement.
       break;
+    case SuggestionType::kPlusAddressError:
+      break;
     case SuggestionType::kComposeResumeNudge:
     case SuggestionType::kComposeProactiveNudge:
     case SuggestionType::kComposeSavedStateNotification:
@@ -847,6 +851,7 @@ void AutofillExternalDelegate::DidPerformButtonActionForSuggestion(
       NOTIMPLEMENTED();
       return;
     case SuggestionType::kCreateNewPlusAddressInline:
+    case SuggestionType::kPlusAddressError:
       if (AutofillPlusAddressDelegate* plus_address_delegate =
               manager_->client().GetPlusAddressDelegate()) {
         ClearPreviewedForm();
@@ -925,6 +930,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kCreateNewPlusAddress:
     case SuggestionType::kCreateNewPlusAddressInline:
     case SuggestionType::kFillExistingPlusAddress:
+    case SuggestionType::kPlusAddressError:
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kVirtualCreditCardEntry:

@@ -4998,6 +4998,11 @@ Called by update_autofill_enums.py.-->
   <int value="50" label="Devtools test address entry"/>
   <int value="51" label="Devtools test address by country entry"/>
   <int value="52" label="Create new plus address inline"/>
+  <int value="53" label="Retrieve prediction improvements"/>
+  <int value="54" label="Prediction improvements loading state"/>
+  <int value="55" label="Fill prediction improvements"/>
+  <int value="56" label="Prediction improvements feedback"/>
+  <int value="57" label="Plus address error"/>
 </enum>
 
 <enum name="TouchToFill.CreditCard.Outcome">

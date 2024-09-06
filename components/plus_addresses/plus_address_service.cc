@@ -52,6 +52,7 @@ namespace plus_addresses {
 
 namespace {
 
+using autofill::AutofillSuggestionTriggerSource;
 using autofill::FormFieldData;
 using autofill::Suggestion;
 using autofill::SuggestionType;
@@ -286,7 +287,7 @@ void PlusAddressService::GetSuggestions(
     bool is_off_the_record,
     const PasswordFormClassification& focused_form_classification,
     const FormFieldData& focused_field,
-    autofill::AutofillSuggestionTriggerSource trigger_source,
+    AutofillSuggestionTriggerSource trigger_source,
     GetSuggestionsCallback callback) {
   if (!IsPlusAddressFillingEnabled(last_committed_primary_main_frame_origin)) {
     std::move(callback).Run({});
@@ -315,7 +316,7 @@ void PlusAddressService::OnGetAffiliatedPlusProfiles(
     url::Origin origin,
     const PasswordFormClassification& focused_form_classification,
     const FormFieldData& focused_field,
-    autofill::AutofillSuggestionTriggerSource trigger_source,
+    AutofillSuggestionTriggerSource trigger_source,
     bool is_off_the_record,
     GetSuggestionsCallback callback,
     std::vector<PlusProfile> affiliated_profiles) {
@@ -575,7 +576,7 @@ void PlusAddressService::OnClickedRefreshInlineSuggestion(
     base::span<const autofill::Suggestion> current_suggestions,
     size_t current_suggestion_index,
     base::OnceCallback<void(std::vector<autofill::Suggestion>,
-                            autofill::AutofillSuggestionTriggerSource)>
+                            AutofillSuggestionTriggerSource)>
         update_suggestions_callback) {
   std::vector<Suggestion> updated_suggestions(current_suggestions.begin(),
                                               current_suggestions.end());
@@ -585,9 +586,9 @@ void PlusAddressService::OnClickedRefreshInlineSuggestion(
       .RefreshPlusAddressForSuggestion(
           updated_suggestions[current_suggestion_index]);
   std::move(update_suggestions_callback)
-      .Run(std::move(updated_suggestions),
-           autofill::AutofillSuggestionTriggerSource::
-               kPlusAddressUpdatedInBrowserProcess);
+      .Run(
+          std::move(updated_suggestions),
+          AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess);
 }
 
 void PlusAddressService::OnShowedInlineSuggestion(
@@ -606,21 +607,24 @@ void PlusAddressService::OnShowedInlineSuggestion(
     return;
   }
 
-  // TODO(crbug.com/362445807): We might have to pass to the payload whether it
-  // is a reserve or a refresh call.
   PlusAddressRequestCallback callback = base::BindOnce(
       [](std::vector<Suggestion> suggestions, size_t suggestion_index,
          UpdateSuggestionsCallback update_callback,
          const PlusProfileOrError& profile_or_error) {
         if (!profile_or_error.has_value()) {
-          // TODO(crbug.com/362445807): Handle errors during reserve.
+          suggestions[suggestion_index] =
+              PlusAddressSuggestionGenerator::GetPlusAddressErrorSuggestion();
+          std::move(update_callback)
+              .Run(std::move(suggestions),
+                   AutofillSuggestionTriggerSource::
+                       kPlusAddressUpdatedInBrowserProcess);
           return;
         }
         PlusAddressSuggestionGenerator::SetSuggestedPlusAddressForSuggestion(
             profile_or_error->plus_address, suggestions[suggestion_index]);
         std::move(update_callback)
             .Run(std::move(suggestions),
-                 autofill::AutofillSuggestionTriggerSource::
+                 AutofillSuggestionTriggerSource::
                      kPlusAddressUpdatedInBrowserProcess);
       },
       std::vector<Suggestion>(current_suggestions.begin(),

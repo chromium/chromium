@@ -96,6 +96,7 @@ enum class SuggestionType {
   kCreateNewPlusAddress = 39,
   kCreateNewPlusAddressInline = 52,
   kFillExistingPlusAddress = 40,
+  kPlusAddressError = 57,
 
   // Promotion suggestions.
   kMerchantPromoCodeEntry = 41,
@@ -135,7 +136,7 @@ enum class SuggestionType {
   // predictions improvements.
   kPredictionImprovementsFeedback = 56,
 
-  kMaxValue = kPredictionImprovementsFeedback
+  kMaxValue = kPlusAddressError
 };
 
 std::string_view SuggestionTypeToStringView(SuggestionType type);

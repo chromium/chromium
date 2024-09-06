@@ -2156,13 +2156,14 @@ TEST_F(AutofillExternalDelegateUnitTest, PlusAddressInlineSuggestionShown) {
     EXPECT_CALL(plus_address_delegate(),
                 OnShowedInlineSuggestion(
                     _, base::span<const Suggestion>(suggestions), _))
-        .WillOnce(
-            RunOnceCallback<2>(updated_suggestions,
-                               AutofillSuggestionTriggerSource::kUnspecified));
+        .WillOnce(RunOnceCallback<2>(updated_suggestions,
+                                     AutofillSuggestionTriggerSource::
+                                         kPlusAddressUpdatedInBrowserProcess));
     EXPECT_CALL(client(),
                 UpdateAutofillSuggestions(
                     updated_suggestions, FillingProduct::kPlusAddresses,
-                    AutofillSuggestionTriggerSource::kUnspecified));
+                    AutofillSuggestionTriggerSource::
+                        kPlusAddressUpdatedInBrowserProcess));
   }
   external_delegate().OnSuggestionsShown(suggestions);
 }
@@ -2235,13 +2236,58 @@ TEST_F(AutofillExternalDelegateUnitTest, PlusAddressExtraButtonAction) {
                 OnClickedRefreshInlineSuggestion(
                     _, base::span<const Suggestion>(suggestions),
                     /*current_suggestion_index=*/0, _))
-        .WillOnce(
-            RunOnceCallback<3>(updated_suggestions,
-                               AutofillSuggestionTriggerSource::kUnspecified));
+        .WillOnce(RunOnceCallback<3>(updated_suggestions,
+                                     AutofillSuggestionTriggerSource::
+                                         kPlusAddressUpdatedInBrowserProcess));
     EXPECT_CALL(client(),
                 UpdateAutofillSuggestions(
                     updated_suggestions, FillingProduct::kPlusAddresses,
-                    AutofillSuggestionTriggerSource::kUnspecified));
+                    AutofillSuggestionTriggerSource::
+                        kPlusAddressUpdatedInBrowserProcess));
+  }
+
+  external_delegate().DidPerformButtonActionForSuggestion(
+      suggestions[0], SuggestionButtonAction());
+}
+
+// Tests that triggering the extra button action on a plus address error
+// suggestion informs the plus address delegate and passes a callback that can
+// be used to update the Autofill suggestions.
+TEST_F(AutofillExternalDelegateUnitTest,
+       PlusAddressExtraButtonActionForErrorSuggestion) {
+  IssueOnQuery();
+
+  const std::u16string plus_address = u"test+plus@test.example";
+  std::vector<Suggestion> suggestions;
+  suggestions.emplace_back(/*main_text=*/u"Error reserving",
+                           SuggestionType::kPlusAddressError);
+  OnSuggestionsReturned(queried_field().global_id(), suggestions);
+  ON_CALL(client(), GetAutofillSuggestions)
+      .WillByDefault(Return(base::span<const Suggestion>(suggestions)));
+  client().set_suggestion_ui_session_id(
+      AutofillClient::SuggestionUiSessionId(123));
+
+  {
+    InSequence s;
+
+    std::vector<Suggestion> updated_suggestions;
+    updated_suggestions.emplace_back(
+        /*main_text=*/u"Create plus address",
+        SuggestionType::kCreateNewPlusAddressInline);
+    updated_suggestions.back().payload =
+        Suggestion::PlusAddressPayload(plus_address);
+    EXPECT_CALL(plus_address_delegate(),
+                OnClickedRefreshInlineSuggestion(
+                    _, base::span<const Suggestion>(suggestions),
+                    /*current_suggestion_index=*/0, _))
+        .WillOnce(RunOnceCallback<3>(updated_suggestions,
+                                     AutofillSuggestionTriggerSource::
+                                         kPlusAddressUpdatedInBrowserProcess));
+    EXPECT_CALL(client(),
+                UpdateAutofillSuggestions(
+                    updated_suggestions, FillingProduct::kPlusAddresses,
+                    AutofillSuggestionTriggerSource::
+                        kPlusAddressUpdatedInBrowserProcess));
   }
 
   external_delegate().DidPerformButtonActionForSuggestion(
@@ -2285,7 +2331,9 @@ TEST_F(AutofillExternalDelegateUnitTest,
   client().set_suggestion_ui_session_id(
       AutofillClient::SuggestionUiSessionId(4));
   std::move(update_callback)
-      .Run(suggestions, AutofillSuggestionTriggerSource::kUnspecified);
+      .Run(
+          suggestions,
+          AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess);
 }
 
 // Tests that running the update callback is safe even after AED has been
@@ -2320,7 +2368,9 @@ TEST_F(AutofillExternalDelegateUnitTest,
   ASSERT_TRUE(update_callback);
   ResetDriver();
   std::move(update_callback)
-      .Run(suggestions, AutofillSuggestionTriggerSource::kUnspecified);
+      .Run(
+          suggestions,
+          AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess);
 }
 
 TEST_F(
