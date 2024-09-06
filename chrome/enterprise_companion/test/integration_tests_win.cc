@@ -49,7 +49,8 @@ class InstallerTest : public ::testing::Test {
   base::FilePath install_dir_;
   // If 64-on-64, the 32-bit install directory. If 32-on-64 the 64-bit install
   // directory. Otherwise nullopt.
-  std::optional<base::FilePath> alt_install_dir_;
+  std::optional<base::FilePath> alt_install_dir_ =
+      GetInstallDirectoryForAlternateArch();
 
   // Run the installer and expect success or failure.
   void RunInstaller(bool expect_success) {
@@ -78,8 +79,6 @@ class InstallerTest : public ::testing::Test {
     ASSERT_EQ(app_key.WriteValue(kRegValuePV, version.c_str()), ERROR_SUCCESS);
     ASSERT_EQ(app_key.WriteValue(kRegValueName, name.c_str()), ERROR_SUCCESS);
   }
-
- private:
 };
 
 TEST_F(InstallerTest, FirstInstall) {

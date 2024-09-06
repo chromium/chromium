@@ -15,6 +15,7 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
 #include "base/test/task_environment.h"
@@ -22,6 +23,7 @@
 #include "build/build_config.h"
 #include "chrome/enterprise_companion/app/app.h"
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
+#include "chrome/enterprise_companion/enterprise_companion.h"
 #include "chrome/enterprise_companion/enterprise_companion_client.h"
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
 #include "chrome/enterprise_companion/global_constants.h"
@@ -320,6 +322,31 @@ TEST_F(IntegrationTests, Install) {
   ASSERT_NO_FATAL_FAILURE(GetTestMethods().Install());
 
   ASSERT_NO_FATAL_FAILURE(GetTestMethods().ExpectInstalled());
+}
+
+// Running the application uninstaller should remove all traces of the app from
+// the system.
+TEST_F(IntegrationTests, Uninstall) {
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().Install());
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(LaunchApp());
+  ASSERT_NO_FATAL_FAILURE(WaitForServerStart());
+
+  std::optional<base::FilePath> install_dir = GetInstallDirectory();
+  ASSERT_TRUE(install_dir);
+  base::CommandLine command_line(install_dir->AppendASCII(kExecutableName));
+  command_line.AppendSwitch(kUninstallSwitch);
+  base::Process uninstall_process = base::LaunchProcess(command_line, {});
+  ASSERT_TRUE(uninstall_process.IsValid());
+  EXPECT_EQ(WaitForProcess(uninstall_process), 0);
+
+  // The server process should be shut down by the uninstall process. Reset the
+  // handle in the test fixture to ensure that a second shutdown is not
+  // attempted during `TearDown`.
+  EXPECT_EQ(WaitForProcess(server_process_), 0);
+  server_process_ = base::Process();
+
+  ASSERT_NO_FATAL_FAILURE(GetTestMethods().ExpectClean());
 }
 
 // Attempting to shut down the server when it's not running should fail.

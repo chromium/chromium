@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "chrome/enterprise_companion/enterprise_companion_client.h"
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
@@ -56,7 +58,9 @@ std::unique_ptr<App> CreateAppInstall(
         base::BindOnce([] { return CreateAppShutdown()->Run(); }),
     base::OnceCallback<std::unique_ptr<ScopedLock>(base::TimeDelta timeout)>
         lock_provider = base::BindOnce(&CreateScopedLock),
-    base::OnceCallback<bool()> install_task = base::BindOnce(&Install));
+    base::OnceCallback<bool()> task = base::BindOnce(&Install));
+
+std::unique_ptr<App> CreateAppUninstall();
 
 #if BUILDFLAG(IS_MAC)
 // Creates an App which handles network requests for another process. If

@@ -27,11 +27,6 @@ class TestMethodsMac : public TestMethods {
     ASSERT_TRUE(base::DeleteFile(GetKSAdminPath()));
   }
 
-  void ExpectClean() override {
-    TestMethods::ExpectClean();
-    ASSERT_FALSE(base::PathExists(GetKSAdminPath()));
-  }
-
   void ExpectInstalled() override {
     TestMethods::ExpectInstalled();
     std::optional<base::FilePath> install_dir = GetInstallDirectory();

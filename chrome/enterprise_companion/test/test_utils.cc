@@ -7,6 +7,8 @@
 #include <optional>
 
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/function_ref.h"
@@ -96,7 +98,28 @@ void TestMethods::Clean() {
 
 void TestMethods::ExpectClean() {
   std::optional<base::FilePath> path = GetInstallDirectory();
-  EXPECT_FALSE(base::PathExists(*path));
+  if (base::PathExists(*path)) {
+    // On Windows the uninstaller delegates the deletion of the installation
+    // directory to a script running in a process that outlives the uninstaller.
+    // Thus, tests should wait for the install to be clean.
+    EXPECT_TRUE(WaitFor(
+        [&] {
+          // The uninstaller cannot reliably completely remove the installer
+          // directory itself, because it writes the log file while it is
+          // operating. If the installation path exists, it must be a directory
+          // with only this file present to be considered "clean".
+          base::flat_set<base::FilePath> remaining_files;
+          base::FileEnumerator(*path, false, base::FileEnumerator::NAMES_ONLY)
+              .ForEach([&](const base::FilePath& path) {
+                remaining_files.insert(path.BaseName());
+              });
+          return remaining_files.size() == 0 ||
+                 (remaining_files.size() == 1 &&
+                  remaining_files.contains(base::FilePath(
+                      FILE_PATH_LITERAL("enterprise_companion.log"))));
+        },
+        [&] { VLOG(1) << "Waiting for " << *path << " to become clean."; }));
+  }
 
   scoped_refptr<device_management_storage::DMStorage> dm_storage =
       device_management_storage::GetDefaultDMStorage();

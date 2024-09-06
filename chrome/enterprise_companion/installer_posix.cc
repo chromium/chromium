@@ -53,4 +53,17 @@ bool InstallToDir(const base::FilePath& install_directory) {
   return true;
 }
 
+// Uninstall the application by deleting the installation directory. On Mac, the
+// updater will recognize that the application has been uninstalled (via the
+// existence checker path) and remove its registration. On Linux, the updater
+// hasn't shipped and thus does not expose a means to manipulate registrations.
+bool Uninstall() {
+  std::optional<base::FilePath> install_directory = GetInstallDirectory();
+  if (!install_directory) {
+    LOG(ERROR) << "Failed to get install directory";
+    return false;
+  }
+  return base::DeletePathRecursively(*install_directory);
+}
+
 }  // namespace enterprise_companion

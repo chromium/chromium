@@ -35,6 +35,7 @@ const char kCrashMeSwitch[] = "crash-me";
 const char kShutdownSwitch[] = "shutdown";
 const char kFetchPoliciesSwitch[] = "fetch-policies";
 const char kInstallSwitch[] = "install";
+const char kUninstallSwitch[] = "uninstall";
 
 #if BUILDFLAG(IS_MAC)
 const char kNetWorkerSwitch[] = "net-worker";
@@ -98,6 +99,10 @@ std::unique_ptr<App> CreateAppForCommandLine(base::CommandLine* command_line) {
 
   if (command_line->HasSwitch(kInstallSwitch)) {
     return CreateAppInstall();
+  }
+
+  if (command_line->HasSwitch(kUninstallSwitch)) {
+    return CreateAppUninstall();
   }
 
 #if BUILDFLAG(IS_MAC)

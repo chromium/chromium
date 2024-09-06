@@ -53,7 +53,7 @@ class AppInstall : public App {
           EnterpriseCompanionStatus(ApplicationError::kInstallationFailed));
       return;
     }
-    VLOG(1) << "Installation completed successfully.";
+    VLOG(1) << "Installation/Uninstallation completed successfully.";
     Shutdown(EnterpriseCompanionStatus::Success());
   }
 
@@ -75,6 +75,12 @@ std::unique_ptr<App> CreateAppInstall(
   return std::make_unique<AppInstall>(std::move(shutdown_remote_task),
                                       std::move(lock_provider),
                                       std::move(install_task));
+}
+
+std::unique_ptr<App> CreateAppUninstall() {
+  return CreateAppInstall(
+      base::BindOnce([] { return CreateAppShutdown()->Run(); }),
+      base::BindOnce(&CreateScopedLock), base::BindOnce(&Uninstall));
 }
 
 }  // namespace enterprise_companion

@@ -32,7 +32,7 @@ enum class ApplicationError {
   kCannotAcquireLock,
   // An IPC connection could not be established.
   kMojoConnectionFailed,
-  // Installation failed.
+  // Installation or uninstallation failed.
   kInstallationFailed,
   // The IPC caller is not allowed to perform the requested action.
   kIpcCallerNotAllowed,

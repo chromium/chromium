@@ -21,6 +21,10 @@ extern const wchar_t kRegValueName[];
 // Install the Chrome Enterprise Companion App.
 bool Install();
 
+// Remove all traces of the app from the system. On Windows this includes
+// removing the installation for the alternate architecture, if present.
+bool Uninstall();
+
 }  // namespace enterprise_companion
 
 #endif  // CHROME_ENTERPRISE_COMPANION_INSTALLER_H_
