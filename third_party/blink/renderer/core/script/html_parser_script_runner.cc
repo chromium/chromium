@@ -105,23 +105,26 @@ void TraceParserBlockingScript(const PendingScript* pending_script,
   if (!element)
     return;
   bool waiting_for_resources = !document.IsScriptExecutionReady();
-  std::unique_ptr<TracedValue> args =
-      GetTraceArgsForScriptElement(document, pending_script->StartingPosition(),
-                                   pending_script->UrlForTracing());
+
+  auto script_element_trace_lambda = [&]() {
+    return GetTraceArgsForScriptElement(document,
+                                        pending_script->StartingPosition(),
+                                        pending_script->UrlForTracing());
+  };
   if (!pending_script->IsReady()) {
     if (waiting_for_resources) {
       TRACE_EVENT_WITH_FLOW1(
           "blink", "YieldParserForScriptLoadAndBlockingResources", element,
-          TRACE_EVENT_FLAG_FLOW_OUT, "data", std::move(args));
+          TRACE_EVENT_FLAG_FLOW_OUT, "data", script_element_trace_lambda());
     } else {
       TRACE_EVENT_WITH_FLOW1("blink", "YieldParserForScriptLoad", element,
                              TRACE_EVENT_FLAG_FLOW_OUT, "data",
-                             std::move(args));
+                             script_element_trace_lambda());
     }
   } else if (waiting_for_resources) {
     TRACE_EVENT_WITH_FLOW1("blink", "YieldParserForScriptBlockingResources",
                            element, TRACE_EVENT_FLAG_FLOW_OUT, "data",
-                           std::move(args));
+                           script_element_trace_lambda());
   }
 }
 
