@@ -20,7 +20,8 @@
 // Sets the consumer's title.
 - (void)setCurrentDriveFolderTitle:(NSString*)currentDriveFolderTitle;
 
-- (void)populateItems:(NSArray<DriveItemIdentifier*>*)driveItems;
+- (void)populateItems:(NSArray<DriveItemIdentifier*>*)driveItems
+    nextPageAvailable:(BOOL)nextPageAvailable;
 
 // Sets the consumer's emails menu.
 - (void)setEmailsMenu:(UIMenu*)emailsMenu;

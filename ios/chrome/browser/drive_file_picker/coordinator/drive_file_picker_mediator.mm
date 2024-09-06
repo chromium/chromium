@@ -133,7 +133,8 @@ NSArray<UTType*>* UTTypesAcceptedForEvent(const ChooseFileEvent& event) {
 DriveListQuery GetUpdatedQuery(const DriveListQuery& original_query,
                                DriveFilePickerFilter filter,
                                DriveItemsSortingType sorting_criteria,
-                               DriveItemsSortingOrder sorting_direction) {
+                               DriveItemsSortingOrder sorting_direction,
+                               NSString* page_token) {
   // Update ordering.
   NSString* updated_order_by = original_query.order_by;
   if (!updated_order_by) {
@@ -197,6 +198,7 @@ DriveListQuery GetUpdatedQuery(const DriveListQuery& original_query,
   DriveListQuery updated_query = original_query;
   updated_query.order_by = updated_order_by;
   updated_query.extra_term = update_extra_term;
+  updated_query.page_token = page_token;
   return updated_query;
 }
 
@@ -295,6 +297,8 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
   DriveItemsSortingType _sortingCriteria;
   // Sorting direction.
   DriveItemsSortingOrder _sortingDirection;
+  // The page token to use to continue the current list/search.
+  NSString* _pageToken;
 }
 
 - (instancetype)
@@ -553,10 +557,13 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
 }
 
 - (void)fetchItemsAppending:(BOOL)append {
+  if (!append) {
+    _pageToken = nil;
+  }
   _driveList = _driveService->CreateList(_identity);
 
   DriveListQuery updatedQuery = GetUpdatedQuery(
-      _originalQuery, _filter, _sortingCriteria, _sortingDirection);
+      _originalQuery, _filter, _sortingCriteria, _sortingDirection, _pageToken);
   __weak __typeof(self) weakSelf = self;
   _driveList->ListItems(
       updatedQuery, base::BindOnce(^(const DriveListResult& result) {
@@ -566,6 +573,7 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
 
 - (void)handleListItemsResponse:(const DriveListResult&)result
                     appendItems:(BOOL)appendItems {
+  _pageToken = result.next_page_token;
   if (appendItems) {
     _fetchedDriveItems.insert(_fetchedDriveItems.end(), result.items.begin(),
                               result.items.end());
@@ -578,7 +586,7 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
     itemIdentifier.enabled = ItemShouldBeEnabled(item, _acceptedTypes);
     [res addObject:itemIdentifier];
   }
-  [self.consumer populateItems:res];
+  [self.consumer populateItems:res nextPageAvailable:(_pageToken != nil)];
 }
 
 - (void)identityUpdatedWithSelectedIdentity:

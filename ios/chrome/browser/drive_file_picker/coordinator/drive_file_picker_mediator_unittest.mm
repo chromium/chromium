@@ -81,7 +81,8 @@
 - (void)setCurrentDriveFolderTitle:(NSString*)currentDriveFolderTitle {
 }
 
-- (void)populateItems:(NSArray<DriveItemIdentifier*>*)driveItems {
+- (void)populateItems:(NSArray<DriveItemIdentifier*>*)driveItems
+    nextPageAvailable:(BOOL)nextPageAvailable {
   self.driveItems = driveItems;
 }
 

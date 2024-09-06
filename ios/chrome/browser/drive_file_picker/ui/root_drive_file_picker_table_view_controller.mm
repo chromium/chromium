@@ -281,7 +281,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 - (void)setCurrentDriveFolderTitle:(NSString*)currentDriveFolderTitle {
 }
 
-- (void)populateItems:(NSArray<DriveItemIdentifier*>*)driveItems {
+- (void)populateItems:(NSArray<DriveItemIdentifier*>*)driveItems
+    nextPageAvailable:(BOOL)nextPageAvailable {
 }
 
 - (void)setEmailsMenu:(UIMenu*)emailsMenu {

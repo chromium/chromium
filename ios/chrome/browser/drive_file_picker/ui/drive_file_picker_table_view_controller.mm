@@ -70,6 +70,12 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
       _diffableDataSource;
 
   DriveItemIdentifier* _downloadedItem;
+
+  // A loading indocator displayed when the next page is being fetched.
+  UIActivityIndicatorView* _loadingIndicator;
+
+  // Next page availability.
+  BOOL _nextPageAvailable;
 }
 
 - (instancetype)init {
@@ -79,6 +85,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
     [self initFilterActions];
     [self initSortActions];
     [self initSortingDirectionSymbols];
+    _nextPageAvailable = YES;
   }
   return self;
 }
@@ -121,6 +128,11 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   RegisterTableViewCell<TableViewDetailIconCell>(self.tableView);
 
   [self.mutator fetchNextPage];
+
+  _loadingIndicator = [[UIActivityIndicatorView alloc]
+      initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+  _loadingIndicator.hidesWhenStopped = YES;
+  self.tableView.tableFooterView = _loadingIndicator;
 }
 
 #pragma mark - DriveFilePickerConsumer
@@ -404,7 +416,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 #pragma mark - DriveFilePickerConsumer
 
-- (void)populateItems:(NSArray<DriveItemIdentifier*>*)driveItems {
+- (void)populateItems:(NSArray<DriveItemIdentifier*>*)driveItems
+    nextPageAvailable:(BOOL)nextPageAvailable {
   NSDiffableDataSourceSnapshot* snapshot =
       [[NSDiffableDataSourceSnapshot alloc] init];
   [snapshot
@@ -412,6 +425,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   [snapshot appendItemsWithIdentifiers:driveItems];
 
   [_diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
+  _nextPageAvailable = nextPageAvailable;
+  [_loadingIndicator stopAnimating];
 }
 
 - (void)setEmailsMenu:(UIMenu*)emailsMenu {
@@ -543,6 +558,16 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
       UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
       cell.accessoryType = UITableViewCellAccessoryCheckmark;
     }
+}
+
+- (void)tableView:(UITableView*)tableView
+      willDisplayCell:(UITableViewCell*)cell
+    forRowAtIndexPath:(NSIndexPath*)indexPath {
+  NSDiffableDataSourceSnapshot* snapshot = _diffableDataSource.snapshot;
+  if (indexPath.row == snapshot.numberOfItems - 1 && _nextPageAvailable) {
+    [_loadingIndicator startAnimating];
+    [self.mutator fetchNextPage];
+  }
 }
 
 @end
