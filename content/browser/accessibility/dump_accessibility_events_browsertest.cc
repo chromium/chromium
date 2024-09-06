@@ -790,15 +790,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("listbox-next.html"));
 }
 
-// TODO(crbug.com/40716698): This is failing on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_AccessibilityEventsLiveRegionAdd \
-  DISABLED_AccessibilityEventsLiveRegionAdd
-#else
-#define MAYBE_AccessibilityEventsLiveRegionAdd AccessibilityEventsLiveRegionAdd
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       MAYBE_AccessibilityEventsLiveRegionAdd) {
+                       AccessibilityEventsLiveRegionAdd) {
   RunEventTest(FILE_PATH_LITERAL("live-region-add.html"));
 }
 
@@ -812,16 +805,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("live-region-change.html"));
 }
 
-// Flaky on Windows: https://crbug.com/1078490.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_AccessibilityEventsLiveRegionCreate \
-  DISABLED_AccessibilityEventsLiveRegionCreate
-#else
-#define MAYBE_AccessibilityEventsLiveRegionCreate \
-  AccessibilityEventsLiveRegionCreate
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       MAYBE_AccessibilityEventsLiveRegionCreate) {
+                       AccessibilityEventsLiveRegionCreate) {
   RunEventTest(FILE_PATH_LITERAL("live-region-create.html"));
 }
 
@@ -835,15 +820,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("live-region-elem-reparent.html"));
 }
 
-// TODO(aboxhall): Fix flakiness.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsLiveRegionIgnoresClick) {
   RunEventTest(FILE_PATH_LITERAL("live-region-ignores-click.html"));
 }
 
-// http:/crbug.com/786848
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       DISABLED_AccessibilityEventsLiveRegionRemove) {
+                       AccessibilityEventsLiveRegionRemove) {
   RunEventTest(FILE_PATH_LITERAL("live-region-remove.html"));
 }
 
