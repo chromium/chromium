@@ -4,12 +4,15 @@
 
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_delegate_desktop.h"
 
+#include <iterator>
 #include <map>
 
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/uuid.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model_listener.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
@@ -103,12 +106,15 @@ void TabGroupSyncDelegateDesktop::HandleOpenTabGroupRequest(
 
 void TabGroupSyncDelegateDesktop::CreateLocalTabGroup(
     const SavedTabGroup& tab_group) {
-  // TODO(b/346871861): Implement.
+  // On desktop we do not automatically open new saved tab groups. Instead, new
+  // groups appear as chips in the bookmarks bar if pinned, and as entries in
+  // the everything menu.
 }
 
 void TabGroupSyncDelegateDesktop::CloseLocalTabGroup(
     const LocalTabGroupID& local_id) {
-  // TODO(b/346871861): Implement.
+  CHECK(!service_->GetGroup(local_id));
+  listener_->RemoveLocalGroupFromSync(local_id);
 }
 
 void TabGroupSyncDelegateDesktop::UpdateLocalTabGroup(
@@ -150,8 +156,17 @@ void TabGroupSyncDelegateDesktop::UpdateLocalTabGroup(
 
 std::vector<LocalTabGroupID>
 TabGroupSyncDelegateDesktop::GetLocalTabGroupIds() {
-  // TODO(b/346871861): Implement.
-  return std::vector<LocalTabGroupID>();
+  std::vector<LocalTabGroupID> local_group_ids;
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    if (browser->tab_strip_model() &&
+        browser->tab_strip_model()->SupportsTabGroups()) {
+      std::vector<LocalTabGroupID> local_groups =
+          browser->tab_strip_model()->group_model()->ListTabGroups();
+      base::ranges::copy(local_groups, std::back_inserter(local_group_ids));
+    }
+  }
+
+  return local_group_ids;
 }
 
 std::vector<LocalTabID> TabGroupSyncDelegateDesktop::GetLocalTabIdsForTabGroup(

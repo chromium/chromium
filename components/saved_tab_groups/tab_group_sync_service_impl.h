@@ -180,24 +180,21 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
                 LocalTabGroupID group_id,
                 const std::optional<LocalTabID>& tab_id = std::nullopt);
 
-  // Obsevers of the model.
-  base::ObserverList<TabGroupSyncService::Observer> observers_;
-
   // The in-memory model representing the currently present saved tab groups.
   std::unique_ptr<SavedTabGroupModel> model_;
 
   // Sync bridges and data storage for both saved and shared tab group data.
-  TabGroupSyncBridgeMediator sync_bridge_mediator_;
+  std::unique_ptr<TabGroupSyncBridgeMediator> sync_bridge_mediator_;
 
   // The UI coordinator to apply changes between local tab groups and the
   // TabGroupSyncService.
   std::unique_ptr<TabGroupSyncCoordinator> coordinator_;
 
-  // The pref service for storing migration status.
-  raw_ptr<PrefService> pref_service_;
-
   // Helper class for logging metrics.
   std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger_;
+
+  // The pref service for storing migration status.
+  raw_ptr<PrefService> pref_service_ = nullptr;
 
   // Whether the initialization has been completed, i.e. all the groups and the
   // ID mappings have been loaded into memory.
@@ -207,6 +204,9 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   // from sync. UI can't handle these groups, hence the service needs to wait
   // before notifying the observers.
   std::set<base::Uuid> empty_groups_;
+
+  // Obsevers of the model.
+  base::ObserverList<TabGroupSyncService::Observer> observers_;
 
   // Keeps track of API calls received before the service is initialized.
   // Once the initialization is complete, these callbacks are run in the order

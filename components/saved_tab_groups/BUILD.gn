@@ -247,6 +247,7 @@ source_set("tab_group_sync_bridge") {
     # to TabGroupSyncService.
     "//chrome/browser",
     "//chrome/browser/ui",
+    "//chrome/test:browser_tests",
     "//chrome/test:sync_integration_tests",
     "//ios/chrome/browser/saved_tab_groups/model",
   ]

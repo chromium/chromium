@@ -687,9 +687,10 @@ TEST_F(TabGroupSyncServiceTest, AddObserverAfterInitialize) {
   model_->LoadStoredEntries(/*groups=*/{}, /*tabs=*/{});
   task_environment_.RunUntilIdle();
 
-  auto observer2 = std::make_unique<MockTabGroupSyncServiceObserver>();
-  EXPECT_CALL(*observer2, OnInitialized()).Times(1);
-  tab_group_sync_service_->AddObserver(observer2.get());
+  tab_group_sync_service_->RemoveObserver(observer_.get());
+
+  EXPECT_CALL(*observer_, OnInitialized()).Times(1);
+  tab_group_sync_service_->AddObserver(observer_.get());
 }
 
 TEST_F(TabGroupSyncServiceTest, OnTabGroupAddedFromRemoteSource) {

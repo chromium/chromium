@@ -48,6 +48,10 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
     // The data from sync DataTypeStore has been loaded to memory.
     virtual void OnInitialized() {}
 
+    // The service is about to be destroyed. Ensures observers have a chance to
+    // remove references before service destruction.
+    virtual void OnWillBeDestroyed() {}
+
     // A new tab group was added at the given |source|.
     virtual void OnTabGroupAdded(const SavedTabGroup& group,
                                  TriggerSource source) {}
