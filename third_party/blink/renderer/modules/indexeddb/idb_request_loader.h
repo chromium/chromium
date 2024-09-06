@@ -13,6 +13,7 @@
 #include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_client.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -62,7 +63,7 @@ class IDBRequestLoader : public GarbageCollected<IDBRequestLoader>,
   FileErrorCode DidStartLoading(uint64_t) override;
   FileErrorCode DidReceiveData(base::span<const uint8_t> data) override;
   void DidFinishLoading() override;
-  void DidFail(FileErrorCode) override;
+  void DidFail(FileErrorCode error_code) override;
   void Trace(Visitor* visitor) const override {
     FileReaderClient::Trace(visitor);
     visitor->Trace(loader_);
@@ -77,7 +78,7 @@ class IDBRequestLoader : public GarbageCollected<IDBRequestLoader>,
   void StartNextValue();
 
   // Called when unwrapping of all values is complete.
-  void OnLoadComplete(bool error);
+  void OnLoadComplete(DOMExceptionCode exception_code);
 
   Member<FileReaderLoader> loader_;
 

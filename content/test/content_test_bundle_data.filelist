@@ -6946,6 +6946,7 @@ data/indexeddb/version_change_blocked.html
 data/indexeddb/version_change_blocked.js
 data/indexeddb/write_4mb_blob.html
 data/indexeddb/write_and_read_blob.html
+data/indexeddb/write_and_read_large_value.html
 data/infinitely_loading_image.html
 data/input_box.html
 data/input_in_iframe.html

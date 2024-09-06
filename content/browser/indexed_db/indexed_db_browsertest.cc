@@ -1244,6 +1244,53 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, ShutdownWithRequests) {
   SimpleTest(GetTestUrl("indexeddb", "shutdown_with_requests.html"));
 }
 
+// Verifies that a "NotFound" DOMException is thrown on reading a large value
+// when the underlying blob file has been deleted but the record is not.
+IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, LargeValueReadBlobMissing) {
+  base::HistogramTester histogram_tester;
+
+  // First write a large value that gets wrapped in a blob.
+  const GURL kTestUrl =
+      GetTestUrl("indexeddb", "write_and_read_large_value.html");
+  SimpleTest(kTestUrl);
+
+  // Delete the blob file that got created.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_OK_AND_ASSIGN(
+        const storage::BucketInfo bucket_info,
+        GetOrCreateBucket(storage::BucketInitParams::ForDefaultBucket(
+            blink::StorageKey::CreateFirstParty(
+                url::Origin::Create(kTestUrl)))));
+    base::FilePath blob_path =
+        PathForBlob(bucket_info.ToBucketLocator(), /*database_id=*/1,
+                    DatabaseMetaDataKey::kBlobNumberGeneratorInitialNumber);
+    ASSERT_TRUE(base::PathExists(blob_path));
+    ASSERT_TRUE(base::DeleteFile(blob_path));
+  }
+
+  // Now attempt to read the large value again and expect an error.
+  EvalJsResult result = EvalJs(shell(), "readData()");
+  EXPECT_THAT(result.error,
+              testing::HasSubstr(
+                  "NotFoundError: Failed to read large IndexedDB value"));
+
+  // Verify that the right set of histograms were recorded.
+  content::FetchHistogramsFromChildProcesses();
+  const int kExpectedBucketCount = 1;
+  const int kFailureTypeBackendReadError = 3;  // From file_reader_loader.h.
+  const int kFileErrorCodeNotFoundErr = 1;     // From file_error.h.
+  histogram_tester.ExpectUniqueSample(
+      "Storage.Blob.FileReaderLoader.ReadError2", -net::ERR_FILE_NOT_FOUND,
+      kExpectedBucketCount);
+  histogram_tester.ExpectUniqueSample(
+      "Storage.Blob.FileReaderLoader.FailureType2",
+      kFailureTypeBackendReadError, kExpectedBucketCount);
+  histogram_tester.ExpectUniqueSample("IndexedDB.LargeValueReadError",
+                                      kFileErrorCodeNotFoundErr,
+                                      kExpectedBucketCount);
+}
+
 // The blob key corruption test runs in a separate class to avoid corrupting
 // an IDB store that other tests use.
 // This test is for https://crbug.com/1039446.

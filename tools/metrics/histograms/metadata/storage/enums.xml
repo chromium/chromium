@@ -110,6 +110,26 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Filenames"/>
 </enum>
 
+<!-- LINT.IfChange(FileErrorCode) -->
+
+<enum name="FileErrorCode">
+  <int value="0" label="kOK"/>
+  <int value="1" label="kNotFoundErr"/>
+  <int value="2" label="kSecurityErr"/>
+  <int value="3" label="kAbortErr"/>
+  <int value="4" label="kNotReadableErr"/>
+  <int value="5" label="kEncodingErr"/>
+  <int value="6" label="kNoModificationAllowedErr"/>
+  <int value="7" label="kInvalidStateErr"/>
+  <int value="8" label="kSyntaxErr"/>
+  <int value="9" label="kInvalidModificationErr"/>
+  <int value="10" label="kQuotaExceededErr"/>
+  <int value="11" label="kTypeMismatchErr"/>
+  <int value="12" label="kPathExistsErr"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/core/fileapi/file_error.h:FileErrorCode) -->
+
 <enum name="FileReaderLoaderFailureType">
   <int value="0" label="Mojo pipe creation failed"/>
   <int value="1" label="Data incomplete after synchronous reading"/>
