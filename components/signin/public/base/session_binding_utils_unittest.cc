@@ -19,8 +19,11 @@
 #include "components/signin/public/base/hybrid_encryption_key.h"
 #include "components/signin/public/base/hybrid_encryption_key_test_utils.h"
 #include "crypto/signature_verifier.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+using testing::ElementsAre;
 
 namespace signin {
 
@@ -43,6 +46,37 @@ std::string Base64UrlEncode(std::string_view input) {
 }
 
 }  // namespace
+
+TEST(SessionBindingUtilsTest, SignatureAlgorithmFromString) {
+  using enum crypto::SignatureVerifier::SignatureAlgorithm;
+  EXPECT_EQ(SignatureAlgorithmFromString("ES256"), ECDSA_SHA256);
+  EXPECT_EQ(SignatureAlgorithmFromString("es256"), ECDSA_SHA256);
+
+  EXPECT_EQ(SignatureAlgorithmFromString("RS256"), RSA_PKCS1_SHA256);
+  EXPECT_EQ(SignatureAlgorithmFromString("rs256"), RSA_PKCS1_SHA256);
+
+  EXPECT_EQ(SignatureAlgorithmFromString("ES256 blah"), std::nullopt);
+  EXPECT_EQ(SignatureAlgorithmFromString("AB512"), std::nullopt);
+  EXPECT_EQ(SignatureAlgorithmFromString(""), std::nullopt);
+}
+
+TEST(SessionBindingUtilsTest, ParseSignatureAlgorithmList) {
+  using enum crypto::SignatureVerifier::SignatureAlgorithm;
+  EXPECT_THAT(ParseSignatureAlgorithmList("ES256 RS256"),
+              ElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
+  // Extra whitespace is ignored.
+  EXPECT_THAT(ParseSignatureAlgorithmList("   ES256      RS256   "),
+              ElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
+  // Order is preserved.
+  EXPECT_THAT(ParseSignatureAlgorithmList("RS256 ES256"),
+              ElementsAre(RSA_PKCS1_SHA256, ECDSA_SHA256));
+  // Unknown algorithms are skipped.
+  EXPECT_THAT(ParseSignatureAlgorithmList("WAT1 ES256 WAT2 RS256 WAT3"),
+              ElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
+  EXPECT_THAT(ParseSignatureAlgorithmList(""), ElementsAre());
+  // All unknown -- empty result.
+  EXPECT_THAT(ParseSignatureAlgorithmList("WAT1 WAT2 WAT3"), ElementsAre());
+}
 
 TEST(SessionBindingUtilsTest,
      CreateKeyRegistrationHeaderAndPayloadForTokenBinding) {

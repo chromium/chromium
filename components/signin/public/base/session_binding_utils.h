@@ -21,6 +21,18 @@ class Time;
 
 namespace signin {
 
+// Converts a known algorithm string into
+// `crypto::SignatureVerifier::SignatureAlgorithm`. Returns std::nullopt if
+// algorithm is not recognized.
+std::optional<crypto::SignatureVerifier::SignatureAlgorithm>
+SignatureAlgorithmFromString(std::string_view algorithm);
+
+// Parses the space-separated list of algorithms into a vector of
+// `crypto::SignatureVerifier::SignatureAlgorithm`. Unrecognized algorithms
+// aren't included in the result.
+std::vector<crypto::SignatureVerifier::SignatureAlgorithm>
+ParseSignatureAlgorithmList(std::string_view algorithm_list);
+
 // Creates header and payload parts of a registration JWT.
 std::optional<std::string> CreateKeyRegistrationHeaderAndPayloadForTokenBinding(
     std::string_view client_id,

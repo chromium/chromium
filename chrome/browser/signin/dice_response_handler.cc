@@ -26,6 +26,7 @@
 #include "components/signin/core/browser/about_signin_internals.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/session_binding_utils.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -94,9 +95,9 @@ enum DiceTokenFetchResult {
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 std::unique_ptr<RegistrationTokenHelper> BuildRegistrationTokenHelper(
     unexportable_keys::UnexportableKeyService& unexportable_key_service,
-    const std::vector<uint8_t>& wrapped_binding_key_to_reuse) {
-  return std::make_unique<RegistrationTokenHelper>(
-      unexportable_key_service, wrapped_binding_key_to_reuse);
+    RegistrationTokenHelper::KeyInitParam key_init_param) {
+  return std::make_unique<RegistrationTokenHelper>(unexportable_key_service,
+                                                   std::move(key_init_param));
 }
 
 DiceResponseHandler::RegistrationTokenHelperFactory
@@ -471,11 +472,22 @@ void DiceResponseHandler::ProcessDiceSigninHeader(
       !supported_algorithms_for_token_binding.empty()) {
     CHECK(switches::IsChromeRefreshTokenBindingEnabled(
         signin_client_->GetPrefs()));
-    // TODO(crbug.com/362480455): pass the list of supported algorithms to the
-    // helper factory once supported.
-    registration_token_helper_ = registration_token_helper_factory_.Run(
-        GetWrappedBindingKeyToReuse(*identity_manager_));
+    std::vector<uint8_t> wrapped_binding_key_to_reuse =
+        GetWrappedBindingKeyToReuse(*identity_manager_);
+    if (!wrapped_binding_key_to_reuse.empty()) {
+      // Ignore the value of `supported_algorithms_for_token_binding` in favor
+      // of an existing binding key.
+      registration_token_helper_ = registration_token_helper_factory_.Run(
+          std::move(wrapped_binding_key_to_reuse));
+    } else {
+      registration_token_helper_ = registration_token_helper_factory_.Run(
+          signin::ParseSignatureAlgorithmList(
+              supported_algorithms_for_token_binding));
+    }
   }
+  // If `registration_token_helper_` was reused, its supported algorithm list
+  // may mismatch `supported_algorithms_for_token_binding`. We ignore this
+  // because it's more important to reuse the same key.
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
   token_fetchers_.push_back(std::make_unique<DiceTokenFetcher>(

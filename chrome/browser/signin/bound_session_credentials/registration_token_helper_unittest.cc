@@ -5,6 +5,7 @@
 #include "chrome/browser/signin/bound_session_credentials/registration_token_helper.h"
 
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/signin/public/base/session_binding_test_utils.h"
@@ -81,7 +82,8 @@ class RegistrationTokenHelperTest : public testing::Test {
 TEST_F(RegistrationTokenHelperTest, SuccessForTokenBinding) {
   crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
   base::test::TestFuture<std::optional<RegistrationTokenHelper::Result>> future;
-  RegistrationTokenHelper helper(unexportable_key_service());
+  RegistrationTokenHelper helper(unexportable_key_service(),
+                                 base::ToVector(kAcceptableAlgorithms));
   helper.GenerateForTokenBinding("test_client_id", "test_auth_code",
                                  GURL("https://accounts.google.com/Register"),
                                  future.GetCallback());
@@ -108,7 +110,8 @@ TEST_F(RegistrationTokenHelperTest, SuccessForTokenBindingReuseKey) {
 TEST_F(RegistrationTokenHelperTest, SuccessForSessionBinding) {
   crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
   base::test::TestFuture<std::optional<RegistrationTokenHelper::Result>> future;
-  RegistrationTokenHelper helper(unexportable_key_service());
+  RegistrationTokenHelper helper(unexportable_key_service(),
+                                 base::ToVector(kAcceptableAlgorithms));
   helper.GenerateForSessionBinding("test_challenge",
                                    GURL("https://accounts.google.com/Register"),
                                    future.GetCallback());
@@ -123,7 +126,8 @@ TEST_F(RegistrationTokenHelperTest, DoubleRegistration) {
       future_1;
   base::test::TestFuture<std::optional<RegistrationTokenHelper::Result>>
       future_2;
-  RegistrationTokenHelper helper(unexportable_key_service());
+  RegistrationTokenHelper helper(unexportable_key_service(),
+                                 base::ToVector(kAcceptableAlgorithms));
   helper.GenerateForTokenBinding("client_id_1", "auth_code_1",
                                  GURL("https://accounts.google.com/Register1"),
                                  future_1.GetCallback());
@@ -143,7 +147,8 @@ TEST_F(RegistrationTokenHelperTest, Failure) {
   // Emulates key generation failure.
   crypto::ScopedNullUnexportableKeyProvider scoped_null_key_provider_;
   base::test::TestFuture<std::optional<RegistrationTokenHelper::Result>> future;
-  RegistrationTokenHelper helper(unexportable_key_service());
+  RegistrationTokenHelper helper(unexportable_key_service(),
+                                 base::ToVector(kAcceptableAlgorithms));
   helper.GenerateForTokenBinding("test_client_id", "test_auth_code",
                                  GURL("https://accounts.google.com/Register"),
                                  future.GetCallback());
@@ -162,4 +167,17 @@ TEST_F(RegistrationTokenHelperTest, FailureReuseKey) {
                                  future.GetCallback());
   RunBackgroundTasks();
   EXPECT_FALSE(future.Get().has_value());
+}
+
+TEST_F(RegistrationTokenHelperTest, FailureEmptyAlgorithms) {
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  base::test::TestFuture<std::optional<RegistrationTokenHelper::Result>> future;
+  RegistrationTokenHelper helper(
+      unexportable_key_service(),
+      std::vector<crypto::SignatureVerifier::SignatureAlgorithm>());
+  helper.GenerateForTokenBinding("test_client_id", "test_auth_code",
+                                 GURL("https://accounts.google.com/Register"),
+                                 future.GetCallback());
+  RunBackgroundTasks();
+  ASSERT_FALSE(future.Get().has_value());
 }

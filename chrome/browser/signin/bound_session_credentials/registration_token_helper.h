@@ -33,8 +33,21 @@ class UnexportableKeyLoader;
 // A single instance can be used to generate multiple registration tokens for
 // the same binding key. To use different binding keys, create multiple class
 // instances.
+//
+// TODO(alexilin): support a timeout aborting the token generation if it takes
+// too long.
 class RegistrationTokenHelper {
  public:
+  // Initialization parameter indicating which binding key should be used for
+  // registration token generation.
+  using KeyInitParam = std::variant<
+      // A list of acceptable signature algorithms to generate a new binding
+      // key.
+      std::vector<crypto::SignatureVerifier::SignatureAlgorithm>,
+      // Wrapped binding key to reuse an existing binding key.
+      std::vector<uint8_t>>;
+
+  // The result of the registration token generation.
   struct Result {
     unexportable_keys::UnexportableKeyId binding_key_id;
     std::vector<uint8_t> wrapped_binding_key;
@@ -53,12 +66,9 @@ class RegistrationTokenHelper {
   };
 
   // `unexportable_key_service` must outlive `this`.
-  // If `wrapped_binding_key_to_reuse_` is not empty, `this` will reuse an
-  // existing binding key instead of generating a new one.
-  // TODO(alexilin): support timeout.
-  explicit RegistrationTokenHelper(
+  RegistrationTokenHelper(
       unexportable_keys::UnexportableKeyService& unexportable_key_service,
-      const std::vector<uint8_t>& wrapped_binding_key_to_reuse = {});
+      KeyInitParam key_init_param);
 
   RegistrationTokenHelper(const RegistrationTokenHelper&) = delete;
   RegistrationTokenHelper& operator=(const RegistrationTokenHelper&) = delete;
@@ -100,8 +110,9 @@ class RegistrationTokenHelper {
 
   const raw_ref<unexportable_keys::UnexportableKeyService>
       unexportable_key_service_;
+  const KeyInitParam key_init_param_;
+
   std::unique_ptr<unexportable_keys::UnexportableKeyLoader> key_loader_;
-  const std::vector<uint8_t> wrapped_binding_key_to_reuse_;
   base::WeakPtrFactory<RegistrationTokenHelper> weak_ptr_factory_{this};
 };
 

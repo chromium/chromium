@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/to_vector.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -37,6 +38,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "crypto/signature_verifier.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -60,10 +62,13 @@ using testing::Unused;
 
 namespace {
 
-const char kAuthorizationCode[] = "authorization_code";
-const char kEligibleForTokenBinding[] = "ES256 RS256";
-const char kEmail[] = "test@email.com";
-const int kSessionIndex = 42;
+constexpr char kAuthorizationCode[] = "authorization_code";
+constexpr char kEmail[] = "test@email.com";
+constexpr int kSessionIndex = 42;
+constexpr char kEligibleForTokenBinding[] = "ES256 RS256";
+constexpr crypto::SignatureVerifier::SignatureAlgorithm
+    kAcceptableAlgorithms[] = {crypto::SignatureVerifier::ECDSA_SHA256,
+                               crypto::SignatureVerifier::RSA_PKCS1_SHA256};
 
 DiceResponseParams::AccountInfo GetDiceResponseParamsAccountInfo(
     const std::string& email) {
@@ -116,7 +121,9 @@ class DiceTestSigninClient : public TestSigninClient, public GaiaAuthConsumer {
 class MockRegistrationTokenHelper : public RegistrationTokenHelper {
  public:
   MockRegistrationTokenHelper()
-      : RegistrationTokenHelper(fake_unexportable_key_service_) {}
+      : RegistrationTokenHelper(
+            fake_unexportable_key_service_,
+            std::vector<crypto::SignatureVerifier::SignatureAlgorithm>{}) {}
 
   ~MockRegistrationTokenHelper() override = default;
 
@@ -251,9 +258,9 @@ class DiceResponseHandlerTest : public testing::Test,
 
   void ExpectRegistrationTokenHelperCreated(
       const std::vector<std::string>& expected_authorization_codes,
-      const std::vector<uint8_t>& expected_wrapped_binding_key) {
+      const RegistrationTokenHelper::KeyInitParam& expected_key_init_param) {
     EXPECT_CALL(mock_registration_token_helper_factory_,
-                Run(expected_wrapped_binding_key))
+                Run(expected_key_init_param))
         .WillOnce(
             Return(BuildRegistrationTokenHelper(expected_authorization_codes)));
   }
@@ -473,7 +480,7 @@ TEST_F(DiceResponseHandlerTest, SigninWithBoundToken) {
   const std::string authorization_code =
       dice_params.signin_info->authorization_code;
   ExpectRegistrationTokenHelperCreated({authorization_code},
-                                       /*expected_wrapped_binding_key=*/{});
+                                       base::ToVector(kAcceptableAlgorithms));
   dice_response_handler_->ProcessDiceHeader(
       dice_params, std::make_unique<TestProcessDiceHeaderDelegate>(this));
 
@@ -595,7 +602,7 @@ TEST_F(DiceResponseHandlerTest, NewBindingKeyOtherTokenIsNotBound) {
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
   ExpectRegistrationTokenHelperCreated(
       {dice_params.signin_info->authorization_code},
-      /*expected_wrapped_binding_key=*/{});
+      base::ToVector(kAcceptableAlgorithms));
   dice_response_handler_->ProcessDiceHeader(
       dice_params, std::make_unique<TestProcessDiceHeaderDelegate>(this));
 }
@@ -618,7 +625,7 @@ TEST_F(DiceResponseHandlerTest, TwoFetchersReuseRegistrationTokenHelper) {
   dice_params_2.signin_info->authorization_code = "other_authorization_code";
   ExpectRegistrationTokenHelperCreated(
       {authorization_code(dice_params_1), authorization_code(dice_params_2)},
-      /*expected_wrapped_binding_key=*/{});
+      base::ToVector(kAcceptableAlgorithms));
   dice_response_handler_->ProcessDiceHeader(
       dice_params_1, std::make_unique<TestProcessDiceHeaderDelegate>(this));
   dice_response_handler_->ProcessDiceHeader(
@@ -679,7 +686,7 @@ TEST_F(DiceResponseHandlerTest, TwoFetchersOneEligible) {
       .clear();
   ExpectRegistrationTokenHelperCreated(
       {authorization_code(eligible_dice_params_)},
-      /*expected_wrapped_binding_key=*/{});
+      base::ToVector(kAcceptableAlgorithms));
 
   dice_response_handler_->ProcessDiceHeader(
       eligible_dice_params_,
@@ -717,7 +724,7 @@ TEST_F(DiceResponseHandlerTest,
 
   DiceResponseParams dice_params_1 = MakeDiceParams(DiceAction::SIGNIN);
   ExpectRegistrationTokenHelperCreated({authorization_code(dice_params_1)},
-                                       /*expected_wrapped_binding_key=*/{});
+                                       base::ToVector(kAcceptableAlgorithms));
   dice_response_handler_->ProcessDiceHeader(
       dice_params_1, std::make_unique<TestProcessDiceHeaderDelegate>(this));
 
@@ -749,7 +756,7 @@ TEST_F(DiceResponseHandlerTest,
       GetDiceResponseParamsAccountInfo("other@email.com");
   dice_params_2.signin_info->authorization_code = "other_authorization_code";
   ExpectRegistrationTokenHelperCreated({authorization_code(dice_params_2)},
-                                       /*expected_wrapped_binding_key=*/{});
+                                       base::ToVector(kAcceptableAlgorithms));
   dice_response_handler_->ProcessDiceHeader(
       dice_params_2, std::make_unique<TestProcessDiceHeaderDelegate>(this));
 }
@@ -764,7 +771,7 @@ TEST_F(DiceResponseHandlerTest, SigninWithFailedBoundTokenAttempt) {
   const std::string authorization_code =
       dice_params.signin_info->authorization_code;
   ExpectRegistrationTokenHelperCreated({authorization_code},
-                                       /*expected_wrapped_binding_key=*/{});
+                                       base::ToVector(kAcceptableAlgorithms));
   dice_response_handler_->ProcessDiceHeader(
       dice_params, std::make_unique<TestProcessDiceHeaderDelegate>(this));
 
