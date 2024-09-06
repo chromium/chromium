@@ -150,9 +150,6 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
                                   gfx::GpuMemoryBufferId id,
                                   gfx::GpuMemoryBufferHandle handle);
 
-  bool CreateBufferUsesGpuService(gfx::BufferFormat format,
-                                  gfx::BufferUsage usage);
-
   GpuServiceProvider gpu_service_provider_;
   raw_ptr<mojom::GpuService> gpu_service_ = nullptr;
 
