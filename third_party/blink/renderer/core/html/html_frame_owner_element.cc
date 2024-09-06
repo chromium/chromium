@@ -171,7 +171,9 @@ void HTMLFrameOwnerElement::PluginDisposeSuspendScope::
 HTMLFrameOwnerElement::HTMLFrameOwnerElement(const QualifiedName& tag_name,
                                              Document& document)
     : HTMLElement(tag_name, document),
-      should_lazy_load_children_(DoesParentAllowLazyLoadingChildren(document)) {
+      should_lazy_load_children_(DoesParentAllowLazyLoadingChildren(document)),
+      preferred_color_scheme_(mojom::blink::PreferredColorScheme::kLight) {
+  SetHasCustomStyleCallbacks();
   document.IncrementImmediateChildFrameCreationCount();
 }
 
@@ -812,12 +814,15 @@ void HTMLFrameOwnerElement::SetColorScheme(
 
 mojom::blink::PreferredColorScheme
 HTMLFrameOwnerElement::GetPreferredColorScheme() const {
-  return GetDocument().GetStyleEngine().ResolveColorSchemeForEmbedding(
-      GetComputedStyle());
+  return preferred_color_scheme_;
 }
 
 void HTMLFrameOwnerElement::SetPreferredColorScheme(
     mojom::blink::PreferredColorScheme preferred_color_scheme) {
+  if (preferred_color_scheme_ == preferred_color_scheme) {
+    return;
+  }
+  preferred_color_scheme_ = preferred_color_scheme;
   Document* doc = contentDocument();
   if (doc && doc->GetFrame()) {
     doc->WillChangeFrameOwnerProperties(
@@ -860,6 +865,14 @@ ParsedPermissionsPolicy HTMLFrameOwnerElement::GetLegacyFramePolicies() {
     container_policy.push_back(allowlist);
   }
   return container_policy;
+}
+
+void HTMLFrameOwnerElement::DidRecalcStyle(
+    const StyleRecalcChange style_recalc_change) {
+  HTMLElement::DidRecalcStyle(style_recalc_change);
+  SetPreferredColorScheme(
+      GetDocument().GetStyleEngine().ResolveColorSchemeForEmbedding(
+          GetComputedStyle()));
 }
 
 }  // namespace blink
