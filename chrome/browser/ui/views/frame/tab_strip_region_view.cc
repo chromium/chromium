@@ -583,7 +583,7 @@ class TabSearchPositionMetricsLogger {
   // Logs the UMA metric for the tab search position.
   void LogMetrics() {
     base::UmaHistogramEnumeration(
-        "Tabs.TabSearch.IsTrailingTabstrip",
+        "Tabs.TabSearch.PositionInTabstrip",
         tabs::GetTabSearchTrailingTabstrip(profile_)
             ? TabStripRegionView::TabSearchPositionEnum::kTrailing
             : TabStripRegionView::TabSearchPositionEnum::kLeading);
