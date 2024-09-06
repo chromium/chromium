@@ -12,12 +12,16 @@ ts_library("build_ts") {
   visibility = [
     ":build_bundle",
 
-    # TODO(crbug.com/40943652): Currently limiting Lit usage to a small set of
-    # folders during the initial experimentation phase.
-    # - cr_elements/ and cr_components/
-    # - tests that need to refer to CrLitElement.
-    # - a few chrome/browser/resources/ folders  that hold small UIs.
-    # Update when the migration enters its next phase.
+    # Lit has officially being declared as the preferred framework (over
+    # Polymer) for new WebUI code, see [1] and [2]
+    #
+    # [1] https://chromium.googlesource.com/chromium/src/+/HEAD/styleguide/web/web.md#Lit
+    # [2] https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui_using_lit.md
+    #
+    # Explicitly tracking targets that can depend on third_party/lit is still
+    # useful to audit UIs that depend on Lit, and to prevent adding Lit as a
+    # dependency to CrOS-only UIs (to reduce coupling between Desktop and CrOS
+    # and reduce the maintenance burden for the Desktop WebUI team).
 
     "//chrome/browser/resources/about_sys:build_ts",
     "//chrome/browser/resources/app_home:build_ts",

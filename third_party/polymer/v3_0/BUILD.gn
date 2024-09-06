@@ -95,15 +95,16 @@ generate_grd("build_grdp") {
 
 ts_library("library") {
   visibility = [
-    # TODO(crbug.com/40943652): The WebUI team is in the process of establishing
-    # Lit as the preferred WebUI framework, moving away from Polymer for Desktop
-    # (aka non-CrOS) surfaces. Please consult with //ui/webui/PLATFORM_OWNERS or
-    # g/chrome-webui before adding any new non-trivial Polymer UIs (excluding
-    # CrOS-only UIs), to consider the possibility of using Lit instead (See
-    # //third_party/lit/v3_0:build_ts).
+    # Lit has officially being declared as the preferred framework (over
+    # Polymer) for new Desktop WebUI code, see [1] and [2]
     #
-    # Note that Lit will be required for any new WebUI development soon
-    # (targeting end of Q2 2024).
+    # [1] https://chromium.googlesource.com/chromium/src/+/HEAD/styleguide/web/web.md#Lit
+    # [2] https://chromium.googlesource.com/chromium/src/+/HEAD/styleguide/web/web.md#Polymer
+    # [2] https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui_using_lit.md
+
+    # Use Lit instead of Polymer (see //third_party/lit/v3_0:build_ts). Consult
+    # with //ui/webui/PLATFORM_OWNERS or g/chrome-webui if you think there is a
+    # strong reason to use Polymer.
 
     "//chrome/browser/resources/access_code_cast:build_ts",
     "//chrome/browser/resources/app_service_internals:build_ts",
