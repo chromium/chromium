@@ -44,7 +44,7 @@ WebGLExtensionName WebGLShaderPixelLocalStorage::GetName() const {
   return kWebGLShaderPixelLocalStorageName;
 }
 
-GLboolean WebGLShaderPixelLocalStorage::isCoherent() const {
+bool WebGLShaderPixelLocalStorage::isCoherent() const {
   return coherent_;
 }
 

@@ -3538,12 +3538,12 @@ void WebGL2RenderingContextBase::deleteQuery(WebGLQuery* query) {
   DeleteObject(query);
 }
 
-GLboolean WebGL2RenderingContextBase::isQuery(WebGLQuery* query) {
+bool WebGL2RenderingContextBase::isQuery(WebGLQuery* query) {
   if (!query || isContextLost() || !query->Validate(ContextGroup(), this))
-    return 0;
+    return false;
 
   if (query->MarkedForDeletion())
-    return 0;
+    return false;
 
   return ContextGL()->IsQueryEXT(query->Object());
 }
@@ -3758,12 +3758,12 @@ void WebGL2RenderingContextBase::deleteSampler(WebGLSampler* sampler) {
   DeleteObject(sampler);
 }
 
-GLboolean WebGL2RenderingContextBase::isSampler(WebGLSampler* sampler) {
+bool WebGL2RenderingContextBase::isSampler(WebGLSampler* sampler) {
   if (!sampler || isContextLost() || !sampler->Validate(ContextGroup(), this))
-    return 0;
+    return false;
 
   if (sampler->MarkedForDeletion())
-    return 0;
+    return false;
 
   return ContextGL()->IsSampler(sampler->Object());
 }
@@ -3969,12 +3969,12 @@ WebGLSync* WebGL2RenderingContextBase::fenceSync(GLenum condition,
   return MakeGarbageCollected<WebGLFenceSync>(this, condition, flags);
 }
 
-GLboolean WebGL2RenderingContextBase::isSync(WebGLSync* sync) {
+bool WebGL2RenderingContextBase::isSync(WebGLSync* sync) {
   if (!sync || isContextLost() || !sync->Validate(ContextGroup(), this))
-    return 0;
+    return false;
 
   if (sync->MarkedForDeletion())
-    return 0;
+    return false;
 
   return sync->Object() != 0;
 }
@@ -4085,16 +4085,16 @@ void WebGL2RenderingContextBase::deleteTransformFeedback(
     transform_feedback_binding_ = default_transform_feedback_;
 }
 
-GLboolean WebGL2RenderingContextBase::isTransformFeedback(
+bool WebGL2RenderingContextBase::isTransformFeedback(
     WebGLTransformFeedback* feedback) {
   if (!feedback || isContextLost() || !feedback->Validate(ContextGroup(), this))
-    return 0;
+    return false;
 
   if (!feedback->HasEverBeenBound())
-    return 0;
+    return false;
 
   if (feedback->MarkedForDeletion())
-    return 0;
+    return false;
 
   return ContextGL()->IsTransformFeedback(feedback->Object());
 }
@@ -4711,16 +4711,16 @@ void WebGL2RenderingContextBase::deleteVertexArray(
   vertex_array->DeleteObject(ContextGL());
 }
 
-GLboolean WebGL2RenderingContextBase::isVertexArray(
+bool WebGL2RenderingContextBase::isVertexArray(
     WebGLVertexArrayObject* vertex_array) {
   if (isContextLost() || !vertex_array ||
       !vertex_array->Validate(ContextGroup(), this))
-    return 0;
+    return false;
 
   if (!vertex_array->HasEverBeenBound())
-    return 0;
+    return false;
   if (vertex_array->MarkedForDeletion())
-    return 0;
+    return false;
 
   return ContextGL()->IsVertexArrayOES(vertex_array->Object());
 }

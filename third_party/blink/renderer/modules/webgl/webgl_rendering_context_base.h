@@ -344,14 +344,14 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   int64_t getVertexAttribOffset(GLuint index, GLenum pname);
 
   void hint(GLenum target, GLenum mode);
-  GLboolean isBuffer(WebGLBuffer*);
+  bool isBuffer(WebGLBuffer*);
   bool isContextLost() const override;
-  GLboolean isEnabled(GLenum cap);
-  GLboolean isFramebuffer(WebGLFramebuffer*);
-  GLboolean isProgram(WebGLProgram*);
-  GLboolean isRenderbuffer(WebGLRenderbuffer*);
-  GLboolean isShader(WebGLShader*);
-  GLboolean isTexture(WebGLTexture*);
+  bool isEnabled(GLenum cap);
+  bool isFramebuffer(WebGLFramebuffer*);
+  bool isProgram(WebGLProgram*);
+  bool isRenderbuffer(WebGLRenderbuffer*);
+  bool isShader(WebGLShader*);
+  bool isTexture(WebGLTexture*);
 
   void lineWidth(GLfloat);
   void linkProgram(WebGLProgram*);
