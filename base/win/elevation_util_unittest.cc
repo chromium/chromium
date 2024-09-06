@@ -7,6 +7,7 @@
 #include <shlobj.h>
 
 #include "base/command_line.h"
+#include "base/functional/callback.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/process/process_iterator.h"
@@ -45,27 +46,40 @@ TEST(ElevationUtil, RunDeElevated) {
   ASSERT_TRUE(IsProcessRunningAtMediumOrLower(process.Pid()));
 }
 
-TEST(ElevationUtil, RunDeElevatedNoWait) {
+class ElevationUtilRunDeElevatedNoWaitTest
+    : public ::testing::TestWithParam<RepeatingCallback<HRESULT()>> {};
+
+INSTANTIATE_TEST_SUITE_P(ElevationUtilRunDeElevatedNoWaitTestCases,
+                         ElevationUtilRunDeElevatedNoWaitTest,
+                         ::testing::Values(BindRepeating([] {
+                                             return RunDeElevatedNoWait(
+                                                 CommandLine::FromString(
+                                                     kMoreExecutable));
+                                           }),
+                                           BindRepeating([] {
+                                             return RunDeElevatedNoWait(
+                                                 kMoreExecutable, {});
+                                           })));
+
+TEST_P(ElevationUtilRunDeElevatedNoWaitTest, TestCases) {
   if (!::IsUserAnAdmin() || !IsExplorerRunningAtMediumOrLower()) {
     GTEST_SKIP();
   }
 
-  ASSERT_EQ(base::GetProcessCount(kMoreExecutable, /*filter=*/nullptr), 0)
+  ASSERT_EQ(GetProcessCount(kMoreExecutable, /*filter=*/nullptr), 0)
       << "This test requires that no instances of the `more` command are "
          "running.";
 
-  base::win::ScopedCOMInitializer com_initializer(
-      base::win::ScopedCOMInitializer::kMTA);
+  ScopedCOMInitializer com_initializer(ScopedCOMInitializer::kMTA);
   ASSERT_TRUE(com_initializer.Succeeded());
 
-  ASSERT_HRESULT_SUCCEEDED(
-      RunDeElevatedNoWait(CommandLine::FromString(kMoreExecutable)));
+  ASSERT_HRESULT_SUCCEEDED(GetParam().Run());
 
   // Wait for the process to start running.
   int i = 0;
   for (; i < 5; ++i) {
-    base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
-    if (base::GetProcessCount(kMoreExecutable, /*filter=*/nullptr) == 1) {
+    PlatformThread::Sleep(TestTimeouts::tiny_timeout());
+    if (GetProcessCount(kMoreExecutable, /*filter=*/nullptr) == 1) {
       break;
     }
   }

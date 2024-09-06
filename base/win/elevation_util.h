@@ -5,6 +5,8 @@
 #ifndef BASE_WIN_ELEVATION_UTIL_H_
 #define BASE_WIN_ELEVATION_UTIL_H_
 
+#include <string>
+
 #include "base/base_export.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
@@ -30,6 +32,14 @@ BASE_EXPORT Process RunDeElevated(const CommandLine& command_line);
 // Runs `command_line` de-elevated. The function does not wait for the spawned
 // process.
 BASE_EXPORT HRESULT RunDeElevatedNoWait(const CommandLine& command_line);
+
+// Runs `path` de-elevated using `IShellDispatch2::ShellExecute`. `path`
+// specifies the file or object on which to execute the default verb (typically
+// "open"). If `path` specifies an executable file, `parameters` specifies the
+// parameters to be passed to the executable. The function does not wait for the
+// spawned process.
+BASE_EXPORT HRESULT RunDeElevatedNoWait(const std::wstring& path,
+                                        const std::wstring& parameters);
 
 }  // namespace base::win
 

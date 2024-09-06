@@ -11,6 +11,8 @@
 #include <shlobj.h>
 #include <wrl/client.h>
 
+#include <string>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -105,6 +107,12 @@ Process RunDeElevated(const CommandLine& command_line) {
 }
 
 HRESULT RunDeElevatedNoWait(const CommandLine& command_line) {
+  return RunDeElevatedNoWait(command_line.GetProgram().value(),
+                             command_line.GetArgumentsString());
+}
+
+HRESULT RunDeElevatedNoWait(const std::wstring& path,
+                            const std::wstring& parameters) {
   Microsoft::WRL::ComPtr<IShellWindows> shell;
   HRESULT hr = ::CoCreateInstance(CLSID_ShellWindows, nullptr,
                                   CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&shell));
@@ -114,9 +122,9 @@ HRESULT RunDeElevatedNoWait(const CommandLine& command_line) {
 
   LONG hwnd = 0;
   Microsoft::WRL::ComPtr<IDispatch> dispatch;
-  hr = shell->FindWindowSW(base::win::ScopedVariant(CSIDL_DESKTOP).AsInput(),
-                           base::win::ScopedVariant().AsInput(), SWC_DESKTOP,
-                           &hwnd, SWFO_NEEDDISPATCH, &dispatch);
+  hr = shell->FindWindowSW(ScopedVariant(CSIDL_DESKTOP).AsInput(),
+                           ScopedVariant().AsInput(), SWC_DESKTOP, &hwnd,
+                           SWFO_NEEDDISPATCH, &dispatch);
   if (hr == S_FALSE || FAILED(hr)) {
     return hr == S_FALSE ? E_FAIL : hr;
   }
@@ -162,11 +170,9 @@ HRESULT RunDeElevatedNoWait(const CommandLine& command_line) {
   }
 
   return shell_dispatch->ShellExecute(
-      base::win::ScopedBstr(command_line.GetProgram().value().c_str()).Get(),
-      base::win::ScopedVariant(command_line.GetArgumentsString().c_str()),
-      base::win::ScopedVariant::kEmptyVariant,
-      base::win::ScopedVariant::kEmptyVariant,
-      base::win::ScopedVariant::kEmptyVariant);
+      ScopedBstr(path.c_str()).Get(), ScopedVariant(parameters.c_str()),
+      ScopedVariant::kEmptyVariant, ScopedVariant::kEmptyVariant,
+      ScopedVariant::kEmptyVariant);
 }
 
 }  // namespace base::win
