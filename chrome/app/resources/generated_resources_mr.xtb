@@ -6313,7 +6313,6 @@
         &lt;li&gt;तुम्ही तुमच्या Google खात्यामध्ये साइन इन केले आहे&lt;/li&gt;
         &lt;li&gt;तुमची वेब आणि अ‍ॅप अ‍ॅक्टिव्हिटी सुरू केलेली आहे&lt;/li&gt;
       &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">अ‍ॅड्रेस बारमध्ये शोध इंजीन वापरले आहे.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{तुमच्या अ‍ॅडमिनिस्ट्रेटरने एक्स्टेंशन इंस्टॉल केले आहे}other{तुमच्या अ‍ॅडमिनिस्ट्रेटरने # एक्स्टेंशन इंस्टॉल केली आहेत}}</translation>
 <translation id="5523532775593636291">तुम्ही जोडलेल्या साइट नेहमी अ‍ॅक्टिव्ह राहतील आणि त्यांच्याकडून मेमरी मोकळी केली जाणार नाही</translation>
 <translation id="5523558474028191231">नावामध्ये अक्षरे, अंक व विशेष वर्ण आणि <ph name="MAX_CHARACTER_COUNT" /> किंवा त्याहून कमी वर्ण वापरू शकता</translation>
@@ -6984,7 +6983,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6020431688553761150">हे संसाधन ॲक्सेस करण्यासाठी सर्व्हरने तुम्हाला परवानगी दिलेली नाही.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> अ‍ॅप्सना यापुढे सपोर्ट नाही</translation>
 <translation id="6021969570711251331">एकावर एक</translation>
-<translation id="602212068530399867">अ‍ॅड्रेस बार आणि लाँचरमध्ये वापरले जाणारे शोध इंजीन.</translation>
 <translation id="6022526133015258832">फुल स्क्रीन उघडा</translation>
 <translation id="6022659036123304283">Chrome ला तुमच्या आवडीनुसार बनवा</translation>
 <translation id="6023643151125006053">हे डिव्हाइस (SN: <ph name="SERIAL_NUMBER" />) <ph name="SAML_DOMAIN" /> ॲडमिनिस्ट्रेटरने लॉक केले होते.</translation>

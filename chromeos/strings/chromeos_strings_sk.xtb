@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">sneh</translation>
 <translation id="3146655726035122603">Exkluzívne pre <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobilné dátové prenosy</translation>
+<translation id="3156511682997763015">O 10 sekúnd vpred</translation>
 <translation id="3156846309055100599">Skenuje sa <ph name="PAGE_NUMBER" />. strana…</translation>
 <translation id="315738237743207937">Bol rozpoznaný prihlasovací portál</translation>
 <translation id="3160172848211257835">Odoslať <ph name="BEGIN_LINK1" />informácie o systéme a aplikáciách<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />metriky<ph name="END_LINK2" /></translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">Nič sa nenašlo</translation>
 <translation id="3305294846493618482">viac</translation>
 <translation id="3310640316857623290">Latencia servera DNS výrazne prekračuje povolenú úroveň</translation>
+<translation id="3321030238473337787">Rýchlosť prehrávania</translation>
 <translation id="3328783797891415197">Test prebieha</translation>
 <translation id="3340011300870565703">Úroveň batérie pravého slúchadla zariadenia je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">nastavenia</translation>
@@ -1336,6 +1338,7 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Typ poskytovateľa</translation>
 <translation id="7882501334836096755">Verejný kľúč</translation>
+<translation id="7889966925761734854">Posúvač prehrávania</translation>
 <translation id="78957024357676568">doľava</translation>
 <translation id="7897043345768902965">chodníkom</translation>
 <translation id="7902285181767404769">Vypínať zvuk upozornení počas nahrávania</translation>

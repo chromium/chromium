@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">눈</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> 전용</translation>
 <translation id="315116470104423982">모바일 데이터</translation>
+<translation id="3156511682997763015">10초 앞으로 이동</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />페이지 스캔 중…</translation>
 <translation id="315738237743207937">종속 포털 감지됨</translation>
 <translation id="3160172848211257835"><ph name="BEGIN_LINK1" />시스템 및 앱 정보<ph name="END_LINK1" />와 <ph name="BEGIN_LINK2" />통계<ph name="END_LINK2" /> 전송</translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">검색결과 없음</translation>
 <translation id="3305294846493618482">더보기</translation>
 <translation id="3310640316857623290">DNS 지연 시간이 허용되는 기준을 훨씬 초과했습니다.</translation>
+<translation id="3321030238473337787">재생 속도</translation>
 <translation id="3328783797891415197">테스트 실행 중</translation>
 <translation id="3340011300870565703">기기의 오른쪽 이어폰 배터리 잔량이 <ph name="BATTERY_PERCENTAGE" />%입니다.</translation>
 <translation id="3340978935015468852">설정</translation>
@@ -1336,6 +1338,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">공급자 유형</translation>
 <translation id="7882501334836096755">공개 키</translation>
+<translation id="7889966925761734854">찾기</translation>
 <translation id="78957024357676568">왼쪽</translation>
 <translation id="7897043345768902965">인도</translation>
 <translation id="7902285181767404769">녹음 중 알림 음소거</translation>

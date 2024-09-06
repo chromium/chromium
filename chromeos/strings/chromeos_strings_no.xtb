@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">snø</translation>
 <translation id="3146655726035122603">Kun på <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobildata</translation>
+<translation id="3156511682997763015">Spol 10 sekunder frem</translation>
 <translation id="3156846309055100599">Skanner side <ph name="PAGE_NUMBER" /> …</translation>
 <translation id="315738237743207937">Oppdaget en obligatorisk side</translation>
 <translation id="3160172848211257835">Send <ph name="BEGIN_LINK1" />system- og appinformasjon<ph name="END_LINK1" /> samt <ph name="BEGIN_LINK2" />verdier<ph name="END_LINK2" /></translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">Søket ga ingen treff</translation>
 <translation id="3305294846493618482">mer</translation>
 <translation id="3310640316857623290">DNS-forsinkelsen er betydelig høyere enn den tillatte grenseverdien</translation>
+<translation id="3321030238473337787">Avspillingshastighet</translation>
 <translation id="3328783797891415197">Testen kjøres</translation>
 <translation id="3340011300870565703">Enheten har <ph name="BATTERY_PERCENTAGE" /> % batteri i høyre øreplugg.</translation>
 <translation id="3340978935015468852">innstillinger</translation>
@@ -1336,6 +1338,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Leverandørtype</translation>
 <translation id="7882501334836096755">Offentlig nøkkel</translation>
+<translation id="7889966925761734854">Let etter</translation>
 <translation id="78957024357676568">venstre</translation>
 <translation id="7897043345768902965">gangvei</translation>
 <translation id="7902285181767404769">Demp varsler under opptak</translation>

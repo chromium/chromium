@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">snjó</translation>
 <translation id="3146655726035122603">Aðeins í <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Farsímagögn</translation>
+<translation id="3156511682997763015">Áfram um 10 sekúndur</translation>
 <translation id="3156846309055100599">Skannar síðu <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">Innskráningarsíða greind</translation>
 <translation id="3160172848211257835">Senda <ph name="BEGIN_LINK1" />upplýsingar um kerfi og forrit<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />mæligildi<ph name="END_LINK2" /></translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">Engar leitarniðurstöður fundust</translation>
 <translation id="3305294846493618482">meira</translation>
 <translation id="3310640316857623290">DNS-biðtími er töluvert yfir leyfðum þröskuldi</translation>
+<translation id="3321030238473337787">Spilunarhraði</translation>
 <translation id="3328783797891415197">Próf í gangi</translation>
 <translation id="3340011300870565703">Rafhleðsla hægra heyrnartóls er <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">stillingar</translation>
@@ -1336,6 +1338,7 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Gerð veitu</translation>
 <translation id="7882501334836096755">Opinber lykill</translation>
+<translation id="7889966925761734854">Spóla</translation>
 <translation id="78957024357676568">vinstri</translation>
 <translation id="7897043345768902965">göngustíg</translation>
 <translation id="7902285181767404769">Þaggaðu tilkynningar á meðan á upptöku stendur</translation>

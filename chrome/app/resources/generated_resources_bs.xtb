@@ -6315,7 +6315,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
         &lt;li&gt;ste prijavljeni na Google račun&lt;/li&gt;
         &lt;li&gt;vam je uključena Aktivnost na webu i u aplikacijama&lt;/li&gt;
       &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">Pretraživač koji se koristi u traci za adresu.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Vaš administrator je instalirao ekstenziju}one{Vaš administrator je instalirao # ekstenziju}few{Vaš administrator je instalirao # ekstenzije}other{Vaš administrator je instalirao # ekstenzija}}</translation>
 <translation id="5523532775593636291">Web lokacije koje dodate će uvijek biti aktivne i zauzimat će memoriju</translation>
 <translation id="5523558474028191231">Naziv može sadržavati slova, brojeve i posebne znakove te može maksimalno sadržavati sljedeći broj znakova: <ph name="MAX_CHARACTER_COUNT" /></translation>
@@ -6983,7 +6982,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="6020431688553761150">Server vam nije odobrio da pristupite ovom izvoru.</translation>
 <translation id="6021293122504240352">Aplikacije <ph name="APPS" /> više nisu podržane</translation>
 <translation id="6021969570711251331">Kombinirani prikaz</translation>
-<translation id="602212068530399867">Pretraživač koji se koristi u traci za adresu i pokretaču.</translation>
 <translation id="6022526133015258832">Otvori preko cijelog ekrana</translation>
 <translation id="6022659036123304283">Prilagodite Chrome svojim potrebama</translation>
 <translation id="6023643151125006053">Ovaj uređaj (SN: <ph name="SERIAL_NUMBER" />) je zaključao administrator domene <ph name="SAML_DOMAIN" />.</translation>

@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">neige</translation>
 <translation id="3146655726035122603">Exclusivité <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Données mobiles</translation>
+<translation id="3156511682997763015">Avancer de 10 secondes</translation>
 <translation id="3156846309055100599">Numérisation de la page <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Portail captif détecté</translation>
 <translation id="3160172848211257835">Envoyer des <ph name="BEGIN_LINK1" />infos sur le système et l'appli<ph name="END_LINK1" />, ainsi que des <ph name="BEGIN_LINK2" />métriques<ph name="END_LINK2" /></translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">Aucun résultat de recherche n'a été trouvé.</translation>
 <translation id="3305294846493618482">plus</translation>
 <translation id="3310640316857623290">Seuil de latence autorisé largement dépassé par le DNS</translation>
+<translation id="3321030238473337787">Vitesse de lecture</translation>
 <translation id="3328783797891415197">Test en cours</translation>
 <translation id="3340011300870565703">L'écouteur droit de l'appareil a <ph name="BATTERY_PERCENTAGE" /> % de batterie.</translation>
 <translation id="3340978935015468852">paramètres</translation>
@@ -1336,6 +1338,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Type de fournisseur</translation>
 <translation id="7882501334836096755">Clé publique</translation>
+<translation id="7889966925761734854">Chercher</translation>
 <translation id="78957024357676568">gauche</translation>
 <translation id="7897043345768902965">chemin</translation>
 <translation id="7902285181767404769">Notifications silencieuses pendant l'enregistrement</translation>

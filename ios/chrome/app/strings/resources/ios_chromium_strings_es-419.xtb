@@ -71,6 +71,8 @@ Si quieres ver más parámetros de configuración que usan datos para mejorar tu
 <translation id="3344973607274501920">Chromium no pudo revisar las contraseñas. Revisa la conexión a Internet.</translation>
 <translation id="3366305173356742781">Datos de Chromium en tu cuenta</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Esto sucede cuando no usas Chromium durante {THRESHOLD} minuto. Esto podría incluir el historial y la función Autocompletar.}other{Esto sucede cuando no usas Chromium durante {THRESHOLD} minutos. Esto podría incluir el historial y la función Autocompletar.}}</translation>
+<translation id="3410395242749598859">Aún no se guardaron algunos de tus datos de Chromium en <ph name="EMAIL" />.
+Espera unos minutos antes de cambiar de cuenta. Si cambias de cuenta ahora, se borrarán estos datos.</translation>
 <translation id="3472200483164753384">No es compatible en Chromium Canary</translation>
 <translation id="347967311580159871">Si quieres ver más parámetros de configuración que usan datos para mejorar tu experiencia en Chromium, ve a los <ph name="BEGIN_LINK" />Servicios de Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">No se compartió tu contraseña. Revisa la conexión a Internet y asegúrate de que accediste a Chromium. Luego, vuelve a intentarlo.</translation>

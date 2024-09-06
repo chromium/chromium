@@ -6314,7 +6314,6 @@
         &lt;li&gt;ທ່ານເຂົ້າສູ່ລະບົບບັນຊີ Google ຂອງທ່ານ&lt;/li&gt;
         &lt;li&gt;ທ່ານເປີດການເຄື່ອນໄຫວເວັບ ແລະ ແອັບໄວ້&lt;/li&gt;
       &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">ໂປຣແກຣມຊອກຫາທີ່ໃຊ້ໃນແຖບທີ່ຢູ່.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{ມີການຕິດຕັ້ງສ່ວນຂະຫຍາຍໜຶ່ງລາຍການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ}other{ມີການຕິດຕັ້ງສ່ວນຂະຫຍາຍ # ລາຍການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ}}</translation>
 <translation id="5523532775593636291">ເວັບໄຊທີ່ທ່ານເພີ່ມຈະນຳໃຊ້ຢູ່ຕະຫຼອດ ແລະ ຈະບໍ່ມີການຮຽກເກັບໜ່ວຍຄວາມຈຳຈາກພວກມັນ</translation>
 <translation id="5523558474028191231">ຊື່ສາມາດໃຊ້ຕົວອັກສອນ, ຕົວເລກ ແລະ ຕົວອັກສອນພິເສດ ແລະ ຈະຕ້ອງຍາວບໍ່ເກີນ <ph name="MAX_CHARACTER_COUNT" /> ຕົວອັກສອນ</translation>
@@ -6982,7 +6981,6 @@
 <translation id="6020431688553761150">ເຊີບເວີບໍ່ໃຫ້ສິດທ່ານເຂົ້າຫາຂໍ້ມູນນີ້.</translation>
 <translation id="6021293122504240352">ບໍ່ຮອງຮັບ <ph name="APPS" /> ແອັບອີກຕໍ່ໄປແລ້ວ</translation>
 <translation id="6021969570711251331">ແຊກສະຫຼັບ</translation>
-<translation id="602212068530399867">ໂປຣແກຣມຊອກຫາທີ່ໃຊ້ໃນແຖບທີ່ຢູ່ ແລະ ຕົວເປີດໃຊ້.</translation>
 <translation id="6022526133015258832">ເປີດເຕັມໜ້າຈໍ</translation>
 <translation id="6022659036123304283">ເຮັດໃຫ້ Chrome ເປັນຂອງທ່ານ</translation>
 <translation id="6023643151125006053">ອຸປະກອນນີ້ (SN: <ph name="SERIAL_NUMBER" />) ຖືກລັອກໄວ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບ <ph name="SAML_DOMAIN" />.</translation>

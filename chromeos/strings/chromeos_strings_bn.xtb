@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">তুষার</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" />-এর জন্য এক্সক্লুসিভ</translation>
 <translation id="315116470104423982">মোবাইল ডেটা</translation>
+<translation id="3156511682997763015">১০ সেকেন্ড ফরওয়ার্ড করুন</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" /> নম্বর পৃষ্ঠা স্ক্যান করা হচ্ছে...</translation>
 <translation id="315738237743207937">অন্তরীণ পোর্টাল শনাক্ত করা হয়েছে</translation>
 <translation id="3160172848211257835"><ph name="BEGIN_LINK1" />সিস্টেম ও অ্যাপ সংক্রান্ত তথ্য<ph name="END_LINK1" /> এবং <ph name="BEGIN_LINK2" />মেট্রিক<ph name="END_LINK2" /> পাঠান।</translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">কোনো সার্চ ফলাফল পাওয়া যায়নি</translation>
 <translation id="3305294846493618482">আরও</translation>
 <translation id="3310640316857623290">যতদূর পর্যন্ত লেটেন্সির ঊর্ধ্বসীমা অনুমোদন করা যায়, ডিএনএস লেটেন্সি উল্লেখযোগ্যভাবে তার চেয়ে বেশি</translation>
+<translation id="3321030238473337787">প্লেব্যাক স্পিড</translation>
 <translation id="3328783797891415197">টেস্ট করা হচ্ছে</translation>
 <translation id="3340011300870565703">ডিভাইসের ডানদিকের বাডে <ph name="BATTERY_PERCENTAGE" />% ব্যাটারি আছে।</translation>
 <translation id="3340978935015468852">সেটিংস</translation>
@@ -1336,6 +1338,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">পরিষেবা প্রদানকারীর ধরন</translation>
 <translation id="7882501334836096755">সর্বজনীন 'কী'</translation>
+<translation id="7889966925761734854">খুঁজে নিন</translation>
 <translation id="78957024357676568">বাঁ</translation>
 <translation id="7897043345768902965">হাঁটার পথ</translation>
 <translation id="7902285181767404769">রেকর্ডিংয়ের সময় বিজ্ঞপ্তির সাউন্ড বন্ধ করুন</translation>

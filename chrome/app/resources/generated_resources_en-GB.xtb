@@ -6316,7 +6316,6 @@ Permissions that you've already given to websites and apps may apply to this acc
         &lt;li&gt;You're signed in to your Google Account&lt;/li&gt;
         &lt;li&gt;You have Web &amp; App Activity turned on&lt;/li&gt;
       &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">Search engine used in the address bar.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{An extension has been installed by your administrator}other{# extensions have been installed by your administrator}}</translation>
 <translation id="5523532775593636291">Websites you add will always stay active and memory won't be freed up from them.</translation>
 <translation id="5523558474028191231">Name can use letters, numbers and special characters, and must be <ph name="MAX_CHARACTER_COUNT" /> characters or fewer</translation>
@@ -6984,7 +6983,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6020431688553761150">Server did not authorise you to access this resource.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> apps are no longer supported</translation>
 <translation id="6021969570711251331">Interleave</translation>
-<translation id="602212068530399867">Search engine used in the address bar and the launcher.</translation>
 <translation id="6022526133015258832">Open Full Screen</translation>
 <translation id="6022659036123304283">Make Chrome your own</translation>
 <translation id="6023643151125006053">This device (SN: <ph name="SERIAL_NUMBER" />) was locked by the <ph name="SAML_DOMAIN" /> administrator.</translation>

@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">雪</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> 限定</translation>
 <translation id="315116470104423982">モバイル データ</translation>
+<translation id="3156511682997763015">10 秒早送り</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" /> ページ目をスキャンしています...</translation>
 <translation id="315738237743207937">キャプティブ ポータルが検出されました</translation>
 <translation id="3160172848211257835"><ph name="BEGIN_LINK1" />システムとアプリの情報<ph name="END_LINK1" />と<ph name="BEGIN_LINK2" />指標<ph name="END_LINK2" />を送信する</translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">一致する結果は見つかりませんでした</translation>
 <translation id="3305294846493618482">続き</translation>
 <translation id="3310640316857623290">DNS の応答時間が許容値を大幅に超えています</translation>
+<translation id="3321030238473337787">再生速度</translation>
 <translation id="3328783797891415197">テスト実行中</translation>
 <translation id="3340011300870565703">デバイスの右イヤフォンのバッテリー残量は <ph name="BATTERY_PERCENTAGE" />% です。</translation>
 <translation id="3340978935015468852">設定</translation>
@@ -1336,6 +1338,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">プロバイダの種類</translation>
 <translation id="7882501334836096755">公開鍵</translation>
+<translation id="7889966925761734854">シーク再生</translation>
 <translation id="78957024357676568">左</translation>
 <translation id="7897043345768902965">通路</translation>
 <translation id="7902285181767404769">録音中は通知をミュートする</translation>

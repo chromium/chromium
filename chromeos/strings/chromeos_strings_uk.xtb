@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">сніг</translation>
 <translation id="3146655726035122603">Ексклюзивно для <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Мобільне передавання даних</translation>
+<translation id="3156511682997763015">Перемотати вперед на 10 секунд</translation>
 <translation id="3156846309055100599">Сканування сторінки <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Виявлено адаптивний портал</translation>
 <translation id="3160172848211257835">Надсилати <ph name="BEGIN_LINK1" />інформацію про систему й додатки<ph name="END_LINK1" />, а також <ph name="BEGIN_LINK2" />показники<ph name="END_LINK2" /></translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">Немає результатів</translation>
 <translation id="3305294846493618482">більше</translation>
 <translation id="3310640316857623290">Затримка DNS значно довша, ніж дозволено</translation>
+<translation id="3321030238473337787">Швидкість відтворення</translation>
 <translation id="3328783797891415197">Триває перевірка</translation>
 <translation id="3340011300870565703">Рівень заряду акумулятора правого навушника – <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">налаштування</translation>
@@ -1336,6 +1338,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Тип постачальника</translation>
 <translation id="7882501334836096755">Відкритий ключ</translation>
+<translation id="7889966925761734854">Пошук</translation>
 <translation id="78957024357676568">ліворуч</translation>
 <translation id="7897043345768902965">доріжка</translation>
 <translation id="7902285181767404769">Вимикати звук сповіщень під час запису</translation>

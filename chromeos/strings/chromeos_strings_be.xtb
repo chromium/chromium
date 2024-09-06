@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">снег</translation>
 <translation id="3146655726035122603">Эксклюзіўна для <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Мабільная перадача даных</translation>
+<translation id="3156511682997763015">Пераматаць на 10 секунд наперад</translation>
 <translation id="3156846309055100599">Сканіруецца старонка <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Выяўлены партал узаемадзеяння</translation>
 <translation id="3160172848211257835">Адправіць <ph name="BEGIN_LINK1" />звесткі пра сістэму і праграмы<ph name="END_LINK1" />, а таксама <ph name="BEGIN_LINK2" />паказчыкі<ph name="END_LINK2" /></translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">Няма вынікаў пошуку</translation>
 <translation id="3305294846493618482">яшчэ</translation>
 <translation id="3310640316857623290">Затрымка DNS значна перавышае дапушчальнае парогавае значэнне</translation>
+<translation id="3321030238473337787">Хуткасць прайгравання</translation>
 <translation id="3328783797891415197">Выконваецца праверка</translation>
 <translation id="3340011300870565703">Узровень зараду акумулятара ў правым навушніку: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">налады</translation>
@@ -1334,6 +1336,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Тып пастаўшчыка</translation>
 <translation id="7882501334836096755">Адкрыты ключ</translation>
+<translation id="7889966925761734854">Шукаць</translation>
 <translation id="78957024357676568">злева</translation>
 <translation id="7897043345768902965">пешаходная дарожка</translation>
 <translation id="7902285181767404769">Выключаць гук апавяшчэнняў падчас запісу</translation>

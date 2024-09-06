@@ -6305,7 +6305,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
         &lt;li&gt;Tes a sesión iniciada na túa Conta de Google.&lt;/li&gt;
         &lt;li&gt;Tes a opción Actividade web e das aplicacións activada.&lt;/li&gt;
       &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">O motor de busca que se utiliza na barra de enderezos.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{O administrador instalou 1 extensión}other{O administrador instalou # extensións}}</translation>
 <translation id="5523532775593636291">Os sitios que engadas sempre estarán activos e non se liberará a memoria que ocupen</translation>
 <translation id="5523558474028191231">O nome pode conter letras, números e caracteres especiais; debe incluír como máximo <ph name="MAX_CHARACTER_COUNT" /> caracteres</translation>
@@ -6970,7 +6969,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="6020431688553761150">O servidor non che autorizou acceso a este recurso.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> aplicacións xa non son compatibles</translation>
 <translation id="6021969570711251331">Intercalado</translation>
-<translation id="602212068530399867">O motor de busca que se utiliza na barra de enderezos e no menú de aplicacións.</translation>
 <translation id="6022526133015258832">Abrir pantalla completa</translation>
 <translation id="6022659036123304283">Personaliza Chrome</translation>
 <translation id="6023643151125006053">O administrador de <ph name="SAML_DOMAIN" /> bloqueou este dispositivo (número de serie: <ph name="SERIAL_NUMBER" />).</translation>

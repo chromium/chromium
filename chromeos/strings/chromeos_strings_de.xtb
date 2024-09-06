@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">Schnee</translation>
 <translation id="3146655726035122603">Exklusiv für <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobile Daten</translation>
+<translation id="3156511682997763015">10 Sekunden vorspulen</translation>
 <translation id="3156846309055100599">Seite <ph name="PAGE_NUMBER" /> wird gescannt…</translation>
 <translation id="315738237743207937">Captive Portal erkannt</translation>
 <translation id="3160172848211257835"><ph name="BEGIN_LINK1" />System- und App-Informationen<ph name="END_LINK1" /> sowie <ph name="BEGIN_LINK2" />Messwerte<ph name="END_LINK2" /> senden</translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">Keine Suchergebnisse gefunden</translation>
 <translation id="3305294846493618482">mehr</translation>
 <translation id="3310640316857623290">Die DNS-Latenz liegt deutlich über dem zulässigen Grenzwert</translation>
+<translation id="3321030238473337787">Wiedergabegeschwindigkeit</translation>
 <translation id="3328783797891415197">Test wird ausgeführt</translation>
 <translation id="3340011300870565703">Der Akkustand des rechten Kopfhörers liegt bei <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">Einstellungen</translation>
@@ -1336,6 +1338,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Providertyp</translation>
 <translation id="7882501334836096755">Öffentlicher Schlüssel</translation>
+<translation id="7889966925761734854">Suche</translation>
 <translation id="78957024357676568">Links</translation>
 <translation id="7897043345768902965">Fußgängerweg</translation>
 <translation id="7902285181767404769">Benachrichtigungen während der Aufnahme stumm schalten</translation>

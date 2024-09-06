@@ -7736,7 +7736,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       如果您未设置此政策，此政策便不会对用户能在锁定屏幕上启用的应用集施加任何限制。</translation>
 <translation id="6882028194958060206">将 Flash 内容设置的涵盖面扩展至所有内容（已弃用）</translation>
-<translation id="6882345904422482308">（警告！此依赖项很快将被舍弃，请开始改用 <ph name="GLS_POLICY_NAME" />）如果此政策设为 <ph name="BLOCK_GEOLOCATION_SETTING" />，Android 应用将无法使用位置信息。如果此政策设为任何其他值或未设置，则当 Android 应用想要使用位置信息时，系统会请求用户的同意。</translation>
 <translation id="6883050310557769428">控制是否启用流动单点登录，并管理 Cookie 网域屏蔽名单及例外项。</translation>
 <translation id="6889123056995503704">由用户决定版本降级行为</translation>
 <translation id="6889617338886728275">您可用来设置一个网站网址格式列表，指定要让统自动向哪些网站授予窗口管理权限。此设置会扩展网站的以下功能：查看设备屏幕的相关信息，以及使用该信息在特定屏幕上打开并放置窗口或者请求进入全屏模式。

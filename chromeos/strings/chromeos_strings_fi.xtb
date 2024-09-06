@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">lumi</translation>
 <translation id="3146655726035122603">Vain käyttäjille, joilla on <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobiilidata</translation>
+<translation id="3156511682997763015">Eteenpäin 10 sekuntia</translation>
 <translation id="3156846309055100599">Skannataan sivu <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Captive portal havaittu</translation>
 <translation id="3160172848211257835">Lähetä <ph name="BEGIN_LINK1" />järjestelmä‐ ja sovellustietoja<ph name="END_LINK1" /> sekä <ph name="BEGIN_LINK2" />mittareita<ph name="END_LINK2" /></translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">Ei hakutuloksia</translation>
 <translation id="3305294846493618482">lisää</translation>
 <translation id="3310640316857623290">DNS-viive merkittävästi yli sallitun rajan</translation>
+<translation id="3321030238473337787">Toistonopeus</translation>
 <translation id="3328783797891415197">Testi käynnissä</translation>
 <translation id="3340011300870565703">Laitteen oikean kuulokkeen akun varaus on <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">asetuksissa</translation>
@@ -1336,6 +1338,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Palveluntarjoajan tyyppi</translation>
 <translation id="7882501334836096755">Julkinen avain</translation>
+<translation id="7889966925761734854">Kelaa</translation>
 <translation id="78957024357676568">vasemmalle</translation>
 <translation id="7897043345768902965">jalkakäytävä</translation>
 <translation id="7902285181767404769">Hiljennä ilmoitukset tallennuksen aikana</translation>

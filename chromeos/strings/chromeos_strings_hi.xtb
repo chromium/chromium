@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">स्नो</translation>
 <translation id="3146655726035122603">सिर्फ़ <ph name="PRODUCT_NAME" /> पर उपलब्ध</translation>
 <translation id="315116470104423982">मोबाइल डेटा</translation>
+<translation id="3156511682997763015">10 सेकंड आगे बढ़ाएं</translation>
 <translation id="3156846309055100599">पेज <ph name="PAGE_NUMBER" /> को स्कैन किया जा रहा है...</translation>
 <translation id="315738237743207937">कैप्टिव पोर्टल की पहचान की गई</translation>
 <translation id="3160172848211257835"><ph name="BEGIN_LINK1" />सिस्टम और ऐप्लिकेशन की जानकारी<ph name="END_LINK1" /> और <ph name="BEGIN_LINK2" />मेट्रिक<ph name="END_LINK2" /> भेजें</translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">कोई खोज नतीजे नहीं मिले</translation>
 <translation id="3305294846493618482">पूरा यूआरएल देखें</translation>
 <translation id="3310640316857623290">डीएनएस, इंतज़ार की समयसीमा से बहुत ऊपर है</translation>
+<translation id="3321030238473337787">वीडियो चलाने की रफ़्तार</translation>
 <translation id="3328783797891415197">टेस्ट चल रहा है</translation>
 <translation id="3340011300870565703">डिवाइस के दाएं बड में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है.</translation>
 <translation id="3340978935015468852">सेटिंग</translation>
@@ -1335,6 +1337,7 @@
 <translation id="7881066108824108340">डीएनएस</translation>
 <translation id="7882358943899516840">कंपनी का प्रकार</translation>
 <translation id="7882501334836096755">सार्वजनिक कुंजी</translation>
+<translation id="7889966925761734854">खोजें</translation>
 <translation id="78957024357676568">बाईं</translation>
 <translation id="7897043345768902965">वॉकवे</translation>
 <translation id="7902285181767404769">रिकॉर्डिंग के दौरान सूचनाओं की आवाज़ बंद करें</translation>

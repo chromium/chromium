@@ -6317,7 +6317,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
         &lt;li&gt; Google 계정에 로그인되어 있는 경우&lt;/li&gt;
         &lt;li&gt;웹 및 앱 활동이 사용 설정되어 있는 경우&lt;/li&gt;
       &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">주소 표시줄에서 사용되는 검색엔진입니다.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{관리자가 확장 프로그램 1개를 설치함}other{관리자가 확장 프로그램 #개를 설치함}}</translation>
 <translation id="5523532775593636291">추가한 사이트는 항상 활성 상태로 유지되며 이러한 사이트에서 메모리가 확보되지 않습니다.</translation>
 <translation id="5523558474028191231">이름은 문자, 숫자, 특수문자를 포함할 수 있고 <ph name="MAX_CHARACTER_COUNT" />자 미만(영문 기준)이어야 합니다</translation>
@@ -6985,7 +6984,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6020431688553761150">서버에서 승인하지 않아 이 리소스에 액세스할 수 없습니다.</translation>
 <translation id="6021293122504240352">앱 <ph name="APPS" />개가 더 이상 지원되지 않음</translation>
 <translation id="6021969570711251331">인터리브</translation>
-<translation id="602212068530399867">주소 표시줄과 런처에서 사용되는 검색엔진입니다.</translation>
 <translation id="6022526133015258832">전체화면 열기</translation>
 <translation id="6022659036123304283">나만의 Chrome 만들기</translation>
 <translation id="6023643151125006053"><ph name="SAML_DOMAIN" /> 관리자가 이 기기(SN: <ph name="SERIAL_NUMBER" />)를 잠갔습니다.</translation>

@@ -6314,7 +6314,6 @@
         &lt;li&gt;आपने Google खाते में साइन इन किया हो&lt;/li&gt;
         &lt;li&gt;आपने वेब और ऐप्लिकेशन गतिविधि की सेटिंग चालू की हो&lt;/li&gt;
       &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">पता बार में इस्तेमाल किया गया सर्च इंजन.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{आपके एडमिन ने एक एक्सटेंशन इंस्टॉल किया है}one{आपके एडमिन ने # एक्सटेंशन इंस्टॉल किए हैं}other{आपके एडमिन ने # एक्सटेंशन इंस्टॉल किए हैं}}</translation>
 <translation id="5523532775593636291">आपने जो साइटें जोड़ी हैं वे हमेशा ऐक्टिव रहेंगी. साथ ही, उनकी मेमोरी को खाली नहीं किया जाएगा</translation>
 <translation id="5523558474028191231">नाम में अक्षर, संख्याएं, और विशेष वर्ण इस्तेमाल किए जा सकते हैं. नाम <ph name="MAX_CHARACTER_COUNT" /> या इससे कम वर्ण का ही होना चाहिए</translation>
@@ -6982,7 +6981,6 @@
 <translation id="6020431688553761150">इस संसाधन को एक्सेस करने के लिए सर्वर ने आपको अनुमति नहीं दी.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> ऐप्स अब उपलब्ध नहीं है</translation>
 <translation id="6021969570711251331">इंटरलीव</translation>
-<translation id="602212068530399867">पता बार और लॉन्चर में इस्तेमाल किया गया सर्च इंजन.</translation>
 <translation id="6022526133015258832">पूरी स्‍क्रीन खोलें</translation>
 <translation id="6022659036123304283">Chrome को अपने मुताबिक बनाएं</translation>
 <translation id="6023643151125006053">इस डिवाइस (क्रमांक: <ph name="SERIAL_NUMBER" />) को <ph name="SAML_DOMAIN" /> के एडमिन ने लॉक कर दिया था.</translation>

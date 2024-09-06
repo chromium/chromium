@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">თოვლი</translation>
 <translation id="3146655726035122603">ექსკლუზიურად <ph name="PRODUCT_NAME" />-ისთვის</translation>
 <translation id="315116470104423982">მობილური მონაცემები</translation>
+<translation id="3156511682997763015">10 წამით წინ გადახვევა</translation>
 <translation id="3156846309055100599">სკანირდება გვერდი <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">აღმოჩენილია ავტორიზაციის პორტალი</translation>
 <translation id="3160172848211257835"><ph name="BEGIN_LINK1" />სისტემისა და აპების ინფორმაციის<ph name="END_LINK1" />, ასევე, <ph name="BEGIN_LINK2" />მეტრიკის<ph name="END_LINK2" /> გაგზავნა</translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">ძიების შედეგები ვერ მოიძებნა</translation>
 <translation id="3305294846493618482">მეტი</translation>
 <translation id="3310640316857623290">DNS-ის რეაგირების დრო მნიშვნელოვნად აღემატება დასაშვებ ზღვარს</translation>
+<translation id="3321030238473337787">დაკვრის სიჩქარე</translation>
 <translation id="3328783797891415197">ტესტი გაშვებულია</translation>
 <translation id="3340011300870565703">მოწყობილობის მარჯვენა ყურსაცვამის ბატარეის დონეა <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">პარამეტრები</translation>
@@ -1336,6 +1338,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">პროვაიდერის ტიპი</translation>
 <translation id="7882501334836096755">საჯარო გასაღები</translation>
+<translation id="7889966925761734854">ძიება</translation>
 <translation id="78957024357676568">მარცხნივ</translation>
 <translation id="7897043345768902965">ქვეითად სასიარულო გზა</translation>
 <translation id="7902285181767404769">შეტყობინებების დადუმება ჩაწერისას</translation>

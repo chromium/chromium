@@ -1313,6 +1313,7 @@
 <translation id="7111394291981742152">在 Chrome 中，您可以更有效地控制自己看到的广告，并限制网站能根据哪些个人信息向您展示个性化广告。</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{已审核 1 个网站的权限}other{已审核 # 个网站的权限}}</translation>
 <translation id="7138678301420049075">其他</translation>
+<translation id="7139479418357139965">您可以联系发送者，请其提供新的链接。</translation>
 <translation id="7140829094791862589">按手动顺序排序</translation>
 <translation id="7146622961999026732">这些网站和应用似乎对您很重要：</translation>
 <translation id="7148400116894863598">从 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 处<ph name="BEGIN_LINK" />获取更多信息<ph name="END_LINK" />。</translation>
@@ -1473,6 +1474,7 @@
 <translation id="7824665136384946951">贵组织已关闭安全浏览功能</translation>
 <translation id="78270725016672455">您的计算机希望注册此设备以登录网站</translation>
 <translation id="7844171778363018843">未选择任何要同步的数据</translation>
+<translation id="7846161022626028328">出错了，请重试。</translation>
 <translation id="7846296061357476882">Google 服务</translation>
 <translation id="784934925303690534">时间范围</translation>
 <translation id="7851858861565204677">来自其他设备的同步</translation>
@@ -1513,6 +1515,7 @@
 <translation id="8004582292198964060">浏览器</translation>
 <translation id="8014210850410408071">接下来，导入密码</translation>
 <translation id="8015452622527143194">将网页上的所有内容恢复到默认大小</translation>
+<translation id="8017431260099661477">无法打开邀请链接</translation>
 <translation id="8026238112629815203">我们更改了此设备上的密码保存方式</translation>
 <translation id="8027863900915310177">选择要下载到何处</translation>
 <translation id="8030852056903932865">批准</translation>

@@ -6316,7 +6316,6 @@
         &lt;li&gt;התחברת לחשבון שלך ב-Google‏&lt;/li&gt;
         &lt;li&gt;הפעלת את ההגדרה 'פעילות באינטרנט ובאפליקציות'&lt;/li&gt;
       &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">מנוע החיפוש שייעשה בו שימוש בסרגל הכתובות.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{מנהל המערכת שלך התקין תוסף}one{מנהל המערכת שלך התקין # תוספים}two{מנהל המערכת שלך התקין # תוספים}other{מנהל המערכת שלך התקין # תוספים}}</translation>
 <translation id="5523532775593636291">אתרים שמוסיפים לרשימה תמיד נשארים פעילים ושמורים בזיכרון</translation>
 <translation id="5523558474028191231">שם יכול לכלול אותיות, ספרות ותווים מיוחדים, והוא חייב להיות באורך של <ph name="MAX_CHARACTER_COUNT" /> תווים או פחות</translation>
@@ -6984,7 +6983,6 @@
 <translation id="6020431688553761150">השרת לא אישר עבורך גישה אל המשאב הזה.</translation>
 <translation id="6021293122504240352">אין יותר תמיכה ב-<ph name="APPS" /> אפליקציות</translation>
 <translation id="6021969570711251331">משולב</translation>
-<translation id="602212068530399867">מנוע החיפוש שבו המערכת תשתמש בסרגל הכתובות ובמרכז האפליקציות.</translation>
 <translation id="6022526133015258832">פתיחה במסך מלא</translation>
 <translation id="6022659036123304283">‏אפשר להתאים אישית את Chrome בדרך שנוחה לך</translation>
 <translation id="6023643151125006053">מכשיר זה (מספר סידורי: <ph name="SERIAL_NUMBER" />) ננעל על-ידי מנהל המערכת של <ph name="SAML_DOMAIN" />.</translation>

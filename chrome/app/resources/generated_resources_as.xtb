@@ -6313,7 +6313,6 @@
         &lt;li&gt;আপুনি আপোনাৰ Google একাউণ্টত ছাইন ইন কৰে&lt;/li&gt;
         &lt;li&gt;আপোনাৰ ৱেব আৰু এপৰ কাৰ্যকলাপ অন কৰা থাকে&lt;/li&gt;
       &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">ঠিকনাৰ বাৰত ব্যৱহাৰ কৰা সন্ধান ইঞ্জিন।</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{আপোনাৰ প্ৰশাসকে এটা এক্সটেনশ্বন ইনষ্টল কৰিছে}one{আপোনাৰ প্ৰশাসকে # টা এক্সটেনশ্বন ইনষ্টল কৰিছে}other{আপোনাৰ প্ৰশাসকে # টা এক্সটেনশ্বন ইনষ্টল কৰিছে}}</translation>
 <translation id="5523532775593636291">আপুনি যোগ দিয়া ছাইটসমূহ সদায় সক্ৰিয় হৈ থাকিব আৰু সেইসমূহৰ পৰা মেম’ৰী খালী কৰা নহয়</translation>
 <translation id="5523558474028191231">নামত আখৰ, সংখ্যা আৰু বিশেষ বৰ্ণ থাকিব পাৰে আৰু ই <ph name="MAX_CHARACTER_COUNT" /> টা অথবা তাতকৈ কম বৰ্ণৰ হ’বই লাগিব</translation>
@@ -6981,7 +6980,6 @@
 <translation id="6020431688553761150">এই সমল এক্সেছ কৰিবলৈ ছাৰ্ভাৰে আপোনাক অনুমোদন জনোৱা নাই।</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> এপ্‌সমূহ আৰু সমৰ্থিত নহয়</translation>
 <translation id="6021969570711251331">ইণ্টাৰলিভ</translation>
-<translation id="602212068530399867">ঠিকনাৰ বাৰ আৰু লঞ্চাৰত ব্যৱহাৰ কৰা সন্ধান ইঞ্জিন</translation>
 <translation id="6022526133015258832">পূৰ্ণ স্ক্ৰীন হিচাপে খোলক</translation>
 <translation id="6022659036123304283">আপোনাৰ ডিভাইচত Chromeৰ ছেট আপ কৰক</translation>
 <translation id="6023643151125006053">এই ডিভাইচটো (SN: <ph name="SERIAL_NUMBER" />) <ph name="SAML_DOMAIN" /> প্ৰশাসকে লক কৰিছিল</translation>

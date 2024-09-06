@@ -6311,7 +6311,6 @@
         &lt;li&gt;Та Google бүртгэлдээ нэвтэрсэн&lt;/li&gt;
         &lt;li&gt;Та Веб, аппын үйл ажиллагааг асаасан&lt;/li&gt;
       &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">Хаяг оруулах хэсэгт ашигласан хайлтын систем.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Таны администратор өргөтгөлийг суулгасан}other{Таны администратор # өргөтгөлийг суулгасан}}</translation>
 <translation id="5523532775593636291">Таны нэмсэн сайтууд үргэлж идэвхтэй байх бөгөөд тэдгээрээс санах ойг чөлөөлөхгүй</translation>
 <translation id="5523558474028191231">Нэр нь үсэг, тоо болон тусгай тэмдэгт ашиглах боломжтой бөгөөд <ph name="MAX_CHARACTER_COUNT" /> эсвэл түүнээс цөөн тэмдэгттэй байх ёстой</translation>
@@ -6979,7 +6978,6 @@
 <translation id="6020431688553761150">Танд энэ нөөцөд хандах зөвшөөрлийг сервер өгөөгүй.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> аппуудыг цаашид дэмжихээ больсон</translation>
 <translation id="6021969570711251331">Давхарласан</translation>
-<translation id="602212068530399867">Хаяг оруулах хэсэг болон эхлүүлэгчид ашигладаг хайлтын систем.</translation>
 <translation id="6022526133015258832">Дэлгэц дүүрэн нээх</translation>
 <translation id="6022659036123304283">Chrome-г хүссэнээрээ тохируулаарай</translation>
 <translation id="6023643151125006053"><ph name="SAML_DOMAIN" /> админ энэ төхөөрөмжийг (SN: <ph name="SERIAL_NUMBER" />) түгжсэн байна.</translation>

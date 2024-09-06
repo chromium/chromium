@@ -7944,7 +7944,6 @@ Nếu bạn không đặt chính sách này, các trang web có thể yêu cầu
 
       Nếu bạn không đặt chính sách này, sẽ không có hạn chế nào áp dụng theo chính sách này cho một số ứng dụng mà người dùng có thể bật trên màn hình khóa.</translation>
 <translation id="6882028194958060206">Mở rộng chế độ cài đặt nội dung Flash thành tất cả nội dung (không dùng nữa)</translation>
-<translation id="6882345904422482308">(Cảnh báo! Phần phụ thuộc này sẽ sớm bị loại bỏ, vui lòng bắt đầu sử dụng <ph name="GLS_POLICY_NAME" />). Nếu bạn đặt chính sách này thành <ph name="BLOCK_GEOLOCATION_SETTING" /> thì các ứng dụng Android sẽ không thể truy cập vào thông tin vị trí. Nếu bạn đặt chính sách này thành bất kỳ giá trị nào khác hoặc không đặt thì người dùng sẽ được nhắc cấp quyền khi một ứng dụng Android muốn truy cập vào thông tin vị trí.</translation>
 <translation id="6883050310557769428">Kiểm soát việc dịch vụ SSO di động có được bật hay không cũng như danh sách miền cookie bị chặn và các trường hợp ngoại lệ của danh sách này.</translation>
 <translation id="6889123056995503704">Người dùng sẽ quyết định chế độ hạ cấp kênh</translation>
 <translation id="6889617338886728275">Cho phép bạn thiết lập danh sách các mẫu URL trang web để chỉ định những trang web sẽ tự động cấp quyền quản lý cửa sổ. Việc này sẽ mở rộng khả năng các trang web xem được thông tin về màn hình của thiết bị và dùng thông tin đó để mở/đặt cửa sổ hoặc yêu cầu chế độ toàn màn hình trên một số màn hình cụ thể.

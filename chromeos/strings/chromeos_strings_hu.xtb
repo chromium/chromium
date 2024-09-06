@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">hó</translation>
 <translation id="3146655726035122603">Kizárólag a következőnél: <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobiladatok</translation>
+<translation id="3156511682997763015">Előre 10 másodpercet</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />. oldal beolvasása…</translation>
 <translation id="315738237743207937">Hitelesítési portál észlelve</translation>
 <translation id="3160172848211257835"><ph name="BEGIN_LINK1" />Rendszer- és alkalmazásadatok<ph name="END_LINK1" />, valamint <ph name="BEGIN_LINK2" />mutatók<ph name="END_LINK2" /> küldése</translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">Nincs találat</translation>
 <translation id="3305294846493618482">több</translation>
 <translation id="3310640316857623290">A DNS várakozási ideje jelentősen az engedélyezhető határérték felett van</translation>
+<translation id="3321030238473337787">Lejátszási sebesség</translation>
 <translation id="3328783797891415197">A teszt fut</translation>
 <translation id="3340011300870565703">Jobb fülhallgató akkumulátorszintje: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">beállítások</translation>
@@ -1336,6 +1338,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Szolgáltató típusa</translation>
 <translation id="7882501334836096755">Nyilvános kulcs</translation>
+<translation id="7889966925761734854">Ugrás</translation>
 <translation id="78957024357676568">balra</translation>
 <translation id="7897043345768902965">sétány</translation>
 <translation id="7902285181767404769">Értesítések némítása felvétel közben</translation>

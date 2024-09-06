@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">сняг</translation>
 <translation id="3146655726035122603">Само за <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Мобилни данни</translation>
+<translation id="3156511682997763015">Превъртане с 10 секунди напред</translation>
 <translation id="3156846309055100599">Страница <ph name="PAGE_NUMBER" /> се сканира...</translation>
 <translation id="315738237743207937">Открит е портал за удостоверяване</translation>
 <translation id="3160172848211257835">Изпращане на <ph name="BEGIN_LINK1" />информация за системата и приложението<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />показатели<ph name="END_LINK2" /></translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">Няма намерени резултати от търсенето</translation>
 <translation id="3305294846493618482">още</translation>
 <translation id="3310640316857623290">Забавянето на DNS е значително над допустимия праг</translation>
+<translation id="3321030238473337787">Скорост на възпроизвеждане</translation>
 <translation id="3328783797891415197">Тестът се изпълнява</translation>
 <translation id="3340011300870565703">Нивото на батерията на дясната слушалка е <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">настройките</translation>
@@ -1336,6 +1338,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Тип на доставчика</translation>
 <translation id="7882501334836096755">Публичен ключ</translation>
+<translation id="7889966925761734854">Търсене</translation>
 <translation id="78957024357676568">наляво</translation>
 <translation id="7897043345768902965">пешеходна пътека</translation>
 <translation id="7902285181767404769">Заглушаване на известията по време на запис</translation>

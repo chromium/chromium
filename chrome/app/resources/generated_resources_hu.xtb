@@ -6314,7 +6314,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
         &lt;li&gt;Ön bejelentkezett a Google-fiókjába&lt;/li&gt;
         &lt;li&gt;Be van kapcsolva Önnél az Internetes és alkalmazástevékenységek funkció.&lt;/li&gt;
       &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">A címsávban használt keresőmotor.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Az adminisztrátor bővítményt telepített}other{Az adminisztrátor # bővítményt telepített}}</translation>
 <translation id="5523532775593636291">A hozzáadott webhelyek mindig aktívak maradnak, és a rendszer nem szabadítja fel az általuk használt memóriát.</translation>
 <translation id="5523558474028191231">A név tartalmazhat betűket, számokat, speciális karaktereket, és legfeljebb<ph name="MAX_CHARACTER_COUNT" /> karakter lehet</translation>
@@ -6983,7 +6982,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6020431688553761150">A szerver nem adott Önnek hozzáférést ehhez a forráshoz.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> alkalmazás már nem támogatott</translation>
 <translation id="6021969570711251331">Közbeékelt</translation>
-<translation id="602212068530399867">A címsávban és az Indítóban használt keresőmotor.</translation>
 <translation id="6022526133015258832">Megnyitás teljes képernyőn</translation>
 <translation id="6022659036123304283">Tegye személyessé a Chrome-ot</translation>
 <translation id="6023643151125006053">Az eszközt (sorozatszám: <ph name="SERIAL_NUMBER" />) zárolta a(z) <ph name="SAML_DOMAIN" /> rendszergazdája.</translation>

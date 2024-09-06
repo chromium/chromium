@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">salju</translation>
 <translation id="3146655726035122603">Eksklusif untuk <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Data seluler</translation>
+<translation id="3156511682997763015">Maju 10 detik</translation>
 <translation id="3156846309055100599">Memindai halaman <ph name="PAGE_NUMBER" /> ...</translation>
 <translation id="315738237743207937">Captive portal terdeteksi</translation>
 <translation id="3160172848211257835">Kirim <ph name="BEGIN_LINK1" />info aplikasi &amp; sistem<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />metrik<ph name="END_LINK2" /></translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">Hasil penelusuran tidak ditemukan</translation>
 <translation id="3305294846493618482">lainnya</translation>
 <translation id="3310640316857623290">Latensi DNS jauh melebihi ambang batas yang diizinkan</translation>
+<translation id="3321030238473337787">Kecepatan pemutaran</translation>
 <translation id="3328783797891415197">Pengujian sedang berjalan</translation>
 <translation id="3340011300870565703">Perangkat memiliki <ph name="BATTERY_PERCENTAGE" />% daya baterai earbud kanan.</translation>
 <translation id="3340978935015468852">setelan</translation>
@@ -1336,6 +1338,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Jenis penyedia</translation>
 <translation id="7882501334836096755">Kunci publik</translation>
+<translation id="7889966925761734854">Cari</translation>
 <translation id="78957024357676568">ke kiri</translation>
 <translation id="7897043345768902965">jalur pejalan kaki</translation>
 <translation id="7902285181767404769">Menonaktifkan suara notifikasi saat merekam</translation>

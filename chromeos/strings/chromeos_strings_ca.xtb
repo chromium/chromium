@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">neu</translation>
 <translation id="3146655726035122603">Exclusiu de <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Dades mòbils</translation>
+<translation id="3156511682997763015">Avança 10 segons</translation>
 <translation id="3156846309055100599">S'està escanejant la pàgina <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">S'ha detectat un portal captiu</translation>
 <translation id="3160172848211257835">Envia <ph name="BEGIN_LINK1" />informació sobre el sistema i les aplicacions<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />mètriques<ph name="END_LINK2" /></translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">No s'ha trobat cap resultat de la cerca</translation>
 <translation id="3305294846493618482">més</translation>
 <translation id="3310640316857623290">La latència DNS supera significativament el llindar permès</translation>
+<translation id="3321030238473337787">Velocitat de reproducció</translation>
 <translation id="3328783797891415197">La prova s'està executant</translation>
 <translation id="3340011300870565703">L'auricular dret del dispositiu té un <ph name="BATTERY_PERCENTAGE" />% de bateria.</translation>
 <translation id="3340978935015468852">configuració</translation>
@@ -1336,6 +1338,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tipus de proveïdor</translation>
 <translation id="7882501334836096755">Clau pública</translation>
+<translation id="7889966925761734854">Cerca</translation>
 <translation id="78957024357676568">esquerra</translation>
 <translation id="7897043345768902965">passeig</translation>
 <translation id="7902285181767404769">Silencia les notificacions durant la gravació</translation>

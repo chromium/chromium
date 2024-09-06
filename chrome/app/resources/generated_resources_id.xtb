@@ -6316,7 +6316,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
         &lt;li&gt;Anda login ke Akun Google Anda&lt;/li&gt;
         &lt;li&gt;Anda telah mengaktifkan Aktivitas Web &amp; Aplikasi&lt;/li&gt;
       &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">Mesin telusur yang digunakan di kolom URL.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Ekstensi telah diinstal oleh administrator Anda}other{# ekstensi telah diinstal oleh administrator Anda}}</translation>
 <translation id="5523532775593636291">Situs yang Anda tambahkan akan selalu aktif dan memori tidak akan dikosongkan dari situs tersebut</translation>
 <translation id="5523558474028191231">Nama dapat menggunakan huruf, angka, serta karakter khusus, dan harus maksimal <ph name="MAX_CHARACTER_COUNT" /> karakter</translation>
@@ -6984,7 +6983,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6020431688553761150">Server tidak dapat memberi otorisasi kepada Anda untuk mengakses sumber daya ini.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> aplikasi tidak lagi didukung</translation>
 <translation id="6021969570711251331">Dipisahkan</translation>
-<translation id="602212068530399867">Mesin telusur yang digunakan di kolom URL dan peluncur.</translation>
 <translation id="6022526133015258832">Buka Layar Penuh</translation>
 <translation id="6022659036123304283">Sesuaikan Chrome dengan selera Anda</translation>
 <translation id="6023643151125006053">Perangkat ini (NS: <ph name="SERIAL_NUMBER" />) dikunci oleh administrator <ph name="SAML_DOMAIN" />.</translation>

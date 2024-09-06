@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">หิมะ</translation>
 <translation id="3146655726035122603">พิเศษสำหรับ <ph name="PRODUCT_NAME" /> โดยเฉพาะ</translation>
 <translation id="315116470104423982">เน็ตมือถือ</translation>
+<translation id="3156511682997763015">กรอไปข้างหน้า 10 วินาที</translation>
 <translation id="3156846309055100599">กำลังสแกนหน้า <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">ตรวจพบแคพทีฟพอร์ทัล</translation>
 <translation id="3160172848211257835">ส่ง<ph name="BEGIN_LINK1" />ข้อมูลระบบและแอป<ph name="END_LINK1" />และ<ph name="BEGIN_LINK2" />เมตริก<ph name="END_LINK2" /></translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">ไม่พบผลการค้นหา</translation>
 <translation id="3305294846493618482">เพิ่มเติม</translation>
 <translation id="3310640316857623290">เวลาในการตอบสนอง DNS สูงกว่าเกณฑ์ที่ยอมรับได้อย่างมีนัยสำคัญ</translation>
+<translation id="3321030238473337787">ความเร็วในการเล่น</translation>
 <translation id="3328783797891415197">กำลังทดสอบ</translation>
 <translation id="3340011300870565703">อุปกรณ์มีระดับแบตเตอรี่ของหูฟังข้างขวา <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3340978935015468852">การตั้งค่า</translation>
@@ -1336,6 +1338,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">ประเภทผู้ให้บริการ</translation>
 <translation id="7882501334836096755">คีย์สาธารณะ</translation>
+<translation id="7889966925761734854">ค้นหา</translation>
 <translation id="78957024357676568">ซ้าย</translation>
 <translation id="7897043345768902965">ทางเท้า</translation>
 <translation id="7902285181767404769">ปิดเสียงการแจ้งเตือนขณะบันทึก</translation>

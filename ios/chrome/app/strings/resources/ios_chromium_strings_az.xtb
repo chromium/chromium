@@ -71,6 +71,8 @@ Chromium təcrübənizi təkmilləşdirmək məqsədilə data istifadə edən di
 <translation id="3344973607274501920">Chromium parollarınızı yoxlaya bilmədi. İnternet bağlantınızı yoxlayın.</translation>
 <translation id="3366305173356742781">Hesabdakı Chromium datası</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Chromium {THRESHOLD} dəqiqə istifadə edilmədikdə belə olur. Bura tarixçə və avtodoldurma daxil ola bilər.}other{Chromium {THRESHOLD} dəqiqə istifadə edilmədikdə belə olur. Bura tarixçə və avtodoldurma daxil ola bilər.}}</translation>
+<translation id="3410395242749598859">Müəyyən Chromium datası hələ də <ph name="EMAIL" /> hesabında yadda saxlanılmayıb.
+Hesabları dəyişməzdən əvvəl bir neçə dəqiqə gözləyin. İndi hesabları dəyişsəniz, bu data silinəcək.</translation>
 <translation id="3472200483164753384">Chromium Canary'də dəstəklənmir</translation>
 <translation id="347967311580159871">Chromium təcrübənizi təkmilləşdirmək məqsədilə datadan istifadə edən daha çox ayar üçün <ph name="BEGIN_LINK" />Google Xidmətlərinə<ph name="END_LINK" /> keçin.</translation>
 <translation id="3512168799938877162">Parol paylaşılmadı. İnternet bağlantısını yoxlayın və Chromium-a daxil olun. Sonra yenidən cəhd edin.</translation>

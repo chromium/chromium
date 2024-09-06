@@ -6299,7 +6299,6 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
         &lt;li&gt;ako ste prijavljeni na Google nalog&lt;/li&gt;
         &lt;li&gt;ako ste uključili Aktivnosti na vebu i u aplikacijama&lt;/li&gt;
       &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">Pretraživač koji se koristi na traci za adresu.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Administrator je instalirao dodatak}one{Administrator je instalirao # dodatak}few{Administrator je instalirao # dodatka}other{Administrator je instalirao # dodataka}}</translation>
 <translation id="5523532775593636291">Sajtovi koje dodate će uvek ostati aktivni, a memorija se neće osloboditi</translation>
 <translation id="5523558474028191231">Slova, brojevi i specijalni znakovi mogu da se koriste u nazivu, a maksimalni broj znakova je <ph name="MAX_CHARACTER_COUNT" /></translation>
@@ -6968,7 +6967,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6020431688553761150">Server vas nije ovlastio da pristupate ovom resursu.</translation>
 <translation id="6021293122504240352">Aplikacije (<ph name="APPS" />) više nisu podržane</translation>
 <translation id="6021969570711251331">Preklopljeno</translation>
-<translation id="602212068530399867">Pretraživač koji se koristi na traci za adresu i u pokretaču.</translation>
 <translation id="6022526133015258832">Otvori na celom ekranu</translation>
 <translation id="6022659036123304283">Prilagodite Chrome sebi</translation>
 <translation id="6023643151125006053">Ovaj uređaj (SB: <ph name="SERIAL_NUMBER" />) je zaključao administrator domena <ph name="SAML_DOMAIN" />.</translation>
@@ -10312,6 +10310,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8440630305826533614">Linux aplikacije</translation>
 <translation id="844063558976952706">Uvek na ovom sajtu</translation>
 <translation id="8441313165929432954">Omogućavanje ili onemogućavanje privezivanja</translation>
+<translation id="8443542808381875261">Zatvorite kartice koje se ne koriste</translation>
 <translation id="8443986842926457191">URL ima više od 2048 znakova</translation>
 <translation id="8445281870900174108">Ova kartica koristi kameru</translation>
 <translation id="8446884382197647889">Saznajte više</translation>

@@ -1313,6 +1313,7 @@
 <translation id="7111394291981742152">在 Chrome 中，你可以進一步控管系統顯示的廣告，並限制網站能根據哪些個人資訊放送個人化廣告。</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{已檢查 1 個網站的權限}other{已檢查 # 個網站的權限}}</translation>
 <translation id="7138678301420049075">其他</translation>
+<translation id="7139479418357139965">你可以與傳送者聯絡，請對方提供新連結。</translation>
 <translation id="7140829094791862589">依手動順序排序</translation>
 <translation id="7146622961999026732">這些網站和應用程式似乎對你很重要：</translation>
 <translation id="7148400116894863598">請洽詢「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" />。</translation>
@@ -1475,6 +1476,7 @@
 <translation id="7824665136384946951">貴機構已關閉安全瀏覽功能</translation>
 <translation id="78270725016672455">你的電腦想要註冊這部裝置以登入網站</translation>
 <translation id="7844171778363018843">沒有選取要同步處理的資料</translation>
+<translation id="7846161022626028328">發生錯誤，請再試一次。</translation>
 <translation id="7846296061357476882">Google 服務</translation>
 <translation id="784934925303690534">時間範圍</translation>
 <translation id="7851858861565204677">其他裝置</translation>
@@ -1515,6 +1517,7 @@
 <translation id="8004582292198964060">瀏覽器</translation>
 <translation id="8014210850410408071">下一步是匯入密碼</translation>
 <translation id="8015452622527143194">將網頁上的所有內容都回復為預設大小</translation>
+<translation id="8017431260099661477">無法開啟邀請連結</translation>
 <translation id="8026238112629815203">我們調整了這部裝置的密碼儲存方式</translation>
 <translation id="8027863900915310177">選擇下載位置</translation>
 <translation id="8030852056903932865">核准</translation>

@@ -71,6 +71,8 @@ Veri kullanarak Chromium deneyiminizi iyileştiren daha fazla ayar görmek için
 <translation id="3344973607274501920">Chromium, şifrelerinizi kontrol edemedi. İnternet bağlantınızı kontrol etmeyi deneyin.</translation>
 <translation id="3366305173356742781">Hesabınızdaki Chromium verileri</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Bu işlem, Chromium {THRESHOLD} dakika boyunca kullanılmadığında gerçekleşir. Geçmiş ve otomatik doldurma da bu kapsamda yer alabilir.}other{Bu işlem, Chromium {THRESHOLD} dakika boyunca kullanılmadığında gerçekleşir. Geçmiş ve otomatik doldurma da bu kapsamda yer alabilir.}}</translation>
+<translation id="3410395242749598859">Chromium verilerinizden bazıları henüz <ph name="EMAIL" /> hesabına kaydedilmedi.
+Hesap değiştirmeden önce birkaç dakika beklemeyi deneyin. Hesabı şimdi değiştirirseniz bu veriler silinir.</translation>
 <translation id="3472200483164753384">Chromium Canary'de desteklenmiyor</translation>
 <translation id="347967311580159871">Veri kullanarak Chromium deneyiminizi iyileştiren daha fazla ayar görmek için <ph name="BEGIN_LINK" />Google Hizmetleri<ph name="END_LINK" />'ne gidin.</translation>
 <translation id="3512168799938877162">Şifreniz paylaşılamadı. İnternet bağlantınızı kontrol edin ve Chromium'da oturum açtığınızdan emin olun. Daha sonra tekrar deneyin.</translation>

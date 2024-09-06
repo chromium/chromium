@@ -150,6 +150,7 @@
 <translation id="1672499492233627739">Видео фид веб-камере</translation>
 <translation id="1676557873873341166">Снима се видео</translation>
 <translation id="1684279041537802716">Боја за наглашавање</translation>
+<translation id="1697278726914783200">Снимај</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Присутан је DNS разрешивач</translation>
 <translation id="1708602061922134366">Google плаво</translation>
@@ -417,6 +418,7 @@
 <translation id="3140130301071865159">снегом</translation>
 <translation id="3146655726035122603">Ексклузивно за <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Мобилни подаци</translation>
+<translation id="3156511682997763015">Премотај 10 секунди унапред</translation>
 <translation id="3156846309055100599">Скенира се <ph name="PAGE_NUMBER" />. страница...</translation>
 <translation id="315738237743207937">Откривен је улазни портал</translation>
 <translation id="3160172848211257835">Шаљи <ph name="BEGIN_LINK1" />информације о систему и апликацијама<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />показатеље<ph name="END_LINK2" /></translation>
@@ -446,6 +448,7 @@
 <translation id="3303855915957856445">Нису пронађени резултати претраге</translation>
 <translation id="3305294846493618482">још</translation>
 <translation id="3310640316857623290">Кашњење DNS-а знатно премашује дозвољену граничну вредност</translation>
+<translation id="3321030238473337787">Брзина репродукције</translation>
 <translation id="3328783797891415197">Тест је у току</translation>
 <translation id="3340011300870565703">Уређај има <ph name="BATTERY_PERCENTAGE" />% батерије десне слушалице.</translation>
 <translation id="3340978935015468852">подешавања</translation>
@@ -687,6 +690,7 @@
 <translation id="458794348635939462">Разрешење свих хостова није успело</translation>
 <translation id="4593212453765072419">Потребна је потврда аутентичности проксија</translation>
 <translation id="4594021849294327751">Направи транскрипт</translation>
+<translation id="4602266091140407479">Микрофон</translation>
 <translation id="4607282946861182308">Не можемо да направимо слике на којима је ово. Пробајте са другим упитом.</translation>
 <translation id="4609350030397390689">Смањите осветљеност тастатуре</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> од <ph name="TOTAL_PAGE_NUMBER" />. Притисните тастер Enter да бисте отказали задатак штампања.</translation>
@@ -989,6 +993,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319">Направљено <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Капацитет батерије се смањује током коришћења</translation>
+<translation id="6189987971574353264">Пусти</translation>
 <translation id="6191293864534840972">Сервери за имена су погрешног формата</translation>
 <translation id="6196607555925437199">Поново направи</translation>
 <translation id="6205145102504628069">Ток у клауду</translation>
@@ -1336,6 +1341,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Тип добављача</translation>
 <translation id="7882501334836096755">Јавни кључ</translation>
+<translation id="7889966925761734854">Тражење</translation>
 <translation id="78957024357676568">лево</translation>
 <translation id="7897043345768902965">пешачком стазом</translation>
 <translation id="7902285181767404769">Искључите звук обавештења током снимања</translation>

@@ -6288,7 +6288,6 @@
         &lt;li&gt;Google アカウントにログインしている場合&lt;/li&gt;
         &lt;li&gt;ウェブとアプリのアクティビティをオンにしている場合&lt;/li&gt;
       &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">アドレスバーで使用する検索エンジンです。</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{管理者が 1 個の拡張機能をインストールしました}other{管理者が # 個の拡張機能をインストールしました}}</translation>
 <translation id="5523532775593636291">追加したサイトは常にアクティブになり、メモリの解放は行われません</translation>
 <translation id="5523558474028191231">名前には文字、数字、特殊文字を使用できます。<ph name="MAX_CHARACTER_COUNT" /> 文字以内で指定してください</translation>
@@ -6956,7 +6955,6 @@
 <translation id="6020431688553761150">このリソースへのアクセスがサーバーで認証されませんでした。</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> 件のアプリが現在サポートされていません</translation>
 <translation id="6021969570711251331">インターリーブ</translation>
-<translation id="602212068530399867">アドレスバーとランチャーで使用される検索エンジン。</translation>
 <translation id="6022526133015258832">全画面表示</translation>
 <translation id="6022659036123304283">Chrome を独自にカスタマイズ</translation>
 <translation id="6023643151125006053">このデバイス（SN: <ph name="SERIAL_NUMBER" />）は <ph name="SAML_DOMAIN" /> の管理者によってロックされています。</translation>

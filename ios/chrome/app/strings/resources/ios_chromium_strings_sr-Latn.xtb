@@ -1,20 +1,29 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr-Latn">
+<translation id="1000436330784933699">Ovde možete da otvorite Objektiv.</translation>
+<translation id="1042296835509784301">Otvara Menadžer lozinki u Chromium-u.</translation>
 <translation id="1047130070405668746">Izaberite Chromium</translation>
 <translation id="1091252999271033193">To znači da će Chromium svaki put zahtevati mobilni sajt.</translation>
 <translation id="1115463765356382667">Obavite ove predložene radnje u nastavku da biste iskoristili Chromium na najbolji način.</translation>
+<translation id="1140315115515116765">Podrazumevano koristite Chromium da biste lako dobijali uvid u cene</translation>
 <translation id="1185134272377778587">O Chromium-u</translation>
 <translation id="1257458525759135959">Da biste sačuvali slike, dodirnite Podešavanja da biste omogućili Chromium-u da dodaje slike</translation>
+<translation id="1260702988262336471">Otvorite Chromium meni</translation>
 <translation id="12739128458173458">Da biste poslali ovu karticu na drugi uređaj, prijavite se u Chromium na oba uređaja.</translation>
 <translation id="1361748954329991663">Chromium je zastareo. Ako ažuriranje nije dostupno u <ph name="BEGIN_LINK" />App Store-u<ph name="END_LINK" />, uređaj možda ne podržava nove verzije Chromium-a.</translation>
 <translation id="1423007117030725713">Započnite pretragu na novoj Chromium kartici.</translation>
 <translation id="1431818719585918472">Dozvolite Chromium-u da zaključa kartice bez arhiviranja.</translation>
 <translation id="146407871188825689">Podrazumevano koristite Chromium na iPad-u</translation>
+<translation id="1471084500615228555">Brisanje podataka pregledanja u Chromium-u</translation>
 <translation id="1472013873724362412">Nalog ne funkcioniše na Chromium-u. Kontaktirajte administratora domena ili se prijavite pomoću običnog Google naloga.</translation>
+<translation id="1501302548410882220">Koristite Chromium svuda</translation>
 <translation id="1503199973012840174">Chromium je zastareo. Ažurirajte ga da biste bili bezbedni.</translation>
+<translation id="1515748263297244785">Podrazumevano koristite Chromium za iPad</translation>
 <translation id="1531155317299575425">Prikazuje upite za prijavljivanje u Chromium.</translation>
+<translation id="1553657876656159572">Prilagođeni fid napravljen za vas. Uključujući vesti, sport i vreme.</translation>
 <translation id="1561849081734670621">Da biste onemogućili režim zaključavanja u Chromium-u, isključite ga na iPhone-u.</translation>
+<translation id="1569258826720962327">Koristite Chromium radnje na iOS-u</translation>
 <translation id="159029779861043703">Chromium štiti osetljive podatke pomoću Face ID-a.</translation>
 <translation id="1591119736686995611">Otvara mrežu Chromium kartica.</translation>
 <translation id="16001233025397167">Provera bezbednosti vas štiti od povrede podataka, nebezbednih veb-sajtova i drugog. Primajte obaveštenja o svim problemima u vezi sa privatnošću ili bezbednošću koje Chromium otkrije za vas.</translation>
@@ -32,8 +41,10 @@
 <translation id="2006345422933397527">Chromium ne može da traži ažuriranja. Proverite internet vezu.</translation>
 <translation id="2042889939382983733">Pregledajte Chromium istoriju</translation>
 <translation id="2052320862053429062">Chromium povremeno upoređuje vaše lozinke sa listama koje su objavljene onlajn. Dok to radi, vaše lozinke i korisnička imena su šifrovani, pa niko ne može da ih pročita, uključujući Google.</translation>
+<translation id="2059365270911640413">Dovršite podešavanje Chromium-a</translation>
 <translation id="2147210759439165826">Budite u toku sa sadržajem i korisnim savetima za Chromium.</translation>
 <translation id="2168108852149185974">Neki programski dodaci izazivaju otkazivanje Chromium-a. Deinstalirajte:</translation>
+<translation id="2168593389981132306">Poboljšajte Chromium</translation>
 <translation id="2178608107313874732">Chromium trenutno ne može da koristi kameru</translation>
 <translation id="2195025571279539885">Želite li da Chromium sledeći put ponudi da prevede stranice sa ovog sajta čiji je jezik <ph name="LANGUAGE_NAME" />?</translation>
 <translation id="22313767259766852">Ova adresa je trenutno sačuvana u Chromium-u. Da biste je koristili u svim Google proizvodima, sačuvajte je na Google nalogu, <ph name="USER_EMAIL" />.</translation>
@@ -43,11 +54,16 @@
 <translation id="2326738825692478496">Neki Chromium podaci još nisu sačuvani na Google nalogu.
 
 Sačekajte nekoliko minuta pre nego što se odjavite. Ako se odjavite odmah, ovi podaci će biti izbrisani.</translation>
+<translation id="2337722506862731008">Deli Chromium</translation>
+<translation id="2340423701577464731">Dodavanje stavke liste za čitanje u Chromium</translation>
 <translation id="2374627437126809292">Chromium koristi Google mape da bi vam pružao putanju i lokalne informacije o otkrivenim adresama.</translation>
 <translation id="2386292341327187942">U okvir Pretražite vidžete unesite Chromium</translation>
 <translation id="2426113998523353159">Organizacija zahteva da se prijavite da biste koristili Chromium.</translation>
 <translation id="2450140762465183767">Sada možete da koristite Chromium svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
+<translation id="2459183986985456602">Otvorite svoju najnoviju karticu u Chromium-u.</translation>
+<translation id="2476409803017965813">Uvek možete da ažurirate izabrane opcije u podešavanjima Chromium-a.</translation>
 <translation id="2478931088402984578">Izaberite <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />.</translation>
+<translation id="2512597191798760956">Pritisnite i zadržite ikonu Chromium-a, pa kliknite na Izmenite početni ekran</translation>
 <translation id="2517624234762908348">Sinhronizuj Chromium podatke</translation>
 <translation id="2592940277904433508">Nastavi sa korišćenjem Chromium-a</translation>
 <translation id="2607609479243848905">Ako ste zaboravili pristupnu frazu ili želite da promenite ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chromium podatke na nalogu<ph name="END_LINK" />.</translation>
@@ -59,14 +75,18 @@ Sačekajte nekoliko minuta pre nego što se odjavite. Ako se odjavite odmah, ovi
 <translation id="28276745681323897">Možete da <ph name="BEGIN_LINK" />upravljate time koji Chromium podaci se čuvaju<ph name="END_LINK" /> na Google nalogu.
 
 Još podešavanja koja koriste podatke za poboljšanje doživljaja Chromium-a potražite u <ph name="BEGIN_LINK" />Google uslugama<ph name="END_LINK" />.</translation>
+<translation id="2832168932648876507">Pretražujte glasom u Chromium-u.</translation>
 <translation id="2843571538056574338">Koristite Chromium za automatsko popunjavanje</translation>
 <translation id="2918709798697875261">Organizacija zahteva da ostanete odjavljeni sa Chromium-a.</translation>
+<translation id="2930158679684712936">Saveti za Chromium</translation>
 <translation id="2942241131342758843">Podrazumevano koristite Chromium da biste otvarali linkove, pretraživali iz vidžeta i automatski popunjavali lozinke u drugim aplikacijama</translation>
 <translation id="2977470724722393594">Chromium je ažuriran</translation>
 <translation id="3044857325852340337">Chromium podaci su izbrisani</translation>
+<translation id="3054480780637153380">Otvorite podešavanja Chromium-a u iOS-u, pa dodirnite Default Browser App (Podrazumevana aplikacija za pregledač) i izaberite Chromium.</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium može da vam pomogne da pratite ovaj paket na stranici nove kartice.}one{Chromium može da vam pomogne da pratite ove pakete na stranici nove kartice.}few{Chromium može da vam pomogne da pratite ove pakete na stranici nove kartice.}other{Chromium može da vam pomogne da pratite ove pakete na stranici nove kartice.}}</translation>
 <translation id="3102849287235003384">Da biste se odjavili sa Google naloga na svim veb-sajtovima, <ph name="BEGIN_LINK" />odjavite se iz Chromium-a<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">Želite da podesite Chromium za podrazumevani pregledač?</translation>
+<translation id="3242612358525156339">U podešavanjima uređaja otvorite „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“ i izaberite „Chromium“</translation>
 <translation id="328933489847748230">{count,plural, =1{Sada se prikazuje 1 Chromium prozor}one{Sada se prikazuje {count} Chromium prozor}few{Sada se prikazuju {count} Chromium prozora}other{Sada se prikazuje {count} Chromium prozora}}</translation>
 <translation id="3344973607274501920">Chromium nije uspeo da vam proveri lozinke. Proverite internet vezu.</translation>
 <translation id="3366305173356742781">Chromium podaci na nalogu</translation>
@@ -76,10 +96,14 @@ Sačekajte nekoliko minuta pre nego što promenite nalog. Ako sada promenite nal
 <translation id="3472200483164753384">Nije podržano u verziji Chromium Canary</translation>
 <translation id="347967311580159871">Više podešavanja koja koriste podatke za poboljšanje doživljaja Chromium-a potražite u <ph name="BEGIN_LINK" />Google uslugama<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Lozinka se ne deli. Proverite internet vezu i uverite se da ste prijavljeni u Chromium. Onda probajte ponovo.</translation>
+<translation id="3529798650269984835">Uključite Zaključaj kartice bez arhiviranja posle zatvaranja Chromium-a.</translation>
 <translation id="3567399274263440288">Da biste koristili Chromium na najbolji način, prijavite se na Chromium pomoću Google naloga.</translation>
+<translation id="3581385059720151202">Pretraživanje vizuelnog materijala u Chromium-u</translation>
+<translation id="3594315078412605236">Upravljanje načinima plaćanja u Chromium-u</translation>
 <translation id="3639997914391704523">Chromium može da vam proverava lozinke kada se prijavite pomoću Google naloga.</translation>
 <translation id="372658070733623520">Da biste koristili i čuvali Chromium podatke na Google nalogu, potvrdite svoj identitet.</translation>
 <translation id="3728124580182886854">Povežite Chromium i druge Google usluge radi personalizacije i drugih svrha</translation>
+<translation id="377649297473651452">Prošireni prikaz Chromium automatskog popunjavanja</translation>
 <translation id="3780779443901618967">Upozorava vas na opasne sajtove, čak i na one za koje Google ranije nije znao, analizirajući više podataka sa sajtova nego standardna zaštita. Možete da izaberete da preskočite upozorenja Chromium-a.</translation>
 <translation id="3805899903892079518">Chromium ne može da pristupa slikama ili videima. Omogućite pristup u iOS Settings (Podešavanja iOS-a) &gt; Privacy (Privatnost) &gt; Photos (Slike).</translation>
 <translation id="3827545470516145620">Dobijate standardnu bezbednosnu zaštitu na ovom uređaju</translation>
@@ -89,6 +113,8 @@ Sačekajte nekoliko minuta pre nego što promenite nalog. Ako sada promenite nal
 <translation id="3983291422281996849">Podesite Chromium kao podrazumevani pregledač da biste lako pratili cene i dobijali uvid u cene za stvari koje želite da kupite.</translation>
 <translation id="4005283307739974863">Otvara i pokreće Proveru bezbednosti u Chromium-u.</translation>
 <translation id="4043291146360695975">Lozinke se čuvaju u Menadžeru lozinki samo na ovom uređaju.</translation>
+<translation id="4066426933127344530">Podrazumevano koristi Chromium</translation>
+<translation id="4087314024407094071">Otvara Podešavanja u Chromium-u.</translation>
 <translation id="4099085513035183040">Nije podržano u verziji Chromium beta</translation>
 <translation id="4106512142782407609">Prijavljeni ste kao <ph name="EMAIL" />.
 
@@ -97,22 +123,27 @@ Podaci se šifruju pomoću pristupne fraze. Unesite je da biste koristili i sa�
 <translation id="4195557071150719219">Pogledajte nedavne kartice Chromium-a</translation>
 <translation id="420541179527342563">Da biste onemogućili režim zaključavanja u Chromium-u, isključite ga na iPad-u.</translation>
 <translation id="4272892696084633551">Pomozite nam da poboljšamo Chromium-ove funkcije i učinak</translation>
+<translation id="4302397443352897529">Podešavanja Chromium-a</translation>
 <translation id="4408912345039114853">Pokreni Chromium proveru bezbednosti</translation>
 <translation id="4432744876818348753">Prijavite se da biste iskoristili Chromium na najbolji način.</translation>
 <translation id="4445228361214254027">Organizacija je isključila mogućnost korišćenja i čuvanja Chromium podataka na Google nalogu. Novi obeleživači, lozinke i drugi sadržaj će se čuvati samo na ovom uređaju.</translation>
 <translation id="4498832288620833153">Dodaje unete URL-ove na listu za čitanje u Chromium-u.</translation>
 <translation id="452436063477828504">Uverite se da uvek možete da koristite Chromium podatke na Google nalogu</translation>
+<translation id="4527452566931097835">Želite da podesite Chromium kao podrazumevani pregledač?</translation>
 <translation id="4555020257205549924">Kada je ova funkcija uključena, Chromium će nuditi da prevodi stranice napisane na drugim jezicima pomoću Google prevodioca. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4572441104543926904">Šifrovanje pomoću pristupne fraze ne obuhvata načine plaćanja i adrese.
 
 Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chromium podatke na nalogu<ph name="END_LINK" />.</translation>
+<translation id="4578500311756617174">Chromium savet: Podrazumevano koristite Chromium</translation>
 <translation id="458786853569524949">Sada možete da koristite Chromium svaki put kada dodirnete linkove u imejlovima, dokumentima i drugim aplikacijama.</translation>
 <translation id="4633738821577273991">Nabavite poboljšano bezbedno pregledanje i za ovaj Chromium profil</translation>
 <translation id="4654936625574199632">Chromium šalje podatke o korišćenju i otkazivanju Google-u radi poboljšanja aplikacije. <ph name="BEGIN_LINK" />Upravljajte<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Uključite Chromium skener</translation>
+<translation id="4685611756167369067">Otvaranje Chromium kartice bez arhiviranja</translation>
 <translation id="4736424910885271643">Nalogom upravlja <ph name="HOSTED_DOMAIN" />, pa će se Chromium podaci obrisati sa ovog uređaja</translation>
 <translation id="4790638144988730920">Nastavite da koristite Chromium podatke na Google nalogu.</translation>
 <translation id="4828317641996116749">Chromium nije uspeo da proveri sve lozinke. Probajte ponovo kasnije.</translation>
+<translation id="4856138222358683580">Chromium radnje</translation>
 <translation id="4904452304169763785">Obaveštenja o svim problemima u vezi sa privatnošću ili bezbednošću koje Chromium otkrije za vas.</translation>
 <translation id="4962295957157529683">Završite ono što ste radili u drugom otvorenom Chromium prozoru.</translation>
 <translation id="4985291216379576555">Oflajn ste. Chromium ne može da traži ažuriranja.</translation>
@@ -122,20 +153,29 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chromium
 <translation id="5044871537677053278">Chromium otkriva adrese i koristi Google mape da bi vam pružao uputstva i lokalne informacije.</translation>
 <translation id="5048795749726991615">Da biste lako pristupali sačuvanim lozinkama u drugim aplikacijama, koristite Chromium za automatsko popunjavanje</translation>
 <translation id="5053429694249468757">Brišu se Chromium podaci…</translation>
+<translation id="5071749685031362629">Chromium za iOS</translation>
 <translation id="5124429847818367226">Sada možete da koristite Chromium svaki put kada pregledate ili dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="5131565040785979529">Vaša organizacija, <ph name="DOMAIN" />, upravlja nalogom na koji ste prijavljeni i načinom na koji se Chromium koristi.</translation>
 <translation id="5224391634244552924">Nema sačuvanih lozinki. Chromium može da proverava lozinke kada ih sačuvate.</translation>
+<translation id="5259423875997548710">Pretražite vizuelni materijal u Chromium-u.</translation>
 <translation id="5308226104666789935">Chromium ne može da traži ažuriranja</translation>
 <translation id="5311557153294205270">Dodaje unete URL-ove u obeleživače u Chromium-u.</translation>
 <translation id="538767207339317086">Dozvoli prijavljivanje u Chromium</translation>
+<translation id="5389058611415066188">Ostanite bezbedni uz Chromium</translation>
+<translation id="5415273218238091735">Chromium savet</translation>
 <translation id="5427571867875391349">Podesi Chromium kao podrazumevani pregledač</translation>
 <translation id="5434562575369834882">Otvori u Chromium-u bez arhiviranja</translation>
 <translation id="5453478652154926037">Chromium ne može da vam proverava lozinke.</translation>
+<translation id="5479292367402350143">Da biste postavili Chromium za podrazumevani pregledač:
+1. Otvorite Podešavanja
+2. Dodirnite Podrazumevana aplikacija za pregledač
+3. Izaberite Chromium</translation>
 <translation id="5521125884468363740">Da biste videli kartice na bilo kojem uređaju na kom koristite Chromium, prijavite se i uključite sinhronizaciju</translation>
 <translation id="5522297504975449419">Neke Chromium funkcije više neće biti dostupne.</translation>
 <translation id="5534584691915394889">Ovo će se koristiti za pravljenje događaja u Apple Calendar-u iz Chromium-a i Google objektiva.</translation>
 <translation id="5571094606370987472">Otvara Chromium nedavne kartice.</translation>
 <translation id="5603085937604338780">chromium</translation>
+<translation id="5664395081284292058">Otvaranje moje najnovije kartice u Chromium-u</translation>
 <translation id="5688047395118852662">Ova kartica vam prikazuje predloge o tome kako da iskoristite Chromium-a na najbolji način.</translation>
 <translation id="5700709190537129682">Chromium ne može da vam proverava lozinke</translation>
 <translation id="584550191241316896">Prijavljeni ste u Chromium</translation>
@@ -148,6 +188,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chromium
   • Ako Chromium otkaže, detalji o otkazivanju mogu da sadrže neke lične podatke.
 
   • Ako sinhronizujete istoriju sa Google nalogom, pokazatelji mogu da obuhvataju informacije o URL-ovima koje posećujete.<ph name="END_INDENT" /></translation>
+<translation id="5932787118589620366">Izbrišite podatke pregledanja u Chromium-u.</translation>
 <translation id="593808800391107017">Primajte obaveštenja o svim problemima u vezi sa privatnošću ili bezbednošću koje Chromium automatski otkrije.</translation>
 <translation id="5945387852661427312">Prijavljujete se pomoću naloga kojim upravlja <ph name="DOMAIN" /> i dajete njegovom administratoru kontrolu nad svojim Chromium podacima. Podaci će postati trajno povezani sa tim nalogom. Odjavljivanjem iz Chromium-a ćete izbrisati podatke sa ovog uređaja, ali će oni ostati sačuvani na Google nalogu.</translation>
 <translation id="5951593919357934226">Iskoristite Chromium na najbolji način.</translation>
@@ -155,6 +196,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chromium
 <translation id="6104024151682120539">Otvori u Chromium-u</translation>
 <translation id="61109258320235597">Da biste koristili i čuvali Chromium podatke na Google nalogu, unesite pristupnu frazu.</translation>
 <translation id="6132149203299792222">Prijavite se pomoću Google naloga da biste sinhronizovali lozinke, obeleživače i drugo.</translation>
+<translation id="6148377327556085395">Dodavanje obeleživača u Chromium</translation>
 <translation id="6154098560469640583">Koristite Chromium svaki put kada dodirujete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="6170619162539716595">Dozvolite Chromium-u da koristi Google mape da bi vam pružao uputstva i lokalne informacije o otkrivenim adresama.</translation>
 <translation id="6197255575340902638">Ako sakrijete „<ph name="MODULE_NAME" />“, Chromium više neće automatski pratiti buduće pakete i izbrisaće sve ranije podatke o praćenju paketa.</translation>
@@ -165,10 +207,17 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chromium
 <translation id="6337530241089703714">Odaberite da li ćete obrisati Chromium podatke sa ovog uređaja ili ih zadržati</translation>
 <translation id="6424492062988593837">Chromium je upravo postao bolji! Dostupna je nova verzija.</translation>
 <translation id="6433172051771630690">Saveti kako da na najbolji način koristite Chromium.</translation>
+<translation id="65045991564554105">Pregled Chromium obeleživača</translation>
+<translation id="6538713818758208754">Otvara stranicu za podešavanje načina plaćanja u Chromium-u.</translation>
+<translation id="6540186279384079894">Otvaranje nove kartice u Chromium-u</translation>
 <translation id="6563921047760808519">Saznajte više o tome <ph name="BEGIN_LINK" />kako Chromium štiti privatnost podataka<ph name="END_LINK" /></translation>
+<translation id="6574750762636192517">Upravljanje lozinkama u Chromium-u</translation>
+<translation id="6590232959690355435">Otvara stranicu istorije Chromium-a.</translation>
+<translation id="6674470628873622334">Otvara novu Chromium karticu bez arhiviranja.</translation>
 <translation id="6752854822223394465">Vaša organizacija podešava Chromium...</translation>
 <translation id="6794054469102824109">Otvara igru Chromium dinosaurus.</translation>
 <translation id="6820823224820483452">Chromium nije uspeo da proveri sve lozinke. Probajte ponovo sutra.</translation>
+<translation id="6852419005633611413">Brže pristupajte Chromium-u sa trake s aplikacijama na početnom ekranu</translation>
 <translation id="6852799557929001644">Pristupajte Chromium lozinkama i ostalim funkcijama u drugim aplikacijama na ovom uređaju.</translation>
 <translation id="6887138405044152640">Da biste poslali ovu karticu na drugi uređaj, prijavite se u Chromium tamo.</translation>
 <translation id="6911341667534646387">Nastavite da koristite Chromium podatke na Google nalogu</translation>
@@ -176,12 +225,14 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chromium
 <translation id="7018284295775193585">Chromium ne može da se ažurira</translation>
 <translation id="7055269218854630176">Vaša organizacija, <ph name="DOMAIN" />, upravlja nalogom na koji se prijavljujete i načinom na koji Chromium može da se koristi. Administrator može da podesi ili ograniči određene funkcije.</translation>
 <translation id="7099326575020694068">Chromium ne može da koristi kameru u režimu podeljenog prikaza</translation>
+<translation id="7129379408282555630">Iskoristite moć Chromium kupovine</translation>
 <translation id="7165402419892018581">Odaberite Chromium za automatsko popunjavanje</translation>
 <translation id="7175400662502680481">Vaša lozinka je otkrivena pri upadu u podatke. Menadžer lozinki preporučuje da je odmah promenite.</translation>
 <translation id="7185731475720473450">Načini plaćanja i adrese neće biti šifrovani. Istorija pregledanja iz Chromium-a se neće sinhronizovati.
 
 Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fraza se ne šalje Google-u niti se čuva na Google-u. Ako zaboravite pristupnu frazu ili želite da promenite ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chromium podatke na nalogu<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Chromium obaveštenja su trenutno isključena u podešavanjima uređaja.</translation>
+<translation id="7219205286115692265">Brže pristupajte Chromium-u sa trake s aplikacijama na početnom ekranu iPad-a.</translation>
 <translation id="7222001353246886083">Pretraži frazu ${searchphrase} u Chromium-u</translation>
 <translation id="7228180817326917122">Savet za Chromium: Odaberite položaj trake za adresu</translation>
 <translation id="725427773388857052">Chromium može da vas štiti od upada u podatke, nebezbednih veb-sajtova i drugih stvari.</translation>
@@ -191,21 +242,31 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="7357211569052832586">Izabrani podaci su uklonjeni iz Chromium-a i sa sinhronizovanih uređaja. Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i aktivnosti u drugim Google uslugama na history.google.com.</translation>
 <translation id="7395825497086981028">Lozinka se čuva u Menadžeru lozinki za <ph name="EMAIL" /></translation>
 <translation id="7531461704633548377">Iz Chromium-a</translation>
+<translation id="7554983317097061001">Savet za Chromium: Premestite Chromium na traku s aplikacijama</translation>
+<translation id="7576863740961052505">Upravljanje podešavanjima Chromium-a</translation>
 <translation id="7674213385180944843">Otvorite Podešavanja &gt; Privatnost &gt; Kamera &gt; Chromium i uključite kameru.</translation>
 <translation id="7733418656985455268">Savet za Chromium: Pretražujte pomoću Objektiva</translation>
 <translation id="7747820849741499258">Pretraži u Chromium-u</translation>
+<translation id="7762622637388462191">Zaključajte kartice bez arhiviranja kada napustite Chromium ili pređete u drugu aplikaciju.</translation>
 <translation id="7763454117143368771">Koristite Chromium kao podrazumevani pregledač da biste se odbranili od opasnih sajtova i zaštitili lozinke</translation>
+<translation id="7784950022329154821">Zaključajte kartice bez arhiviranja posle zatvaranja Chromium-a</translation>
 <translation id="78025249032851484">Chromium je zastareo.</translation>
 <translation id="7859018312476869945">Kada kucate u traci za adresu ili u okviru za pretragu, Chromium šalje tekst koji unosite podrazumevanom pretraživaču da biste dobijali bolje predloge. Ovo je isključeno u režimu bez arhiviranja.</translation>
+<translation id="7859432380288435856">Chromium otkriva brojeve za praćenje paketa na sajtovima koje posećujete i prikazuje vam novosti o paketima na stranici Nova kartica. Podaci će se deliti sa Google-om radi pružanja ove funkcije i poboljšanja Kupovine za sve.</translation>
 <translation id="7890287942691234100">Počnite da koristite Chromium skener</translation>
 <translation id="7905064834449738336">Kada koristite lozinku, Chromium vas upozorava ako je ona objavljena onlajn. Dok to radi, vaše lozinke i korisnička imena su šifrovani, pa niko ne može da ih pročita, uključujući Google.</translation>
 <translation id="7928628054454574139">Otvara Chromium svaki put kada dodirnete linkove u drugim aplikacijama</translation>
 <translation id="7934404985878918282">Prikaži Chromium listu za čitanje</translation>
+<translation id="7951793218148208717">Otvara novu karticu u Chromium-u.</translation>
 <translation id="7980860476903281594">Chromium deli lokaciju sa sajtovima koje dozvolite.</translation>
 <translation id="7994322153108931467">Da biste dobijali korisne savete za Chromium, uključite obaveštenja u podešavanjima iOS-a.</translation>
+<translation id="7997159823054171568">Postavljanje Chromium-a kao podrazumevanog pregledača</translation>
 <translation id="800195749539500647">Koristite Chromium na najbolji način</translation>
+<translation id="800380310260616129">Preuzmite Chromium ovde.</translation>
 <translation id="8013573822802650211">Da biste videli kartice na bilo kojem uređaju na kom koristite Chromium, prijavite se na svim uređajima</translation>
+<translation id="8014091604604659473">Chromium je odjavljen</translation>
 <translation id="8104697640054703121">Nabavite najjaču Chromium zaštitu od opasnih sajtova</translation>
+<translation id="8119542592987737574">Brže pristupajte Chromium-u sa trake s aplikacijama na početnom ekranu iPhone-a.</translation>
 <translation id="8164086860209325020">Idi u Chromium podešavanja</translation>
 <translation id="8197822717502700527">Sada ćete iskoristiti sve prednosti Chromium-a na uređaju.</translation>
 <translation id="8240981428553046115">Chromium ne može da traži ažuriranja. Probajte ponovo kasnije.</translation>
@@ -216,6 +277,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{To se dešava kada se Chromium ne koristi {THRESHOLD} minut. Izbrisaće se podaci koji su sačuvani samo na ovom uređaju dok ste bili prijavljeni. To može da obuhvata istoriju i lozinke.}one{To se dešava kada se Chromium ne koristi {THRESHOLD} minut. Izbrisaće se podaci koji su sačuvani samo na ovom uređaju dok ste bili prijavljeni. To može da obuhvata istoriju i lozinke.}few{To se dešava kada se Chromium ne koristi {THRESHOLD} minuta. Izbrisaće se podaci koji su sačuvani samo na ovom uređaju dok ste bili prijavljeni. To može da obuhvata istoriju i lozinke.}other{To se dešava kada se Chromium ne koristi {THRESHOLD} minuta. Izbrisaće se podaci koji su sačuvani samo na ovom uređaju dok ste bili prijavljeni. To može da obuhvata istoriju i lozinke.}}</translation>
 <translation id="858114650497379505">Možete da koristite lozinke koje ste sačuvali u Menadžeru lozinki u drugim aplikacijama na iPhone-u.</translation>
 <translation id="8586442755830160949">Autorska prava <ph name="YEAR" />. Autori Chromium-a. Sva prava zadržana.</translation>
+<translation id="8602103377623855616">Chromium stranica</translation>
 <translation id="865600487977764604">Štiti vas u Chrome-u i može da se koristi za poboljšanje bezbednosti u drugim Google aplikacijama kada ste prijavljeni.</translation>
 <translation id="8663480472502753423">Redovno ažuriraju Chromium</translation>
 <translation id="8685813584220679697">Prijavite se na ovaj sajt i u Chromium.</translation>
@@ -223,13 +285,16 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="8754966941001340678">Chromium preporučuje poboljšanu zaštitu</translation>
 <translation id="8759037115129007407">Član porodice trenutno ne može da prima lozinke. Zatražite mu da ažurira Chromium i sinhronizuje lozinke. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Ovaj nalog i svi nesačuvani podaci ukloniće se iz Chromium-a.</translation>
+<translation id="8805148242934787134">Postavi Chromium kao podrazumevani pregledač</translation>
 <translation id="8826789549860004832">Koristite Chromium na najbolji način tako što ćete nastaviti sa podešavanjem pregledača.</translation>
 <translation id="88376265765385899">Otvara Chromium obeleživače.</translation>
 <translation id="8860548555286245440">Otvorite URL-ove u Chromium-u u režimu bez arhiviranja</translation>
 <translation id="8866191443434488382">Chromium otkriva brojeve za praćenje na sajtovima koje posećujete i prikazuje vam novosti o paketima na stranici Nova kartica. Broj za praćenje paketa i naziv veb-sajta biće poslati Chromium-u radi pružanja ove funkcije i poboljšanja funkcija kupovine za sve. To možete da ažurirate u svakom trenutku u <ph name="BEGIN_LINK" />podešavanjima praćenja paketa<ph name="END_LINK" />.</translation>
+<translation id="8880024619507699923">Organizacija zahteva da se prijavite da biste koristili Chromium. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="894437814105052438">Kada se odjavite, Chromium ne sinhronizuje nikakve nove podatke sa Google nalogom. Prethodno sinhronizovani podaci ostaju na nalogu.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{To se dešava kada se Chromium ne koristi {THRESHOLD} minut}one{To se dešava kada se Chromium ne koristi {THRESHOLD} minut}few{To se dešava kada se Chromium ne koristi {THRESHOLD} minuta}other{To se dešava kada se Chromium ne koristi {THRESHOLD} minuta}}</translation>
 <translation id="8963279154877372067">Dozvolite Chromium obaveštenja da biste dobijali obaveštenja o sniženjima</translation>
+<translation id="8975812008711371178">Pretraživanje glasom u Chromium-u</translation>
 <translation id="900560297598578021">Prijavljeni ste kao <ph name="EMAIL" />.
 
 Podaci su šifrovani pomoću pristupne fraze <ph name="TIME" />. Unesite je da biste koristili i sačuvali Chromium podatke na Google nalogu.</translation>

@@ -6307,7 +6307,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
         &lt;li&gt;Olete oma Google'i kontole sisse logitud&lt;/li&gt;
         &lt;li&gt;Teil on veebi- ja rakendustegevused sisse lülitatud&lt;/li&gt;
       &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">Aadressiribal kasutatud otsingumootor.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Administraator installis laienduse}other{Administraator installis # laiendust}}</translation>
 <translation id="5523532775593636291">Teie lisatud saidid püsivad alati aktiivsena ja nende arvelt mälu ei vabastata</translation>
 <translation id="5523558474028191231">Nimi võib sisaldada tähti, numbreid ja erimärke ning tohib olla kuni <ph name="MAX_CHARACTER_COUNT" /> tähemärki pikk</translation>
@@ -6975,7 +6974,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6020431688553761150">Server ei luba teil sellele ressursile juurdepääsu hankida.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> rakendust enam ei toetata</translation>
 <translation id="6021969570711251331">Vaheldumisi tekst</translation>
-<translation id="602212068530399867">Otsingumootor, mida kasutatakse aadressiribal ja käivitajas.</translation>
 <translation id="6022526133015258832">Ava täisekraanil</translation>
 <translation id="6022659036123304283">Isikupärastage Chrome'i</translation>
 <translation id="6023643151125006053">Selle seadme (seerianumber: <ph name="SERIAL_NUMBER" />) lukustas domeeni <ph name="SAML_DOMAIN" /> administraator.</translation>

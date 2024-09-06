@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">સ્નો</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> માટે વિશેષ</translation>
 <translation id="315116470104423982">મોબાઇલ ડેટા</translation>
+<translation id="3156511682997763015">10 સેકન્ડ ફૉરવર્ડ કરો</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" /> નંબરનું પેજ સ્કૅન કરી રહ્યાં છીએ...</translation>
 <translation id="315738237743207937">કૅપ્ટિવ પોર્ટલની જાણકારી મળી</translation>
 <translation id="3160172848211257835"><ph name="BEGIN_LINK1" />સિસ્ટમ અને ઍપ વિશેની માહિતી<ph name="END_LINK1" /> તથા <ph name="BEGIN_LINK2" />મેટ્રિક<ph name="END_LINK2" /> મોકલો</translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">કોઈ શોધ પરિણામો મળ્યાં નથી</translation>
 <translation id="3305294846493618482">વધુ</translation>
 <translation id="3310640316857623290">DNSની વિલંબતા મંજૂરીયોગ્ય થ્રેશોલ્ડ કરતાં ઘણી વધુ છે</translation>
+<translation id="3321030238473337787">પ્લેબૅકની ઝડપ</translation>
 <translation id="3328783797891415197">પરીક્ષણ ચાલુ છે</translation>
 <translation id="3340011300870565703">ડિવાઇસના જમણા ઇયરબડમાં <ph name="BATTERY_PERCENTAGE" />% બૅટરી છે.</translation>
 <translation id="3340978935015468852">સેટિંગ</translation>
@@ -1336,6 +1338,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">પ્રદાતાનો પ્રકાર</translation>
 <translation id="7882501334836096755">જાહેર કી</translation>
+<translation id="7889966925761734854">શોધો</translation>
 <translation id="78957024357676568">ડાબી</translation>
 <translation id="7897043345768902965">પગપાળા ચાલવાનો રસ્તો</translation>
 <translation id="7902285181767404769">રેકોર્ડ કરતી વખતે, નોટિફિકેશનને સાઇલન્ટ કરો</translation>

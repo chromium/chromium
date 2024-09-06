@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">χιόνι</translation>
 <translation id="3146655726035122603">Αποκλειστικά στο <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Δεδομένα κινητής τηλεφωνίας</translation>
+<translation id="3156511682997763015">Μπροστά κατά 10 δευτερόλεπτα</translation>
 <translation id="3156846309055100599">Σάρωση σελίδας <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Εντοπίστηκε πύλη υποδοχής</translation>
 <translation id="3160172848211257835">Αποστολή <ph name="BEGIN_LINK1" />πληροφοριών συστήματος και εφαρμογών<ph name="END_LINK1" /> καθώς και <ph name="BEGIN_LINK2" />μετρήσεων<ph name="END_LINK2" /></translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">Δεν βρέθηκαν αποτελέσματα αναζήτησης</translation>
 <translation id="3305294846493618482">περισσότερα</translation>
 <translation id="3310640316857623290">Ο λανθάνων χρόνος DNS έχει υπερβεί σημαντικά το επιτρεπόμενο ελάχιστο όριο.</translation>
+<translation id="3321030238473337787">Ταχύτητα αναπαραγωγής</translation>
 <translation id="3328783797891415197">Η δοκιμή εκτελείται</translation>
 <translation id="3340011300870565703">Η μπαταρία δεξιού ακουστικού της συσκευής βρίσκεται στο <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">ρυθμίσεις</translation>
@@ -1336,6 +1338,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Τύπος παρόχου</translation>
 <translation id="7882501334836096755">Δημόσιο κλειδί</translation>
+<translation id="7889966925761734854">Αναζήτηση</translation>
 <translation id="78957024357676568">αριστερά</translation>
 <translation id="7897043345768902965">πεζόδρομος</translation>
 <translation id="7902285181767404769">Σίγαση ειδοποιήσεων κατά την εγγραφή</translation>

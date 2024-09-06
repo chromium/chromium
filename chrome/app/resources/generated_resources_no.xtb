@@ -6305,7 +6305,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
         &lt;li&gt;du er logget på Google-kontoen din&lt;/li&gt;
         &lt;li&gt;Nett- og appaktivitet er slått på&lt;/li&gt;
       &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">Søkemotoren som brukes i adressefeltet.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Administratoren har installert en utvidelse}other{Administratoren har installert # utvidelser}}</translation>
 <translation id="5523532775593636291">Nettsteder du legger til, holdes alltid aktive, og minnet de bruker, blir ikke frigjort</translation>
 <translation id="5523558474028191231">Navnet kan inneholde bokstaver, tall og spesialtegn og kan maksimalt bestå av <ph name="MAX_CHARACTER_COUNT" /> tegn</translation>
@@ -6973,7 +6972,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6020431688553761150">Tjeneren autoriserte ikke tilgang til denne ressursen for deg.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> apper støttes ikke lenger</translation>
 <translation id="6021969570711251331">Innfelt</translation>
-<translation id="602212068530399867">Søkemotoren som brukes i adressefeltet og appoversikten.</translation>
 <translation id="6022526133015258832">Åpne i fullskjerm</translation>
 <translation id="6022659036123304283">Gi Chrome et personlig preg</translation>
 <translation id="6023643151125006053">Denne enheten (SN: <ph name="SERIAL_NUMBER" />) ble låst av <ph name="SAML_DOMAIN" />-administratoren.</translation>

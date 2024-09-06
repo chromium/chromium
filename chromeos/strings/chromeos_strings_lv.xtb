@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">sniegs</translation>
 <translation id="3146655726035122603">Tikai šeit: <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobilie dati</translation>
+<translation id="3156511682997763015">Patīt uz priekšu par 10 sekundēm</translation>
 <translation id="3156846309055100599">Notiek <ph name="PAGE_NUMBER" />. lapas skenēšana…</translation>
 <translation id="315738237743207937">Konstatēta caurlaides lapa</translation>
 <translation id="3160172848211257835">Sūtīt <ph name="BEGIN_LINK1" />sistēmas un lietotņu informāciju<ph name="END_LINK1" />, kā arī <ph name="BEGIN_LINK2" />rādītājus<ph name="END_LINK2" /></translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">Netika atrasts neviens meklēšanas rezultāts.</translation>
 <translation id="3305294846493618482">vēl</translation>
 <translation id="3310640316857623290">DNS latentums ievērojami pārsniedz pieļaujamo slieksni</translation>
+<translation id="3321030238473337787">Atskaņošanas ātrums</translation>
 <translation id="3328783797891415197">Tiek veikta pārbaude</translation>
 <translation id="3340011300870565703">Labās austiņas akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">Iestatījumi</translation>
@@ -1332,6 +1334,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Pakalpojumu sniedzēja veids</translation>
 <translation id="7882501334836096755">Publiskā atslēga</translation>
+<translation id="7889966925761734854">Meklēšana</translation>
 <translation id="78957024357676568">pa kreisi</translation>
 <translation id="7897043345768902965">gājēju celiņš</translation>
 <translation id="7902285181767404769">Izslēdziet paziņojumu skaņu ierakstīšanas laikā.</translation>

@@ -6299,7 +6299,6 @@
         &lt;li&gt;ако сте пријављени на Google налог&lt;/li&gt;
         &lt;li&gt;ако сте укључили Активности на вебу и у апликацијама&lt;/li&gt;
       &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">Претраживач који се користи на траци за адресу.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Администратор је инсталирао додатак}one{Администратор је инсталирао # додатак}few{Администратор је инсталирао # додатка}other{Администратор је инсталирао # додатака}}</translation>
 <translation id="5523532775593636291">Сајтови које додате ће увек остати активни, а меморија се неће ослободити</translation>
 <translation id="5523558474028191231">Слова, бројеви и специјални знакови могу да се користе у називу, а максимални број знакова је <ph name="MAX_CHARACTER_COUNT" /></translation>
@@ -6968,7 +6967,6 @@
 <translation id="6020431688553761150">Сервер вас није овластио да приступате овом ресурсу.</translation>
 <translation id="6021293122504240352">Апликације (<ph name="APPS" />) више нису подржане</translation>
 <translation id="6021969570711251331">Преклопљено</translation>
-<translation id="602212068530399867">Претраживач који се користи на траци за адресу и у покретачу.</translation>
 <translation id="6022526133015258832">Отвори на целом екрану</translation>
 <translation id="6022659036123304283">Прилагодите Chrome себи</translation>
 <translation id="6023643151125006053">Овај уређај (СБ: <ph name="SERIAL_NUMBER" />) је закључао администратор домена <ph name="SAML_DOMAIN" />.</translation>
@@ -10312,6 +10310,7 @@
 <translation id="8440630305826533614">Linux апликације</translation>
 <translation id="844063558976952706">Увек на овом сајту</translation>
 <translation id="8441313165929432954">Омогућавање или онемогућавање привезивања</translation>
+<translation id="8443542808381875261">Затворите картице које се не користе</translation>
 <translation id="8443986842926457191">URL има више од 2048 знакова</translation>
 <translation id="8445281870900174108">Ова картица користи камеру</translation>
 <translation id="8446884382197647889">Сазнајте више</translation>

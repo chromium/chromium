@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="kk">
 <translation id="1001033507375626788">Бұл желі сізбен бөлісілген</translation>
+<translation id="1001360573085135660">Рұқсатты ауыстыру үшін басыңыз.</translation>
 <translation id="1002085272681738789">Қойынды қайтадан белсенді болды.</translation>
 <translation id="1003088604756913841">Сілтемені жаңа <ph name="APP" /> терезесінде ашу</translation>
 <translation id="100323615638474026">USB құрылғысы (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
@@ -3281,6 +3282,7 @@
 <translation id="3333190335304955291">Бұл қызметті "Параметрлер" бөлімінен өшіруге болады.</translation>
 <translation id="3333961966071413176">Барлық контакт</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – бейне "Суреттегі сурет" режимінде ойнатылып жатыр</translation>
+<translation id="3335380372402547327">Жарқылды хабарландыруларды алдын ала көру</translation>
 <translation id="3335947283844343239">Жабық қойындыны қайта ашу</translation>
 <translation id="3336855445806447827">Сенімді емеспін</translation>
 <translation id="3337568642696914359">Сайттардың протоколдарды өңдеуіне рұқсат бермеу</translation>
@@ -6294,7 +6296,6 @@
         &lt;li&gt;Google аккаунтыңызға кірсеңіз;&lt;/li&gt;
         &lt;li&gt;интернет пен қолданбаларды пайдалану тарихы қосылған.&lt;/li&gt;
       &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">Мекенжай жолағында пайдаланылатын іздеу жүйесі.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Кеңейтім әкімшіңіздің тарапынан орнатылды.}other{# кеңейтім әкімшіңіздің тарапынан орнатылды.}}</translation>
 <translation id="5523532775593636291">Сіз қосатын сайттар әрдайым белсенді болып қалады және олардың жады босатылмайды.</translation>
 <translation id="5523558474028191231">Атауда әріптерді, сандарды және арнайы таңбаларды пайдалана аласыз және ол <ph name="MAX_CHARACTER_COUNT" /> таңбадан аспауы керек.</translation>
@@ -6959,7 +6960,6 @@
 <translation id="6020431688553761150">Сервер бұл ресурсқа кіру рұқсатын бермеген.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> қолданбаға бұдан былай қолдау көрсетілмейді</translation>
 <translation id="6021969570711251331">Кезектесу</translation>
-<translation id="602212068530399867">Мекенжай жолағында және іске қосу тақтасында пайдаланылатын іздеу жүйесі.</translation>
 <translation id="6022526133015258832">Толық экранда ашу</translation>
 <translation id="6022659036123304283">Chrome браузерін өз талғамыңызға сай реттеңіз</translation>
 <translation id="6023643151125006053">Бұл құрылғыны (сериялық нөмірі: <ph name="SERIAL_NUMBER" />) <ph name="SAML_DOMAIN" /> әкімшісі құлыптады.</translation>

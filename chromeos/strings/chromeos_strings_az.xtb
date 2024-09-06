@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">qar</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> üçün eksklüziv</translation>
 <translation id="315116470104423982">Mobil data</translation>
+<translation id="3156511682997763015">10 saniyə irəli çəkin</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" /> saylı səhifə skanlanır...</translation>
 <translation id="315738237743207937">Avtorizasiya portalı aşkarlanıb</translation>
 <translation id="3160172848211257835"><ph name="BEGIN_LINK1" />Sistem və tətbiq məlumatı<ph name="END_LINK1" /> və <ph name="BEGIN_LINK2" />göstəriciləri<ph name="END_LINK2" /> göndərin</translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">Heç bir axtarış nəticəsi tapılmadı</translation>
 <translation id="3305294846493618482">ardı</translation>
 <translation id="3310640316857623290">DNS gecikməsi icazə verilən həddən xeyli yuxarıdır</translation>
+<translation id="3321030238473337787">Oxutma sürəti</translation>
 <translation id="3328783797891415197">Test icra edilir</translation>
 <translation id="3340011300870565703">Sağ qulaqlığın batareya səviyyəsi: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">ayarlar</translation>
@@ -1336,6 +1338,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Provayder növü</translation>
 <translation id="7882501334836096755">İctimai açar</translation>
+<translation id="7889966925761734854">Axtarın</translation>
 <translation id="78957024357676568">sol</translation>
 <translation id="7897043345768902965">piyada yolu</translation>
 <translation id="7902285181767404769">Qeydə alarkən bildirişləri susdurun</translation>

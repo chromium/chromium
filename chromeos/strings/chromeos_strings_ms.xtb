@@ -150,6 +150,7 @@
 <translation id="1672499492233627739">Suapan video kamera web</translation>
 <translation id="1676557873873341166">Mengambil video</translation>
 <translation id="1684279041537802716">Warna aksen</translation>
+<translation id="1697278726914783200">Rakam</translation>
 <translation id="1703835215927279855">Surat</translation>
 <translation id="1706391837335750954">Pelerai DNS Ada</translation>
 <translation id="1708602061922134366">Biru Google</translation>
@@ -417,6 +418,7 @@
 <translation id="3140130301071865159">salji</translation>
 <translation id="3146655726035122603">Eksklusif untuk <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Data mudah alih</translation>
+<translation id="3156511682997763015">Mundar 10 saat</translation>
 <translation id="3156846309055100599">Mengimbas halaman <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">Portal terbolot dikesan</translation>
 <translation id="3160172848211257835">Hantar <ph name="BEGIN_LINK1" />maklumat sistem &amp; apl<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />metrik<ph name="END_LINK2" /></translation>
@@ -446,6 +448,7 @@
 <translation id="3303855915957856445">Tiada hasil carian ditemui</translation>
 <translation id="3305294846493618482">lagi</translation>
 <translation id="3310640316857623290">Kependaman DNS ternyata melebihi ambang yang dibenarkan</translation>
+<translation id="3321030238473337787">Kelajuan main balik</translation>
 <translation id="3328783797891415197">Ujian sedang berjalan</translation>
 <translation id="3340011300870565703">Peranti mempunyai <ph name="BATTERY_PERCENTAGE" />% paras bateri kanan.</translation>
 <translation id="3340978935015468852">tetapan</translation>
@@ -687,6 +690,7 @@
 <translation id="458794348635939462">Gagal untuk menyelesaikan semua hos</translation>
 <translation id="4593212453765072419">Pengesahan proksi diperlukan</translation>
 <translation id="4594021849294327751">Buat transkrip</translation>
+<translation id="4602266091140407479">Mikrofon</translation>
 <translation id="4607282946861182308">Tidak dapat membuat imej ini. Cuba gesaan lain.</translation>
 <translation id="4609350030397390689">Mengurangkan kecerahan papan kekunci</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> daripada <ph name="TOTAL_PAGE_NUMBER" />. Tekan enter untuk membatalkan tugas cetak.</translation>
@@ -989,6 +993,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319">Dibuat pada <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Kapasiti bateri menurun seiring dengan penggunaan</translation>
+<translation id="6189987971574353264">Main</translation>
 <translation id="6191293864534840972">Pelayan nama cacat</translation>
 <translation id="6196607555925437199">Buat semula</translation>
 <translation id="6205145102504628069">Aliran Awan</translation>
@@ -1336,6 +1341,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Jenis penyedia</translation>
 <translation id="7882501334836096755">Kunci awam</translation>
+<translation id="7889966925761734854">Cari</translation>
 <translation id="78957024357676568">kiri</translation>
 <translation id="7897043345768902965">laluan pejalan kaki</translation>
 <translation id="7902285181767404769">Senyapkan pemberitahuan semasa merakam</translation>

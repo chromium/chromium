@@ -1110,7 +1110,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="177989070088644880">App (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Gruppe schließen</translation>
 <translation id="1780273119488802839">Lesezeichen werden importiert...</translation>
-<translation id="1780572199786401845">Als anstößig / nicht sicher melden.</translation>
+<translation id="1780572199786401845">Als anstößig / nicht sicher melden</translation>
 <translation id="178092663238929451">Nearby Share einrichten, um Dateien mit Personen in der Nähe auszutauschen</translation>
 <translation id="1781291988450150470">Aktuelle PIN</translation>
 <translation id="1781502536226964113">„Neuer Tab“-Seite öffnen</translation>
@@ -1677,7 +1677,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2180620921879609685">Inhalte auf jeder Seite blockieren</translation>
 <translation id="2181821976797666341">Richtlinien</translation>
 <translation id="2182058453334755893">In die Zwischenablage kopiert</translation>
-<translation id="2182419606502127232">Meine Server-Logs senden.</translation>
+<translation id="2182419606502127232">Meine Server-Logs senden</translation>
 <translation id="2183570493397356669">Schaltfläche „Weiter“ deaktiviert</translation>
 <translation id="2184272387334793084">Melde dich an, um Passwörter und mehr auf allen Geräten abzurufen</translation>
 <translation id="2184515124301515068">Chrome die Entscheidung überlassen, wann Audioinhalte auf Websites abgespielt werden (empfohlen)</translation>
@@ -6296,7 +6296,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
         &lt;li&gt;Du bist in deinem Google-Konto angemeldet&lt;/li&gt;
         &lt;li&gt;Du hast Web- &amp; App-Aktivitäten aktiviert&lt;/li&gt;
       &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">In der Adressleiste verwendete Suchmaschine.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Eine Erweiterung wurde von deinem Administrator installiert}other{# Erweiterungen wurden von deinem Administrator installiert}}</translation>
 <translation id="5523532775593636291">Hinzugefügte Websites bleiben immer aktiv und im Arbeitsspeicher</translation>
 <translation id="5523558474028191231">Der Name darf aus Buchstaben, Ziffern und Sonderzeichen bestehen und maximal <ph name="MAX_CHARACTER_COUNT" /> Zeichen lang sein</translation>
@@ -6961,7 +6960,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6020431688553761150">Du wurdest vom Server nicht für den Zugriff auf diese Ressource autorisiert.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> Apps werden nicht mehr unterstützt</translation>
 <translation id="6021969570711251331">Überlappend</translation>
-<translation id="602212068530399867">In der Adressleiste und im Launcher verwendete Suchmaschine.</translation>
 <translation id="6022526133015258832">Im Vollbildmodus öffnen</translation>
 <translation id="6022659036123304283">Chrome personalisieren</translation>
 <translation id="6023643151125006053">Dieses Gerät (SN: <ph name="SERIAL_NUMBER" />) wurde durch den Administrator von <ph name="SAML_DOMAIN" /> gesperrt.</translation>

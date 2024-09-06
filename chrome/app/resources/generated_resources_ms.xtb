@@ -6316,7 +6316,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
         &lt;li&gt;Anda telah log masuk ke Google Account anda&lt;/li&gt;
         &lt;li&gt;Anda telah menghidupkan Aktiviti Web &amp; Apl&lt;/li&gt;
       &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">Enjin carian yang digunakan dalam bar alamat.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Satu sambungan telah dipasang oleh pentadbir anda}other{# sambungan telah dipasang oleh pentadbir anda}}</translation>
 <translation id="5523532775593636291">Laman yang anda tambahkan akan sentiasa aktif dan memori tidak akan dikosongkan daripada laman tersebut</translation>
 <translation id="5523558474028191231">Nama boleh menggunakan huruf, nombor serta aksara khas dan mestilah tidak melebihi <ph name="MAX_CHARACTER_COUNT" /> aksara</translation>
@@ -6984,7 +6983,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6020431688553761150">Pelayan tidak membenarkan anda mengakses sumber ini.</translation>
 <translation id="6021293122504240352">Apl <ph name="APPS" /> tidak disokong lagi</translation>
 <translation id="6021969570711251331">Antara lembar</translation>
-<translation id="602212068530399867">Enjin carian yang digunakan dalam bar alamat dan pelancar.</translation>
 <translation id="6022526133015258832">Buka Skrin Penuh</translation>
 <translation id="6022659036123304283">Peribadikan Chrome anda</translation>
 <translation id="6023643151125006053">Peranti ini (SN: <ph name="SERIAL_NUMBER" />) telah dikunci oleh pentadbir <ph name="SAML_DOMAIN" />.</translation>
@@ -10325,6 +10323,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8440630305826533614">Apl Linux</translation>
 <translation id="844063558976952706">Sentiasa hidup pada laman ini</translation>
 <translation id="8441313165929432954">Dayakan/Lumpuhkan Penambatan</translation>
+<translation id="8443542808381875261">Tutup tab yang tidak digunakan</translation>
 <translation id="8443986842926457191">URL melebihi 2048 aksara</translation>
 <translation id="8445281870900174108">Tab ini menggunakan kamera anda</translation>
 <translation id="8446884382197647889">Ketahui Lebih Lanjut</translation>

@@ -4248,7 +4248,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="3995138139523574647">Dispositiu USB-C (port posterior dret)</translation>
 <translation id="3995963973192100066">Reprodueix l'animació</translation>
 <translation id="399788104667917863">Fixa a la barra d'eines</translation>
-<translation id="3998780825367526465">Mostra les imatges de previsualització de la pestanya</translation>
+<translation id="3998780825367526465">Mostra imatges de previsualització de les pestanyes</translation>
 <translation id="3998976413398910035">Gestiona les impressores</translation>
 <translation id="4000360130639414007">No podràs utilitzar aplicacions d'Android ni Google Play Store</translation>
 <translation id="4001540981461989979">Marca el cursor del ratolí quan es mogui</translation>
@@ -6299,7 +6299,6 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
         &lt;li&gt;Tens la sessió iniciada al teu Compte de Google.&lt;/li&gt;
         &lt;li&gt;Tens l'opció Activitat al web i en aplicacions activada.&lt;/li&gt;
       &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">Motor de cerca que s'utilitza a la barra d'adreces.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{L'administrador ha instal·lat una extensió}other{L'administrador ha instal·lat # extensions}}</translation>
 <translation id="5523532775593636291">Els llocs web que afegeixis estaran sempre actius i no se n'alliberarà memòria</translation>
 <translation id="5523558474028191231">El nom pot incloure lletres, números i caràcters especials, i pot tenir com a màxim <ph name="MAX_CHARACTER_COUNT" /> caràcters</translation>
@@ -6965,7 +6964,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6020431688553761150">El servidor no us ha autoritzat a accedir a aquest recurs.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> aplicacions ja no s'admeten</translation>
 <translation id="6021969570711251331">Entrellaça</translation>
-<translation id="602212068530399867">Motor de cerca que s'utilitza a la barra d'adreces i al menú d'aplicacions.</translation>
 <translation id="6022526133015258832">Obre en pantalla completa</translation>
 <translation id="6022659036123304283">Personalitza Chrome</translation>
 <translation id="6023643151125006053">L'administrador del domini <ph name="SAML_DOMAIN" /> ha bloquejat aquest dispositiu (NS: <ph name="SERIAL_NUMBER" />).</translation>

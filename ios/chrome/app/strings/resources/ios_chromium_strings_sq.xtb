@@ -71,6 +71,8 @@ Për më shumë cilësime që përdorin të dhënat për të përmirësuar përv
 <translation id="3344973607274501920">Chromium nuk mund t'i kontrollonte fjalëkalimet e tua. Provo të kontrollosh lidhjen e internetit.</translation>
 <translation id="3366305173356742781">Të dhënat e Chromium në llogarinë tënde</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Kjo ndodh kur Chromium nuk përdoret për {THRESHOLD} minutë. Kjo mund të përfshijë historikun dhe plotësimin automatik.}other{Kjo ndodh kur Chromium nuk përdoret për {THRESHOLD} minuta. Kjo mund të përfshijë historikun dhe plotësimin automatik.}}</translation>
+<translation id="3410395242749598859">Disa nga të dhënat e tua të Chromium nuk janë ruajtur ende në <ph name="EMAIL" />.
+Provo të presësh për disa minuta para se të ndërrosh llogaritë. Nëse i ndërron llogaritë tani, këto të dhëna do të fshihen.</translation>
 <translation id="3472200483164753384">Nuk mbështetet në Chromium Canary</translation>
 <translation id="347967311580159871">Për më shumë cilësime që përdorin të dhënat për të përmirësuar përvojën tënde me Chromium, shko te <ph name="BEGIN_LINK" />Shërbimet e Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Fjalëkalimi yt nuk është ndarë. Kontrollo lidhjen e internetit dhe sigurohu që të jesh identifikuar në Chromium. Më pas provo përsëri.</translation>

@@ -6301,7 +6301,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
         &lt;li&gt;Hai eseguito l'accesso al tuo Account Google&lt;/li&gt;
         &lt;li&gt;Hai attivato l'impostazione Attività web e app&lt;/li&gt;
       &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">Motore di ricerca utilizzato nella barra degli indirizzi.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Il tuo amministratore ha installato un'estensione}other{Il tuo amministratore ha installato # estensioni}}</translation>
 <translation id="5523532775593636291">I siti che aggiungi saranno sempre attivi e non verrà eliminata memoria per questi siti</translation>
 <translation id="5523558474028191231">Il nome può contenere lettere, numeri e caratteri speciali e non può superare i <ph name="MAX_CHARACTER_COUNT" /> caratteri</translation>
@@ -6966,7 +6965,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6020431688553761150">Il server non ti ha autorizzato ad accedere a questa risorsa.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> app non sono più supportate</translation>
 <translation id="6021969570711251331">Interfoliazione</translation>
-<translation id="602212068530399867">Motore di ricerca utilizzato nella barra degli indirizzi e in Avvio app.</translation>
 <translation id="6022526133015258832">Apri a schermo intero</translation>
 <translation id="6022659036123304283">Personalizza il tuo Chrome</translation>
 <translation id="6023643151125006053">Questo dispositivo (numero di serie <ph name="SERIAL_NUMBER" />) è stato bloccato dall'amministratore di <ph name="SAML_DOMAIN" />.</translation>

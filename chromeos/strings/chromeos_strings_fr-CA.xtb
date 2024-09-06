@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">neige</translation>
 <translation id="3146655726035122603">Exclusif à <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Données mobiles</translation>
+<translation id="3156511682997763015">Avancer de 10 secondes</translation>
 <translation id="3156846309055100599">Numérisation de la page <ph name="PAGE_NUMBER" /> en cours…</translation>
 <translation id="315738237743207937">Un portail captif a été détecté</translation>
 <translation id="3160172848211257835">Envoyer les <ph name="BEGIN_LINK1" />données relatives au système et aux applications<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />mesures<ph name="END_LINK2" /></translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">Aucun résultat de recherche n'a été trouvé</translation>
 <translation id="3305294846493618482">plus</translation>
 <translation id="3310640316857623290">La latence du DNS dépasse le seuil acceptable de manière considérable</translation>
+<translation id="3321030238473337787">Vitesse de lecture</translation>
 <translation id="3328783797891415197">Exécution du test en cours…</translation>
 <translation id="3340011300870565703">Le niveau de la pile de l'écouteur droit est à <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">paramètres</translation>
@@ -1336,6 +1338,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Type de fournisseur</translation>
 <translation id="7882501334836096755">Clé publique</translation>
+<translation id="7889966925761734854">Rechercher</translation>
 <translation id="78957024357676568">gauche</translation>
 <translation id="7897043345768902965">passerelle</translation>
 <translation id="7902285181767404769">Désactivez le son des notifications pendant l'enregistrement</translation>

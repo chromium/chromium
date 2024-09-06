@@ -6317,7 +6317,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
         &lt;li&gt;Du er logget ind på din Google-konto&lt;/li&gt;
         &lt;li&gt;Web- og appaktivitet er aktiveret&lt;/li&gt;
       &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">Den søgemaskine, der bruges i adresselinjen.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{En udvidelse blev installeret af din administrator}one{# udvidelse blev installeret af din administrator}other{# udvidelser blev installeret af din administrator}}</translation>
 <translation id="5523532775593636291">De websites, du tilføjer, forbliver aktive, og der frigøres ikke hukommelse fra dem.</translation>
 <translation id="5523558474028191231">Navne må indeholde bogstaver, tal og specialtegn og må maks. være på <ph name="MAX_CHARACTER_COUNT" /> tegn</translation>
@@ -6985,7 +6984,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6020431688553761150">Serveren godkendte dig ikke til at få adgang til denne ressource.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> apps understøttes ikke længere</translation>
 <translation id="6021969570711251331">Sammenflet</translation>
-<translation id="602212068530399867">Den søgemaskine, der bruges i adresselinjen og applisten.</translation>
 <translation id="6022526133015258832">Åbn i fuld skærm</translation>
 <translation id="6022659036123304283">Gør Chrome til din egen</translation>
 <translation id="6023643151125006053">Denne enhed (serienummer: <ph name="SERIAL_NUMBER" />) blev låst af administratoren på <ph name="SAML_DOMAIN" />.</translation>

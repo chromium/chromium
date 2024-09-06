@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">borë</translation>
 <translation id="3146655726035122603">Ekskluzive për <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Të dhëna celulare</translation>
+<translation id="3156511682997763015">Shko përpara 10 sekonda</translation>
 <translation id="3156846309055100599">Po skanon faqen <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">U zbulua portal izolues</translation>
 <translation id="3160172848211257835">Dërgo <ph name="BEGIN_LINK1" />informacionet e sistemit dhe të aplikacionit<ph name="END_LINK1" />, si dhe <ph name="BEGIN_LINK2" />metrikën<ph name="END_LINK2" /></translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">Nuk u gjetën rezultate kërkimi</translation>
 <translation id="3305294846493618482">më shumë</translation>
 <translation id="3310640316857623290">Vonesa e DNS-së është shumë më lart se pragu i lejueshëm</translation>
+<translation id="3321030238473337787">Shpejtësia e luajtjes</translation>
 <translation id="3328783797891415197">Testi është në ekzekutim</translation>
 <translation id="3340011300870565703">Pajisja ka <ph name="BATTERY_PERCENTAGE" />% bateri në kufjen e djathtë.</translation>
 <translation id="3340978935015468852">cilësimet</translation>
@@ -1336,6 +1338,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Lloji i ofruesit</translation>
 <translation id="7882501334836096755">Çelës publik</translation>
+<translation id="7889966925761734854">Kërko</translation>
 <translation id="78957024357676568">majtas</translation>
 <translation id="7897043345768902965">rrugicë</translation>
 <translation id="7902285181767404769">Vendos njoftimet në heshtje ndërsa regjistron</translation>

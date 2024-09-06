@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">sniegas</translation>
 <translation id="3146655726035122603">Taikoma tik „<ph name="PRODUCT_NAME" />“</translation>
 <translation id="315116470104423982">Duomenys mobiliesiems</translation>
+<translation id="3156511682997763015">Persukti dešimt sekundžių pirmyn</translation>
 <translation id="3156846309055100599">Nuskaitomas <ph name="PAGE_NUMBER" /> puslapis...</translation>
 <translation id="315738237743207937">Aptiktas fiksuotasis portalas</translation>
 <translation id="3160172848211257835">Siųsti <ph name="BEGIN_LINK1" />sistemos ir programos informaciją<ph name="END_LINK1" /> ir <ph name="BEGIN_LINK2" />metriką<ph name="END_LINK2" /></translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">Nerasta jokių paieškos rezultatų</translation>
 <translation id="3305294846493618482">daugiau</translation>
 <translation id="3310640316857623290">DNS delsa gerokai viršija leistiną slenksčio vertę</translation>
+<translation id="3321030238473337787">Atkūrimo sparta</translation>
 <translation id="3328783797891415197">Vykdomas bandymas</translation>
 <translation id="3340011300870565703">Įrenginio dešiniosios ausinės akumuliatoriaus energijos lygis: <ph name="BATTERY_PERCENTAGE" /> proc.</translation>
 <translation id="3340978935015468852">Nustatymai</translation>
@@ -1336,6 +1338,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Teikėjo tipas</translation>
 <translation id="7882501334836096755">Viešasis raktas</translation>
+<translation id="7889966925761734854">Ieškoti</translation>
 <translation id="78957024357676568">kairėn</translation>
 <translation id="7897043345768902965">pėsčiųjų takas</translation>
 <translation id="7902285181767404769">Nutildyti pranešimus įrašant</translation>

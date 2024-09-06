@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">sne</translation>
 <translation id="3146655726035122603">Kun tilgængelig på <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobildata</translation>
+<translation id="3156511682997763015">Spol 10 sekunder frem</translation>
 <translation id="3156846309055100599">Scanner side <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">Der blev registreret en loginportal</translation>
 <translation id="3160172848211257835">Send <ph name="BEGIN_LINK1" />system- og appoplysninger<ph name="END_LINK1" /> samt <ph name="BEGIN_LINK2" />metrics<ph name="END_LINK2" /></translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">Der blev ikke fundet nogen søgeresultater</translation>
 <translation id="3305294846493618482">mere</translation>
 <translation id="3310640316857623290">DNS-forsinkelsen er markant højere end den tilladte grænse</translation>
+<translation id="3321030238473337787">Afspilningshastighed</translation>
 <translation id="3328783797891415197">Testen kører</translation>
 <translation id="3340011300870565703">Enheden har <ph name="BATTERY_PERCENTAGE" /> % batteri på højre øretelefon.</translation>
 <translation id="3340978935015468852">indstillinger</translation>
@@ -1336,6 +1338,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Udbydertype</translation>
 <translation id="7882501334836096755">Offentlig nøgle</translation>
+<translation id="7889966925761734854">Hop</translation>
 <translation id="78957024357676568">venstre</translation>
 <translation id="7897043345768902965">fortov</translation>
 <translation id="7902285181767404769">Sæt notifikationer på lydløs under optagelser</translation>

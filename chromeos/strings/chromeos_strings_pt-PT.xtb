@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">neve</translation>
 <translation id="3146655726035122603">Exclusivo do <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Dados móveis</translation>
+<translation id="3156511682997763015">Avançar 10 segundos</translation>
 <translation id="3156846309055100599">A digitalizar a página <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Portal cativo detetado</translation>
 <translation id="3160172848211257835">Enviar <ph name="BEGIN_LINK2" />métricas<ph name="END_LINK2" /> e <ph name="BEGIN_LINK1" />informações do sistema e da app<ph name="END_LINK1" /></translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">Não foram encontrados resultados da pesquisa</translation>
 <translation id="3305294846493618482">mais</translation>
 <translation id="3310640316857623290">Latência de DNS significativamente acima do limite permitido.</translation>
+<translation id="3321030238473337787">Velocidade de reprodução</translation>
 <translation id="3328783797891415197">A executar teste…</translation>
 <translation id="3340011300870565703">O dispositivo tem <ph name="BATTERY_PERCENTAGE" />% de bateria no auricular direito.</translation>
 <translation id="3340978935015468852">definições</translation>
@@ -1336,6 +1338,7 @@ Transfira o modelo de transcrição (até 100 MB) para ver estas transcrições.
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tipo de fornecedor</translation>
 <translation id="7882501334836096755">Chave pública</translation>
+<translation id="7889966925761734854">Procurar</translation>
 <translation id="78957024357676568">esquerda</translation>
 <translation id="7897043345768902965">passeio</translation>
 <translation id="7902285181767404769">Silenciar as notificações durante a gravação</translation>

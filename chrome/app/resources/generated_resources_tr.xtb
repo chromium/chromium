@@ -6298,7 +6298,6 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
         &lt;li&gt;Google Hesabınızda oturum açtıysanız&lt;/li&gt;
         &lt;li&gt;Web ve Uygulama Etkinliği'ni açtıysanız&lt;/li&gt;
       &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">Adres çubuğunda kullanılan arama motoru.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Yöneticiniz tarafından bir uzantı yüklendi}other{Yöneticiniz tarafından # uzantı yüklendi}}</translation>
 <translation id="5523532775593636291">Eklediğiniz siteler her zaman etkin kalır ve bu sitelerin kullandığı bellekte yer açılmaz</translation>
 <translation id="5523558474028191231">Ad harf, sayı ve özel karakter içerebilir ve en fazla <ph name="MAX_CHARACTER_COUNT" /> karakter olabilir</translation>
@@ -6967,7 +6966,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6020431688553761150">Sunucu, bu kaynağa erişmeniz için yetki vermedi.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> uygulama artık desteklenmiyor</translation>
 <translation id="6021969570711251331">Üst üste</translation>
-<translation id="602212068530399867">Adres çubuğu ve başlatıcıda kullanılan arama motoru.</translation>
 <translation id="6022526133015258832">Tam Ekranı Aç</translation>
 <translation id="6022659036123304283">Chrome'u kendinize uyarlayın</translation>
 <translation id="6023643151125006053">Bu cihaz (SN: <ph name="SERIAL_NUMBER" />) <ph name="SAML_DOMAIN" /> yöneticisi tarafından kilitlendi.</translation>

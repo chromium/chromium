@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">snö</translation>
 <translation id="3146655726035122603">Exklusivt för <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobildata</translation>
+<translation id="3156511682997763015">Spola framåt 10 sekunder</translation>
 <translation id="3156846309055100599">Skannar sidan <ph name="PAGE_NUMBER" /> …</translation>
 <translation id="315738237743207937">Infångstportal har upptäckts</translation>
 <translation id="3160172848211257835">Skicka <ph name="BEGIN_LINK1" />system- och appinformation<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />statistik<ph name="END_LINK2" /></translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">Inga sökresultat hittades</translation>
 <translation id="3305294846493618482">mer</translation>
 <translation id="3310640316857623290">DNS-latensen är avsevärt högre än det godtagbara tröskelvärdet</translation>
+<translation id="3321030238473337787">Uppspelningshastighet</translation>
 <translation id="3328783797891415197">Testet körs</translation>
 <translation id="3340011300870565703">Batterinivån för höger hörsnäcka på enheten är <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">inställningar</translation>
@@ -1336,6 +1338,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Leverantörstyp</translation>
 <translation id="7882501334836096755">Offentlig nyckel</translation>
+<translation id="7889966925761734854">Sök</translation>
 <translation id="78957024357676568">vänster</translation>
 <translation id="7897043345768902965">gångväg</translation>
 <translation id="7902285181767404769">Stäng av aviseringsljud under inspelning</translation>

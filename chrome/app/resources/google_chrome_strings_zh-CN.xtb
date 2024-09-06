@@ -169,7 +169,7 @@
 <translation id="3140883423282498090">您所做的更改会在下次重新启动 Google Chrome 时生效。</translation>
 <translation id="3149510190863420837">Chrome 应用</translation>
 <translation id="3169523567916669830">在试用期间，您可看到并移除被网站用来向您展示广告的兴趣主题。Chrome 会根据您近期的浏览记录推测出您的兴趣。</translation>
-<translation id="3196187562065225381">Chrome 阻止了此项下载操作，因为该文件具有危险性</translation>
+<translation id="3196187562065225381">由于该文件具有危险性，Chrome 阻止了这次下载</translation>
 <translation id="3226612997184048185">如果您还将书签保存在 Google 账号中，则可在 Chrome 中跟踪商品价格，并在降价时收到通知</translation>
 <translation id="3234642784688107085">试用全新 AI 功能，创建主题、获取写作帮助，并让一切井然有序</translation>
 <translation id="3245429137663807393">如果您还共享了 Chrome 使用情况报告，这些报告会包含您访问过的网址</translation>
@@ -287,7 +287,6 @@
 <translation id="4828579605166583682">Google Chrome 正在尝试替换现有密码。请输入您的 Windows 密码以允许此操作。</translation>
 <translation id="4842397268809523050">ChromeOS Flex 无法同步您的数据，因为您的网域不支持同步。</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" />已登录。若要单独存储您的浏览数据，请使用您自己的个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录 Chrome。</translation>
-<translation id="4862446263930606916">贵组织可以查看和管理您工作资料中的浏览数据（例如您的书签、历史记录和密码），但无法查看 Chrome 个人资料中的浏览数据。</translation>
 <translation id="4873692836499071887">若要接收后续 Google Chrome 更新，您需使用 macOS 11 或更高版本。该计算机目前使用的是 macOS 10.15。</translation>
 <translation id="4873783916118289636">检查 Chrome 中重要的隐私控制设置和安全控件</translation>
 <translation id="4891791193823137474">让 Google Chrome 浏览器在后台运行</translation>

@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">śnieg</translation>
 <translation id="3146655726035122603">Tylko na urządzeniu <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobilna transmisja danych</translation>
+<translation id="3156511682997763015">Przewiń do przodu o 10 sekund</translation>
 <translation id="3156846309055100599">Skanuję stronę <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Wykryto portal przechwytujący</translation>
 <translation id="3160172848211257835">Wyślij <ph name="BEGIN_LINK1" />informacje o systemie i aplikacjach<ph name="END_LINK1" /> oraz <ph name="BEGIN_LINK2" />dane<ph name="END_LINK2" /></translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">Brak wyników wyszukiwania</translation>
 <translation id="3305294846493618482">więcej</translation>
 <translation id="3310640316857623290">Opóźnienie DNS znacznie przekracza dopuszczalny próg</translation>
+<translation id="3321030238473337787">Szybkość odtwarzania</translation>
 <translation id="3328783797891415197">Test w toku</translation>
 <translation id="3340011300870565703">Poziom naładowania baterii prawej słuchawki urządzenia: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">ustawienia</translation>
@@ -1333,6 +1335,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Typ dostawcy</translation>
 <translation id="7882501334836096755">Klucz publiczny</translation>
+<translation id="7889966925761734854">Szukaj</translation>
 <translation id="78957024357676568">w lewo</translation>
 <translation id="7897043345768902965">chodnik</translation>
 <translation id="7902285181767404769">Wyciszaj powiadomienia podczas nagrywania</translation>

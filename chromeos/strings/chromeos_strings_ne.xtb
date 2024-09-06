@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">स्नो</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> मा मात्र उपलब्ध</translation>
 <translation id="315116470104423982">मोबाइल डाटा</translation>
+<translation id="3156511682997763015">१० सेकेन्ड फर्वार्ड गर्नुहोस्</translation>
 <translation id="3156846309055100599">पेज <ph name="PAGE_NUMBER" /> स्क्यान गरिँदै छ...</translation>
 <translation id="315738237743207937">क्याप्टिभ पोर्टल भेटियो</translation>
 <translation id="3160172848211257835"><ph name="BEGIN_LINK1" />सिस्टम तथा एपसम्बन्धी जानकारी<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />मेट्रिक्स<ph name="END_LINK2" /> पठाउनुहोस्</translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">खोजका परिणाम फेला परेनन्</translation>
 <translation id="3305294846493618482">थप</translation>
 <translation id="3310640316857623290">DNS को विलम्बता तोकिएको समयसीमाभन्दा अत्यधिक मात्रामा बढी छ</translation>
+<translation id="3321030238473337787">प्लेब्याकको गति</translation>
 <translation id="3328783797891415197">परीक्षण चलिरहेको छ</translation>
 <translation id="3340011300870565703">यो डिभाइसको दायाँपट्टिको बडमा <ph name="BATTERY_PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
 <translation id="3340978935015468852">सेटिङहरू</translation>
@@ -1336,6 +1338,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">प्रदायकको प्रकार</translation>
 <translation id="7882501334836096755">सार्वजनिक की</translation>
+<translation id="7889966925761734854">खोज्नुहोस्</translation>
 <translation id="78957024357676568">बायाँ</translation>
 <translation id="7897043345768902965">वाकवे</translation>
 <translation id="7902285181767404769">रेकर्ड गरिरहेका बेला नोटिफिकेसनको आवाज साइलेन्ट पार्नुहोस्</translation>

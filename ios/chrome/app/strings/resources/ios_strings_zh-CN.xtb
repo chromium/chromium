@@ -21,6 +21,7 @@
 <translation id="1108938384783527433">历史记录同步</translation>
 <translation id="1112015203684611006">打印操作失败。</translation>
 <translation id="1118569444314402022">欢迎回来，<ph name="USER_NAME" /></translation>
+<translation id="1121850836842642159">照片和图片</translation>
 <translation id="1125564390852150847">创建新的标签页。</translation>
 <translation id="1126809382673880764">不会保护您免受危险网站、下载内容和扩展程序的侵害。在 Gmail 和 Google 搜索等其他 Google 服务中，若安全浏览保护可用，您仍将获得该保护。</translation>
 <translation id="1147031633655575115">目前的登录者是：<ph name="USER" /></translation>
@@ -148,6 +149,7 @@
 <translation id="1967461193809857427">{count,plural, =1{要继续使用之前在 Android 设备上打开的标签页吗？}other{要继续使用之前在 Android 设备上打开的标签页吗？}}</translation>
 <translation id="1972325230031091483">您的浏览速度会更快，因为系统会根据您当前访问的网页主动加载内容</translation>
 <translation id="1974060860693918893">高级</translation>
+<translation id="1979188886349613713">包括网站未指定的文件扩展名</translation>
 <translation id="1980417445547898121">{count,plural, =1{在这部 iPhone 上打开最近在其他设备上使用的 {count} 个标签页}other{在这部 iPhone 上打开最近在其他设备上使用的 {count} 个标签页}}</translation>
 <translation id="1981118202195772574">移动版</translation>
 <translation id="1984417487208496350">不保护（不建议）</translation>
@@ -622,6 +624,7 @@
 <translation id="5132942445612118989">将您的密码、历史记录等信息同步到所有设备上</translation>
 <translation id="5137526732000415202">您上次在所有设备上打开的标签页。</translation>
 <translation id="5157638238828697074">出了点问题。无法打开该应用。</translation>
+<translation id="5163417375525818870">PDF</translation>
 <translation id="5168414296986405587">专为 iPadOS 打造</translation>
 <translation id="5169725654005786900">正在操作…</translation>
 <translation id="5176312250994681348">保留最新的密码</translation>
@@ -655,6 +658,7 @@
 <translation id="5343472494710226394">根据您的兴趣推送的新闻、体育赛事和内容。</translation>
 <translation id="5348775987281903912">您可以通过分享按钮在此处分享该页面。</translation>
 <translation id="5355191726083956201">已开启增强型保护</translation>
+<translation id="5356332698539508708">删除并切换</translation>
 <translation id="537853552771686272">管理您感兴趣的主题和网站</translation>
 <translation id="5395707839134961196">隐藏搜索引擎详细信息</translation>
 <translation id="5414763847370083940">当相应商品在所跟踪的任何网站上降价时，您都会收到提醒。</translation>
@@ -742,6 +746,7 @@
 <translation id="5860033963881614850">关闭</translation>
 <translation id="5860491529813859533">启用</translation>
 <translation id="5869522115854928033">已保存的密码</translation>
+<translation id="5878899964490256268"><ph name="EMAIL" />。由贵组织管理。</translation>
 <translation id="5888889603768021126">所用登录身份</translation>
 <translation id="5896576662943111387">专为 iOS 打造</translation>
 <translation id="5897749768294722429">如果想快速重新访问浏览过的网站，请同步您的标签页和历史记录。</translation>
@@ -843,6 +848,7 @@
 <translation id="6429213933892582367">打开“密码选项”</translation>
 <translation id="6434591244308415567">发生错误，请稍后重试。</translation>
 <translation id="6443118737398455446">过期日期无效</translation>
+<translation id="6444435711855078002">更多选项</translation>
 <translation id="6445051938772793705">国家/地区</translation>
 <translation id="6445981559479772097">短信已发送。</translation>
 <translation id="6447842834002726250">Cookie</translation>
@@ -908,6 +914,7 @@
 <translation id="6746338529702829275">检查您的账号数据</translation>
 <translation id="6748108480210050150">发件人</translation>
 <translation id="6755200887046212842">管理账号</translation>
+<translation id="6761393919622941301">音频</translation>
 <translation id="6779455296366983087">您的浏览数据将被删除</translation>
 <translation id="6790502149545262384">不久之后，当打开新标签页时，您会看到来自<ph name="CHANNEL_NAME" />的故事。</translation>
 <translation id="6800349425672670802">您可在标签页切换器中访问您所有已打开的标签页。</translation>
@@ -949,6 +956,7 @@
 <translation id="7063811929043357292">你的账号由家长管理。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="7067610207756299941">为保护贵组织的安全，未保存的数据将从此设备中删除。这些数据可能包括密码、历史记录等。</translation>
+<translation id="7067780033517902110">所有文件</translation>
 <translation id="7080806333218412752">会将网址发送给“安全浏览”功能进行检查。还会发送网页、下载内容、扩展程序活动和系统信息的少量样本，以帮助发现新威胁。而且，会在您登录后暂时将这些数据关联到您的 Google 账号，以便在各个 Google 应用中为您提供保护。</translation>
 <translation id="7082853213442715471">开启锁定模式后，系统会屏蔽某些网络技术，这可能会导致部分网站的加载速度变慢或无法正常运行。</translation>
 <translation id="7095110968493193530">保存到 <ph name="EMAIL" /> 的 Google 密码管理工具</translation>
@@ -1084,6 +1092,7 @@
 <translation id="7926975587469166629">卡的别名</translation>
 <translation id="7927711904086083099">未选择</translation>
 <translation id="7930998711684428189">密码遭遇数据泄露时向您发出警告。</translation>
+<translation id="7933880123415105005">在 <ph name="SEARCH_PROVIDER" /> 中搜索</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7944772052836377867">同步功能需要验证您的身份</translation>
 <translation id="7947953824732555851">接受并登录</translation>
@@ -1210,6 +1219,7 @@
 <translation id="8654802032646794042">取消</translation>
 <translation id="8663764600409216912">您使用的密码不易猜中</translation>
 <translation id="8668210798914567634">此页面已保存到您的阅读列表。</translation>
+<translation id="8672733398999596205">全部可选</translation>
 <translation id="8674716540979958118">您有已泄露的密码。</translation>
 <translation id="8680787084697685621">账号登录详细信息已过期。</translation>
 <translation id="8692689525339542358">保护您免受危险的网站、下载内容和扩展程序的侵害。</translation>
@@ -1238,9 +1248,11 @@
 <translation id="8843129975935593190">贵单位限制了您可同步的内容。</translation>
 <translation id="8849001918648564819">已隐藏</translation>
 <translation id="8855242995793521265">不会致使浏览器或设备的运行速度明显变慢。</translation>
+<translation id="8856643812068084733">归档文件</translation>
 <translation id="8863431381414769983">通过 Google 地图获取路线和本地信息</translation>
 <translation id="8871974300055371298">内容设置</translation>
 <translation id="8879604564928138696">点按两次即可试用</translation>
+<translation id="8893208530912252670">视频</translation>
 <translation id="8898822736010347272">向 Google 发送您访问的部分网页的网址、有限的系统信息以及部分网页内容，以协助我们发现新威胁并保护网络上的所有用户。</translation>
 <translation id="890565330728586731">返回</translation>
 <translation id="8909135823018751308">分享…</translation>

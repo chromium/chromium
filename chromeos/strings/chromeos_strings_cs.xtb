@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">sníh</translation>
 <translation id="3146655726035122603">Exkluzivní pro <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobilní datové přenosy</translation>
+<translation id="3156511682997763015">O 10 sekund vpřed</translation>
 <translation id="3156846309055100599">Skenování stránky <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Byl nalezen captive portál</translation>
 <translation id="3160172848211257835">Odesílat <ph name="BEGIN_LINK1" />informace o systému a aplikacích<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />metriky<ph name="END_LINK2" /></translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">Nebyly nalezeny žádné výsledky</translation>
 <translation id="3305294846493618482">více</translation>
 <translation id="3310640316857623290">DNS má latenci výrazně nad prahovou hodnotou</translation>
+<translation id="3321030238473337787">Rychlost přehrávání</translation>
 <translation id="3328783797891415197">Běží test</translation>
 <translation id="3340011300870565703">Stav baterie pravého sluchátka je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">nastavení</translation>
@@ -1336,6 +1338,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Typ poskytovatele</translation>
 <translation id="7882501334836096755">Veřejný klíč</translation>
+<translation id="7889966925761734854">Posuvník přehrávání</translation>
 <translation id="78957024357676568">vlevo</translation>
 <translation id="7897043345768902965">chodník</translation>
 <translation id="7902285181767404769">Při nahrávání vypnout zvuk oznámení</translation>

@@ -71,6 +71,8 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="3344973607274501920">Chromium no ha pogut comprovar les teves contrasenyes. Comprova la connexió a Internet.</translation>
 <translation id="3366305173356742781">Dades de Chromium al teu compte</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Es produeix quan Chromium no s'utilitza durant {THRESHOLD} minut. Això pot incloure l'historial i la funció Emplenament automàtic.}other{Es produeix quan Chromium no s'utilitza durant {THRESHOLD} minuts. Això pot incloure l'historial i la funció Emplenament automàtic.}}</translation>
+<translation id="3410395242749598859">Algunes dades de Chromium encara no s'han desat a <ph name="EMAIL" />.
+Espera uns quants minuts abans de canviar de compte. Si canvies de compte ara, aquestes dades se suprimiran.</translation>
 <translation id="3472200483164753384">No s'admeten a Chromium Canary</translation>
 <translation id="347967311580159871">Per veure més opcions de configuració que utilitzin dades per millorar la teva experiència de Chromium, ves a <ph name="BEGIN_LINK" />Serveis de Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">La contrasenya no s'ha compartit. Comprova la connexió a Internet i assegura't que tens la sessió iniciada a Chromium. Després, torna-ho a provar.</translation>

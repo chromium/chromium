@@ -17,7 +17,7 @@
 <translation id="1188705220418984327">若要共享窗口，请在“系统偏好设置”中为 Chromium 启用屏幕录制功能。</translation>
 <translation id="1203500561924088507">感谢您完成安装。您必须重启浏览器才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="1262876892872089030">当此标签页处于闲置状态时，系统会释放一些内存，以让 Chromium 保持快速运行。您可以选择始终不让此网站处于闲置状态。</translation>
-<translation id="1265577313130862557">Chromium 阻止了此项下载操作，因为该文件具有危险性</translation>
+<translation id="1265577313130862557">由于该文件具有危险性，Chromium 阻止了这次下载</translation>
 <translation id="126567311906253476">使用 <ph name="USER_EMAIL" /> 登录 Gmail 或 YouTube 等 Google 服务时，您可以使用同一账号自动登录 Chromium</translation>
 <translation id="1290883685122687410">设置错误：<ph name="METAINSTALLER_EXIT_CODE" />。<ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">设置您的新 Chromium 个人资料</translation>
@@ -202,7 +202,6 @@
 <translation id="4118474109249235144">Chromium 无痕模式</translation>
 <translation id="4122186850977583290">前往“关于 Chromium”页面</translation>
 <translation id="4148957013307229264">正在安装...</translation>
-<translation id="4149336151887611710">贵组织可以查看和管理您工作资料中的浏览数据（例如您的书签、历史记录和密码），但无法查看 Chromium 个人资料中的浏览数据。</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - 网络登录 - Chromium</translation>
 <translation id="421369550622382712">在这里，您可以找到适用于 Chromium 的精彩应用、游戏、扩展程序和主题背景。</translation>
 <translation id="4216212958613226427">使用此语言显示 Chromium 界面</translation>

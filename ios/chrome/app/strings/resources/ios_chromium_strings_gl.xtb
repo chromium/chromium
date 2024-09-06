@@ -71,6 +71,8 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="3344973607274501920">Chromium non puido comprobar os teus contrasinais. Verifica a conexión a Internet.</translation>
 <translation id="3366305173356742781">Datos de Chromium na túa conta</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Isto ocorre cando Chromium non se utiliza durante {THRESHOLD} minuto. Eses datos poderían incluír o historial e a función de autocompletar.}other{Isto ocorre cando Chromium non se utiliza durante {THRESHOLD} minutos. Eses datos poderían incluír o historial e a función de autocompletar.}}</translation>
+<translation id="3410395242749598859">Algúns dos datos de Chromium aínda non se gardaron en <ph name="EMAIL" />.
+Espera uns minutiños antes de cambiar de conta. Se a cambias agora, eliminaranse eses datos.</translation>
 <translation id="3472200483164753384">Non compatible en Chromium Canary</translation>
 <translation id="347967311580159871">Se queres ver máis opcións de configuración que usen datos para mellorar a túa experiencia con Chromium, vai a <ph name="BEGIN_LINK" />Servizos de Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Non se compartiu o teu contrasinal. Comproba a túa conexión a Internet e asegúrate de que tes a sesión iniciada en Chromium. Despois, téntao de novo.</translation>

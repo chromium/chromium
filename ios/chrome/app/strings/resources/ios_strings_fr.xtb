@@ -21,6 +21,7 @@
 <translation id="1108938384783527433">Synchronisation de l'historique</translation>
 <translation id="1112015203684611006">Échec impr.</translation>
 <translation id="1118569444314402022">Bon retour parmi nous, <ph name="USER_NAME" /> !</translation>
+<translation id="1121850836842642159">Photos et images</translation>
 <translation id="1125564390852150847">Créer un onglet</translation>
 <translation id="1126809382673880764">Ce mode ne vous protège pas contre les téléchargements, les extensions et les sites Web dangereux. Le cas échéant, vous bénéficierez toujours de la protection offerte par la navigation sécurisée dans d'autres services Google, tels que Gmail et la recherche.</translation>
 <translation id="1147031633655575115">Connecté en tant que <ph name="USER" /></translation>
@@ -148,6 +149,7 @@
 <translation id="1967461193809857427">{count,plural, =1{Afficher l'onglet que vous avez quitté sur Android ?}one{Afficher l'onglet que vous avez quitté sur Android ?}other{Afficher les onglets que vous avez quittés sur Android ?}}</translation>
 <translation id="1972325230031091483">Vous naviguerez plus rapidement, car le contenu sera chargé de manière proactive en fonction de la page Web que vous êtes en train de consulter</translation>
 <translation id="1974060860693918893">Paramètres avancés</translation>
+<translation id="1979188886349613713">Inclure les extensions de fichier non spécifiées par le site Web</translation>
 <translation id="1980417445547898121">{count,plural, =1{Affichez sur cet iPhone {count} onglet récemment actif sur votre autre appareil}one{Affichez sur cet iPhone {count} onglet récemment actif sur votre autre appareil}other{Affichez sur cet iPhone vos {count} onglets récemment actifs sur votre autre appareil}}</translation>
 <translation id="1981118202195772574">Mobile</translation>
 <translation id="1984417487208496350">Aucune protection (non recommandé)</translation>
@@ -622,6 +624,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="5132942445612118989">Synchronisez vos mots de passe, votre historique et plus encore sur tous les appareils</translation>
 <translation id="5137526732000415202">Le dernier onglet ouvert sur tous vos appareils.</translation>
 <translation id="5157638238828697074">Un problème est survenu. Impossible d'ouvrir l'appli.</translation>
+<translation id="5163417375525818870">PDF</translation>
 <translation id="5168414296986405587">Conçu pour iPadOS</translation>
 <translation id="5169725654005786900">Action en cours</translation>
 <translation id="5176312250994681348">Conserver le mot de passe récent</translation>
@@ -655,6 +658,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="5343472494710226394">Actualités, sports et contenus basés sur vos centres d'intérêt.</translation>
 <translation id="5348775987281903912">Vous pouvez partager cette page ici à l'aide du bouton "Partager".</translation>
 <translation id="5355191726083956201">La protection renforcée est activée</translation>
+<translation id="5356332698539508708">Supprimer et changer</translation>
 <translation id="537853552771686272">Gérez les thèmes et les sites qui vous intéressent</translation>
 <translation id="5395707839134961196">Masquer les informations sur le moteur de recherche</translation>
 <translation id="5414763847370083940">Vous recevrez une alerte si le prix baisse sur un site.</translation>
@@ -742,6 +746,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5860033963881614850">Désactivé</translation>
 <translation id="5860491529813859533">Activer</translation>
 <translation id="5869522115854928033">Mots de passe enregistrés</translation>
+<translation id="5878899964490256268"><ph name="EMAIL" />. Géré par votre organisation.</translation>
 <translation id="5888889603768021126">Connecté avec</translation>
 <translation id="5896576662943111387">Conçu pour iOS</translation>
 <translation id="5897749768294722429">Pour revenir rapidement aux sites que vous avez consultés, synchronisez vos onglets et votre historique.</translation>
@@ -843,6 +848,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6429213933892582367">Ouvrez "Options de mots de passe"</translation>
 <translation id="6434591244308415567">Une erreur s'est produite. Réessayez plus tard.</translation>
 <translation id="6443118737398455446">La date d'expiration n'est pas valide</translation>
+<translation id="6444435711855078002">Plus d'options</translation>
 <translation id="6445051938772793705">Pays</translation>
 <translation id="6445981559479772097">Message envoyé.</translation>
 <translation id="6447842834002726250">Cookies</translation>
@@ -908,6 +914,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="6746338529702829275">Examiner les données de votre compte</translation>
 <translation id="6748108480210050150">De</translation>
 <translation id="6755200887046212842">Gérer les comptes</translation>
+<translation id="6761393919622941301">Audio</translation>
 <translation id="6779455296366983087">Vos données de navigation seront supprimées</translation>
 <translation id="6790502149545262384">Vous verrez bientôt les stories de <ph name="CHANNEL_NAME" /> quand vous ouvrirez un onglet.</translation>
 <translation id="6800349425672670802">Vous pouvez accéder à tous vos onglets ouverts à partir du sélecteur d'onglets.</translation>
@@ -949,6 +956,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7063811929043357292">Ton compte est géré par ton parent.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="7067610207756299941">Pour protéger la sécurité de votre organisation, les données non enregistrées seront supprimées de cet appareil. Il peut s'agir de mots de passe, de l'historique, etc.</translation>
+<translation id="7067780033517902110">Tous les fichiers</translation>
 <translation id="7080806333218412752">Il envoie des URL à la navigation sécurisée pour les vérifier. Il transmet également un petit échantillon de pages, de téléchargements, d'informations système et de l'activité des extensions afin d'identifier de nouvelles menaces. De même, pour vous protéger dans l'ensemble des applications Google, il associe temporairement ces données à votre compte Google lorsque vous êtes connecté.</translation>
 <translation id="7082853213442715471">Lorsque cette option est activée, certaines technologies Web sont bloquées, ce qui peut ralentir le chargement ou perturber le fonctionnement de certains sites Web.</translation>
 <translation id="7095110968493193530">Dans le Gestionnaire de mots de passe de Google pour <ph name="EMAIL" /></translation>
@@ -1081,9 +1089,10 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7920949005883349320">Confidentialité et sécurité</translation>
 <translation id="792357691529995513">Aucun problème détecté</translation>
 <translation id="7925108652071887026">Données de saisie automatique</translation>
-<translation id="7926975587469166629">Pseudo associé à la carte</translation>
+<translation id="7926975587469166629">Nom donné à la carte</translation>
 <translation id="7927711904086083099">Non sélectionné</translation>
 <translation id="7930998711684428189">Il vous avertit en cas de divulgation de mots de passe suite à une violation des données.</translation>
+<translation id="7933880123415105005">Rechercher sur <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7944772052836377867">La synchronisation doit confirmer votre identité</translation>
 <translation id="7947953824732555851">Accepter/Se connecter</translation>
@@ -1210,6 +1219,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8654802032646794042">Annuler</translation>
 <translation id="8663764600409216912">Vos mots de passe semblent difficiles à deviner</translation>
 <translation id="8668210798914567634">Cette page a été enregistrée dans votre liste de lecture.</translation>
+<translation id="8672733398999596205">Tout activer</translation>
 <translation id="8674716540979958118">Vous avez des mots de passe compromis.</translation>
 <translation id="8680787084697685621">Les informations de connexion au compte sont obsolètes.</translation>
 <translation id="8692689525339542358">Protégez-vous contre les sites, extensions et téléchargements dangereux.</translation>
@@ -1238,9 +1248,11 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8843129975935593190">Votre entreprise limite les éléments que vous pouvez synchroniser.</translation>
 <translation id="8849001918648564819">Masqué</translation>
 <translation id="8855242995793521265">Ne ralentit pas sensiblement votre navigateur ni votre appareil.</translation>
+<translation id="8856643812068084733">Archives</translation>
 <translation id="8863431381414769983">Obtenez un itinéraire et des informations locales depuis Google Maps</translation>
 <translation id="8871974300055371298">Paramètres du contenu</translation>
 <translation id="8879604564928138696">Appuyez deux fois pour essayer</translation>
+<translation id="8893208530912252670">Vidéos</translation>
 <translation id="8898822736010347272">Les URL de certaines pages que vous consultez, ainsi que des informations système limitées et une partie du contenu de certaines pages sont envoyées à Google, à la fois pour identifier les nouvelles menaces et pour protéger tous les utilisateurs sur le Web.</translation>
 <translation id="890565330728586731">Retour</translation>
 <translation id="8909135823018751308">Partager…</translation>

@@ -757,6 +757,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2355395290879513365">Es posible que los atacantes puedan ver las imágenes que ves en este sitio web y que las modifiquen para engañarte.</translation>
 <translation id="2356070529366658676">Preguntar</translation>
 <translation id="2356926036049612643">Optimizador de V8</translation>
+<translation id="2356941001189392209">Una lista limitada de URLs de las páginas que visitas donde se producen eventos tecnológicos antiguos</translation>
 <translation id="2357481397660644965"><ph name="DEVICE_MANAGER" /> gestiona tu dispositivo y <ph name="ACCOUNT_MANAGER" /> gestiona tu cuenta.</translation>
 <translation id="2359629602545592467">Varias</translation>
 <translation id="2359808026110333948">Continuar</translation>
@@ -4297,6 +4298,7 @@ Más información:
 <translation id="8919740778133505789">Coches deportivos</translation>
 <translation id="8919895429178014996">Ocultar todos los elementos</translation>
 <translation id="8922013791253848639">Permite los anuncios siempre en este sitio web</translation>
+<translation id="8922734931659847428">Una lista limitada de URLs de las páginas que visitas donde se producen <ph name="BEGIN_LINK" />eventos tecnológicos antiguos<ph name="END_LINK" /></translation>
 <translation id="8924109546403192898">Cuando Chrome detecte actividades relacionadas con la seguridad, tu administrador recibirá los datos pertinentes. Esto puede incluir URLs de páginas que visites en Chrome, URLs de páginas de las que hayas copiado datos, nombres o metadatos de archivos, fallos del navegador o de pestañas y el nombre de usuario que utilizas para iniciar sesión en aplicaciones web, en tu dispositivo y en Chrome.</translation>
 <translation id="892588693504540538">Perforado en la parte superior derecha</translation>
 <translation id="8926389886865778422">No preguntar de nuevo</translation>

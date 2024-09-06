@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">elurrarekin</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> gailuan soilik</translation>
 <translation id="315116470104423982">Datu-konexioa</translation>
+<translation id="3156511682997763015">Aurreratu 10 segundo</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />. orria eskaneatzen…</translation>
 <translation id="315738237743207937">Sare-zerbitzuaren atari bat hauteman da</translation>
 <translation id="3160172848211257835">Bidali <ph name="BEGIN_LINK1" />sistemari eta aplikazioei buruzko informazioa<ph name="END_LINK1" /> eta <ph name="BEGIN_LINK2" />estatistikak<ph name="END_LINK2" /></translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">Ez da aurkitu bilaketa-emaitzarik</translation>
 <translation id="3305294846493618482">gehiago</translation>
 <translation id="3310640316857623290">DNSaren latentzia onartzen den atalasetik askoz gorago dago</translation>
+<translation id="3321030238473337787">Erreprodukzio-abiadura</translation>
 <translation id="3328783797891415197">Abian da proba</translation>
 <translation id="3340011300870565703">Bateriaren ehuneko <ph name="BATTERY_PERCENTAGE" /> geratzen zaio gailuaren eskuineko aurikularrari.</translation>
 <translation id="3340978935015468852">ezarpenak</translation>
@@ -1336,6 +1338,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="7881066108824108340">DNSa</translation>
 <translation id="7882358943899516840">Hornitzaile mota</translation>
 <translation id="7882501334836096755">Gako publikoa</translation>
+<translation id="7889966925761734854">Bilatu</translation>
 <translation id="78957024357676568">ezkerrera</translation>
 <translation id="7897043345768902965">ibilbide</translation>
 <translation id="7902285181767404769">Desaktibatu jakinarazpenen audioa grabaketa abian den bitartean</translation>

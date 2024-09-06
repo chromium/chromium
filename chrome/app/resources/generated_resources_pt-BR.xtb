@@ -6317,7 +6317,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
         &lt;li&gt;Você fez login na sua Conta do Google&lt;/li&gt;
         &lt;li&gt;A Atividade na Web e de apps está ativada&lt;/li&gt;
       &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">Mecanismo de pesquisa usado na barra de endereço.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Uma extensão foi instalada pelo administrador}one{# extensão foi instalada pelo administrador}other{# extensões foram instaladas pelo administrador}}</translation>
 <translation id="5523532775593636291">Os sites adicionados sempre ficam ativos e a memória não é liberada</translation>
 <translation id="5523558474028191231">Os nomes precisam ter <ph name="MAX_CHARACTER_COUNT" /> caracteres ou menos e podem usar letras, números e caracteres especiais</translation>
@@ -6986,7 +6985,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6020431688553761150">O servidor não autorizou você a acessar este recurso.</translation>
 <translation id="6021293122504240352">Não há mais suporte para <ph name="APPS" /> apps</translation>
 <translation id="6021969570711251331">Intercalado</translation>
-<translation id="602212068530399867">Mecanismo de pesquisa usado na barra de endereço e no acesso rápido.</translation>
 <translation id="6022526133015258832">Abrir em tela cheia</translation>
 <translation id="6022659036123304283">Deixe o Chrome do seu jeito</translation>
 <translation id="6023643151125006053">Este dispositivo (SN: <ph name="SERIAL_NUMBER" />) foi bloqueado pelo administrador de <ph name="SAML_DOMAIN" />.</translation>

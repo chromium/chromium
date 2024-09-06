@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">برف</translation>
 <translation id="3146655726035122603">اختصاصی برای <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">داده‌های تلفن همراه</translation>
+<translation id="3156511682997763015">‫۱۰ ثانیه به جلو</translation>
 <translation id="3156846309055100599">درحال اسکن کردن صفحه <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">درگاه مهمان شناسایی شد</translation>
 <translation id="3160172848211257835">ارسال <ph name="BEGIN_LINK1" />اطلاعات<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />سنجه‌های سیستم و برنامه<ph name="END_LINK2" /></translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">هیچ نتیجه‌ای برای جستجو یافت نشد</translation>
 <translation id="3305294846493618482">بیشتر</translation>
 <translation id="3310640316857623290">تأخیر در ساناد به‌میزان قابل‌توجهی از آستانه مجاز بالاتر است</translation>
+<translation id="3321030238473337787">سرعت بازپخش</translation>
 <translation id="3328783797891415197">درحال اجرای آزمایش</translation>
 <translation id="3340011300870565703">باتری هدفون توگوشی سمت راست دستگاه <ph name="BATTERY_PERCENTAGE" />٪ شارژ دارد.</translation>
 <translation id="3340978935015468852">تنظیمات</translation>
@@ -1336,6 +1338,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">نوع ارائه‌دهنده</translation>
 <translation id="7882501334836096755">کلید عمومی</translation>
+<translation id="7889966925761734854">جستجو</translation>
 <translation id="78957024357676568">چپ</translation>
 <translation id="7897043345768902965">مسیر پیاده</translation>
 <translation id="7902285181767404769">بی‌صدا کردن اعلان‌ها درحین ضبط</translation>

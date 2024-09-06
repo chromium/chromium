@@ -6319,7 +6319,6 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
         &lt;li&gt;ste prijavljeni v račun Google;&lt;/li&gt;
         &lt;li&gt;je vklopljena dejavnost v spletu in aplikacijah.&lt;/li&gt;
       &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">Iskalnik, uporabljen v naslovni vrstici.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Skrbnik je namestil razširitev}one{Skrbnik je namestil # razširitev}two{Skrbnik je namestil # razširitvi}few{Skrbnik je namestil # razširitve}other{Skrbnik je namestil # razširitev}}</translation>
 <translation id="5523532775593636291">Spletna mesta, ki jih dodate, bodo ves čas aktivna in pomnilnik zanje se ne bo sprostil</translation>
 <translation id="5523558474028191231">Za ime se lahko uporabijo črke, številke in posebni znaki, in ima lahko največ toliko znakov: <ph name="MAX_CHARACTER_COUNT" />.</translation>
@@ -6989,7 +6988,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6020431688553761150">Strežnik vas ni pooblastil za dostop do tega vira.</translation>
 <translation id="6021293122504240352">Toliko aplikacij ni več podprtih: <ph name="APPS" /></translation>
 <translation id="6021969570711251331">Prepleteno</translation>
-<translation id="602212068530399867">Iskalnik, ki se uporablja v naslovni vrstici in zaganjalniku.</translation>
 <translation id="6022526133015258832">Odpri v celozaslonskem načinu</translation>
 <translation id="6022659036123304283">Prilagodite si Chrome</translation>
 <translation id="6023643151125006053">To napravo (serijska številka: <ph name="SERIAL_NUMBER" />) je zaklenil skrbnik domene <ph name="SAML_DOMAIN" />.</translation>

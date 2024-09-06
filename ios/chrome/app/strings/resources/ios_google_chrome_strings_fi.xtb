@@ -139,6 +139,8 @@ Odota muutama minuutti ennen uloskirjautumista. Jos kirjaudut ulos nyt, tämä d
 <translation id="571296537125272375">Chrome ei voi tarkistaa, onko päivityksiä saatavilla</translation>
 <translation id="5716154293141027663">Avaa Chrome, kun napautat linkkejä muissa sovelluksissa</translation>
 <translation id="5808435672482059465">Tarkista Chrome-historiasi</translation>
+<translation id="5833027901704861726">Osaa Chrome-datastasi ei ole vielä tallennettu tälle tilille: <ph name="EMAIL" />.
+Odota muutama minuutti ennen tilin vaihtamista. Jos vaihdat tiliä nyt, tämä data poistetaan.</translation>
 <translation id="5998675059699164418">Organisaatiosi edellyttää sisäänkirjautumista, jotta voit käyttää Chromea.</translation>
 <translation id="6022659036123304283">Tee Chromesta näköisesi</translation>
 <translation id="6110625574506755980">Jotkin Chromen ominaisuudet eivät ole enää käytettävissä.</translation>

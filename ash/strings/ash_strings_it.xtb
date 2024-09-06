@@ -915,6 +915,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4209973997261364186">Il Wi-Fi è attivo</translation>
 <translation id="4212246570487010370">Continua la navigazione</translation>
 <translation id="4212472694152630271">Passa al PIN</translation>
+<translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, pulsante di attivazione/disattivazione, <ph name="STATE" /></translation>
 <translation id="4215497585250573029">Impostazioni VPN</translation>
 <translation id="4217571870635786043">Dettatura</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, app installata, messa in pausa</translation>

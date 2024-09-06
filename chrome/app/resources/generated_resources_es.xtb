@@ -6300,7 +6300,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
         &lt;li&gt;Has iniciado sesión en tu cuenta de Google&lt;/li&gt;
         &lt;li&gt;Tienes activado el ajuste Actividad en la Web y en Aplicaciones&lt;/li&gt;
       &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">Buscador utilizado en la barra de direcciones.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Tu administrador ha instalado 1 extensión}other{Tu administrador ha instalado # extensiones}}</translation>
 <translation id="5523532775593636291">Los sitios que añadas siempre permanecerán activos y no se liberará memoria de ellos</translation>
 <translation id="5523558474028191231">El nombre puede contener letras, números y caracteres especiales, y debe tener como máximo <ph name="MAX_CHARACTER_COUNT" /> caracteres</translation>
@@ -6968,7 +6967,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6020431688553761150">El servidor no te ha autorizado a acceder a este recurso.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> aplicaciones ya no se admiten</translation>
 <translation id="6021969570711251331">Intercalado</translation>
-<translation id="602212068530399867">Buscador usado en la barra de direcciones y en el menú de aplicaciones.</translation>
 <translation id="6022526133015258832">Abrir en pantalla completa</translation>
 <translation id="6022659036123304283">Personaliza Chrome</translation>
 <translation id="6023643151125006053">El administrador de <ph name="SAML_DOMAIN" /> ha bloqueado este dispositivo (número de serie: <ph name="SERIAL_NUMBER" />).</translation>

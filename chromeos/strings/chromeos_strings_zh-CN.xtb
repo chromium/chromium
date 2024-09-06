@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">雪</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> 专有</translation>
 <translation id="315116470104423982">移动数据</translation>
+<translation id="3156511682997763015">快进 10 秒</translation>
 <translation id="3156846309055100599">正在扫描第 <ph name="PAGE_NUMBER" /> 页…</translation>
 <translation id="315738237743207937">检测到强制门户</translation>
 <translation id="3160172848211257835">发送<ph name="BEGIN_LINK1" />系统和应用信息<ph name="END_LINK1" />以及<ph name="BEGIN_LINK2" />指标<ph name="END_LINK2" /></translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">未找到任何搜索结果</translation>
 <translation id="3305294846493618482">更多</translation>
 <translation id="3310640316857623290">DNS 延迟时间明显超出了允许的阈值</translation>
+<translation id="3321030238473337787">播放速度</translation>
 <translation id="3328783797891415197">正在运行测试</translation>
 <translation id="3340011300870565703">设备右侧耳机的电池电量为 <ph name="BATTERY_PERCENTAGE" />%。</translation>
 <translation id="3340978935015468852">设置</translation>
@@ -1336,6 +1338,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">提供商类型</translation>
 <translation id="7882501334836096755">公钥</translation>
+<translation id="7889966925761734854">进度</translation>
 <translation id="78957024357676568">向左</translation>
 <translation id="7897043345768902965">人行道</translation>
 <translation id="7902285181767404769">录制时将通知设为静音</translation>

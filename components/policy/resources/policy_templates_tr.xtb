@@ -7923,7 +7923,6 @@ Politika ayarlamadan bırakılırsa web siteleri yerel yazıcılara erişme izni
 
       Politika uygulamadan bırakılırsa politika, kullanıcının kilit ekranında etkinleştirebileceği uygulama dizisini kısıtlamaz.</translation>
 <translation id="6882028194958060206">Flash içeriği ayarını tüm içeriği kapsayacak şekilde genişlet (kullanımdan kaldırııldı)</translation>
-<translation id="6882345904422482308">(Uyarı: Bu bağımlılık yakında kullanımdan kalkacağından lütfen bunun yerine <ph name="GLS_POLICY_NAME" /> politikasını kullanın.) Bu politika <ph name="BLOCK_GEOLOCATION_SETTING" /> değerine ayarlanırsa Android uygulamaları konum bilgisine erişemez. Bu politikayı başka herhangi bir değer olarak ayarlar veya ayarlamadan bırakırsanız Android uygulaması konum bilgisine erişmek istediğinde kullanıcıdan izin istenir.</translation>
 <translation id="6883050310557769428">Kayan TOA'nın etkin olup olmadığını, ayrıca çerez alan adı engellenenler listesi ve istisnalarını kontrol eder.</translation>
 <translation id="6889123056995503704">Kanal sürümü değiştirme davranışına kullanıcı karar verir</translation>
 <translation id="6889617338886728275">Pencere yönetimi izninin otomatik olarak verileceği siteleri belirten site URL kalıplarından oluşan bir liste oluşturmanıza imkan verir. Bu durumda sitelerin, cihazların ekranlarıyla ilgili bilgileri görme ve pencere açıp yerleştirmek ya da belirli ekranlarda tam ekran isteği iletmek için bu bilgileri kullanma imkanı artmış olur.

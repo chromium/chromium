@@ -6297,7 +6297,6 @@
         &lt;li&gt;你已登入 Google 帳戶&lt;/li&gt;
         &lt;li&gt;你已開啟「網路和應用程式活動」&lt;/li&gt;
       &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">網址列中使用的搜尋引擎。</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{你的系統管理員已安裝擴充功能}other{你的系統管理員已安裝 # 個擴充功能}}</translation>
 <translation id="5523532775593636291">清單內的網站一律會保持使用中的狀態，系統不會釋出記憶體</translation>
 <translation id="5523558474028191231">名稱可以包含字母、數字和特殊字元，且不得超過 <ph name="MAX_CHARACTER_COUNT" /> 個字元</translation>
@@ -6962,7 +6961,6 @@
 <translation id="6020431688553761150">伺服器未授予你這個資源的存取權。</translation>
 <translation id="6021293122504240352">系統已不再支援 <ph name="APPS" /> 個應用程式</translation>
 <translation id="6021969570711251331">交錯顯示</translation>
-<translation id="602212068530399867">網址列和啟動器使用的搜尋引擎。</translation>
 <translation id="6022526133015258832">開啟全螢幕</translation>
 <translation id="6022659036123304283">打造專屬的 Chrome</translation>
 <translation id="6023643151125006053">這部裝置 (序號：<ph name="SERIAL_NUMBER" />) 已被 <ph name="SAML_DOMAIN" /> 管理員鎖定。</translation>

@@ -71,6 +71,8 @@ Untuk setelan lainnya yang menggunakan data guna meningkatkan pengalaman Chromiu
 <translation id="3344973607274501920">Chromium tidak dapat memeriksa sandi Anda. Coba periksa koneksi internet Anda.</translation>
 <translation id="3366305173356742781">Data Chromium di akun Anda</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Hal ini terjadi jika Chromium tidak digunakan selama {THRESHOLD} menit. Data ini dapat mencakup histori dan isi otomatis.}other{Hal ini terjadi jika Chromium tidak digunakan selama {THRESHOLD} menit. Data ini dapat mencakup histori dan isi otomatis.}}</translation>
+<translation id="3410395242749598859">Beberapa data Chromium Anda belum disimpan di <ph name="EMAIL" />.
+Coba tunggu beberapa menit sebelum beralih akun. Jika Anda beralih akun sekarang, data ini akan dihapus.</translation>
 <translation id="3472200483164753384">Tidak didukung di Chromium Canary</translation>
 <translation id="347967311580159871">Untuk setelan lainnya yang menggunakan data guna meningkatkan pengalaman Chromium Anda, buka <ph name="BEGIN_LINK" />Layanan Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Sandi Anda tidak dibagikan. Periksa koneksi internet dan pastikan Anda login ke Chromium. Lalu, coba lagi.</translation>

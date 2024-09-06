@@ -71,6 +71,8 @@
 <translation id="3344973607274501920">Chromium 無法檢查密碼，請檢查互聯網連線。</translation>
 <translation id="3366305173356742781">帳戶中的 Chromium 資料</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{當 Chromium 閒置 {THRESHOLD} 分鐘後，系統就會執行此操作，當中可能包括記錄和自動填入資料。}other{當 Chromium 閒置 {THRESHOLD} 分鐘後，系統就會執行此操作，當中可能包括記錄和自動填入資料。}}</translation>
+<translation id="3410395242749598859">部分 Chromium 資料尚未儲存至 <ph name="EMAIL" />。
+請等待幾分鐘後再嘗試切換帳戶。如果現在切換帳戶，系統將刪除有關資料。</translation>
 <translation id="3472200483164753384">Chromium Canary 上不支援此功能</translation>
 <translation id="347967311580159871">如需其他會運用資料提升 Chromium 體驗的設定，請前往 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />。</translation>
 <translation id="3512168799938877162">系統沒有分享你的密碼。請檢查互聯網連線，並確保你已登入 Chromium，然後再試一次。</translation>

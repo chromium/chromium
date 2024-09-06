@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">nieve</translation>
 <translation id="3146655726035122603">Exclusivo de <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Datos móviles</translation>
+<translation id="3156511682997763015">Avanzar 10 segundos</translation>
 <translation id="3156846309055100599">Escaneando la página <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Se detectó un portal cautivo.</translation>
 <translation id="3160172848211257835">Enviar <ph name="BEGIN_LINK1" />información del sistema y las apps<ph name="END_LINK1" /> y <ph name="BEGIN_LINK2" />métricas<ph name="END_LINK2" /></translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">No se encontraron resultados en la búsqueda</translation>
 <translation id="3305294846493618482">más</translation>
 <translation id="3310640316857623290">La latencia de DNS supera significativamente el umbral permitido</translation>
+<translation id="3321030238473337787">Velocidad de reproducción</translation>
 <translation id="3328783797891415197">Prueba en ejecución</translation>
 <translation id="3340011300870565703">Nivel de batería del auricular derecho <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">configuración</translation>
@@ -1336,6 +1338,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tipo de proveedor</translation>
 <translation id="7882501334836096755">Clave pública</translation>
+<translation id="7889966925761734854">Buscar</translation>
 <translation id="78957024357676568">izquierda</translation>
 <translation id="7897043345768902965">acera</translation>
 <translation id="7902285181767404769">Silenciar las notificaciones durante la grabación</translation>

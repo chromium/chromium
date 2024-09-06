@@ -21,6 +21,7 @@
 <translation id="1108938384783527433">Sincronización del historial</translation>
 <translation id="1112015203684611006">Se produjo un error en la impresión.</translation>
 <translation id="1118569444314402022">Te damos la bienvenida nuevamente, <ph name="USER_NAME" /></translation>
+<translation id="1121850836842642159">Imágenes y fotos</translation>
 <translation id="1125564390852150847">Crea una pestaña nueva.</translation>
 <translation id="1126809382673880764">No te protege contra descargas, extensiones ni sitios web peligrosos. Seguirás teniendo la protección (donde esté disponible) de la Navegación segura en otros servicios de Google, como Gmail y la Búsqueda.</translation>
 <translation id="1147031633655575115">Accediste como <ph name="USER" /></translation>
@@ -148,6 +149,7 @@
 <translation id="1967461193809857427">{count,plural, =1{¿Quieres retomar la pestaña que dejaste en Android?}other{¿Quieres retomar las pestañas que dejaste en Android?}}</translation>
 <translation id="1972325230031091483">Navegarás más rápido porque el contenido se cargará proactivamente en función de la página web que visites en el momento</translation>
 <translation id="1974060860693918893">Opciones avanzadas</translation>
+<translation id="1979188886349613713">Incluir extensiones de archivo que no especificó el sitio web</translation>
 <translation id="1980417445547898121">{count,plural, =1{Obtén {count} pestaña activa recientemente de tu otro dispositivo en este iPhone}other{Obtén {count} pestañas activas recientemente de tu otro dispositivo en este iPhone}}</translation>
 <translation id="1981118202195772574">Dispositivo móvil</translation>
 <translation id="1984417487208496350">Sin protección (opción no recomendada)</translation>
@@ -622,6 +624,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="5132942445612118989">Sincroniza tus contraseñas, historial y más en todos los dispositivos</translation>
 <translation id="5137526732000415202">La última pestaña que abriste en todos tus dispositivos.</translation>
 <translation id="5157638238828697074">Se produjo un error. No se pudo abrir la aplicación.</translation>
+<translation id="5163417375525818870">PDFs</translation>
 <translation id="5168414296986405587">Diseñado para iPadOS</translation>
 <translation id="5169725654005786900">Acción en curso…</translation>
 <translation id="5176312250994681348">Conservar la contraseña reciente</translation>
@@ -655,6 +658,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="5343472494710226394">Noticias, deportes y contenido según tus intereses.</translation>
 <translation id="5348775987281903912">Puedes compartir esta página aquí desde el botón para compartir.</translation>
 <translation id="5355191726083956201">Se activó la protección mejorada</translation>
+<translation id="5356332698539508708">Borrar y cambiar</translation>
 <translation id="537853552771686272">Administrar los temas y los sitios que te interesan</translation>
 <translation id="5395707839134961196">Ocultar detalles del motor de búsqueda</translation>
 <translation id="5414763847370083940">Recibirás una alerta si el precio disminuye en algún sitio.</translation>
@@ -742,6 +746,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5860033963881614850">Desactivado</translation>
 <translation id="5860491529813859533">Activar</translation>
 <translation id="5869522115854928033">Contraseñas almacenadas</translation>
+<translation id="5878899964490256268"><ph name="EMAIL" />. Administrado por tu organización.</translation>
 <translation id="5888889603768021126">Accediste con</translation>
 <translation id="5896576662943111387">Diseñado para iOS</translation>
 <translation id="5897749768294722429">Para volver rápidamente a los sitios que visitaste, sincroniza las pestañas y el historial.</translation>
@@ -843,6 +848,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6429213933892582367">Abre Opciones de contraseña</translation>
 <translation id="6434591244308415567">Se produjo un error. Vuelve a intentarlo más tarde.</translation>
 <translation id="6443118737398455446">Fecha de caducidad no válida</translation>
+<translation id="6444435711855078002">Más opciones</translation>
 <translation id="6445051938772793705">País</translation>
 <translation id="6445981559479772097">Mensaje enviado</translation>
 <translation id="6447842834002726250">Cookies</translation>
@@ -908,6 +914,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="6746338529702829275">Revisa los datos de tu cuenta</translation>
 <translation id="6748108480210050150">De</translation>
 <translation id="6755200887046212842">Administrar cuentas</translation>
+<translation id="6761393919622941301">Audio</translation>
 <translation id="6779455296366983087">Se borrarán tus datos de navegación</translation>
 <translation id="6790502149545262384">Pronto, cuando abras una nueva pestaña, verás historias de <ph name="CHANNEL_NAME" />.</translation>
 <translation id="6800349425672670802">Puedes acceder a todas las pestañas abiertas desde el Alternador de pestañas.</translation>
@@ -949,6 +956,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7063811929043357292">Tu madre o padre administra tu cuenta.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="7067610207756299941">Para proteger la seguridad de tu organización, se borrarán los datos no guardados de este dispositivo. Esto puede incluir contraseñas, historial y más.</translation>
+<translation id="7067780033517902110">Todos los archivos</translation>
 <translation id="7080806333218412752">Envía las URL a la Navegación segura para revisarlas. También envía una pequeña muestra de páginas, descargas, información del sistema y actividad de extensiones para ayudar a descubrir nuevas amenazas. Vincula estos datos de manera temporal con tu Cuenta de Google cuando accedes a ella para protegerte en todas las apps de Google.</translation>
 <translation id="7082853213442715471">Cuando lo actives, se bloquean ciertas tecnologías web, lo que puede provocar que algunos sitios web se carguen más lento o no funcionen correctamente.</translation>
 <translation id="7095110968493193530">En el Administrador de contraseñas de Google de <ph name="EMAIL" /></translation>
@@ -1084,6 +1092,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7926975587469166629">Sobrenombre de la tarjeta</translation>
 <translation id="7927711904086083099">Sin seleccionar</translation>
 <translation id="7930998711684428189">Te advierte si quedan expuestas las contraseñas ante una violación de la seguridad de los datos.</translation>
+<translation id="7933880123415105005">Buscar en <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7944772052836377867">La Sincronización necesita verificar tu identidad</translation>
 <translation id="7947953824732555851">Aceptar y acceder</translation>
@@ -1210,6 +1219,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8654802032646794042">Cancelar</translation>
 <translation id="8663764600409216912">Usas contraseñas que parecen difíciles de adivinar</translation>
 <translation id="8668210798914567634">Esta página se guardó en tu lista de lectura.</translation>
+<translation id="8672733398999596205">Habilitar todo</translation>
 <translation id="8674716540979958118">Tienes contraseñas hackeadas.</translation>
 <translation id="8680787084697685621">Los datos de inicio de cuenta están desactualizados</translation>
 <translation id="8692689525339542358">Obtén protección contra sitios, descargas y extensiones peligrosos.</translation>
@@ -1238,9 +1248,11 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8843129975935593190">Tu organización limita lo que puedes sincronizar.</translation>
 <translation id="8849001918648564819">Oculta</translation>
 <translation id="8855242995793521265">No ralentiza mucho tu navegador ni dispositivo.</translation>
+<translation id="8856643812068084733">Archivos</translation>
 <translation id="8863431381414769983">Obtén instrucciones sobre cómo llegar, así como información local de Google Maps</translation>
 <translation id="8871974300055371298">Configuración de contenido</translation>
 <translation id="8879604564928138696">Presionar dos veces para probar</translation>
+<translation id="8893208530912252670">Videos</translation>
 <translation id="8898822736010347272">Envía a Google las URL de algunas páginas que visitas, información limitada del sistema y parte del contenido de las páginas para ayudar a detectar nuevas amenazas y proteger a todos los usuarios en la Web.</translation>
 <translation id="890565330728586731">Atrás</translation>
 <translation id="8909135823018751308">Compartir…</translation>

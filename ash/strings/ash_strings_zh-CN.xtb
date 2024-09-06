@@ -917,6 +917,7 @@
 <translation id="4209973997261364186">Wi-Fi 处于开启状态</translation>
 <translation id="4212246570487010370">继续浏览</translation>
 <translation id="4212472694152630271">切换到 PIN 码</translation>
+<translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />，<ph name="EFFECT_NAME" />，切换按钮，<ph name="STATE" /></translation>
 <translation id="4215497585250573029">VPN 设置</translation>
 <translation id="4217571870635786043">语音输入</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />，已安装的应用，已暂停</translation>

@@ -6306,7 +6306,6 @@
         &lt;li&gt;كنت حاليًا مسجّلاً للدخول إلى حسابك على Google&lt;/li&gt;
         &lt;li&gt;كنت قد فعّلت الإعداد "النشاط على الويب وفي التطبيقات"&lt;/li&gt;
       &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">محرك البحث المستخدَم في شريط العناوين -</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{ثبَّت مشرفك إضافة واحدة.}zero{ثبَّت مشرفك # إضافة.}two{ثبَّت مشرفك إضافتَين.}few{ثبَّت مشرفك # إضافات.}many{ثبَّت مشرفك # إضافةً.}other{ثبَّت مشرفك # إضافة.}}</translation>
 <translation id="5523532775593636291">ستظل المواقع الإلكترونية التي تضيفها نشطة دائمًا ولن يتم إخلاء المساحة التي تشغلها في الذاكرة.</translation>
 <translation id="5523558474028191231">يمكن أن يحتوي الاسم على أحرف وأرقام ورموز خاصة، ويجب ألا يزيد عن <ph name="MAX_CHARACTER_COUNT" /> حرف.</translation>
@@ -6974,7 +6973,6 @@
 <translation id="6020431688553761150">لا يسمح لك الخادم بالوصول إلى هذا المورد.</translation>
 <translation id="6021293122504240352">تم إيقاف <ph name="APPS" /> تطبيق نهائيًا</translation>
 <translation id="6021969570711251331">المضمَّن</translation>
-<translation id="602212068530399867">محرك البحث المُستخدَم في شريط العناوين ومشغّل التطبيقات</translation>
 <translation id="6022526133015258832">فتح في وضع ملء الشاشة</translation>
 <translation id="6022659036123304283">‏اجعل Chrome متصفِّحك الدائم.</translation>
 <translation id="6023643151125006053">تم إقفال هذا الجهاز (الرقم التسلسلي: <ph name="SERIAL_NUMBER" />) من خلال مشرف <ph name="SAML_DOMAIN" />.</translation>

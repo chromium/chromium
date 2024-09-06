@@ -6304,7 +6304,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 &lt;li&gt;vous êtes connecté à votre compte Google;&lt;/li&gt;
 &lt;li&gt;le paramètre d'activité sur le Web et dans les applications est activé.&lt;/li&gt;
 &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">Moteur de recherche utilisé dans la barre d'adresse.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Votre administrateur a installé une extension}one{Votre administrateur a installé # extension}other{Votre administrateur a installé # extensions}}</translation>
 <translation id="5523532775593636291">Les sites que vous ajoutez resteront toujours actifs et leur mémoire ne sera pas libérée</translation>
 <translation id="5523558474028191231">Le nom peut comprendre des lettres, des chiffres et des caractères spéciaux, et doit comporter un maximum de<ph name="MAX_CHARACTER_COUNT" /> caractères</translation>
@@ -6972,7 +6971,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6020431688553761150">Vous ne disposez pas des autorisations serveur nécessaires pour accéder à cette ressource.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> applications ne sont plus prises en charge</translation>
 <translation id="6021969570711251331">Entrelacement</translation>
-<translation id="602212068530399867">Moteur de recherche utilisé dans la barre d'adresse et le lanceur.</translation>
 <translation id="6022526133015258832">Ouvrir en mode plein écran</translation>
 <translation id="6022659036123304283">Appropriez-vous Chrome</translation>
 <translation id="6023643151125006053">Cet appareil (numéro de série : <ph name="SERIAL_NUMBER" />) a été verrouillé par l'administrateur de <ph name="SAML_DOMAIN" />.</translation>

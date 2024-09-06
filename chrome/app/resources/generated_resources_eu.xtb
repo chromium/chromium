@@ -6299,7 +6299,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
         &lt;li&gt;Zure Google-ko kontuan saioa hasita daukazu.&lt;/li&gt;
         &lt;li&gt;Sareko eta aplikazioetako jarduerak aktibatuta dago.&lt;/li&gt;
       &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">Helbide-barran egiten diren bilaketetarako erabiltzen den bilatzailea.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Administratzaileak luzapen bat instalatu du}other{Administratzaileak # luzapen instalatu ditu}}</translation>
 <translation id="5523532775593636291">Gehitzen dituzun webguneak aktibo egongo dira beti, eta ez dira erabiliko memorian tokia egiteko</translation>
 <translation id="5523558474028191231">Hizkiak, zenbakiak eta karaktere bereziak izan ditzake izenak, eta <ph name="MAX_CHARACTER_COUNT" /> karaktere edo gutxiagoko luzera izan behar du</translation>
@@ -6964,7 +6963,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="6020431688553761150">Zerbitzariak ez dizu baliabide hau atzitzeko baimenik eman.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> aplikazio ez dira bateragarriak jada</translation>
 <translation id="6021969570711251331">Tartekatu</translation>
-<translation id="602212068530399867">Helbide-barran eta Exekutatzeko tresnan egiten diren bilaketetarako erabiltzen den bilatzailea.</translation>
 <translation id="6022526133015258832">Ireki pantaila osoa</translation>
 <translation id="6022659036123304283">Zeureganatu Chrome</translation>
 <translation id="6023643151125006053"><ph name="SAML_DOMAIN" /> domeinuaren administratzaileak blokeatu du gailua (serie-zk.: <ph name="SERIAL_NUMBER" />).</translation>
@@ -10898,7 +10896,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="8870413625673593573">Itxitako azkenak</translation>
 <translation id="8871043459130124414">Luzapena sakatu ondoren soilik exekutatzen da</translation>
 <translation id="8871551568777368300">Administratzaileak ainguratu du</translation>
-<translation id="8871696467337989339">Agindu-lerroko etengailu ez-onartu bat erabiltzen ari zara: <ph name="BAD_FLAG" />. Egonkortasunak eta segurtasunak okerrera egingo dute.</translation>
+<translation id="8871696467337989339">Agindu-lerroko onartzen ez den etengailu bat erabiltzen ari zara: <ph name="BAD_FLAG" />. Egonkortasunak eta segurtasunak okerrera egingo dute.</translation>
 <translation id="8871974300055371298">Edukiaren ezarpenak</translation>
 <translation id="8872155268274985541">Kiosk kanpoko eguneratze-manifestuaren fitxategi baliogabea aurkitu da. Ezin izan da eguneratu kiosko-aplikazioa. Kendu USB memoria.</translation>
 <translation id="8872506776304248286">Ireki aplikazioan</translation>

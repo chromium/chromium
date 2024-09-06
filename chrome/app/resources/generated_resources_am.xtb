@@ -6309,7 +6309,6 @@
         &lt;li&gt;በGoogle መለያዎ ውስጥ ገብተው ከሆነ&lt;/li&gt;
         &lt;li&gt;የድር እና የመተግበሪያ እንቅስቃሴ በርቶ ከሆነ&lt;/li&gt;
       &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">በአድራሻ አሞሌ ውስጥ ሥራ ላይ የዋለ የፍለጋ ፕሮግራም</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{አንድ ቅጥያ በአስተዳዳሪዎ ተጭኗል}one{# ቅጥያዎች በአስተዳዳሪዎ ተጭነዋል}other{# ቅጥያዎች በአስተዳዳሪዎ ተጭነዋል}}</translation>
 <translation id="5523532775593636291">የሚያክሏቸው ጣቢያዎች ሁልጊዜ ገቢር ሆነው ይቆያሉ እና ማህደረ ትውስታ ከእነሱ ላይ አይቀነስም</translation>
 <translation id="5523558474028191231">ስም ፊደላትን፣ ቁጥሮችን እና ልዩ ቁምፊዎችን መጠቀም ይችላል እና <ph name="MAX_CHARACTER_COUNT" /> ቁምፊዎች ወይም ከዚያ ያነሰ መሆን አለበት</translation>
@@ -6977,7 +6976,6 @@
 <translation id="6020431688553761150">አገልጋይ ይህን መርጃ እንዲደርሱበት አልፈቀደለዎትም።</translation>
 <translation id="6021293122504240352">የ<ph name="APPS" /> መተግበሪያዎች ከአሁን በኋላ አይደገፉም</translation>
 <translation id="6021969570711251331">በውስጥ ትቶ መውጣት</translation>
-<translation id="602212068530399867">በአድራሻ አሞሌው እና በማስጀመሪያው ውስጥ ጥቅም ላይ የዋለው የፍለጋ ፕሮግራም።</translation>
 <translation id="6022526133015258832">ሙሉ ማያ ገፅ ክፈት</translation>
 <translation id="6022659036123304283">Chromeን የራስዎ ያድርጉት</translation>
 <translation id="6023643151125006053">ይህ መሣሪያ (SN፦ <ph name="SERIAL_NUMBER" />) በ<ph name="SAML_DOMAIN" /> አስተዳዳሪ ተቆልፎ ነበር።</translation>

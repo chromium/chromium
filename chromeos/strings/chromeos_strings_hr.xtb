@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">snijeg</translation>
 <translation id="3146655726035122603">Ekskluzivno za <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobilni podaci</translation>
+<translation id="3156511682997763015">10 sekundi unaprijed</translation>
 <translation id="3156846309055100599">Skeniranje stranice <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">Otkriven je zaštitni portal</translation>
 <translation id="3160172848211257835">Pošalji <ph name="BEGIN_LINK1" />podatke o sustavu i aplikacijama<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />mjerne podatke<ph name="END_LINK2" /></translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">Nisu pronađeni rezultati pretraživanja</translation>
 <translation id="3305294846493618482">više</translation>
 <translation id="3310640316857623290">Latencija DNS-a značajno iznad dopuštenog praga</translation>
+<translation id="3321030238473337787">Brzina reprodukcije</translation>
 <translation id="3328783797891415197">Test se izvodi</translation>
 <translation id="3340011300870565703">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije za desnu slušalicu.</translation>
 <translation id="3340978935015468852">postavke</translation>
@@ -1336,6 +1338,7 @@ Da biste dobili te prijepise, preuzmite model prijepisa (do 100 MB).</translati
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Vrsta davatelja usluge</translation>
 <translation id="7882501334836096755">Javni ključ</translation>
+<translation id="7889966925761734854">Traženje</translation>
 <translation id="78957024357676568">lijevo</translation>
 <translation id="7897043345768902965">nogostup</translation>
 <translation id="7902285181767404769">Utišaj obavijesti tijekom snimanja</translation>

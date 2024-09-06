@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">zăpadă</translation>
 <translation id="3146655726035122603">Exclusiv pentru <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Date mobile</translation>
+<translation id="3156511682997763015">Derulează înainte cu 10 secunde</translation>
 <translation id="3156846309055100599">Se scanează pagina <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">S-a detectat un portal captiv</translation>
 <translation id="3160172848211257835">Trimite <ph name="BEGIN_LINK1" />informații despre sistem și aplicații<ph name="END_LINK1" /> și <ph name="BEGIN_LINK2" />valori<ph name="END_LINK2" /></translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">Nu s-au găsit rezultate de căutare</translation>
 <translation id="3305294846493618482">mai multe</translation>
 <translation id="3310640316857623290">Latența DNS depășește semnificativ pragul permisibil</translation>
+<translation id="3321030238473337787">Viteza de redare</translation>
 <translation id="3328783797891415197">Se rulează testul</translation>
 <translation id="3340011300870565703">Nivelul bateriei căștii drepte a dispozitivului este de <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">setări</translation>
@@ -1336,6 +1338,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tip furnizor</translation>
 <translation id="7882501334836096755">Cheie publică</translation>
+<translation id="7889966925761734854">Caută</translation>
 <translation id="78957024357676568">stânga</translation>
 <translation id="7897043345768902965">trotuar</translation>
 <translation id="7902285181767404769">Dezactivează sunetul notificărilor în timpul înregistrării</translation>

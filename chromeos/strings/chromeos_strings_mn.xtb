@@ -417,6 +417,7 @@
 <translation id="3140130301071865159">цас</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" />-д онцгой</translation>
 <translation id="315116470104423982">Гар утасны дата</translation>
+<translation id="3156511682997763015">10 секунд урагшлуулах</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />-р хуудсыг скан хийж байна...</translation>
 <translation id="315738237743207937">Дамжих портал илэрсэн</translation>
 <translation id="3160172848211257835"><ph name="BEGIN_LINK1" />Систем, аппын мэдээлэл<ph name="END_LINK1" /> болон <ph name="BEGIN_LINK2" />хэмжигдэхүүн<ph name="END_LINK2" /> илгээх</translation>
@@ -446,6 +447,7 @@
 <translation id="3303855915957856445">Хайлтын илэрц олдсонгүй</translation>
 <translation id="3305294846493618482">бусад</translation>
 <translation id="3310640316857623290">DNS-н хоцролт зөвшөөрөгдөх хязгаараас нэлээд өндөр байна</translation>
+<translation id="3321030238473337787">Дахин тоглуулах хурд</translation>
 <translation id="3328783797891415197">Туршилтыг ажиллуулж байна</translation>
 <translation id="3340011300870565703">Төхөөрөмжийн баруун талын чихэвчийн батарей <ph name="BATTERY_PERCENTAGE" />% байна.</translation>
 <translation id="3340978935015468852">тохиргоо</translation>
@@ -1336,6 +1338,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Нийлүүлэгчийн төрөл</translation>
 <translation id="7882501334836096755">Нийтийн түлхүүр</translation>
+<translation id="7889966925761734854">Хайх</translation>
 <translation id="78957024357676568">зүүн</translation>
 <translation id="7897043345768902965">явган хүний зам</translation>
 <translation id="7902285181767404769">Бичиж байхад мэдэгдлийг чимээгүй болгоно</translation>

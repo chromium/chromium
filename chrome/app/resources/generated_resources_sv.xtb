@@ -6316,7 +6316,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
         &lt;li&gt;du är inloggad på ditt Google-konto&lt;/li&gt;
         &lt;li&gt;du har aktiverat webb- och appaktivitet.&lt;/li&gt;
       &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">Sökmotorn som används i adressfältet.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Ett tillägg har installerats av administratören}other{# tillägg har installerats av administratören}}</translation>
 <translation id="5523532775593636291">Webbplatser du lägger till är alltid aktiva och minne frigörs inte från dem</translation>
 <translation id="5523558474028191231">Namnet kan innehålla bokstäver, siffror och specialtecken och får vara högst <ph name="MAX_CHARACTER_COUNT" /> tecken långt</translation>
@@ -6984,7 +6983,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6020431688553761150">Servern auktoriserade inte din åtkomst till den här resursen.</translation>
 <translation id="6021293122504240352"><ph name="APPS" />-appar stöds inte längre</translation>
 <translation id="6021969570711251331">Omlott</translation>
-<translation id="602212068530399867">Sökmotorn som används i adressfältet och appstartaren.</translation>
 <translation id="6022526133015258832">Öppna helskärmsläge</translation>
 <translation id="6022659036123304283">Anpassa Chrome</translation>
 <translation id="6023643151125006053">Den här enheten (serienr: <ph name="SERIAL_NUMBER" />) har låsts av administratören för <ph name="SAML_DOMAIN" />.</translation>

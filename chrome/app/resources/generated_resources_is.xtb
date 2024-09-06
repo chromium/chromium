@@ -6317,7 +6317,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
         &lt;li&gt;Þú ert skráð(ur) inn á Google-reikninginn þinn&lt;/li&gt;
         &lt;li&gt;Þú ert með kveikt á vef- og forritavirkni&lt;/li&gt;
       &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">Leitarvél notuð í veffangastikunni.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Viðbót var sett upp af stjórnanda}one{# viðbót var sett upp af stjórnanda}other{# viðbætur voru settar upp af stjórnanda}}</translation>
 <translation id="5523532775593636291">Vefsvæði sem þú bætir við verða alltaf virk og ekki verður losað um minni úr þeim</translation>
 <translation id="5523558474028191231">Heitið má innihalda bókstafi, tölur og sérstafi og verður að vera <ph name="MAX_CHARACTER_COUNT" /> eða færri stafir að lengd</translation>
@@ -6985,7 +6984,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6020431688553761150">Þjónninn veitti þér ekki aðgang að þessu efni.</translation>
 <translation id="6021293122504240352">Ekki er lengur stuðningur við <ph name="APPS" /> forrit</translation>
 <translation id="6021969570711251331">Sameina</translation>
-<translation id="602212068530399867">Leitarvél notuð í veffangastiku og ræsiforriti.</translation>
 <translation id="6022526133015258832">Opna á öllum skjánum</translation>
 <translation id="6022659036123304283">Gerðu Chrome að þínu</translation>
 <translation id="6023643151125006053">Kerfisstjóri <ph name="SAML_DOMAIN" /> læsti þessu tæki (raðnúmer: <ph name="SERIAL_NUMBER" />).</translation>

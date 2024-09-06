@@ -6319,7 +6319,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
         &lt;li&gt;Os ydych wedi mewngofnodi i'ch cyfrif Google&lt;/li&gt;
         &lt;li&gt;Os oes gennych Gweithgarwch ar y We ac Apiau wedi'i droi ymlaen&lt;/li&gt;
       &lt;/ul&gt;</translation>
-<translation id="5522403133543437426">Peiriant chwilio sy'n cael ei ddefnyddio yn y bar cyfeiriadau.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Mae estyniad wedi'i osod gan eich gweinyddwr}zero{Mae # estyniad wedi'u gosod gan eich gweinyddwr}two{Mae # estyniad wedi'u gosod gan eich gweinyddwr}few{Mae # estyniad wedi'u gosod gan eich gweinyddwr}many{Mae # estyniad wedi'u gosod gan eich gweinyddwr}other{Mae # estyniad wedi'u gosod gan eich gweinyddwr}}</translation>
 <translation id="5523532775593636291">Bydd gwefannau y byddwch yn eu hychwanegu bob amser yn aros yn weithredol ac ni fydd y cof yn cael ei ryddhau oddi wrthynt</translation>
 <translation id="5523558474028191231">Gall yr enw ddefnyddio llythrennau, rhifau, a nodau arbennig, a rhaid cynnwys <ph name="MAX_CHARACTER_COUNT" /> nod neu lai</translation>
@@ -6987,7 +6986,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="6020431688553761150">Ni wnaeth y gweinydd eich awdurdodi i gael mynediad at yr adnodd hwn.</translation>
 <translation id="6021293122504240352">Nid yw <ph name="APPS" /> ap yn cael eu cefnogi bellach</translation>
 <translation id="6021969570711251331">Cydblethu</translation>
-<translation id="602212068530399867">Peiriant chwilio a ddefnyddir yn y bar cyfeiriad a'r lansiwr.</translation>
 <translation id="6022526133015258832">Agor Sgrîn Lawn</translation>
 <translation id="6022659036123304283">Personoleiddio Chrome</translation>
 <translation id="6023643151125006053">Cafodd y ddyfais hon (SN: <ph name="SERIAL_NUMBER" />) ei chloi gan y gweinyddwr <ph name="SAML_DOMAIN" /></translation>
