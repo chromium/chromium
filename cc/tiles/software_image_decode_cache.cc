@@ -73,7 +73,7 @@ class SoftwareImageDecodeTaskImpl : public TileTask {
       SoftwareImageDecodeCache* cache,
       const SoftwareImageDecodeCache::CacheKey& image_key,
       const PaintImage& paint_image,
-      SoftwareImageDecodeCache::DecodeTaskType task_type,
+      ImageDecodeCache::TaskType task_type,
       const ImageDecodeCache::TracingInfo& tracing_info)
       : TileTask(TileTask::SupportsConcurrentExecution::kYes,
                  TileTask::SupportsBackgroundThreadPriority::kNo),
@@ -99,7 +99,7 @@ class SoftwareImageDecodeTaskImpl : public TileTask {
     devtools_instrumentation::ScopedImageDecodeTask image_decode_task(
         paint_image_.GetSwSkImage().get(),
         devtools_instrumentation::ScopedImageDecodeTask::DecodeType::kSoftware,
-        ImageDecodeCache::ToScopedTaskType(tracing_info_.task_type),
+        ImageDecodeCache::ToScopedTaskType(task_type_),
         ImageDecodeCache::ToScopedImageType(image_type));
     SoftwareImageDecodeCache::TaskProcessingResult result =
         cache_->DecodeImageInTask(image_key_, paint_image_, task_type_);
@@ -128,7 +128,7 @@ class SoftwareImageDecodeTaskImpl : public TileTask {
   raw_ptr<SoftwareImageDecodeCache, AcrossTasksDanglingUntriaged> cache_;
   SoftwareImageDecodeCache::CacheKey image_key_;
   PaintImage paint_image_;
-  SoftwareImageDecodeCache::DecodeTaskType task_type_;
+  ImageDecodeCache::TaskType task_type_;
   const ImageDecodeCache::TracingInfo tracing_info_;
 };
 
@@ -186,11 +186,10 @@ ImageDecodeCache::TaskResult SoftwareImageDecodeCache::GetTaskForImageAndRef(
     ClientId client_id,
     const DrawImage& image,
     const TracingInfo& tracing_info) {
-  DCHECK_EQ(tracing_info.task_type, TaskType::kInRaster);
   DCHECK_EQ(client_id, ImageDecodeCache::kDefaultClientId)
       << "SoftwareImageDecodeCache cannot be shared between multiple clients.";
   return GetTaskForImageAndRefInternal(image, tracing_info,
-                                       DecodeTaskType::USE_IN_RASTER_TASKS);
+                                       TaskType::kInRaster);
 }
 
 ImageDecodeCache::TaskResult
@@ -199,16 +198,15 @@ SoftwareImageDecodeCache::GetOutOfRasterDecodeTaskForImageAndRef(
     const DrawImage& image) {
   DCHECK_EQ(client_id, ImageDecodeCache::kDefaultClientId)
       << "SoftwareImageDecodeCache cannot be shared between multiple clients.";
-  return GetTaskForImageAndRefInternal(
-      image, TracingInfo(0, TilePriority::NOW, TaskType::kOutOfRaster),
-      DecodeTaskType::USE_OUT_OF_RASTER_TASKS);
+  return GetTaskForImageAndRefInternal(image, TracingInfo(0, TilePriority::NOW),
+                                       TaskType::kOutOfRaster);
 }
 
 ImageDecodeCache::TaskResult
 SoftwareImageDecodeCache::GetTaskForImageAndRefInternal(
     const DrawImage& image,
     const TracingInfo& tracing_info,
-    DecodeTaskType task_type) {
+    TaskType task_type) {
   CacheKey key = CacheKey::FromDrawImage(
       image, GetColorTypeForPaintImage(image.target_color_params(),
                                        image.paint_image()));
@@ -240,8 +238,9 @@ SoftwareImageDecodeCache::GetTaskForImageAndRefInternal(
       return TaskResult(/*need_unref=*/false, /*is_at_raster_decode=*/true,
                         /*can_do_hardware_accelerated_decode=*/false);
     cache_entry = AddCacheEntry(key);
-    if (task_type == DecodeTaskType::USE_OUT_OF_RASTER_TASKS)
+    if (task_type == TaskType::kOutOfRaster) {
       cache_entry->mark_out_of_raster();
+    }
   } else {
     cache_entry = decoded_it->second.get();
   }
@@ -268,10 +267,9 @@ SoftwareImageDecodeCache::GetTaskForImageAndRefInternal(
     return TaskResult(/*need_unref=*/true, /*is_at_raster_decode=*/false,
                       /*can_do_hardware_accelerated_decode=*/false);
 
-  scoped_refptr<TileTask>& task =
-      task_type == DecodeTaskType::USE_IN_RASTER_TASKS
-          ? cache_entry->in_raster_task
-          : cache_entry->out_of_raster_task;
+  scoped_refptr<TileTask>& task = task_type == TaskType::kInRaster
+                                      ? cache_entry->in_raster_task
+                                      : cache_entry->out_of_raster_task;
   if (!task) {
     // Ref image once for the decode task.
     ++cache_entry->ref_count;
@@ -333,7 +331,7 @@ void SoftwareImageDecodeCache::UnrefImage(const CacheKey& key) {
 SoftwareImageDecodeCache::TaskProcessingResult
 SoftwareImageDecodeCache::DecodeImageInTask(const CacheKey& key,
                                             const PaintImage& paint_image,
-                                            DecodeTaskType task_type) {
+                                            TaskType task_type) {
   TRACE_EVENT1("cc,benchmark", "SoftwareImageDecodeCache::DecodeImageInTask",
                "key", key.ToString());
   base::AutoLock lock(lock_);
@@ -660,9 +658,8 @@ size_t SoftwareImageDecodeCache::GetMaximumMemoryLimitBytes() const {
   return locked_images_budget_.total_limit_bytes();
 }
 
-void SoftwareImageDecodeCache::OnImageDecodeTaskCompleted(
-    const CacheKey& key,
-    DecodeTaskType task_type) {
+void SoftwareImageDecodeCache::OnImageDecodeTaskCompleted(const CacheKey& key,
+                                                          TaskType task_type) {
   base::AutoLock hold(lock_);
 
   auto image_it = decoded_images_.Peek(key);
@@ -670,7 +667,7 @@ void SoftwareImageDecodeCache::OnImageDecodeTaskCompleted(
   CacheEntry* cache_entry = image_it->second.get();
   UMA_HISTOGRAM_BOOLEAN("Compositing.DecodeLCPCandidateImage.Software",
                         key.may_be_lcp_candidate());
-  auto& task = task_type == DecodeTaskType::USE_IN_RASTER_TASKS
+  auto& task = task_type == TaskType::kInRaster
                    ? cache_entry->in_raster_task
                    : cache_entry->out_of_raster_task;
   task = nullptr;

@@ -48,11 +48,9 @@ class CC_EXPORT ImageDecodeCache {
   // reporting systems.
   struct TracingInfo {
     TracingInfo(uint64_t prepare_tiles_id,
-                TilePriority::PriorityBin requesting_tile_bin,
-                TaskType task_type)
+                TilePriority::PriorityBin requesting_tile_bin)
         : prepare_tiles_id(prepare_tiles_id),
-          requesting_tile_bin(requesting_tile_bin),
-          task_type(task_type) {}
+          requesting_tile_bin(requesting_tile_bin) {}
     TracingInfo() = default;
 
     // ID for the current prepare tiles call.
@@ -60,9 +58,6 @@ class CC_EXPORT ImageDecodeCache {
 
     // The bin of the tile that caused this image to be requested.
     const TilePriority::PriorityBin requesting_tile_bin = TilePriority::NOW;
-
-    // Whether the decode is requested as a part of tile rasterization.
-    const TaskType task_type = TaskType::kInRaster;
   };
 
   static devtools_instrumentation::ScopedImageDecodeTask::TaskType
