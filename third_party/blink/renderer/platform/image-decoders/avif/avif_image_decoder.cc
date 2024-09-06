@@ -362,7 +362,7 @@ cc::YUVSubsampling AVIFImageDecoder::GetYUVSubsampling() const {
       // AVIF_PIXEL_FORMAT_NONE.
       CHECK(!IsDecodedSizeAvailable());
       return cc::YUVSubsampling::kUnknown;
-    case AVIF_PIXEL_FORMAT_COUNT:
+    default:
       break;
   }
   NOTREACHED() << "Invalid YUV format: " << avif_yuv_format_;
