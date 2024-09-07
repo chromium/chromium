@@ -186,11 +186,16 @@ void AccountSelectionModalView::InitDialogWidget() {
     return;
   }
 
-  views::Widget* widget =
-      constrained_window::ShowWebModalDialogViews(this, web_contents_.get());
-  if (!widget) {
-    return;
-  }
+  // Create and show the dialog widget. This is functionally a tab-modal dialog.
+  // Showing and hiding is done by FedCmAccountSelectionView. See
+  // https://crbug.com/364926910 for details.
+  gfx::NativeWindow top_level_native_window =
+      web_contents_->GetTopLevelNativeWindow();
+  views::Widget* top_level_widget =
+      views::Widget::GetWidgetForNativeWindow(top_level_native_window);
+  views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
+      this, /*context=*/nullptr, /*parent=*/top_level_widget->GetNativeView());
+  widget->Show();
   UpdateDialogPosition();
 
   // Add the widget observer, if available. It is null in tests.
