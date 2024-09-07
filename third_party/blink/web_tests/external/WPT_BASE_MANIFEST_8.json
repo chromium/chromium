@@ -188978,7 +188978,7 @@
       ]
      ],
      "table-intrinsic-size-003.html": [
-      "08c3333e6730b68a79dcf63e3de7a0a7d1a9fc9f",
+      "4b65cdd664c269ddbe21a5b577d5476702d4e8c5",
       [
        null,
        [
@@ -245587,7 +245587,7 @@
        ]
       ],
       "svg.html": [
-       "b5aad837fd807293788c79781fcffd84dedcaa4d",
+       "2a6064a1d6158dce529e0a274369e879026315ca",
        [
         null,
         [
@@ -353528,7 +353528,7 @@
        []
       ],
       "svg-ref.html": [
-       "8959a01f20186a9775436d49e04dfd36fa5d22cd",
+       "f5f349517c114b76e6a59b8eca4b5041a4e00e4f",
        []
       ],
       "svg-transform-ref.html": [
@@ -367349,7 +367349,11 @@
       []
      ],
      "get-interest-group-auction-data.https.window_1-4-expected.txt": [
-      "1c031379865e872865afc93c87590cf7eac3ec90",
+      "a4c2fd643041bec197c5e7355b677463ef18a575",
+      []
+     ],
+     "get-interest-group-auction-data.https.window_5-last-expected.txt": [
+      "53d11956e0ad96dc5fd89652897bdd47e9f7c9b7",
       []
      ],
      "kanon-status-below-threshold.https.window-expected.txt": [
@@ -367359,6 +367363,18 @@
      "resources": {
       "additional-bids.py": [
        "721909a04583aa67edf6b893408e2f53f4498bb5",
+       []
+      ],
+      "authorize-server-response.py": [
+       "303d2efae5f13a052bedc3ccf182a6d45bcdfc55",
+       []
+      ],
+      "ba-fledge-util.sub.js": [
+       "1c9f051d9d3aa9b91183ab27cc5a486356587810",
+       []
+      ],
+      "ba-public-keys": [
+       "60580a74d06a78db23d0d551a9d4a014bee77994",
        []
       ],
       "bidding-logic.sub.py": [
@@ -367445,6 +367461,40 @@
        "0bac1b99a968eb93daf5719b22dd6e27a26b13a9",
        []
       ]
+     },
+     "server-response.https.window_1-4-expected.txt": [
+      "b9bbe1aa69c8b78589e0909e21c8f7a42c3e13ed",
+      []
+     ],
+     "third_party": {
+      "cbor-js": {
+       "LICENSE": [
+        "8957e130bceb3bdbd22a2eb6ef6b02fc61005672",
+        []
+       ],
+       "README": [
+        "6c475a30331b72f23cccdc343884243bf83bd8b7",
+        []
+       ],
+       "cbor.js": [
+        "3e1f300df35185ec0e7ab0ea65ed998d32970809",
+        []
+       ]
+      },
+      "hpke-js": {
+       "LICENSE": [
+        "e91735e17a2133c54920437d1a41f726b4bfdff8",
+        []
+       ],
+       "README": [
+        "db7cf2b1246c01945ab8f09f1e44ac6ee151030d",
+        []
+       ],
+       "hpke.js": [
+        "05fc9229fc35b7a34b4671450fe7d0ecc14a0fec",
+        []
+       ]
+      }
      }
     }
    },
@@ -374098,7 +374148,7 @@
        []
       ],
       "gentestutilsunion.py": [
-       "3a58f81a10fb77927a47a9cb60cfb6025c76aa64",
+       "84315af983beb97592d2d8a3e42d3a8b81465292",
        []
       ],
       "name2dir-canvas.yaml": [
@@ -379288,7 +379338,7 @@
        ]
       },
       "structured-cloning-error-stack-optional.sub.window-expected.txt": [
-       "3cc0dba1f7478daed848ab92f759b210b43f743d",
+       "9a732a9a5d63661b3e6ef94b7640655fd36f31af",
        []
       ]
      },
@@ -459744,6 +459794,13 @@
          {}
         ]
        ],
+       "color-scheme-iframe-preferred-change.html": [
+        "b078cbbb26666ed012364e2e99ee9831f526de7a",
+        [
+         null,
+         {}
+        ]
+       ],
        "color-scheme-root-background.html": [
         "c5766c7f99f9d22510da537fcb8b9035d356f2d4",
         [
@@ -500755,6 +500812,13 @@
        {}
       ]
      ],
+     "TreeWalker-realm.html": [
+      "e373e67d3601d5619187c8a3a37e8aef394ee156",
+      [
+       null,
+       {}
+      ]
+     ],
      "TreeWalker-traversal-reject.html": [
       "d6c96adc114f6b8c131ee0e8bf494686bb364da8",
       [
@@ -536833,7 +536897,7 @@
    },
    "file-system-access": {
     "getDirectory.https.any.js": [
-     "bace6860b85cfbb170b4b87982de20af86d86f3b",
+     "6921ab6fc3b263db0badf6d8d106d422b4d23dbd",
      [
       "file-system-access/getDirectory.https.any.html",
       {
@@ -540806,7 +540870,7 @@
       ]
      ],
      "get-interest-group-auction-data.https.window.js": [
-      "29f58ebe9b1fd61e64ece49387114f9916f60ff6",
+      "fbd75badbc70aed2fc5db2b078596969e34f8ed9",
       [
        "fledge/tentative/get-interest-group-auction-data.https.window.html?1-4",
        {
@@ -540821,7 +540885,15 @@
          ],
          [
           "script",
+          "resources/ba-fledge-util.sub.js"
+         ],
+         [
+          "script",
           "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "third_party/cbor-js/cbor.js"
          ],
          [
           "script",
@@ -540834,6 +540906,54 @@
          [
           "variant",
           "?1-4"
+         ],
+         [
+          "variant",
+          "?5-last"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/get-interest-group-auction-data.https.window.html?5-last",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/ba-fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "third_party/cbor-js/cbor.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-4"
+         ],
+         [
+          "variant",
+          "?5-last"
          ]
         ],
         "timeout": "long"
@@ -544786,6 +544906,49 @@
          [
           "variant",
           "?6-last"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "server-response.https.window.js": [
+      "918dffefedd58dad55be0c009275464b3f97ea19",
+      [
+       "fledge/tentative/server-response.https.window.html?1-4",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/ba-fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "third_party/cbor-js/cbor.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-4"
          ]
         ],
         "timeout": "long"
@@ -597810,6 +597973,15 @@
           null,
           {}
          ]
+        ],
+        "switch-picker-appearance.tentative.html": [
+         "7a58f62e2900f8ca6c7cb1438a4f303602e31f03",
+         [
+          null,
+          {
+           "testdriver": true
+          }
+         ]
         ]
        }
       },
@@ -629405,7 +629577,7 @@
      ]
     ],
     "coalesced_events_attributes.https.html": [
-     "249be7c7afca75f0a91ac3ac0aa9f532724d6918",
+     "cf9e42db0bcaa9c035586fb0215305dfada4f04e",
      [
       "pointerevents/coalesced_events_attributes.https.html?mouse",
       {
@@ -723653,7 +723825,7 @@
      ]
     ],
     "RTCPeerConnection-generateCertificate.html": [
-     "25d67fb0b007cbd204de4942987279c26e358915",
+     "4cda97e9b7ee5d5c8ec9534edf57f316172af373",
      [
       null,
       {}
